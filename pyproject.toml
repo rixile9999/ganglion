@@ -1,0 +1,18 @@
+[project]
+name = "reflex-language-model-poc"
+version = "0.1.0"
+description = "POC for converting compact model outputs into deterministic tool calls."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

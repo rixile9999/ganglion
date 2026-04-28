@@ -1,0 +1,500 @@
+{"id":"iot-001","prompt":"거실 불 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":70}}]}}
+{"id":"iot-002","prompt":"밤 10시 반에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"22:30","state":"off"}}]}}
+{"id":"iot-003","prompt":"현재 주방 조명 상태 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-004","prompt":"조명 장치 목록 보여줘","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-005","prompt":"서재 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-006","prompt":"복도 불 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"off"}}]}}
+{"id":"iot-007","prompt":"오전 7시에 주방 불 80%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"07:00","state":"on","brightness":80}}]}}
+{"id":"iot-008","prompt":"영화 모드 scene을 만들어줘. 거실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-009","prompt":"침실 불 밝기 35로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":35}}]}}
+{"id":"iot-010","prompt":"오후 6시에 복도 조명 켜줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"18:00","state":"on"}}]}}
+{"id":"iot-011","prompt":"office light off","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"off"}}]}}
+{"id":"iot-012","prompt":"Check living room light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-013","prompt":"거실 불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on"}}]}}
+{"id":"iot-014","prompt":"오전 1시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"01:00","state":"on"}}]}}
+{"id":"iot-015","prompt":"현재 거실 조명 상태 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-016","prompt":"사용 가능한 조명 장치 목록 알려줘","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-017","prompt":"영화 볼 때 쓸 scene 만들어줘. 거실 조명 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-018","prompt":"거실 조명 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on"}}]}}
+{"id":"iot-019","prompt":"오후 1시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"13:00","state":"off"}}]}}
+{"id":"iot-020","prompt":"거실 불 상태 알려줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-021","prompt":"등록된 조명 디바이스 목록 보여줘","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-022","prompt":"create movie mode scene. set living room light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-023","prompt":"거실 불 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"off"}}]}}
+{"id":"iot-024","prompt":"오전 2시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"02:00","state":"on"}}]}}
+{"id":"iot-025","prompt":"거실 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-026","prompt":"집 안 조명 장치 목록 확인해줘","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-027","prompt":"movie scene for living room light, 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-028","prompt":"turn living room light on","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on"}}]}}
+{"id":"iot-029","prompt":"오후 2시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"14:00","state":"off"}}]}}
+{"id":"iot-030","prompt":"what is the living room light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-031","prompt":"list devices","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-032","prompt":"영화 모드 scene을 만들어줘. 침실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-033","prompt":"turn living room light off","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"off"}}]}}
+{"id":"iot-034","prompt":"오전 3시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"03:00","state":"on"}}]}}
+{"id":"iot-035","prompt":"get living room light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-036","prompt":"list light devices","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-037","prompt":"영화 볼 때 쓸 scene 만들어줘. 침실 조명 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-038","prompt":"거실 불 10%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":10}}]}}
+{"id":"iot-039","prompt":"오후 3시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"15:00","state":"off"}}]}}
+{"id":"iot-040","prompt":"현재 침실 조명 상태 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-041","prompt":"show available devices","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-042","prompt":"create movie mode scene. set bedroom light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-043","prompt":"거실 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":10}}]}}
+{"id":"iot-044","prompt":"오전 4시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"04:00","state":"on"}}]}}
+{"id":"iot-045","prompt":"침실 불 상태 알려줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-046","prompt":"what light devices are available","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-047","prompt":"movie scene for bedroom light, 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-048","prompt":"set living room light to 10%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":10}}]}}
+{"id":"iot-049","prompt":"오후 4시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"16:00","state":"off"}}]}}
+{"id":"iot-050","prompt":"침실 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-051","prompt":"조명 장치 목록 보여줘 #8","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-052","prompt":"영화 모드 scene을 만들어줘. 주방 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-053","prompt":"거실 불 20%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20}}]}}
+{"id":"iot-054","prompt":"오전 5시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"05:00","state":"on"}}]}}
+{"id":"iot-055","prompt":"Check bedroom light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-056","prompt":"사용 가능한 조명 장치 목록 알려줘 #9","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-057","prompt":"영화 볼 때 쓸 scene 만들어줘. 주방 조명 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-058","prompt":"거실 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20}}]}}
+{"id":"iot-059","prompt":"오후 5시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"17:00","state":"off"}}]}}
+{"id":"iot-060","prompt":"what is the bedroom light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-061","prompt":"등록된 조명 디바이스 목록 보여줘 #10","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-062","prompt":"create movie mode scene. set kitchen light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-063","prompt":"set living room light to 20%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20}}]}}
+{"id":"iot-064","prompt":"오전 6시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"06:00","state":"on"}}]}}
+{"id":"iot-065","prompt":"get bedroom light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-066","prompt":"집 안 조명 장치 목록 확인해줘 #11","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-067","prompt":"movie scene for kitchen light, 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-068","prompt":"거실 불 35%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":35}}]}}
+{"id":"iot-069","prompt":"오후 6시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"18:00","state":"off"}}]}}
+{"id":"iot-070","prompt":"주방 불 상태 알려줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-071","prompt":"list devices #12","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-072","prompt":"영화 모드 scene을 만들어줘. 복도 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-073","prompt":"거실 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":35}}]}}
+{"id":"iot-074","prompt":"오전 7시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"07:00","state":"on"}}]}}
+{"id":"iot-075","prompt":"주방 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-076","prompt":"list light devices #13","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-077","prompt":"영화 볼 때 쓸 scene 만들어줘. 복도 조명 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-078","prompt":"set living room light to 35%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":35}}]}}
+{"id":"iot-079","prompt":"오후 7시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"19:00","state":"off"}}]}}
+{"id":"iot-080","prompt":"Check kitchen light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-081","prompt":"show available devices #14","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-082","prompt":"create movie mode scene. set hallway light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-083","prompt":"거실 불 50%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":50}}]}}
+{"id":"iot-084","prompt":"오전 8시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"08:00","state":"on"}}]}}
+{"id":"iot-085","prompt":"what is the kitchen light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-086","prompt":"what light devices are available #15","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-087","prompt":"movie scene for hallway light, 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-088","prompt":"거실 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":50}}]}}
+{"id":"iot-089","prompt":"오후 8시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"20:00","state":"off"}}]}}
+{"id":"iot-090","prompt":"get kitchen light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-091","prompt":"조명 장치 목록 보여줘 #16","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-092","prompt":"영화 모드 scene을 만들어줘. 서재 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-093","prompt":"set living room light to 50%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":50}}]}}
+{"id":"iot-094","prompt":"오전 9시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"09:00","state":"on"}}]}}
+{"id":"iot-095","prompt":"현재 복도 조명 상태 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-096","prompt":"사용 가능한 조명 장치 목록 알려줘 #17","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-097","prompt":"영화 볼 때 쓸 scene 만들어줘. 서재 조명 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-098","prompt":"거실 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":70}}]}}
+{"id":"iot-099","prompt":"오후 9시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"21:00","state":"off"}}]}}
+{"id":"iot-100","prompt":"복도 불 상태 알려줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-101","prompt":"등록된 조명 디바이스 목록 보여줘 #18","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-102","prompt":"create movie mode scene. set office light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-103","prompt":"set living room light to 70%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":70}}]}}
+{"id":"iot-104","prompt":"오전 10시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"10:00","state":"on"}}]}}
+{"id":"iot-105","prompt":"복도 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-106","prompt":"집 안 조명 장치 목록 확인해줘 #19","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-107","prompt":"movie scene for office light, 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-108","prompt":"거실 불 80%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":80}}]}}
+{"id":"iot-109","prompt":"오후 10시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"22:00","state":"off"}}]}}
+{"id":"iot-110","prompt":"Check hallway light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-111","prompt":"list devices #20","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-112","prompt":"영화 모드 #0 만들어줘. 거실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-113","prompt":"거실 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":80}}]}}
+{"id":"iot-114","prompt":"오전 11시에 거실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"11:00","state":"on"}}]}}
+{"id":"iot-115","prompt":"what is the hallway light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-116","prompt":"list light devices #21","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-117","prompt":"create movie mode #0. set living room light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-118","prompt":"set living room light to 80%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":80}}]}}
+{"id":"iot-119","prompt":"오후 11시에 거실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"23:00","state":"off"}}]}}
+{"id":"iot-120","prompt":"get hallway light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-121","prompt":"show available devices #22","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-122","prompt":"영화 모드 #1 만들어줘. 침실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-123","prompt":"거실 불 100%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":100}}]}}
+{"id":"iot-124","prompt":"오전 7시에 거실 불 20%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"07:00","state":"on","brightness":20}}]}}
+{"id":"iot-125","prompt":"현재 서재 조명 상태 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-126","prompt":"what light devices are available #23","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-127","prompt":"create movie mode #1. set bedroom light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-128","prompt":"거실 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":100}}]}}
+{"id":"iot-129","prompt":"오전 7시에 거실 불 50%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"07:00","state":"on","brightness":50}}]}}
+{"id":"iot-130","prompt":"서재 불 상태 알려줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-131","prompt":"조명 장치 목록 보여줘 #24","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-132","prompt":"영화 모드 #2 만들어줘. 주방 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-133","prompt":"set living room light to 100%","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":100}}]}}
+{"id":"iot-134","prompt":"오전 7시에 거실 불 80%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"07:00","state":"on","brightness":80}}]}}
+{"id":"iot-135","prompt":"서재 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-136","prompt":"사용 가능한 조명 장치 목록 알려줘 #25","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-137","prompt":"create movie mode #2. set kitchen light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-138","prompt":"거실 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-139","prompt":"schedule living room light on at 06:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"06:30","state":"on"}}]}}
+{"id":"iot-140","prompt":"Check office light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-141","prompt":"등록된 조명 디바이스 목록 보여줘 #26","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-142","prompt":"영화 모드 #3 만들어줘. 복도 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-143","prompt":"make living room light warm","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-144","prompt":"at 06:30 turn living room light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"06:30","state":"off"}}]}}
+{"id":"iot-145","prompt":"what is the office light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-146","prompt":"집 안 조명 장치 목록 확인해줘 #27","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-147","prompt":"create movie mode #3. set hallway light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-148","prompt":"거실 조명을 중립으로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-149","prompt":"schedule living room light on at 18:00","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"18:00","state":"on"}}]}}
+{"id":"iot-150","prompt":"get office light state","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-151","prompt":"list devices #28","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-152","prompt":"영화 모드 #4 만들어줘. 서재 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-153","prompt":"make living room light neutral","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-154","prompt":"at 18:00 turn living room light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"18:00","state":"off"}}]}}
+{"id":"iot-155","prompt":"거실 조명 상태 다시 확인해줘 #0","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-156","prompt":"list light devices #29","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-157","prompt":"create movie mode #4. set office light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-158","prompt":"거실 조명을 차갑게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-159","prompt":"schedule living room light on at 22:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"22:30","state":"on"}}]}}
+{"id":"iot-160","prompt":"check living room light state again #0","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-161","prompt":"show available devices #30","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-162","prompt":"영화 모드 #5 만들어줘. 거실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-163","prompt":"make living room light cool","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-164","prompt":"at 22:30 turn living room light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"22:30","state":"off"}}]}}
+{"id":"iot-165","prompt":"침실 조명 상태 다시 확인해줘 #1","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-166","prompt":"what light devices are available #31","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-167","prompt":"create movie mode #5. set living room light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-168","prompt":"침실 불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on"}}]}}
+{"id":"iot-169","prompt":"오전 1시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"01:00","state":"on"}}]}}
+{"id":"iot-170","prompt":"check bedroom light state again #1","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-171","prompt":"조명 장치 목록 보여줘 #32","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-172","prompt":"영화 모드 #6 만들어줘. 침실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-173","prompt":"침실 조명 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on"}}]}}
+{"id":"iot-174","prompt":"오후 1시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"13:00","state":"off"}}]}}
+{"id":"iot-175","prompt":"주방 조명 상태 다시 확인해줘 #2","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-176","prompt":"사용 가능한 조명 장치 목록 알려줘 #33","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-177","prompt":"create movie mode #6. set bedroom light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-178","prompt":"침실 불 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"off"}}]}}
+{"id":"iot-179","prompt":"오전 2시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"02:00","state":"on"}}]}}
+{"id":"iot-180","prompt":"check kitchen light state again #2","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-181","prompt":"등록된 조명 디바이스 목록 보여줘 #34","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-182","prompt":"영화 모드 #7 만들어줘. 주방 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-183","prompt":"turn bedroom light on","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on"}}]}}
+{"id":"iot-184","prompt":"오후 2시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"14:00","state":"off"}}]}}
+{"id":"iot-185","prompt":"복도 조명 상태 다시 확인해줘 #3","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-186","prompt":"집 안 조명 장치 목록 확인해줘 #35","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-187","prompt":"create movie mode #7. set kitchen light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-188","prompt":"turn bedroom light off","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"off"}}]}}
+{"id":"iot-189","prompt":"오전 3시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"03:00","state":"on"}}]}}
+{"id":"iot-190","prompt":"check hallway light state again #3","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-191","prompt":"list devices #36","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-192","prompt":"영화 모드 #8 만들어줘. 복도 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-193","prompt":"침실 불 10%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":10}}]}}
+{"id":"iot-194","prompt":"오후 3시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"15:00","state":"off"}}]}}
+{"id":"iot-195","prompt":"서재 조명 상태 다시 확인해줘 #4","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-196","prompt":"list light devices #37","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-197","prompt":"create movie mode #8. set hallway light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-198","prompt":"침실 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":10}}]}}
+{"id":"iot-199","prompt":"오전 4시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"04:00","state":"on"}}]}}
+{"id":"iot-200","prompt":"check office light state again #4","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-201","prompt":"show available devices #38","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-202","prompt":"영화 모드 #9 만들어줘. 서재 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-203","prompt":"set bedroom light to 10%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":10}}]}}
+{"id":"iot-204","prompt":"오후 4시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"16:00","state":"off"}}]}}
+{"id":"iot-205","prompt":"거실 조명 상태 다시 확인해줘 #5","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-206","prompt":"what light devices are available #39","expected":{"calls":[{"action":"list_devices","args":{}}]}}
+{"id":"iot-207","prompt":"create movie mode #9. set office light to 20% warm","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20,"color_temp":"warm"}}]}}]}}
+{"id":"iot-208","prompt":"침실 불 20%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20}}]}}
+{"id":"iot-209","prompt":"오전 5시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"05:00","state":"on"}}]}}
+{"id":"iot-210","prompt":"check living room light state again #5","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-211","prompt":"침실 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20}}]}}
+{"id":"iot-212","prompt":"오후 5시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"17:00","state":"off"}}]}}
+{"id":"iot-213","prompt":"침실 조명 상태 다시 확인해줘 #6","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-214","prompt":"set bedroom light to 20%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20}}]}}
+{"id":"iot-215","prompt":"오전 6시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"06:00","state":"on"}}]}}
+{"id":"iot-216","prompt":"check bedroom light state again #6","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-217","prompt":"침실 불 35%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":35}}]}}
+{"id":"iot-218","prompt":"오후 6시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"18:00","state":"off"}}]}}
+{"id":"iot-219","prompt":"주방 조명 상태 다시 확인해줘 #7","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-220","prompt":"침실 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":35}}]}}
+{"id":"iot-221","prompt":"오전 7시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"07:00","state":"on"}}]}}
+{"id":"iot-222","prompt":"check kitchen light state again #7","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-223","prompt":"set bedroom light to 35%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":35}}]}}
+{"id":"iot-224","prompt":"오후 7시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"19:00","state":"off"}}]}}
+{"id":"iot-225","prompt":"복도 조명 상태 다시 확인해줘 #8","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-226","prompt":"침실 불 50%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":50}}]}}
+{"id":"iot-227","prompt":"오전 8시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"08:00","state":"on"}}]}}
+{"id":"iot-228","prompt":"check hallway light state again #8","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-229","prompt":"침실 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":50}}]}}
+{"id":"iot-230","prompt":"오후 8시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"20:00","state":"off"}}]}}
+{"id":"iot-231","prompt":"서재 조명 상태 다시 확인해줘 #9","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-232","prompt":"set bedroom light to 50%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":50}}]}}
+{"id":"iot-233","prompt":"오전 9시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"09:00","state":"on"}}]}}
+{"id":"iot-234","prompt":"check office light state again #9","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-235","prompt":"침실 불 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":70}}]}}
+{"id":"iot-236","prompt":"오후 9시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"21:00","state":"off"}}]}}
+{"id":"iot-237","prompt":"거실 조명 상태 다시 확인해줘 #10","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-238","prompt":"침실 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":70}}]}}
+{"id":"iot-239","prompt":"오전 10시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"10:00","state":"on"}}]}}
+{"id":"iot-240","prompt":"check living room light state again #10","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-241","prompt":"set bedroom light to 70%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":70}}]}}
+{"id":"iot-242","prompt":"오후 10시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"22:00","state":"off"}}]}}
+{"id":"iot-243","prompt":"침실 조명 상태 다시 확인해줘 #11","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-244","prompt":"침실 불 80%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":80}}]}}
+{"id":"iot-245","prompt":"오전 11시에 침실 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"11:00","state":"on"}}]}}
+{"id":"iot-246","prompt":"check bedroom light state again #11","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-247","prompt":"침실 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":80}}]}}
+{"id":"iot-248","prompt":"오후 11시에 침실 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"23:00","state":"off"}}]}}
+{"id":"iot-249","prompt":"주방 조명 상태 다시 확인해줘 #12","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-250","prompt":"set bedroom light to 80%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":80}}]}}
+{"id":"iot-251","prompt":"오전 7시에 침실 불 20%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"07:00","state":"on","brightness":20}}]}}
+{"id":"iot-252","prompt":"check kitchen light state again #12","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-253","prompt":"침실 불 100%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":100}}]}}
+{"id":"iot-254","prompt":"오전 7시에 침실 불 50%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"07:00","state":"on","brightness":50}}]}}
+{"id":"iot-255","prompt":"복도 조명 상태 다시 확인해줘 #13","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-256","prompt":"침실 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":100}}]}}
+{"id":"iot-257","prompt":"오전 7시에 침실 불 80%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"07:00","state":"on","brightness":80}}]}}
+{"id":"iot-258","prompt":"check hallway light state again #13","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-259","prompt":"set bedroom light to 100%","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":100}}]}}
+{"id":"iot-260","prompt":"schedule bedroom light on at 06:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"06:30","state":"on"}}]}}
+{"id":"iot-261","prompt":"서재 조명 상태 다시 확인해줘 #14","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-262","prompt":"침실 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-263","prompt":"at 06:30 turn bedroom light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"06:30","state":"off"}}]}}
+{"id":"iot-264","prompt":"check office light state again #14","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-265","prompt":"make bedroom light warm","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-266","prompt":"schedule bedroom light on at 18:00","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"18:00","state":"on"}}]}}
+{"id":"iot-267","prompt":"거실 조명 상태 다시 확인해줘 #15","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-268","prompt":"침실 조명을 중립으로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-269","prompt":"at 18:00 turn bedroom light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"18:00","state":"off"}}]}}
+{"id":"iot-270","prompt":"check living room light state again #15","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-271","prompt":"make bedroom light neutral","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-272","prompt":"schedule bedroom light on at 22:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"22:30","state":"on"}}]}}
+{"id":"iot-273","prompt":"침실 조명 상태 다시 확인해줘 #16","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-274","prompt":"침실 조명을 차갑게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-275","prompt":"at 22:30 turn bedroom light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"22:30","state":"off"}}]}}
+{"id":"iot-276","prompt":"check bedroom light state again #16","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-277","prompt":"make bedroom light cool","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-278","prompt":"오전 1시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"01:00","state":"on"}}]}}
+{"id":"iot-279","prompt":"주방 조명 상태 다시 확인해줘 #17","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-280","prompt":"주방 불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on"}}]}}
+{"id":"iot-281","prompt":"오후 1시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"13:00","state":"off"}}]}}
+{"id":"iot-282","prompt":"check kitchen light state again #17","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-283","prompt":"주방 조명 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on"}}]}}
+{"id":"iot-284","prompt":"오전 2시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"02:00","state":"on"}}]}}
+{"id":"iot-285","prompt":"복도 조명 상태 다시 확인해줘 #18","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-286","prompt":"주방 불 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"off"}}]}}
+{"id":"iot-287","prompt":"오후 2시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"14:00","state":"off"}}]}}
+{"id":"iot-288","prompt":"check hallway light state again #18","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-289","prompt":"turn kitchen light on","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on"}}]}}
+{"id":"iot-290","prompt":"오전 3시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"03:00","state":"on"}}]}}
+{"id":"iot-291","prompt":"서재 조명 상태 다시 확인해줘 #19","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-292","prompt":"turn kitchen light off","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"off"}}]}}
+{"id":"iot-293","prompt":"오후 3시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"15:00","state":"off"}}]}}
+{"id":"iot-294","prompt":"check office light state again #19","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-295","prompt":"주방 불 10%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":10}}]}}
+{"id":"iot-296","prompt":"오전 4시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"04:00","state":"on"}}]}}
+{"id":"iot-297","prompt":"거실 조명 상태 다시 확인해줘 #20","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-298","prompt":"주방 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":10}}]}}
+{"id":"iot-299","prompt":"오후 4시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"16:00","state":"off"}}]}}
+{"id":"iot-300","prompt":"check living room light state again #20","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-301","prompt":"set kitchen light to 10%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":10}}]}}
+{"id":"iot-302","prompt":"오전 5시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"05:00","state":"on"}}]}}
+{"id":"iot-303","prompt":"침실 조명 상태 다시 확인해줘 #21","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-304","prompt":"주방 불 20%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20}}]}}
+{"id":"iot-305","prompt":"오후 5시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"17:00","state":"off"}}]}}
+{"id":"iot-306","prompt":"check bedroom light state again #21","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-307","prompt":"주방 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20}}]}}
+{"id":"iot-308","prompt":"오전 6시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"06:00","state":"on"}}]}}
+{"id":"iot-309","prompt":"주방 조명 상태 다시 확인해줘 #22","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-310","prompt":"set kitchen light to 20%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":20}}]}}
+{"id":"iot-311","prompt":"오후 6시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"18:00","state":"off"}}]}}
+{"id":"iot-312","prompt":"check kitchen light state again #22","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-313","prompt":"주방 불 35%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":35}}]}}
+{"id":"iot-314","prompt":"오전 7시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"07:00","state":"on"}}]}}
+{"id":"iot-315","prompt":"복도 조명 상태 다시 확인해줘 #23","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-316","prompt":"주방 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":35}}]}}
+{"id":"iot-317","prompt":"오후 7시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"19:00","state":"off"}}]}}
+{"id":"iot-318","prompt":"check hallway light state again #23","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-319","prompt":"set kitchen light to 35%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":35}}]}}
+{"id":"iot-320","prompt":"오전 8시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"08:00","state":"on"}}]}}
+{"id":"iot-321","prompt":"서재 조명 상태 다시 확인해줘 #24","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-322","prompt":"주방 불 50%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":50}}]}}
+{"id":"iot-323","prompt":"오후 8시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"20:00","state":"off"}}]}}
+{"id":"iot-324","prompt":"check office light state again #24","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-325","prompt":"주방 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":50}}]}}
+{"id":"iot-326","prompt":"오전 9시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"09:00","state":"on"}}]}}
+{"id":"iot-327","prompt":"거실 조명 상태 다시 확인해줘 #25","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-328","prompt":"set kitchen light to 50%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":50}}]}}
+{"id":"iot-329","prompt":"오후 9시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"21:00","state":"off"}}]}}
+{"id":"iot-330","prompt":"check living room light state again #25","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-331","prompt":"주방 불 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":70}}]}}
+{"id":"iot-332","prompt":"오전 10시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"10:00","state":"on"}}]}}
+{"id":"iot-333","prompt":"침실 조명 상태 다시 확인해줘 #26","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-334","prompt":"주방 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":70}}]}}
+{"id":"iot-335","prompt":"오후 10시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"22:00","state":"off"}}]}}
+{"id":"iot-336","prompt":"check bedroom light state again #26","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-337","prompt":"set kitchen light to 70%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":70}}]}}
+{"id":"iot-338","prompt":"오전 11시에 주방 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"11:00","state":"on"}}]}}
+{"id":"iot-339","prompt":"주방 조명 상태 다시 확인해줘 #27","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-340","prompt":"주방 불 80%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":80}}]}}
+{"id":"iot-341","prompt":"오후 11시에 주방 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"23:00","state":"off"}}]}}
+{"id":"iot-342","prompt":"check kitchen light state again #27","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-343","prompt":"주방 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":80}}]}}
+{"id":"iot-344","prompt":"오전 7시에 주방 불 20%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"07:00","state":"on","brightness":20}}]}}
+{"id":"iot-345","prompt":"복도 조명 상태 다시 확인해줘 #28","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-346","prompt":"set kitchen light to 80%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":80}}]}}
+{"id":"iot-347","prompt":"오전 7시에 주방 불 50%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"07:00","state":"on","brightness":50}}]}}
+{"id":"iot-348","prompt":"check hallway light state again #28","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-349","prompt":"주방 불 100%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":100}}]}}
+{"id":"iot-350","prompt":"schedule kitchen light on at 06:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"06:30","state":"on"}}]}}
+{"id":"iot-351","prompt":"서재 조명 상태 다시 확인해줘 #29","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-352","prompt":"주방 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":100}}]}}
+{"id":"iot-353","prompt":"at 06:30 turn kitchen light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"06:30","state":"off"}}]}}
+{"id":"iot-354","prompt":"check office light state again #29","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-355","prompt":"set kitchen light to 100%","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":100}}]}}
+{"id":"iot-356","prompt":"schedule kitchen light on at 18:00","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"18:00","state":"on"}}]}}
+{"id":"iot-357","prompt":"거실 조명 상태 다시 확인해줘 #30","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-358","prompt":"주방 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-359","prompt":"at 18:00 turn kitchen light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"18:00","state":"off"}}]}}
+{"id":"iot-360","prompt":"check living room light state again #30","expected":{"calls":[{"action":"get_light_state","args":{"room":"living"}}]}}
+{"id":"iot-361","prompt":"make kitchen light warm","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-362","prompt":"schedule kitchen light on at 22:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"22:30","state":"on"}}]}}
+{"id":"iot-363","prompt":"침실 조명 상태 다시 확인해줘 #31","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-364","prompt":"주방 조명을 중립으로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-365","prompt":"at 22:30 turn kitchen light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"kitchen","at":"22:30","state":"off"}}]}}
+{"id":"iot-366","prompt":"check bedroom light state again #31","expected":{"calls":[{"action":"get_light_state","args":{"room":"bedroom"}}]}}
+{"id":"iot-367","prompt":"make kitchen light neutral","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-368","prompt":"오전 1시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"01:00","state":"on"}}]}}
+{"id":"iot-369","prompt":"주방 조명 상태 다시 확인해줘 #32","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-370","prompt":"주방 조명을 차갑게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-371","prompt":"오후 1시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"13:00","state":"off"}}]}}
+{"id":"iot-372","prompt":"check kitchen light state again #32","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]}}
+{"id":"iot-373","prompt":"make kitchen light cool","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-374","prompt":"오전 2시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"02:00","state":"on"}}]}}
+{"id":"iot-375","prompt":"복도 조명 상태 다시 확인해줘 #33","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-376","prompt":"복도 불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on"}}]}}
+{"id":"iot-377","prompt":"오후 2시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"14:00","state":"off"}}]}}
+{"id":"iot-378","prompt":"check hallway light state again #33","expected":{"calls":[{"action":"get_light_state","args":{"room":"hallway"}}]}}
+{"id":"iot-379","prompt":"복도 조명 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on"}}]}}
+{"id":"iot-380","prompt":"오전 3시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"03:00","state":"on"}}]}}
+{"id":"iot-381","prompt":"서재 조명 상태 다시 확인해줘 #34","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-382","prompt":"turn hallway light on","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on"}}]}}
+{"id":"iot-383","prompt":"오후 3시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"15:00","state":"off"}}]}}
+{"id":"iot-384","prompt":"check office light state again #34","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]}}
+{"id":"iot-385","prompt":"turn hallway light off","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"off"}}]}}
+{"id":"iot-386","prompt":"오전 4시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"04:00","state":"on"}}]}}
+{"id":"iot-387","prompt":"복도 불 10%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":10}}]}}
+{"id":"iot-388","prompt":"오후 4시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"16:00","state":"off"}}]}}
+{"id":"iot-389","prompt":"복도 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":10}}]}}
+{"id":"iot-390","prompt":"오전 5시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"05:00","state":"on"}}]}}
+{"id":"iot-391","prompt":"set hallway light to 10%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":10}}]}}
+{"id":"iot-392","prompt":"오후 5시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"17:00","state":"off"}}]}}
+{"id":"iot-393","prompt":"복도 불 20%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20}}]}}
+{"id":"iot-394","prompt":"오전 6시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"06:00","state":"on"}}]}}
+{"id":"iot-395","prompt":"복도 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20}}]}}
+{"id":"iot-396","prompt":"오후 6시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"18:00","state":"off"}}]}}
+{"id":"iot-397","prompt":"set hallway light to 20%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20}}]}}
+{"id":"iot-398","prompt":"오전 7시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"07:00","state":"on"}}]}}
+{"id":"iot-399","prompt":"복도 불 35%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":35}}]}}
+{"id":"iot-400","prompt":"오후 7시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"19:00","state":"off"}}]}}
+{"id":"iot-401","prompt":"복도 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":35}}]}}
+{"id":"iot-402","prompt":"오전 8시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"08:00","state":"on"}}]}}
+{"id":"iot-403","prompt":"set hallway light to 35%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":35}}]}}
+{"id":"iot-404","prompt":"오후 8시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"20:00","state":"off"}}]}}
+{"id":"iot-405","prompt":"복도 불 50%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":50}}]}}
+{"id":"iot-406","prompt":"오전 9시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"09:00","state":"on"}}]}}
+{"id":"iot-407","prompt":"복도 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":50}}]}}
+{"id":"iot-408","prompt":"오후 9시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"21:00","state":"off"}}]}}
+{"id":"iot-409","prompt":"set hallway light to 50%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":50}}]}}
+{"id":"iot-410","prompt":"오전 10시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"10:00","state":"on"}}]}}
+{"id":"iot-411","prompt":"복도 불 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":70}}]}}
+{"id":"iot-412","prompt":"오후 10시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"22:00","state":"off"}}]}}
+{"id":"iot-413","prompt":"복도 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":70}}]}}
+{"id":"iot-414","prompt":"오전 11시에 복도 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"11:00","state":"on"}}]}}
+{"id":"iot-415","prompt":"set hallway light to 70%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":70}}]}}
+{"id":"iot-416","prompt":"오후 11시에 복도 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"23:00","state":"off"}}]}}
+{"id":"iot-417","prompt":"복도 불 80%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":80}}]}}
+{"id":"iot-418","prompt":"오전 7시에 복도 불 20%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"07:00","state":"on","brightness":20}}]}}
+{"id":"iot-419","prompt":"복도 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":80}}]}}
+{"id":"iot-420","prompt":"오전 7시에 복도 불 50%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"07:00","state":"on","brightness":50}}]}}
+{"id":"iot-421","prompt":"set hallway light to 80%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":80}}]}}
+{"id":"iot-422","prompt":"오전 7시에 복도 불 80%로 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"07:00","state":"on","brightness":80}}]}}
+{"id":"iot-423","prompt":"복도 불 100%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":100}}]}}
+{"id":"iot-424","prompt":"schedule hallway light on at 06:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"06:30","state":"on"}}]}}
+{"id":"iot-425","prompt":"복도 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":100}}]}}
+{"id":"iot-426","prompt":"at 06:30 turn hallway light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"06:30","state":"off"}}]}}
+{"id":"iot-427","prompt":"set hallway light to 100%","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":100}}]}}
+{"id":"iot-428","prompt":"schedule hallway light on at 18:00","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"18:00","state":"on"}}]}}
+{"id":"iot-429","prompt":"복도 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-430","prompt":"at 18:00 turn hallway light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"18:00","state":"off"}}]}}
+{"id":"iot-431","prompt":"make hallway light warm","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-432","prompt":"schedule hallway light on at 22:30","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"22:30","state":"on"}}]}}
+{"id":"iot-433","prompt":"복도 조명을 중립으로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-434","prompt":"at 22:30 turn hallway light off","expected":{"calls":[{"action":"schedule_light","args":{"room":"hallway","at":"22:30","state":"off"}}]}}
+{"id":"iot-435","prompt":"make hallway light neutral","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-436","prompt":"오전 1시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"01:00","state":"on"}}]}}
+{"id":"iot-437","prompt":"복도 조명을 차갑게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-438","prompt":"오후 1시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"13:00","state":"off"}}]}}
+{"id":"iot-439","prompt":"make hallway light cool","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-440","prompt":"오전 2시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"02:00","state":"on"}}]}}
+{"id":"iot-441","prompt":"서재 불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on"}}]}}
+{"id":"iot-442","prompt":"오후 2시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"14:00","state":"off"}}]}}
+{"id":"iot-443","prompt":"서재 조명 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on"}}]}}
+{"id":"iot-444","prompt":"오전 3시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"03:00","state":"on"}}]}}
+{"id":"iot-445","prompt":"서재 불 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"off"}}]}}
+{"id":"iot-446","prompt":"오후 3시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"15:00","state":"off"}}]}}
+{"id":"iot-447","prompt":"turn office light on","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on"}}]}}
+{"id":"iot-448","prompt":"오전 4시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"04:00","state":"on"}}]}}
+{"id":"iot-449","prompt":"turn office light off","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"off"}}]}}
+{"id":"iot-450","prompt":"오후 4시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"16:00","state":"off"}}]}}
+{"id":"iot-451","prompt":"서재 불 10%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":10}}]}}
+{"id":"iot-452","prompt":"오전 5시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"05:00","state":"on"}}]}}
+{"id":"iot-453","prompt":"서재 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":10}}]}}
+{"id":"iot-454","prompt":"오후 5시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"17:00","state":"off"}}]}}
+{"id":"iot-455","prompt":"set office light to 10%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":10}}]}}
+{"id":"iot-456","prompt":"오전 6시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"06:00","state":"on"}}]}}
+{"id":"iot-457","prompt":"서재 불 20%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20}}]}}
+{"id":"iot-458","prompt":"오후 6시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"18:00","state":"off"}}]}}
+{"id":"iot-459","prompt":"서재 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20}}]}}
+{"id":"iot-460","prompt":"오전 7시에 서재 불 켜지게 예약해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"07:00","state":"on"}}]}}
+{"id":"iot-461","prompt":"set office light to 20%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":20}}]}}
+{"id":"iot-462","prompt":"오후 7시에 서재 조명 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"office","at":"19:00","state":"off"}}]}}
+{"id":"iot-463","prompt":"서재 불 35%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":35}}]}}
+{"id":"iot-464","prompt":"서재 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":35}}]}}
+{"id":"iot-465","prompt":"set office light to 35%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":35}}]}}
+{"id":"iot-466","prompt":"서재 불 50%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":50}}]}}
+{"id":"iot-467","prompt":"서재 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":50}}]}}
+{"id":"iot-468","prompt":"set office light to 50%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":50}}]}}
+{"id":"iot-469","prompt":"서재 불 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":70}}]}}
+{"id":"iot-470","prompt":"서재 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":70}}]}}
+{"id":"iot-471","prompt":"set office light to 70%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":70}}]}}
+{"id":"iot-472","prompt":"서재 불 80%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":80}}]}}
+{"id":"iot-473","prompt":"서재 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":80}}]}}
+{"id":"iot-474","prompt":"set office light to 80%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":80}}]}}
+{"id":"iot-475","prompt":"서재 불 100%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":100}}]}}
+{"id":"iot-476","prompt":"서재 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":100}}]}}
+{"id":"iot-477","prompt":"set office light to 100%","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":100}}]}}
+{"id":"iot-478","prompt":"make office light warm","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","color_temp":"warm"}}]}}
+{"id":"iot-479","prompt":"서재 조명을 중립으로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-480","prompt":"make office light neutral","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","color_temp":"neutral"}}]}}
+{"id":"iot-481","prompt":"서재 조명을 차갑게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-482","prompt":"make office light cool","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","color_temp":"cool"}}]}}
+{"id":"iot-483","prompt":"거실 불 10%로 다시 켜줘 #0","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":10}}]}}
+{"id":"iot-484","prompt":"거실 불 다시 꺼줘 #0","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"off"}}]}}
+{"id":"iot-485","prompt":"침실 불 20%로 다시 켜줘 #1","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20}}]}}
+{"id":"iot-486","prompt":"침실 불 다시 꺼줘 #1","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"off"}}]}}
+{"id":"iot-487","prompt":"주방 불 35%로 다시 켜줘 #2","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":35}}]}}
+{"id":"iot-488","prompt":"주방 불 다시 꺼줘 #2","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"off"}}]}}
+{"id":"iot-489","prompt":"복도 불 50%로 다시 켜줘 #3","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":50}}]}}
+{"id":"iot-490","prompt":"복도 불 다시 꺼줘 #3","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"off"}}]}}
+{"id":"iot-491","prompt":"서재 불 70%로 다시 켜줘 #4","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":70}}]}}
+{"id":"iot-492","prompt":"서재 불 다시 꺼줘 #4","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"off"}}]}}
+{"id":"iot-493","prompt":"거실 불 80%로 다시 켜줘 #5","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":80}}]}}
+{"id":"iot-494","prompt":"거실 불 다시 꺼줘 #5","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"off"}}]}}
+{"id":"iot-495","prompt":"침실 불 100%로 다시 켜줘 #6","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":100}}]}}
+{"id":"iot-496","prompt":"침실 불 다시 꺼줘 #6","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"off"}}]}}
+{"id":"iot-497","prompt":"주방 불 10%로 다시 켜줘 #7","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":10}}]}}
+{"id":"iot-498","prompt":"주방 불 다시 꺼줘 #7","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"off"}}]}}
+{"id":"iot-499","prompt":"복도 불 20%로 다시 켜줘 #8","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":20}}]}}
+{"id":"iot-500","prompt":"복도 불 다시 꺼줘 #8","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"off"}}]}}

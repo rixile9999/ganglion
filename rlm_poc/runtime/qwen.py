@@ -4,12 +4,12 @@ import json
 import os
 import time
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Protocol
 
+from rlm_poc.dsl.catalog import Catalog
 from rlm_poc.dsl.json_extract import parse_json_dsl_lenient
-from rlm_poc.dsl.validator import parse_json_dsl
+from rlm_poc.dsl.tool_spec import DSLValidationError
 from rlm_poc.runtime.types import ModelResult
-from rlm_poc.schema.iot_light import JSON_DSL_CATALOG, OPENAI_TOOLS
 
 
 @dataclass(frozen=True)
@@ -36,57 +36,152 @@ class QwenConfig:
         )
 
 
+@dataclass(frozen=True)
+class RepairConfig:
+    enabled: bool = False
+    max_attempts: int = 1
+
+
+@dataclass(frozen=True)
+class CompletionResponse:
+    content: str
+    input_tokens: int = 0
+    output_tokens: int = 0
+
+
+class Completer(Protocol):
+    def complete(self, messages: list[dict[str, Any]]) -> CompletionResponse: ...
+
+
+def _dsl_messages(catalog: Catalog, user_prompt: str) -> list[dict[str, Any]]:
+    return [
+        {
+            "role": "system",
+            "content": (
+                "You convert user requests into the JSON DSL below. "
+                "The response must be valid JSON.\n\n"
+                f"{catalog.render_json_dsl()}"
+            ),
+        },
+        {"role": "user", "content": user_prompt},
+    ]
+
+
+def run_dsl_with_repair(
+    catalog: Catalog,
+    user_prompt: str,
+    completer: Completer,
+    repair: RepairConfig,
+) -> ModelResult:
+    messages = _dsl_messages(catalog, user_prompt)
+    attempts: list[dict[str, Any]] = []
+    total_input = 0
+    total_output = 0
+    started = time.perf_counter()
+    last_error: DSLValidationError | None = None
+
+    for attempt in range(repair.max_attempts + 1):
+        response = completer.complete(messages)
+        total_input += response.input_tokens
+        total_output += response.output_tokens
+        attempts.append(
+            {
+                "attempt": attempt,
+                "content": response.content,
+                "input_tokens": response.input_tokens,
+                "output_tokens": response.output_tokens,
+            }
+        )
+
+        try:
+            plan = catalog.parse_json_dsl(response.content)
+            latency_ms = (time.perf_counter() - started) * 1000
+            return ModelResult(
+                plan=plan,
+                raw={"attempts": attempts, "final_content": response.content},
+                latency_ms=latency_ms,
+                input_tokens=total_input,
+                output_tokens=total_output,
+            )
+        except DSLValidationError as exc:
+            last_error = exc
+            attempts[-1]["error"] = str(exc)
+            if not repair.enabled or attempt >= repair.max_attempts:
+                raise
+            messages = messages + [
+                {"role": "assistant", "content": response.content},
+                {
+                    "role": "user",
+                    "content": (
+                        "Your previous JSON failed validation: "
+                        f"{exc}. Return only valid JSON that matches the DSL."
+                    ),
+                },
+            ]
+
+    raise RuntimeError(f"repair loop exited without returning; last_error={last_error}")
+
+
+class _OpenAIDSLCompleter:
+    def __init__(self, client: Any, model: str, extra_body: dict[str, Any] | None) -> None:
+        self.client = client
+        self.model = model
+        self.extra_body = extra_body
+
+    def complete(self, messages: list[dict[str, Any]]) -> CompletionResponse:
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            response_format={"type": "json_object"},
+            extra_body=self.extra_body,
+        )
+        content = completion.choices[0].message.content or "{}"
+        usage = getattr(completion, "usage", None)
+        return CompletionResponse(
+            content=content,
+            input_tokens=getattr(usage, "prompt_tokens", 0) or 0,
+            output_tokens=getattr(usage, "completion_tokens", 0) or 0,
+        )
+
+
 class QwenJSONDSLClient:
-    def __init__(self, config: QwenConfig | None = None) -> None:
+    def __init__(
+        self,
+        catalog: Catalog,
+        config: QwenConfig | None = None,
+        *,
+        repair: RepairConfig | None = None,
+    ) -> None:
         from openai import OpenAI
 
+        self.catalog = catalog
         self.config = config or QwenConfig.from_env()
-        self.client = OpenAI(api_key=self.config.api_key, base_url=self.config.base_url)
-
-    def invoke(self, user_prompt: str) -> ModelResult:
-        messages = [
-            {
-                "role": "system",
-                "content": (
-                    "You convert user requests into the JSON DSL below. "
-                    "The response must be valid JSON.\n\n"
-                    f"{JSON_DSL_CATALOG}"
-                ),
-            },
-            {"role": "user", "content": user_prompt},
-        ]
+        self.repair = repair or RepairConfig()
+        self._openai = OpenAI(api_key=self.config.api_key, base_url=self.config.base_url)
         extra_body = (
             {"enable_thinking": False} if self.config.disable_thinking else None
         )
-        started = time.perf_counter()
-        completion = self.client.chat.completions.create(
-            model=self.config.model,
-            messages=messages,
-            response_format={"type": "json_object"},
-            extra_body=extra_body,
+        self._completer = _OpenAIDSLCompleter(
+            self._openai, self.config.model, extra_body
         )
-        latency_ms = (time.perf_counter() - started) * 1000
-        content = completion.choices[0].message.content or "{}"
-        plan = parse_json_dsl(content)
-        usage = getattr(completion, "usage", None)
-        return ModelResult(
-            plan=plan,
-            raw=content,
-            latency_ms=latency_ms,
-            input_tokens=getattr(usage, "prompt_tokens", None),
-            output_tokens=getattr(usage, "completion_tokens", None),
+
+    def invoke(self, user_prompt: str) -> ModelResult:
+        return run_dsl_with_repair(
+            self.catalog, user_prompt, self._completer, self.repair
         )
 
 
 class QwenFreeformJSONDSLClient:
     def __init__(
         self,
+        catalog: Catalog,
         config: QwenConfig | None = None,
         *,
         enable_thinking: bool = False,
     ) -> None:
         from openai import OpenAI
 
+        self.catalog = catalog
         self.config = config or QwenConfig.from_env()
         self.enable_thinking = enable_thinking
         self.client = OpenAI(api_key=self.config.api_key, base_url=self.config.base_url)
@@ -98,7 +193,7 @@ class QwenFreeformJSONDSLClient:
                 "content": (
                     "You convert user requests into the JSON DSL below. "
                     "Return JSON only, with no Markdown and no explanation.\n\n"
-                    f"{JSON_DSL_CATALOG}"
+                    f"{self.catalog.render_json_dsl()}"
                 ),
             },
             {"role": "user", "content": user_prompt},
@@ -118,7 +213,7 @@ class QwenFreeformJSONDSLClient:
             usage = getattr(completion, "usage", None)
         latency_ms = (time.perf_counter() - started) * 1000
 
-        plan, parse_strategy = parse_json_dsl_lenient(content)
+        plan, parse_strategy = parse_json_dsl_lenient(content, catalog=self.catalog)
         return ModelResult(
             plan=plan,
             raw={
@@ -163,9 +258,10 @@ class QwenFreeformJSONDSLClient:
 
 
 class QwenNativeToolClient:
-    def __init__(self, config: QwenConfig | None = None) -> None:
+    def __init__(self, catalog: Catalog, config: QwenConfig | None = None) -> None:
         from openai import OpenAI
 
+        self.catalog = catalog
         self.config = config or QwenConfig.from_env()
         self.client = OpenAI(api_key=self.config.api_key, base_url=self.config.base_url)
 
@@ -173,7 +269,7 @@ class QwenNativeToolClient:
         messages = [
             {
                 "role": "system",
-                "content": "Choose the correct light-control tool call for the user request.",
+                "content": "Choose the correct tool call for the user request.",
             },
             {"role": "user", "content": user_prompt},
         ]
@@ -184,7 +280,7 @@ class QwenNativeToolClient:
         completion = self.client.chat.completions.create(
             model=self.config.model,
             messages=messages,
-            tools=OPENAI_TOOLS,
+            tools=self.catalog.render_openai_tools(),
             tool_choice="auto",
             extra_body=extra_body,
         )
@@ -199,7 +295,7 @@ class QwenNativeToolClient:
             function = raw_call.function
             args = json.loads(function.arguments or "{}")
             dsl_calls.append({"action": function.name, "args": args})
-        plan = parse_json_dsl({"calls": dsl_calls})
+        plan = self.catalog.parse_json_dsl({"calls": dsl_calls})
 
         emitted_calls = [
             {"name": call.action, "arguments": call.args}

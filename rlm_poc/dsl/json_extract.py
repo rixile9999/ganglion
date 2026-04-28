@@ -2,21 +2,30 @@ from __future__ import annotations
 
 import json
 import re
-from typing import Any
 
+from rlm_poc.dsl.catalog import Catalog
+from rlm_poc.dsl.tool_spec import DSLValidationError
 from rlm_poc.dsl.types import ActionPlan
-from rlm_poc.dsl.validator import DSLValidationError, parse_json_dsl
 
 
-def parse_json_dsl_lenient(raw: str) -> tuple[ActionPlan, str]:
+def parse_json_dsl_lenient(
+    raw: str,
+    *,
+    catalog: Catalog | None = None,
+) -> tuple[ActionPlan, str]:
+    if catalog is None:
+        from rlm_poc.schema.iot_light import CATALOG as DEFAULT_CATALOG
+
+        catalog = DEFAULT_CATALOG
+
     try:
-        return parse_json_dsl(raw), "strict"
+        return catalog.parse_json_dsl(raw), "strict"
     except DSLValidationError as strict_error:
         last_error = strict_error
 
     for fenced in re.findall(r"```(?:json)?\s*(.*?)```", raw, flags=re.DOTALL | re.IGNORECASE):
         try:
-            return parse_json_dsl(fenced.strip()), "fenced"
+            return catalog.parse_json_dsl(fenced.strip()), "fenced"
         except DSLValidationError as exc:
             last_error = exc
 
@@ -29,7 +38,7 @@ def parse_json_dsl_lenient(raw: str) -> tuple[ActionPlan, str]:
         except json.JSONDecodeError:
             continue
         try:
-            return parse_json_dsl(payload), "embedded"
+            return catalog.parse_json_dsl(payload), "embedded"
         except DSLValidationError as exc:
             last_error = exc
 

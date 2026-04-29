@@ -2,13 +2,21 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project: Ganglion — *spinal tool calling for LLMs*
+## Project: ToolCallOpt — *compiler-guided optimization for LLM tool calling*
 
-The repo directory is `reflex-language-model` and the Python package is `ganglion`. Use the name **Ganglion** in user-facing artefacts (READMEs, reports, paper drafts).
+The repo directory is `reflex-language-model` and the current Python package
+namespace is `ganglion`. Use the name **ToolCallOpt** in new user-facing
+artifacts (READMEs, reports, paper drafts). Treat **Ganglion** as the former
+codename during the rename transition.
 
 ## Project Purpose
 
-POC testing whether a compact JSON DSL emitted by an LLM can replace native tool/function-call schemas in the prompt while preserving accuracy. The hypothesis is that DSL-style intermediate output reduces input token cost and latency vs handing the model the full OpenAI tool schema. See `overview.md` (Korean) for the broader research goal and `docs/poc_verification_report.md` for measured results.
+POC testing whether compact Action IRs emitted by an LLM can replace native
+tool/function-call schemas in the prompt while preserving accuracy. The
+hypothesis is that an IR-style intermediate output reduces input token cost and
+latency vs handing the model the full OpenAI tool schema. See `overview.md`
+(Korean) for the broader research goal and `docs/poc_verification_report.md`
+for measured results.
 
 There is also a `QWEN.md` written for a separate agent — its content overlaps with this file; if you update operational facts here, check whether `QWEN.md` needs the same change.
 
@@ -29,7 +37,7 @@ bash runs/m2_run.sh   # batch experiment scripts; outputs JSON into runs/m{2,3,4
 python runs/aggregate.py                                         # compact tables from runs/*.json
 ```
 
-`--llm` choices: `rules` | `qwen` | `qwen-text` | `qwen-thinking` | `qwen-native`. `--tier` choices: `iot_light_5` | `home_iot_20` | `smart_home_50`. The runner prints a JSON summary to stdout — redirect to capture.
+`--llm` choices: `rules` | `qwen` | `qwen-text` | `qwen-thinking` | `qwen-native`. `--tier` choices: `iot_light_5` | `home_iot_20` | `smart_home_50`. The runner prints a JSON summary to stdout; redirect to capture.
 
 ## Required Environment
 
@@ -40,7 +48,7 @@ python runs/aggregate.py                                         # compact table
 
 Data flow per case: `user prompt → ModelClient.invoke() → JSON DSL string → Catalog.parse_json_dsl() → ActionPlan → metrics`. The deterministic emission and validation are the load-bearing pieces; the LLM only produces a DSL string.
 
-**Catalog is the spine.** A `Catalog` (`ganglion/dsl/catalog.py`) bundles `ToolSpec`s and renders two artefacts from the same source of truth:
+**Catalog is the compiler boundary.** A `Catalog` (`ganglion/dsl/catalog.py`) bundles `ToolSpec`s and renders two artifacts from the same source of truth:
 - `render_json_dsl()` — short text appended to the system prompt for DSL paths.
 - `render_openai_tools()` — full OpenAI `tools=[...]` schema for the native baseline.
 

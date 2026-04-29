@@ -1,7 +1,7 @@
 [project]
-name = "ganglion"
+name = "toolcallopt"
 version = "0.1.0"
-description = "Ganglion — spinal tool calling for LLMs. POC converting compact JSON DSL outputs into deterministic tool calls."
+description = "ToolCallOpt: compiler-guided optimization for LLM tool calling via compact Action IRs."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

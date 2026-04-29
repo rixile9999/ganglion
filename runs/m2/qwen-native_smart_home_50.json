@@ -1,0 +1,89 @@
+{
+  "total": 50,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 1.0,
+  "exact_match_rate": 0.98,
+  "action_match_rate": 1.0,
+  "latency_ms_mean": 1992.89,
+  "latency_ms_p50": 2064.54,
+  "latency_ms_p95": 2697.22,
+  "latency_ms_stddev": 414.03,
+  "input_tokens_total": 235207,
+  "output_tokens_total": 2134,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [
+    {
+      "id": "iot-017",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 거실 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "Movie Time",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": [
+        {
+          "name": "create_scene",
+          "arguments": {
+            "name": "Movie Time",
+            "actions": [
+              {
+                "action": "set_light",
+                "args": {
+                  "room": "living",
+                  "state": "on",
+                  "brightness": 20,
+                  "color_temp": "warm"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "tier": "smart_home_50",
+  "llm": "qwen-native",
+  "dsl_catalog_chars": 4643,
+  "openai_tools_chars": 15795
+}

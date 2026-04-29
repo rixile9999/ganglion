@@ -1,0 +1,89 @@
+{
+  "total": 50,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 1.0,
+  "exact_match_rate": 0.98,
+  "action_match_rate": 1.0,
+  "latency_ms_mean": 1864.74,
+  "latency_ms_p50": 1838.93,
+  "latency_ms_p95": 2702.55,
+  "latency_ms_stddev": 533.79,
+  "input_tokens_total": 41507,
+  "output_tokens_total": 2135,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [
+    {
+      "id": "iot-037",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 침실 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "영화 볼 때",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": [
+        {
+          "name": "create_scene",
+          "arguments": {
+            "name": "영화 볼 때",
+            "actions": [
+              {
+                "action": "set_light",
+                "args": {
+                  "room": "bedroom",
+                  "state": "on",
+                  "brightness": 20,
+                  "color_temp": "warm"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "tier": "iot_light_5",
+  "llm": "qwen-native",
+  "dsl_catalog_chars": 1307,
+  "openai_tools_chars": 2062
+}

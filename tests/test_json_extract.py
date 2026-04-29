@@ -1,4 +1,4 @@
-from rlm_poc.dsl.json_extract import parse_json_dsl_lenient
+from ganglion.dsl.json_extract import parse_json_dsl_lenient
 
 
 def test_parse_json_dsl_lenient_extracts_fenced_json() -> None:

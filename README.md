@@ -1,7 +1,11 @@
-# Reflex Language Model POC
+# Ganglion
 
-This POC tests whether a compact intermediate representation can replace full
-tool schemas in the prompt while preserving tool-call accuracy.
+> *spinal tool calling for LLMs*
+
+A compact JSON DSL that lets language models invoke tools without the full
+native function-call schema in the prompt — like a spinal reflex bypassing the
+cortex. This POC tests whether the intermediate representation preserves
+tool-call accuracy while cutting input tokens and latency.
 
 The first implementation targets IoT light control and uses Qwen's
 OpenAI-compatible DashScope API for JSON structured output.
@@ -22,7 +26,7 @@ The offline runner uses a deterministic rule-based model so tests and metrics
 can run without API cost.
 
 ```bash
-python -m rlm_poc.eval.runner --llm rules
+python -m ganglion.eval.runner --llm rules
 ```
 
 ## Run Qwen JSON DSL Evaluation
@@ -31,21 +35,21 @@ Set `DASHSCOPE_API_KEY` in the environment. The default model is
 `qwen3.6-plus`.
 
 ```bash
-python -m rlm_poc.eval.runner --llm qwen --limit 5
+python -m ganglion.eval.runner --llm qwen --limit 5
 ```
 
 Additional Qwen comparison paths:
 
 ```bash
-python -m rlm_poc.eval.runner --llm qwen-text
-python -m rlm_poc.eval.runner --llm qwen-thinking
-python -m rlm_poc.eval.runner --llm qwen-native
+python -m ganglion.eval.runner --llm qwen-text
+python -m ganglion.eval.runner --llm qwen-thinking
+python -m ganglion.eval.runner --llm qwen-native
 ```
 
 Optional environment variables:
 
 ```bash
-export RLM_MODEL=qwen3.6-plus
+export GANGLION_MODEL=qwen3.6-plus
 export DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 ```
 

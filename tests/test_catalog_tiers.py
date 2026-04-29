@@ -1,5 +1,5 @@
-from rlm_poc.dsl.tool_spec import DSLValidationError
-from rlm_poc.schema import TIERS, get_catalog
+from ganglion.dsl.tool_spec import DSLValidationError
+from ganglion.schema import TIERS, get_catalog
 
 
 def test_tier_tool_counts() -> None:

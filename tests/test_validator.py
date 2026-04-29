@@ -1,7 +1,7 @@
 import pytest
 
-from rlm_poc.dsl.emitter import emit_tool_calls
-from rlm_poc.dsl.validator import DSLValidationError, parse_json_dsl
+from ganglion.dsl.emitter import emit_tool_calls
+from ganglion.dsl.validator import DSLValidationError, parse_json_dsl
 
 
 def test_parse_and_normalize_korean_room_alias() -> None:

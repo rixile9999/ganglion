@@ -1,7 +1,7 @@
 [project]
-name = "reflex-language-model-poc"
+name = "ganglion"
 version = "0.1.0"
-description = "POC for converting compact model outputs into deterministic tool calls."
+description = "Ganglion — spinal tool calling for LLMs. POC converting compact JSON DSL outputs into deterministic tool calls."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -12,6 +12,9 @@ dependencies = [
 dev = [
     "pytest>=8.0.0",
 ]
+
+[tool.setuptools.packages.find]
+include = ["ganglion*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

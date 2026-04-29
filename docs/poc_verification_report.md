@@ -1,4 +1,6 @@
-# RLM POC 검증 보고서
+# Ganglion POC 검증 보고서
+
+> *spinal tool calling for LLMs*
 
 작성일: 2026-04-28
 
@@ -65,10 +67,10 @@ qwen-thinking
 
 주요 파일:
 
-- `rlm_poc/runtime/qwen.py`: Qwen JSON DSL client와 native tool calling client
-- `rlm_poc/schema/iot_light.py`: compact JSON DSL catalog와 native tool schema
-- `rlm_poc/dsl/validator.py`: JSON DSL 검증, room/state/time/scene name normalization
-- `rlm_poc/eval/runner.py`: 평가 실행기
+- `ganglion/runtime/qwen.py`: Qwen JSON DSL client와 native tool calling client
+- `ganglion/schema/iot_light.py`: compact JSON DSL catalog와 native tool schema
+- `ganglion/dsl/validator.py`: JSON DSL 검증, room/state/time/scene name normalization
+- `ganglion/eval/runner.py`: 평가 실행기
 - `examples/iot_light/generate_dataset.py`: 500건 deterministic dataset generator
 - `examples/iot_light/dataset.jsonl`: 500건 IoT 조명 평가셋
 
@@ -187,31 +189,31 @@ python examples/iot_light/generate_dataset.py
 
 ```bash
 python -m pytest
-python -m rlm_poc.eval.runner --llm rules
+python -m ganglion.eval.runner --llm rules
 ```
 
 Qwen structured JSON DSL 평가:
 
 ```bash
-python -m rlm_poc.eval.runner --llm qwen
+python -m ganglion.eval.runner --llm qwen
 ```
 
 Qwen non-thinking, no `response_format` 평가:
 
 ```bash
-python -m rlm_poc.eval.runner --llm qwen-text
+python -m ganglion.eval.runner --llm qwen-text
 ```
 
 Qwen thinking mode, no `response_format` 평가:
 
 ```bash
-python -m rlm_poc.eval.runner --llm qwen-thinking
+python -m ganglion.eval.runner --llm qwen-thinking
 ```
 
 Native tool calling baseline 평가:
 
 ```bash
-python -m rlm_poc.eval.runner --llm qwen-native
+python -m ganglion.eval.runner --llm qwen-native
 ```
 
 ## 8. 검증 결과
@@ -356,8 +358,258 @@ JSON DSL 방식의 장점:
 
 ```text
 M1. IoT dataset 500건 확장 - 완료
-M2. 5/20/50 tool scaling experiment
-M3. qwen JSON DSL vs qwen native tools 반복 측정 리포트
-M4. 실패 패턴 기반 repair loop 구현
+M2. 5/20/50 tool scaling experiment - 완료 (Qwen API 300 calls, §14.4)
+M3. qwen JSON DSL vs qwen native tools 반복 측정 리포트 - 완료 (Qwen API 500 calls, §15.3)
+M4. 실패 패턴 기반 repair loop 구현 - 완료, native 실패 escalation은 후속 (§16.4)
 M5. MCP tool schema -> DSL catalog 자동 생성 prototype
 ```
+
+## 14. M2 도구 확장 실험
+
+본 절은 도구 수가 5에서 50으로 늘어나도 JSON DSL 방식이 native tool calling 대비 토큰 효율을 유지하는지를 검증하기 위한 실험 결과다. M2의 핵심 가설은 "tool 수가 증가할수록 native tool calling 대비 JSON DSL의 상대적 우위가 더 커진다"이다.
+
+### 14.1 실험 설계
+
+도메인을 단순 복제하지 않고 현실적인 toolset 확장을 위해 세 단계의 tier를 정의했다.
+
+```text
+iot_light_5 (M1 baseline)
+  list_devices, get_light_state, set_light, schedule_light, create_scene
+
+home_iot_20 (M1 + 15개 추가)
+  set_curtain, set_thermostat, get_thermostat, play_music, stop_music,
+  set_music_volume, lock_door, unlock_door, arm_security, set_alarm,
+  cancel_alarm, start_robot_vacuum, stop_robot_vacuum, open_garage,
+  send_notification
+
+smart_home_50 (home_iot_20 + 30개 추가)
+  set_water_heater, start_dishwasher, stop_dishwasher, start_washer,
+  stop_washer, start_dryer, stop_dryer, start_oven, stop_oven,
+  set_fridge_temp, start_microwave, order_groceries, start_sprinkler,
+  stop_sprinkler, start_pool_pump, stop_pool_pump, set_pool_temp,
+  open_window, close_window, set_fan, set_air_purifier,
+  start_humidifier, start_camera_recording, stop_camera_recording,
+  send_email, send_sms, set_reminder, start_timer,
+  get_weather_forecast, play_tv
+```
+
+평가 prompt는 세 tier 모두 동일한 500건 IoT 조명 데이터셋을 사용한다. 이는 "catalog는 커지지만 정답 행동은 동일한 5종"이라는 통제된 조건에서 catalog 크기가 토큰/정확도에 미치는 영향을 분리하기 위한 설계다.
+
+도구 정의는 `ganglion/dsl/tool_spec.py`의 `ToolSpec` 레지스트리를 통해 선언적으로 관리하며, JSON DSL catalog 텍스트와 OpenAI tool schema는 `Catalog.render_json_dsl()` / `Catalog.render_openai_tools()`로 동일한 source-of-truth에서 생성된다. 따라서 두 표현 간 비교는 apples-to-apples다.
+
+### 14.2 카탈로그 사이즈 측정 (offline, deterministic)
+
+`python -m ganglion.eval.scaling` 결과:
+
+| Tier | Tools | DSL chars | Native chars | Native/DSL |
+| --- | ---: | ---: | ---: | ---: |
+| iot_light_5 | 5 | 1,307 | 2,062 | 1.58x |
+| home_iot_20 | 20 | 2,525 | 6,796 | 2.69x |
+| smart_home_50 | 50 | 4,643 | 15,795 | 3.40x |
+
+도구 수가 5에서 50으로 10배 늘어날 때 DSL catalog는 약 3.55배 (1,307→4,643) 증가하지만, native tool schema는 약 7.66배 (2,062→15,795) 증가한다. native/DSL 비율은 1.58x에서 3.40x로 약 2.15배 확대되며, 이는 M2 가설을 강하게 지지한다.
+
+DSL이 더 천천히 커지는 이유는 다음과 같다.
+
+- DSL catalog는 도구당 1줄(평균 ~67자)로 표현되지만, native tool schema는 도구당 JSON Schema 객체(평균 ~270자) 전체를 포함한다.
+- 공유되는 enum (room, state 등)이 DSL에서는 한 번만 표현되는 반면, native에서는 각 도구의 parameters에 매번 반복된다.
+
+### 14.3 정확도 (offline, rules client)
+
+500건 IoT 조명 데이터셋으로 deterministic rules client를 세 tier에 모두 실행한 결과 모두 syntax_valid 100%, exact_match 100%였다. 이는 "validator가 tier 확장에 따른 새 도구로 인해 기존 도구 검증 행동이 깨지지 않는다"는 것만 보장하며, 모델이 큰 catalog 안에서 올바른 도구를 고르는 능력은 별도 검증이 필요하다.
+
+```bash
+python -m ganglion.eval.runner --llm rules --tier iot_light_5
+python -m ganglion.eval.runner --llm rules --tier home_iot_20
+python -m ganglion.eval.runner --llm rules --tier smart_home_50
+```
+
+세 tier 모두 syntax_valid_rate=1.0, exact_match_rate=1.0.
+
+### 14.4 Qwen API 토큰/정확도 측정 (50건 sample, 2026-04-28)
+
+실제 DashScope `qwen3.6-plus` API로 50건 sample을 세 tier × 두 path에 모두 실행한 결과:
+
+| Tier | Path | Exact match | Input tokens | Output tokens | p50 latency | p95 latency |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| iot_light_5 | DSL | 100% | 22,757 | 1,210 | 1,279.11 ms | 1,930.75 ms |
+| iot_light_5 | Native | 98% | 41,507 | 2,135 | 1,838.93 ms | 2,702.55 ms |
+| home_iot_20 | DSL | 100% | 40,907 | 1,210 | 1,208.31 ms | 1,825.28 ms |
+| home_iot_20 | Native | 96% | 109,207 | 2,138 | 1,857.88 ms | 2,669.60 ms |
+| smart_home_50 | DSL | 100% | 74,057 | 1,210 | 1,334.43 ms | 2,236.64 ms |
+| smart_home_50 | Native | 98% | 235,207 | 2,134 | 2,064.54 ms | 2,697.22 ms |
+
+토큰 절감 (Native 대비 DSL):
+
+| Tier | Native input | DSL input | Input 절감률 | Native total | DSL total | Total 절감률 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| iot_light_5 | 41,507 | 22,757 | **45.2%** | 43,642 | 23,967 | 45.1% |
+| home_iot_20 | 109,207 | 40,907 | **62.5%** | 111,345 | 42,117 | 62.2% |
+| smart_home_50 | 235,207 | 74,057 | **68.5%** | 237,341 | 75,267 | 68.3% |
+
+**핵심 발견.** 도구 수가 5에서 50으로 늘어날 때 DSL의 token reduction은 45%에서 69%로 **확대**된다. offline char 비율 (1.58x → 3.40x = 2.15배)이 실제 token 비율 (1.82x → 3.18x = 1.74배)에서도 같은 방향의 더 강한 신호로 재현된다. M2의 핵심 가설인 "tool 수가 증가할수록 DSL의 우위가 확대된다"가 실제 LLM 호출에서 확인되었다.
+
+**정확도.** DSL path는 세 tier 모두 100% exact match를 유지한 반면, native path는 96-98%로 떨어졌다. 모든 native 실패는 `create_scene` action의 `name` 필드가 canonical "movie" 대신 `Movie Time`, `영화 볼 때`, `movie scene for bedroom light` 등 미정규화 라벨로 생성된 사례였다. 이는 DSL prompt에 `"name":"movie"`를 포함한 example이 모델에 anchoring 효과를 제공한 반면, native path의 JSON Schema는 `name: string`으로만 표현되어 정규화 단서가 없기 때문으로 해석된다.
+
+**Latency.** p50/p95 모두 DSL이 native보다 일관되게 낮다. 단일 50건 측정의 한계는 §15에서 반복 측정으로 보강한다.
+
+### 14.5 한계와 후속 작업
+
+- DSL/native chars 비교는 결정론적 measurement이지만, Qwen tokenizer 기반 token 수는 비례 관계를 따르더라도 절대값은 다르다. tier별 1회 API smoke call로 calibration 권장.
+- 500건 데이터셋이 5종 액션만 사용하므로, 도구 수가 50개여도 모델은 5종 중 선택만 하면 된다. "irrelevant tool 수가 증가했을 때 distractor effect가 있는가"는 이 데이터셋으로는 측정할 수 없다. 후속 단계에서는 tier 20/50의 새 도구를 사용하는 prompt를 추가해 catalog-wide selection accuracy를 측정해야 한다.
+
+## 15. M3 반복 측정 인프라
+
+M1 보고서 §9에서 latency 우위 주장이 단일 실행 결과에 의존한다는 한계가 지적되었다. M3는 이를 보완하기 위한 반복 측정 인프라를 추가한다.
+
+### 15.1 구현
+
+`ganglion.eval.runner`에 `--repeat N` flag를 추가했다. 각 case를 N회 호출한 뒤 mean / p50 / p95 / stddev를 모두 합산해 단일 summary로 출력한다.
+
+`CaseResult.runs: tuple[RunResult, ...]` 구조로 회차별 latency, input/output token, raw response, error를 보존한다. exact_match는 모든 회차가 같은 expected와 일치할 때만 true로 평가하므로, "한 번 우연히 맞은" 결과를 걸러낼 수 있다.
+
+### 15.2 offline 검증
+
+```bash
+python -m ganglion.eval.runner --llm rules --tier iot_light_5 --limit 50 --repeat 5
+```
+
+50 case × 5 repeat = 250 latency sample에서 mean=0.02ms, stddev=0.07ms로 산출된다. rules client는 latency가 ~10µs 수준이라 통계적 의미는 없지만, repeat 인프라가 정상 작동함을 보여준다.
+
+### 15.3 Qwen API 반복 측정 (50건 × 5 repeat = 250 sample/path, 2026-04-28)
+
+iot_light_5 baseline에서 두 path를 각각 5회 반복 실행:
+
+| Path | Exact match | Mean | p50 | p95 | Stddev | Input tokens | Output tokens |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| DSL | 100% | 1,442.99 ms | 1,388.12 ms | 2,130.21 ms | 376.44 ms | 113,785 | 6,047 |
+| Native | 98% | 1,782.29 ms | 1,765.85 ms | 2,753.32 ms | 498.27 ms | 207,535 | 10,674 |
+
+n=250 sample 기준:
+
+- DSL이 native보다 mean latency에서 **339.30 ms (19.0%) 빠르다**. n=250이고 stddev=376/498로 차이가 노이즈를 충분히 상회한다.
+- DSL의 stddev가 native보다 **24.5% 낮다**. 동일 prompt에 대한 응답 시간 일관성이 더 높다.
+- 토큰 cost는 250 case 기준으로 input 절감 45.2%, output 절감 43.4%. 단일 50건 결과(§14.4)와 일치한다.
+
+M1 보고서 §9에서 "단일 실행의 latency 우위 주장은 약하다"는 한계를 명시했는데, n=250 반복으로 그 우려가 해소되었다. DSL이 native보다 빠른 것은 일관된 효과이며, 이는 input token 양이 작아 (a) prefill 시간 단축과 (b) tool-calling 후처리 절감 두 가지가 합쳐진 결과로 해석된다.
+
+(Native의 exact match가 250개 중 5개 실패한 것은 §14.4와 같은 `create_scene.name` 정규화 누락 사례. 5회 반복에서 1건 case가 일관되게 실패함.)
+
+## 16. M4 Repair Loop
+
+### 16.1 동기
+
+M1 §9에서 native tool calling raw output에 `영화 모드` 대신 `영화 감상 모드` 등 비표준 scene name이 등장한 사례가 보고되었다. 현재는 validator의 `SCENE_ALIASES`가 이를 normalize해서 정확도 100%를 만들었지만, alias 사전 외 패턴이 등장하면 case가 실패한다. M4는 validator 실패를 모델에게 다시 알려서 한 번 더 재시도시키는 repair loop를 도입한다.
+
+### 16.2 구현
+
+`ganglion/runtime/qwen.py`에 `run_dsl_with_repair(catalog, user_prompt, completer, repair_config)` 헬퍼를 추가했다. validator가 `DSLValidationError`를 던지면 다음 메시지를 추가해 동일한 `Completer`를 재호출한다.
+
+```text
+assistant: <previous JSON>
+user: Your previous JSON failed validation: <error>. Return only valid JSON that matches the DSL.
+```
+
+`RepairConfig(enabled=True, max_attempts=N)`로 재시도 횟수를 제한한다.
+
+CLI:
+
+```bash
+python -m ganglion.eval.runner --llm qwen --tier iot_light_5 --repair --repair-max-attempts 1
+```
+
+`summarize`는 `repair_attempts_total`과 `repair_successes_total`을 집계해서 repair가 얼마나 자주 동원되었고 그중 몇 %가 성공했는지 리포트한다.
+
+### 16.3 offline 검증 (합성 실패 주입)
+
+`tests/test_repair_loop.py`에 `ScriptedCompleter`를 사용한 4개의 단위 테스트를 추가했다.
+
+```text
+test_repair_recovers_on_second_attempt
+  첫 응답: room="moon" (validator 실패)
+  두 번째 응답: room="living" (성공)
+  → repair loop가 두 번째 attempt에서 valid plan을 반환
+
+test_repair_disabled_propagates_error
+  repair=False일 때 첫 실패에서 DSLValidationError를 그대로 raise
+
+test_repair_exhausts_attempts
+  세 번 모두 실패 (max_attempts=2 = 3회 시도 후 raise)
+
+test_repair_recovers_invalid_json
+  첫 응답: 자유형 텍스트 (JSON parse 실패)
+  두 번째 응답: 정상 JSON
+  → JSON parse 단계 실패도 repair가 복구함
+```
+
+모든 테스트가 통과하므로 repair loop의 (a) 성공 복구, (b) 정책에 따른 propagation, (c) 시도 횟수 enforcement, (d) JSON parse 실패와 schema 실패 모두 커버 검증되었다.
+
+### 16.4 Qwen API ablation (50건 sample, 2026-04-28)
+
+iot_light_5 + DSL path에서 repair off / on을 50건씩 측정:
+
+| Variant | Exact match | Syntax valid | Input tokens | Output tokens | Repair attempts |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| repair off | 100% | 100% | 22,757 | 1,209 | 0 |
+| repair on (max=1) | 100% | 100% | 22,757 | 1,209 | 0 |
+
+happy-path 측정에서 DSL path는 `qwen3.6-plus`가 100% syntax valid한 JSON을 생성했고, 따라서 repair loop가 자연스럽게 트리거되지 않았다. 이 결과는 다음 두 가지 의미를 가진다.
+
+1. 현재 데이터셋에서는 DSL path의 raw failure rate가 충분히 낮아서 repair loop의 추가 호출 비용은 정확히 0이다. repair=on은 무비용 안전망이다.
+2. 그러나 native path에서는 §14.4와 §15.3에서 본 것처럼 `create_scene.name` 라벨링 실패가 일관되게 4-5%대로 발생한다. 이 실패는 `DSLValidationError`가 아니라 *exact_match* 단계에서 잡히므로 (즉, validator는 raw 라벨을 그대로 통과시킴), 현재 repair loop는 native 실패를 잡지 못한다.
+
+후속 작업 후보:
+
+- `SCENE_ALIASES`를 더 빡센 enum으로 강제 (`name: enum["movie", ...]`)하여 native 라벨 오류를 `DSLValidationError`로 escalate하면 repair loop가 잡을 수 있다.
+- 또는 ambiguous한 prompt (e.g. "영화 보기 좋은 분위기로") 셋을 추가해 raw failure rate를 인위적으로 끌어올리고 repair recovery rate를 측정한다.
+- native path에도 동일한 repair 패턴을 도입 (현재는 DSL path에만 구현됨).
+
+## 17. 종합 변경 사항
+
+### 17.1 코드 구조 변경
+
+```text
+ganglion/dsl/tool_spec.py     (신규) ToolSpec, EnumArg, IntArg, StringArg, TimeArg, RawArg
+ganglion/dsl/catalog.py       (신규) Catalog: render_json_dsl, render_openai_tools, validate
+ganglion/dsl/validator.py     (리팩터) iot_light catalog로 위임하는 thin shim
+ganglion/schema/iot_light.py  (리팩터) ToolSpec list로 재정의, JSON_DSL_CATALOG/OPENAI_TOOLS는 derive
+ganglion/schema/home_iot.py   (신규) tier 20 catalog
+ganglion/schema/smart_home.py (신규) tier 50 catalog
+ganglion/schema/__init__.py   (확장) get_catalog(tier), TIERS registry
+ganglion/runtime/qwen.py      (확장) Catalog 인자, run_dsl_with_repair, RepairConfig
+ganglion/eval/metrics.py      (확장) RunResult, repeat-aware CaseResult, mean/stddev/repair stats
+ganglion/eval/runner.py       (확장) --tier, --repeat, --repair, --repair-max-attempts
+ganglion/eval/scaling.py      (신규) catalog 사이즈 측정 CLI
+tests/test_catalog_tiers.py  (신규) 6개 테스트
+tests/test_repair_loop.py    (신규) 4개 테스트
+```
+
+### 17.2 검증 결과 요약
+
+```text
+pytest:                     18/18 통과
+rules @ iot_light_5:        500/500 exact match
+rules @ home_iot_20:        500/500 exact match (catalog 4x, prompt 동일)
+rules @ smart_home_50:      500/500 exact match (catalog 12x, prompt 동일)
+
+M2 (Qwen API, 50건 × 3 tier × 2 path = 300 calls):
+  iot_light_5  DSL/Native 토큰 절감 45.2% (input)
+  home_iot_20  DSL/Native 토큰 절감 62.5% (input)
+  smart_home_50 DSL/Native 토큰 절감 68.5% (input)
+  DSL exact match: 100% (모든 tier)
+  Native exact match: 96-98% (create_scene.name 정규화 실패)
+
+M3 (Qwen API, 50건 × 5 repeat × 2 path = 500 calls):
+  DSL    mean=1,442.99 ms  stddev=376.44 ms  exact=100%
+  Native mean=1,782.29 ms  stddev=498.27 ms  exact=98%
+  DSL이 19.0% 빠르고 stddev 24.5% 낮음 (n=250)
+
+M4 (Qwen API, 50건 × repair on/off = 100 calls):
+  DSL path는 happy-path에서 100% valid → repair 트리거 0회
+  repair=on은 무비용 안전망 (overhead 없음)
+  native path 실패는 validator를 통과하므로 현재 loop가 잡지 못함
+
+총 Qwen API 호출: 900건 (M2 300 + M3 500 + M4 100)
+```
+
+Qwen API 토큰/latency 측정은 비용 동반이므로 별도 승인 후 §14.4, §15.3, §16.4의 명령으로 실행한다.

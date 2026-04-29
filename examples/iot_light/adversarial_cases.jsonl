@@ -1,0 +1,28 @@
+{"id":"adversarial-001","prompt":"거실과 주방 불 모두 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on"}},{"action":"set_light","args":{"room":"kitchen","state":"on"}}]},"category":"multi_call"}
+{"id":"adversarial-002","prompt":"7시에 켜고 10시에 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"07:00","state":"on"}},{"action":"schedule_light","args":{"room":"living","at":"22:00","state":"off"}}]},"category":"multi_call"}
+{"id":"adversarial-003","prompt":"침실 불 켜고 상태 확인해줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on"}},{"action":"get_light_state","args":{"room":"bedroom"}}]},"category":"multi_call"}
+{"id":"adversarial-004","prompt":"거실 불 8시에 켜고 11시에 꺼줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"living","at":"08:00","state":"on"}},{"action":"schedule_light","args":{"room":"living","at":"23:00","state":"off"}}]},"category":"multi_call"}
+{"id":"adversarial-005","prompt":"서재와 침실 불 모두 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":70}},{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":70}}]},"category":"multi_call"}
+{"id":"adversarial-006","prompt":"안방 불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on"}}]},"category":"invalid_room_explicit"}
+{"id":"adversarial-007","prompt":"마당 조명 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"off"}}]},"category":"invalid_room_explicit"}
+{"id":"adversarial-008","prompt":"지하불 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on"}}]},"category":"invalid_room_explicit"}
+{"id":"adversarial-009","prompt":"게임방 불 70%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":70}}]},"category":"invalid_room_explicit"}
+{"id":"adversarial-010","prompt":"화장실 불 꺼줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"off"}}]},"category":"invalid_room_explicit"}
+{"id":"adversarial-011","prompt":"거실 불 150%로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":100}}]},"category":"out_of_range_explicit"}
+{"id":"adversarial-012","prompt":"침실 불 -10%로 해줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":0}}]},"category":"out_of_range_explicit"}
+{"id":"adversarial-013","prompt":"주방 불 200%로 최대로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":100}}]},"category":"out_of_range_explicit"}
+{"id":"adversarial-014","prompt":"거실 불 색깔 바꿔줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","color_temp":"warm"}}]},"category":"unknown_action_hint"}
+{"id":"adversarial-015","prompt":"주방 온도 조절해줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"kitchen"}}]},"category":"unknown_action_hint"}
+{"id":"adversarial-016","prompt":"침실 알람 설정해줘","expected":{"calls":[{"action":"schedule_light","args":{"room":"bedroom","at":"07:00","state":"on"}}]},"category":"unknown_action_hint"}
+{"id":"adversarial-017","prompt":"서재 환기 시켜줘","expected":{"calls":[{"action":"get_light_state","args":{"room":"office"}}]},"category":"unknown_action_hint"}
+{"id":"adversarial-018","prompt":"복도 보안등 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on"}}]},"category":"unknown_action_hint"}
+{"id":"adversarial-019","prompt":"거실 불 밝게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"living","state":"on","brightness":80}}]},"category":"vague_brightness"}
+{"id":"adversarial-020","prompt":"침실 불 어둡게 해줘","expected":{"calls":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":20}}]},"category":"vague_brightness"}
+{"id":"adversarial-021","prompt":"주방 불 중간 밝기로 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":50}}]},"category":"vague_brightness"}
+{"id":"adversarial-022","prompt":"서재 불 반짝하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"office","state":"on","brightness":100}}]},"category":"vague_brightness"}
+{"id":"adversarial-023","prompt":"복도 불 은은하게 켜줘","expected":{"calls":[{"action":"set_light","args":{"room":"hallway","state":"on","brightness":30}}]},"category":"vague_brightness"}
+{"id":"adversarial-024","prompt":"영화 보기 좋은 분위기로 만들어줘. 거실 조명은 20% 따뜻하게 켜줘","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"living","state":"on","brightness":20,"color_temp":"warm"}}]}}]},"category":"ambiguous_scene"}
+{"id":"adversarial-025","prompt":"cinema mode로 바꿔줘. 침실 불 30% 중립으로","expected":{"calls":[{"action":"create_scene","args":{"name":"movie","actions":[{"action":"set_light","args":{"room":"bedroom","state":"on","brightness":30,"color_temp":"neutral"}}]}}]},"category":"ambiguous_scene"}
+{"id":"adversarial-026","prompt":"독서 모드 scene 만들어줘. 서재 불 80% 차갑게","expected":{"calls":[{"action":"create_scene","args":{"name":"focus","actions":[{"action":"set_light","args":{"room":"office","state":"on","brightness":80,"color_temp":"cool"}}]}}]},"category":"ambiguous_scene"}
+{"id":"adversarial-027","prompt":"relax scene 만들어줘. 주방 불 10% 따뜻하게","expected":{"calls":[{"action":"create_scene","args":{"name":"relax","actions":[{"action":"set_light","args":{"room":"kitchen","state":"on","brightness":10,"color_temp":"warm"}}]}}]},"category":"ambiguous_scene"}
+{"id":"adversarial-028","prompt":"수면 모드 만들어줘. 침실 불 꺼줘","expected":{"calls":[{"action":"create_scene","args":{"name":"sleep","actions":[{"action":"set_light","args":{"room":"bedroom","state":"off"}}]}}]},"category":"ambiguous_scene"}

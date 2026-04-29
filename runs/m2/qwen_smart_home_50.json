@@ -1,0 +1,22 @@
+{
+  "total": 50,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 1.0,
+  "exact_match_rate": 1.0,
+  "action_match_rate": 1.0,
+  "latency_ms_mean": 1414.14,
+  "latency_ms_p50": 1334.43,
+  "latency_ms_p95": 2236.64,
+  "latency_ms_stddev": 393.61,
+  "input_tokens_total": 74057,
+  "output_tokens_total": 1210,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [],
+  "tier": "smart_home_50",
+  "llm": "qwen",
+  "dsl_catalog_chars": 4643,
+  "openai_tools_chars": 15795
+}

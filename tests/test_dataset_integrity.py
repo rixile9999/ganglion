@@ -1,7 +1,7 @@
 from collections import Counter
 
 from examples.iot_light.generate_dataset import TARGET_COUNTS
-from rlm_poc.eval.dataset import DEFAULT_DATASET, load_dataset
+from ganglion.eval.dataset import DEFAULT_DATASET, load_dataset
 
 
 def test_iot_dataset_has_target_distribution() -> None:

@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from rlm_poc.eval.metrics import summarize
-from rlm_poc.eval.runner import run_eval
-from rlm_poc.runtime.rules import RuleBasedJSONDSLClient
+from ganglion.eval.metrics import summarize
+from ganglion.eval.runner import run_eval
+from ganglion.runtime.rules import RuleBasedJSONDSLClient
 
 
 def test_rule_model_matches_dataset() -> None:

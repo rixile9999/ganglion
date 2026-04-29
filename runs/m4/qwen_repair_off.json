@@ -1,0 +1,22 @@
+{
+  "total": 50,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 1.0,
+  "exact_match_rate": 1.0,
+  "action_match_rate": 1.0,
+  "latency_ms_mean": 1591.18,
+  "latency_ms_p50": 1581.84,
+  "latency_ms_p95": 2262.33,
+  "latency_ms_stddev": 388.51,
+  "input_tokens_total": 22757,
+  "output_tokens_total": 1209,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [],
+  "tier": "iot_light_5",
+  "llm": "qwen",
+  "dsl_catalog_chars": 1307,
+  "openai_tools_chars": 2062
+}

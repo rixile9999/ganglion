@@ -1,17 +1,19 @@
-# Ganglion
+# ToolCallOpt
 
-> *spinal tool calling for LLMs*
+> *compiler-guided optimization for LLM tool calling*
 
-A compact JSON DSL that lets language models invoke tools without the full
-native function-call schema in the prompt — like a spinal reflex bypassing the
-cortex. This POC tests whether the intermediate representation preserves
-tool-call accuracy while cutting input tokens and latency.
+ToolCallOpt compiles verbose tool schemas into compact Action IRs that language
+models can emit with lower token cost. The current POC uses a compact JSON DSL
+as the first IR, then validates and emits deterministic tool calls from that IR.
 
 The first implementation targets IoT light control and uses Qwen's
-OpenAI-compatible DashScope API for JSON structured output.
+OpenAI-compatible DashScope API for JSON structured output. The Python package
+namespace is still `ganglion` during the rename transition.
 
 For a research-team oriented summary of the verification results, see
 [docs/poc_verification_report.md](docs/poc_verification_report.md).
+For the schema-to-DSL compiler process, see
+[docs/tool_schema_compiler.md](docs/tool_schema_compiler.md).
 
 The IoT dataset is generated deterministically and currently contains 500
 cases.
@@ -56,11 +58,11 @@ export DASHSCOPE_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1
 ## Design
 
 ```text
-User Prompt
+Tool schema / catalog
+  -> compact JSON DSL prompt
   -> Qwen JSON structured output
-  -> JSON DSL validation
+  -> Action IR validation
   -> deterministic tool-call emission
-  -> mock IoT executor
   -> evaluation metrics
 ```
 

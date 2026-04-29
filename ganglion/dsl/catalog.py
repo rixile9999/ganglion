@@ -8,6 +8,7 @@ from typing import Any
 
 from ganglion.dsl.tool_spec import (
     ArgSpec,
+    BoolArg,
     DSLValidationError,
     EnumArg,
     IntArg,
@@ -124,6 +125,8 @@ def _render_dsl_arg_value(spec: ArgSpec) -> str:
         return f"{optional}integer{bounds}"
     if isinstance(spec, StringArg):
         return f"{optional}string"
+    if isinstance(spec, BoolArg):
+        return f"{optional}boolean"
     if isinstance(spec, TimeArg):
         return f'{optional}"HH:MM" 24h time'
     if isinstance(spec, RawArg):
@@ -180,6 +183,8 @@ def _render_openai_arg(spec: ArgSpec) -> dict[str, Any]:
         if spec.pattern is not None:
             schema["pattern"] = spec.pattern
         return schema
+    if isinstance(spec, BoolArg):
+        return {"type": "boolean"}
     if isinstance(spec, TimeArg):
         return {
             "type": "string",
@@ -220,9 +225,12 @@ def _normalize_value(name: str, spec: ArgSpec, raw: Any) -> Any:
         return _normalize_int(name, spec, raw)
     if isinstance(spec, StringArg):
         return _normalize_string(name, spec, raw)
+    if isinstance(spec, BoolArg):
+        return _normalize_bool(name, raw)
     if isinstance(spec, TimeArg):
         return _normalize_time(name, raw)
     if isinstance(spec, RawArg):
+        _validate_schema_fragment(name, spec.json_schema, raw)
         return raw
     raise DSLValidationError(f"unknown ArgSpec for {name}")
 
@@ -282,6 +290,18 @@ def _normalize_string(name: str, spec: StringArg, raw: Any) -> str:
     return value
 
 
+def _normalize_bool(name: str, raw: Any) -> bool:
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, str):
+        value = raw.strip().lower()
+        if value in {"true", "yes", "1", "on"}:
+            return True
+        if value in {"false", "no", "0", "off"}:
+            return False
+    raise DSLValidationError(f"{name} must be a boolean")
+
+
 def _normalize_time(name: str, raw: Any) -> str:
     if not isinstance(raw, str) or not raw.strip():
         raise DSLValidationError(f"{name} is required")
@@ -291,3 +311,167 @@ def _normalize_time(name: str, raw: Any) -> str:
     if int(value[:2]) > 23:
         raise DSLValidationError(f"{name} hour must be 00..23")
     return value
+
+
+def _validate_schema_fragment(path: str, schema: Mapping[str, Any], value: Any) -> None:
+    """Validate the useful subset of JSON Schema needed for compiled RawArg values."""
+    if "const" in schema and value != schema["const"]:
+        raise DSLValidationError(f"{path} must equal {schema['const']!r}")
+    if "enum" in schema and value not in schema["enum"]:
+        raise DSLValidationError(f"{path} must be one of {schema['enum']!r}")
+
+    if "allOf" in schema:
+        for index, subschema in enumerate(schema["allOf"]):
+            if isinstance(subschema, Mapping):
+                _validate_schema_fragment(f"{path}.allOf[{index}]", subschema, value)
+    if "anyOf" in schema:
+        _validate_any_schema(path, schema["anyOf"], value)
+    if "oneOf" in schema:
+        _validate_one_schema(path, schema["oneOf"], value)
+
+    schema_types = _schema_types(schema)
+    if not schema_types:
+        return
+    if not any(_matches_json_type(schema_type, value) for schema_type in schema_types):
+        expected = "|".join(schema_types)
+        raise DSLValidationError(f"{path} must be {expected}")
+
+    if "object" in schema_types:
+        _validate_object_schema(path, schema, value)
+    if "array" in schema_types:
+        _validate_array_schema(path, schema, value)
+    if "string" in schema_types:
+        _validate_string_schema(path, schema, value)
+    if "integer" in schema_types or "number" in schema_types:
+        _validate_number_schema(path, schema, value)
+
+
+def _schema_types(schema: Mapping[str, Any]) -> tuple[str, ...]:
+    schema_type = schema.get("type")
+    if isinstance(schema_type, str):
+        return (schema_type,)
+    if isinstance(schema_type, Sequence) and not isinstance(schema_type, (str, bytes)):
+        return tuple(item for item in schema_type if isinstance(item, str))
+    if "properties" in schema:
+        return ("object",)
+    if "items" in schema:
+        return ("array",)
+    return ()
+
+
+def _matches_json_type(schema_type: str, value: Any) -> bool:
+    if schema_type == "object":
+        return isinstance(value, Mapping)
+    if schema_type == "array":
+        return isinstance(value, Sequence) and not isinstance(value, (str, bytes))
+    if schema_type == "string":
+        return isinstance(value, str)
+    if schema_type == "integer":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if schema_type == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if schema_type == "boolean":
+        return isinstance(value, bool)
+    if schema_type == "null":
+        return value is None
+    return True
+
+
+def _validate_object_schema(path: str, schema: Mapping[str, Any], value: Any) -> None:
+    if not isinstance(value, Mapping):
+        return
+    properties = schema.get("properties", {})
+    if not isinstance(properties, Mapping):
+        properties = {}
+    required = schema.get("required", [])
+    if not isinstance(required, Sequence) or isinstance(required, (str, bytes)):
+        required = []
+    for key in required:
+        if isinstance(key, str) and key not in value:
+            raise DSLValidationError(f"{path}.{key} is required")
+    for key, raw_value in value.items():
+        if key in properties and isinstance(properties[key], Mapping):
+            _validate_schema_fragment(f"{path}.{key}", properties[key], raw_value)
+            continue
+        additional = schema.get("additionalProperties", True)
+        if additional is False:
+            raise DSLValidationError(f"{path}: unknown property '{key}'")
+        if isinstance(additional, Mapping):
+            _validate_schema_fragment(f"{path}.{key}", additional, raw_value)
+
+
+def _validate_array_schema(path: str, schema: Mapping[str, Any], value: Any) -> None:
+    if not isinstance(value, Sequence) or isinstance(value, (str, bytes)):
+        return
+    min_items = schema.get("minItems")
+    max_items = schema.get("maxItems")
+    if isinstance(min_items, int) and len(value) < min_items:
+        raise DSLValidationError(f"{path} must contain at least {min_items} items")
+    if isinstance(max_items, int) and len(value) > max_items:
+        raise DSLValidationError(f"{path} must contain at most {max_items} items")
+    items = schema.get("items")
+    if isinstance(items, Mapping):
+        for index, item in enumerate(value):
+            _validate_schema_fragment(f"{path}[{index}]", items, item)
+
+
+def _validate_string_schema(path: str, schema: Mapping[str, Any], value: Any) -> None:
+    if not isinstance(value, str):
+        return
+    pattern = schema.get("pattern")
+    if isinstance(pattern, str) and not re.fullmatch(pattern, value):
+        raise DSLValidationError(f"{path} does not match pattern")
+    min_length = schema.get("minLength")
+    max_length = schema.get("maxLength")
+    if isinstance(min_length, int) and len(value) < min_length:
+        raise DSLValidationError(f"{path} must have length >= {min_length}")
+    if isinstance(max_length, int) and len(value) > max_length:
+        raise DSLValidationError(f"{path} must have length <= {max_length}")
+
+
+def _validate_number_schema(path: str, schema: Mapping[str, Any], value: Any) -> None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return
+    minimum = schema.get("minimum")
+    maximum = schema.get("maximum")
+    exclusive_minimum = schema.get("exclusiveMinimum")
+    exclusive_maximum = schema.get("exclusiveMaximum")
+    if isinstance(minimum, (int, float)) and value < minimum:
+        raise DSLValidationError(f"{path} must be >= {minimum}")
+    if isinstance(maximum, (int, float)) and value > maximum:
+        raise DSLValidationError(f"{path} must be <= {maximum}")
+    if isinstance(exclusive_minimum, (int, float)) and value <= exclusive_minimum:
+        raise DSLValidationError(f"{path} must be > {exclusive_minimum}")
+    if isinstance(exclusive_maximum, (int, float)) and value >= exclusive_maximum:
+        raise DSLValidationError(f"{path} must be < {exclusive_maximum}")
+
+
+def _validate_any_schema(path: str, schemas: Any, value: Any) -> None:
+    if not isinstance(schemas, Sequence) or isinstance(schemas, (str, bytes)):
+        return
+    errors = []
+    for subschema in schemas:
+        if not isinstance(subschema, Mapping):
+            continue
+        try:
+            _validate_schema_fragment(path, subschema, value)
+            return
+        except DSLValidationError as exc:
+            errors.append(str(exc))
+    raise DSLValidationError(f"{path} did not match any allowed schema: {errors}")
+
+
+def _validate_one_schema(path: str, schemas: Any, value: Any) -> None:
+    if not isinstance(schemas, Sequence) or isinstance(schemas, (str, bytes)):
+        return
+    matches = 0
+    for subschema in schemas:
+        if not isinstance(subschema, Mapping):
+            continue
+        try:
+            _validate_schema_fragment(path, subschema, value)
+        except DSLValidationError:
+            continue
+        matches += 1
+    if matches != 1:
+        raise DSLValidationError(f"{path} must match exactly one schema")

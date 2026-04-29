@@ -40,6 +40,13 @@ class StringArg:
 
 
 @dataclass(frozen=True)
+class BoolArg:
+    required: bool = True
+    description: str = ""
+    kind: str = field(init=False, default="boolean")
+
+
+@dataclass(frozen=True)
 class TimeArg:
     required: bool = True
     description: str = ""
@@ -59,7 +66,7 @@ class RawArg:
     kind: str = field(init=False, default="raw")
 
 
-ArgSpec = EnumArg | IntArg | StringArg | TimeArg | RawArg
+ArgSpec = EnumArg | IntArg | StringArg | BoolArg | TimeArg | RawArg
 
 
 @dataclass(frozen=True)

@@ -1,10 +1,18 @@
-# Ganglion — *spinal tool calling for LLMs*
+# ToolCallOpt — *compiler-guided optimization for LLM tool calling*
 
 ## Project Overview
 
-**Ganglion** is a research prototype testing whether a compact intermediate representation (JSON DSL) can replace full tool schemas in LLM prompts while preserving tool-call accuracy. The goal is to reduce token costs and latency for agent tool-calling workflows. The metaphor is a spinal reflex / insect ganglion — a fast, low-overhead reaction circuit that doesn't need the full "cortex" of native tool schemas.
+**ToolCallOpt** is a research prototype testing whether compact Action IRs can
+replace full tool schemas in LLM prompts while preserving tool-call accuracy.
+The goal is to reduce token costs and latency for agent tool-calling workflows
+and provide a clean optimization target for small tool-calling models. The
+former codename was **Ganglion**; keep that only as historical context during
+the rename transition.
 
-**Core Hypothesis:** Instead of providing full tool schemas to the LLM on every request, have the LLM generate a short intermediate representation (IR) that a deterministic parser/validator converts into actual tool calls. This reduces token consumption and improves response latency.
+**Core Hypothesis:** Instead of providing full tool schemas to the LLM on every
+request, have the LLM generate a short Action IR that a deterministic
+parser/validator converts into actual tool calls. This reduces token
+consumption and improves response latency.
 
 **Key Results (M1-M4):**
 - **46-69% token reduction** vs native tool calling (scales with tool count)
@@ -16,7 +24,7 @@
 
 ```
 reflex-language-model/
-├── ganglion/                 # Main package
+├── ganglion/                 # Current implementation package namespace
 │   ├── dsl/                 # DSL definition & validation
 │   │   ├── catalog.py       # Tool catalog, DSL rendering, OpenAI tools
 │   │   ├── tool_spec.py     # ToolSpec, ArgSpec definitions (EnumArg, IntArg, etc.)

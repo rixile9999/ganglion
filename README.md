@@ -1,14 +1,14 @@
-# ToolCallOpt
+# Ganglion
 
 > *compiler-guided optimization for LLM tool calling*
 
-ToolCallOpt compiles verbose tool schemas into compact Action IRs that language
+Ganglion compiles verbose tool schemas into compact Action IRs that language
 models can emit with lower token cost. The current POC uses a compact JSON DSL
 as the first IR, then validates and emits deterministic tool calls from that IR.
 
 The first implementation targets IoT light control and uses Qwen's
 OpenAI-compatible DashScope API for JSON structured output. The Python package
-namespace is still `ganglion` during the rename transition.
+namespace is `ganglion`.
 
 For a research-team oriented summary of the verification results, see
 [docs/poc_verification_report.md](docs/poc_verification_report.md).

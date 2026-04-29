@@ -1,13 +1,11 @@
-# ToolCallOpt — *compiler-guided optimization for LLM tool calling*
+# Ganglion — *compiler-guided optimization for LLM tool calling*
 
 ## Project Overview
 
-**ToolCallOpt** is a research prototype testing whether compact Action IRs can
+**Ganglion** is a research prototype testing whether compact Action IRs can
 replace full tool schemas in LLM prompts while preserving tool-call accuracy.
 The goal is to reduce token costs and latency for agent tool-calling workflows
-and provide a clean optimization target for small tool-calling models. The
-former codename was **Ganglion**; keep that only as historical context during
-the rename transition.
+and provide a clean optimization target for small tool-calling models.
 
 **Core Hypothesis:** Instead of providing full tool schemas to the LLM on every
 request, have the LLM generate a short Action IR that a deterministic

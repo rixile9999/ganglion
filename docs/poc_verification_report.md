@@ -1,11 +1,8 @@
-# ToolCallOpt POC 검증 보고서
+# Ganglion POC 검증 보고서
 
 > *compiler-guided optimization for LLM tool calling*
 
 작성일: 2026-04-28
-
-참고: 이 보고서의 초기 실험 당시 프로젝트 코드네임은 Ganglion이었다. 현재 공개
-프로젝트명은 ToolCallOpt이며, Python package namespace는 아직 `ganglion`이다.
 
 ## 1. 요약
 

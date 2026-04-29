@@ -1,4 +1,4 @@
-# ToolCallOpt Branding and Research Positioning
+# Ganglion Branding and Research Positioning
 
 > *compiler-guided optimization for LLM tool calling*
 
@@ -12,13 +12,13 @@ READMEs, slides, paper drafts, and announcements without rewriting.
 
 **Research thesis**
 
-> ToolCallOpt is a compiler-guided MLOps framework for token-efficient LLM tool
+> Ganglion is a compiler-guided MLOps framework for token-efficient LLM tool
 > calling, with compact Action IRs as the training, validation, and deployment
 > interface.
 
 **Korean thesis**
 
-> ToolCallOpt는 LLM tool calling을 토큰 효율적으로 만들기 위한 컴파일러 기반
+> Ganglion은 LLM tool calling을 토큰 효율적으로 만들기 위한 컴파일러 기반
 > MLOps 프레임워크이며, compact Action IR을 학습·검증·배포의 단위로 삼는다.
 
 The important claim is not "we made a DSL." The claim is:
@@ -27,7 +27,7 @@ The important claim is not "we made a DSL." The claim is:
 > the stable unit for prompting, small-model fine-tuning, validation,
 > evaluation, repair, and deployment.
 
-ToolCallOpt treats LLM tool calling as an optimization and systems problem:
+Ganglion treats LLM tool calling as an optimization and systems problem:
 
 - **Compile** verbose tool schemas into a compact Action IR.
 - **Prompt or train** a model to emit the IR instead of provider-specific tool
@@ -48,21 +48,30 @@ fine-tuned small models, and automatic schema-to-catalog compilation.
 
 | Field | Value |
 | --- | --- |
-| Public project name | **ToolCallOpt** |
+| Public project name | **Ganglion** |
 | Primary tagline | *compiler-guided optimization for LLM tool calling* |
 | Research subtitle | *compact Action IRs for token-efficient tool-calling models* |
 | Paper subtitle | *A compiler-guided MLOps framework for token-efficient LLM tool calling* |
 | Korean tagline | *LLM tool calling 최적화를 위한 컴파일러 기반 MLOps* |
-| Former codename | **Ganglion** |
 
-Why the rename:
+### Why "Ganglion"
 
-- `ToolCallOpt` immediately says what the project optimizes.
-- It is easier to search for than a broad biological term.
-- It fits the long-term open-source scope: schema optimization, Action IR,
-  small-model optimization, repair, evaluation, and deployment.
-- The former `Ganglion` codename remains useful as a metaphor for compact,
-  reflex-like action routing, but it should not be the public brand.
+A ganglion (神經節) is a cluster of nerve cell bodies that sits between the
+central nervous system and the periphery, integrating distributed signals into
+compact relays. The metaphor maps directly onto what this project does:
+
+- **Intermediate node.** A ganglion sits between brain and end effector;
+  Ganglion (the project) sits between the LLM and tool execution.
+- **Compaction.** The Greek root γάγγλιον means "knot" — many inputs are
+  bundled into a denser representation. Verbose tool schemas are compiled into
+  a compact Action IR.
+- **Reflex-like routing.** The reflex arc bypasses higher-level reasoning by
+  routing through a ganglion for fast, deterministic action. The Action IR
+  path skips the verbose schema-aware reasoning step for the same reason.
+
+The repo is named `reflex-language-model` for the same reason — the design
+philosophy is "compact, reflex-like action routing" rather than full
+schema-aware deliberation.
 
 ---
 
@@ -82,11 +91,11 @@ models to emit and easier for systems to validate.
 
 ### System
 
-ToolCallOpt introduces a catalog-driven compiler path:
+Ganglion introduces a catalog-driven compiler path:
 
 ```text
 tool schemas / MCP catalog / action specs
-  -> ToolCallOpt catalog
+  -> Ganglion catalog
   -> compact Action IR
   -> LLM or fine-tuned small model
   -> validator + optional repair loop
@@ -111,7 +120,7 @@ The current POC validates the approach on synthetic IoT control tasks across 5,
 
 ### Long-Term Claim
 
-ToolCallOpt should become an open-source MLOps stack for token-efficient
+Ganglion should become an open-source MLOps stack for token-efficient
 tool-calling models: schema ingestion, catalog generation, Action IR design,
 small-model fine-tuning, regression evaluation, repair policies, deployment
 adapters, and eventually physical AI action safety interfaces.
@@ -123,30 +132,30 @@ adapters, and eventually physical AI action safety interfaces.
 ### Compact
 
 ```text
-ToolCallOpt: compiler-guided optimization for LLM tool calling
+Ganglion: compiler-guided optimization for LLM tool calling
 ```
 
 ### Research
 
 ```text
-ToolCallOpt: compact Action IRs for token-efficient tool-calling models
+Ganglion: compact Action IRs for token-efficient tool-calling models
 ```
 
 ### Paper
 
 ```text
-ToolCallOpt: A Compiler-Guided MLOps Framework for Token-Efficient LLM Tool Calling
+Ganglion: A Compiler-Guided MLOps Framework for Token-Efficient LLM Tool Calling
 ```
 
 ### Wordmark
 
 ```text
- _____           _  ____      _ _  ___        _
-|_   _|__   ___ | |/ ___|__ _| | |/ _ \ _ __ | |_
-  | |/ _ \ / _ \| | |   / _` | | | | | | '_ \| __|
-  | | (_) | (_) | | |__| (_| | | | |_| | |_) | |_
-  |_|\___/ \___/|_|\____\__,_|_|_|\___/| .__/ \__|
-                                       |_|
+  ____                   _ _
+ / ___| __ _ _ __   __ _| (_) ___  _ __
+| |  _ / _` | '_ \ / _` | | |/ _ \| '_ \
+| |_| | (_| | | | | (_| | | | (_) | | | |
+ \____|\__,_|_| |_|\__, |_|_|\___/|_| |_|
+                   |___/
 compiler-guided optimization for LLM tool calling
 ```
 
@@ -187,7 +196,7 @@ tool calls.
 
 ### One-Liner
 
-> ToolCallOpt compiles verbose tool schemas into compact Action IRs that LLMs
+> Ganglion compiles verbose tool schemas into compact Action IRs that LLMs
 > and small language models can emit with lower token cost.
 
 ### Paper Subtitle
@@ -196,31 +205,31 @@ tool calls.
 
 ### Paragraph
 
-> **ToolCallOpt: Compiler-Guided Optimization for LLM Tool Calling.** Modern
+> **Ganglion: Compiler-Guided Optimization for LLM Tool Calling.** Modern
 > LLM agents commonly expose verbose tool schemas to the model on every request,
 > increasing token cost, latency, and the burden placed on smaller models.
-> ToolCallOpt reframes tool calling as compact Action IR generation. A catalog
+> Ganglion reframes tool calling as compact Action IR generation. A catalog
 > compiler derives a short IR surface from tool specifications; the model emits
 > that IR; and deterministic validation and emission convert it into executable
 > tool calls. In a 500-case IoT control POC across 5, 20, and 50 tool tiers, the
 > current JSON-based IR path achieves 100% exact match while reducing input
 > tokens by about 45-69% versus native tool schemas, with a repeated 5-tool
 > measurement showing about 19% lower mean latency. These results motivate
-> ToolCallOpt as an open-source MLOps stack for training, evaluating, repairing,
+> Ganglion as an open-source MLOps stack for training, evaluating, repairing,
 > and deploying token-efficient tool-calling models.
 
 ### Korean Abstract
 
-> **ToolCallOpt: LLM tool calling 최적화를 위한 컴파일러 기반 MLOps.**
+> **Ganglion: LLM tool calling 최적화를 위한 컴파일러 기반 MLOps.**
 > 일반적인 LLM 에이전트는 도구 호출 시마다 큰 tool schema를 모델에 제공한다.
 > 이는 도구 수가 늘어날수록 입력 토큰, latency, 소형 모델의 학습 난이도를 함께
-> 증가시킨다. ToolCallOpt는 도구 호출을 compact Action IR 생성 문제로 재정의한다.
+> 증가시킨다. Ganglion은 도구 호출을 compact Action IR 생성 문제로 재정의한다.
 > catalog compiler가 tool specification에서 짧은 IR 표면을 만들고, 모델은 이
 > IR을 생성하며, deterministic validator와 emitter가 이를 실행 가능한 tool
 > call로 변환한다. 현재 POC는 500건 IoT 제어 데이터셋과 5/20/50 tool tier에서
 > JSON 기반 IR 경로가 exact match 100%를 달성하면서 native tool schema 대비
 > 입력 토큰을 약 45-69% 줄이고, 5-tool 반복 측정에서 평균 latency를 약 19%
-> 낮출 수 있음을 보였다. 이 결과는 ToolCallOpt를 소형 tool-calling 모델의
+> 낮출 수 있음을 보였다. 이 결과는 Ganglion을 소형 tool-calling 모델의
 > 학습·검증·복구·배포를 포괄하는 오픈소스 MLOps 스택으로 확장할 근거를 준다.
 
 ---
@@ -243,7 +252,7 @@ Use this framing in papers:
 
 Avoid overclaiming:
 
-- Do not claim ToolCallOpt is merely "a shorter JSON prompt."
+- Do not claim Ganglion is merely "a shorter JSON prompt."
 - Do not claim the current POC proves small-model superiority yet.
 - Do not present the repair loop as empirically proven robustness until
   adversarial and weaker-model runs are added.
@@ -254,9 +263,10 @@ Avoid overclaiming:
 
 ## 7. Visual Identity
 
-- **Mark**: a compact tool-call graph, schema bracket, or IR node feeding into a
-  deterministic adapter. Avoid a biological mark as the primary logo now that
-  the public name is no longer Ganglion.
+- **Mark**: a compact node — a ganglion-style cluster relaying signal from a
+  schema source into a deterministic adapter. A simple neural-knot or
+  intermediate-relay glyph fits the metaphor; avoid medical/anatomical
+  illustration.
 - **Accent color**: restrained blue/teal or graphite with one sharp accent. The
   project should feel efficient, inspectable, and deployable.
 - **Typography**: monospace wordmark for technical surfaces; clean sans
@@ -265,24 +275,19 @@ Avoid overclaiming:
   The visual story should be "schema -> Action IR -> validator -> tool call."
 
 A logo image is not committed yet. When one exists, place it at
-`docs/assets/toolcallopt-mark.svg` and link it from the README hero.
+`docs/assets/ganglion-mark.svg` and link it from the README hero.
 
 ---
 
 ## 8. Usage Notes
 
-- Prefer **ToolCallOpt** in user-facing artifacts, papers, READMEs, slide decks,
+- Use **Ganglion** in user-facing artifacts, papers, READMEs, slide decks,
   and announcements.
-- Treat **Ganglion** as the former codename. It can appear in historical notes,
-  but should not be the public project name.
 - Use **Action IR** for the research abstraction. Use **JSON DSL** when
   referring to the current concrete implementation.
 - Use **compiler** for catalog-to-IR, IR-to-schema, and IR-to-tool emission.
   Use **MLOps** for evaluation, regression, repair, fine-tuning, and deployment
   lifecycle.
-- The current Python package namespace is still `ganglion` during the rename
-  transition. Do not rewrite historical commands until the code package itself
-  is renamed.
-- Current environment variables remain `GANGLION_MODEL` /
-  `GANGLION_ENABLE_THINKING` for compatibility. A future code-level rename can
-  introduce `TOOLCALLOPT_MODEL` aliases.
+- The Python package namespace is `ganglion`. Environment variables are
+  `GANGLION_MODEL` / `GANGLION_ENABLE_THINKING`. Legacy `RLM_*` variables
+  remain readable as a fallback for older scripts and historical reports.

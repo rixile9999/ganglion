@@ -2,12 +2,19 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project: ToolCallOpt — *compiler-guided optimization for LLM tool calling*
+## Project: Ganglion — *compiler-guided optimization for LLM tool calling*
 
-The repo directory is `reflex-language-model` and the current Python package
-namespace is `ganglion`. Use the name **ToolCallOpt** in new user-facing
-artifacts (READMEs, reports, paper drafts). Treat **Ganglion** as the former
-codename during the rename transition.
+The repo directory is `reflex-language-model` and the Python package
+namespace is `ganglion` (this is what `pyproject.toml` packages — see
+`[tool.setuptools.packages.find] include = ["ganglion*"]`). The public project
+name is **Ganglion**. An earlier draft used a different public name briefly
+before reverting to Ganglion; if you spot any stray reference to that earlier
+name in docs or commit history, treat it as outdated and align it with
+Ganglion.
+
+`rlm_poc/` at the repo root is a vestigial directory from a prior rename and is
+empty except for `__pycache__`. Don't add code there — everything lives under
+`ganglion/`.
 
 ## Project Purpose
 
@@ -55,6 +62,8 @@ Data flow per case: `user prompt → ModelClient.invoke() → JSON DSL string �
 This dual rendering is what makes the DSL-vs-native comparison apples-to-apples. When adding a new tool, define one `ToolSpec` and both renderings update.
 
 **ToolSpec / ArgSpec.** `ganglion/dsl/tool_spec.py` defines `ToolSpec` plus arg variants `EnumArg`, `IntArg`, `StringArg`, `TimeArg`, `RawArg`. `EnumArg.aliases` and `StringArg.aliases` are the canonicalisation hook (e.g. `"거실" → "living"`, `"영화 모드" → "movie"`). `RawArg` exists for shapes the generic renderer can't express, like nested `create_scene.actions`; pair it with a `custom_validator` on the `ToolSpec` (see `iot_light.py`).
+
+**Schema → DSL compiler.** `ganglion/dsl/compiler.py` is the M5 direction: it consumes external tool schemas (e.g. OpenAI/MCP) and produces `ToolSpec`s suitable for a `Catalog`. See `docs/tool_schema_compiler.md` for the intended pipeline and `tests/test_tool_schema_compiler.py` for current coverage. Treat this as the auto-generation entry point when extending beyond the hand-written `schema/` modules.
 
 **Validator + emitter.** `Catalog.parse_json_dsl()` accepts either a string or mapping, normalises via `_validate_flat_args`, and returns an `ActionPlan` of immutable `ToolCall`s. `ActionPlan` equality is value equality, so `result.plan == expected` is the exact-match metric. There is no separate emitter step beyond this — the parsed plan IS the executable form, fed to `runtime/executor.py` (mock executor for tests).
 

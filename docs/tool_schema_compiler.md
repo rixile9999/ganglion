@@ -1,6 +1,6 @@
-# ToolCallOpt Schema Compiler Process
+# Ganglion Schema Compiler Process
 
-ToolCallOpt의 장기 목표는 임의의 tool calling schema를 입력받아 compact Action
+Ganglion의 장기 목표는 임의의 tool calling schema를 입력받아 compact Action
 IR을 정의하고, 그 IR을 실제 tool call로 되돌리는 mapper를 자동 생성하는 것이다.
 
 현재 프로토타입은 이 과정을 다음 파이프라인으로 구현한다.
@@ -8,7 +8,7 @@ IR을 정의하고, 그 IR을 실제 tool call로 되돌리는 mapper를 자동 
 ```text
 OpenAI/DashScope tools or MCP inputSchema
   -> schema compiler
-  -> ToolCallOpt catalog
+  -> Ganglion catalog
   -> model-facing JSON DSL prompt
   -> LLM output: compact Action IR
   -> Catalog validator
@@ -17,8 +17,8 @@ OpenAI/DashScope tools or MCP inputSchema
 
 ## Supported Inputs
 
-현재 구현의 Python namespace는 아직 `ganglion`이다. 따라서 프로토타입 API는
-`ganglion.dsl.compiler.compile_tool_calling_schema()`로 노출된다.
+프로토타입 API는 `ganglion.dsl.compiler.compile_tool_calling_schema()`로
+노출된다.
 
 이 함수는 다음 입력을 받는다.
 
@@ -122,9 +122,9 @@ assert tool_calls == [
 
 ## Compilation Rules
 
-The compiler maps JSON Schema fragments into ToolCallOpt `ArgSpec` types:
+The compiler maps JSON Schema fragments into Ganglion `ArgSpec` types:
 
-| JSON Schema fragment | ToolCallOpt arg |
+| JSON Schema fragment | Ganglion arg |
 | --- | --- |
 | `{"type":"string","enum":[...]}` | `EnumArg` |
 | `{"type":"integer","minimum":...,"maximum":...}` | `IntArg` |

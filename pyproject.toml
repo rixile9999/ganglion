@@ -1,7 +1,7 @@
 [project]
-name = "toolcallopt"
+name = "ganglion"
 version = "0.1.0"
-description = "ToolCallOpt: compiler-guided optimization for LLM tool calling via compact Action IRs."
+description = "Ganglion: compiler-guided optimization for LLM tool calling via compact Action IRs."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -12,6 +12,8 @@ namespace is `ganglion`.
 
 For a research-team oriented summary of the verification results, see
 [docs/poc_verification_report.md](docs/poc_verification_report.md).
+For the BFCL v4 M1-M4 replay assessment, see
+[docs/bfcl_m1_m4_result_report.md](docs/bfcl_m1_m4_result_report.md).
 For the schema-to-DSL compiler process, see
 [docs/tool_schema_compiler.md](docs/tool_schema_compiler.md).
 

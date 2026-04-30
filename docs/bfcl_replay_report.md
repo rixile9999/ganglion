@@ -17,7 +17,7 @@ native tool-calling baseline using the same `qwen3.6-plus` model:
 - **Repair**: rescues 2/3 of validation failures at +5% token cost.
 
 **The thesis holds on a real benchmark with a small accuracy cost.**
-On callable-only categories the AST gap is 1.6pp; the headline 2.6pp gap
+On callable-only categories the AST gap is 0.25pp; the headline 2.6pp gap
 is dragged down by `irrelevance` (74% vs 86%) — addressable by M5'
 abstention support without changing the M1'-M4' results.
 
@@ -179,7 +179,7 @@ synthetic IoT dataset.
 loss) **partially survives** the move to a real benchmark. The full 100% →
 100% picture was synthetic-data-driven; on BFCL the cost is a 2.6pp AST gap.
 Most of that gap is concentrated in irrelevance (closable by M5'); on the
-callable categories alone the gap is 1.6pp on average.
+callable categories alone the gap is only 0.25pp.
 
 ## Open Questions
 

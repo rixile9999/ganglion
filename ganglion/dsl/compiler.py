@@ -14,11 +14,20 @@ from ganglion.dsl.tool_spec import (
     DSLValidationError,
     EnumArg,
     IntArg,
+    NumberArg,
     RawArg,
     StringArg,
     TimeArg,
     ToolSpec,
 )
+
+# BFCL v4 uses non-standard JSON Schema type names; normalise them up front
+# so the rest of the compiler and validator only see standard types.
+_TYPE_ALIASES = {
+    "dict": "object",
+    "float": "number",
+    "tuple": "array",
+}
 from ganglion.dsl.types import ActionPlan
 
 _TIME_PATTERN_HINTS = (
@@ -136,9 +145,40 @@ def _compile_tool(tool: Mapping[str, Any]) -> ToolSpec:
     function = _extract_function(tool)
     name = _required_string(function, "name")
     description = _optional_string(function.get("description"))
-    parameters = _extract_parameters(function)
+    parameters = _normalize_schema(_extract_parameters(function))
     args = _compile_parameters(name, parameters)
     return ToolSpec(name=name, description=description, args=args)
+
+
+def _normalize_schema(schema: Any) -> Any:
+    """Recursively rewrite BFCL-specific type aliases to standard JSON Schema."""
+    if not isinstance(schema, Mapping):
+        return schema
+    result = dict(schema)
+    raw_type = result.get("type")
+    if isinstance(raw_type, str):
+        result["type"] = _TYPE_ALIASES.get(raw_type, raw_type)
+    elif isinstance(raw_type, Sequence) and not isinstance(raw_type, (str, bytes)):
+        result["type"] = [
+            _TYPE_ALIASES.get(item, item) if isinstance(item, str) else item
+            for item in raw_type
+        ]
+    properties = result.get("properties")
+    if isinstance(properties, Mapping):
+        result["properties"] = {key: _normalize_schema(value) for key, value in properties.items()}
+    items = result.get("items")
+    if isinstance(items, Mapping):
+        result["items"] = _normalize_schema(items)
+    elif isinstance(items, Sequence) and not isinstance(items, (str, bytes)):
+        result["items"] = [_normalize_schema(item) for item in items]
+    additional = result.get("additionalProperties")
+    if isinstance(additional, Mapping):
+        result["additionalProperties"] = _normalize_schema(additional)
+    for combinator in ("allOf", "anyOf", "oneOf"):
+        sub = result.get(combinator)
+        if isinstance(sub, Sequence) and not isinstance(sub, (str, bytes)):
+            result[combinator] = [_normalize_schema(item) for item in sub]
+    return result
 
 
 def _extract_function(tool: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -161,7 +201,9 @@ def _extract_parameters(function: Mapping[str, Any]) -> Mapping[str, Any]:
         return {"type": "object", "properties": {}}
     if not isinstance(parameters, Mapping):
         raise DSLValidationError("tool parameters/inputSchema must be an object")
-    schema_types = _schema_types(parameters)
+    schema_types = tuple(
+        _TYPE_ALIASES.get(item, item) for item in _schema_types(parameters)
+    )
     if schema_types and "object" not in schema_types:
         raise DSLValidationError("tool parameters/inputSchema must be an object schema")
     return parameters
@@ -202,6 +244,8 @@ def _compile_arg(
     *,
     required: bool,
 ) -> ArgSpec:
+    if schema.get("optional") is True:
+        required = False
     description = _optional_string(schema.get("description"))
     schema_types = _schema_types(schema)
     enum_values = schema.get("enum")
@@ -224,6 +268,14 @@ def _compile_arg(
             description=description,
         )
 
+    if "number" in schema_types:
+        return NumberArg(
+            min_value=_number_bound(schema.get("minimum")),
+            max_value=_number_bound(schema.get("maximum")),
+            required=required,
+            description=description,
+        )
+
     if "string" in schema_types:
         pattern = schema.get("pattern")
         if _looks_like_time(name, schema):
@@ -232,6 +284,13 @@ def _compile_arg(
             pattern=pattern if isinstance(pattern, str) else None,
             required=required,
             description=description,
+        )
+
+    if "any" in schema_types:
+        return RawArg(
+            json_schema={},
+            dsl_description="any JSON value",
+            required=required,
         )
 
     return RawArg(
@@ -281,6 +340,14 @@ def _int_bound(value: Any) -> int | None:
         return value
     if isinstance(value, float) and value.is_integer():
         return int(value)
+    return None
+
+
+def _number_bound(value: Any) -> float | int | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return value
     return None
 
 

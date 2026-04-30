@@ -31,6 +31,15 @@ class IntArg:
 
 
 @dataclass(frozen=True)
+class NumberArg:
+    min_value: float | None = None
+    max_value: float | None = None
+    required: bool = True
+    description: str = ""
+    kind: str = field(init=False, default="number")
+
+
+@dataclass(frozen=True)
 class StringArg:
     aliases: Mapping[str, str] = field(default_factory=dict)
     pattern: str | None = None
@@ -66,7 +75,7 @@ class RawArg:
     kind: str = field(init=False, default="raw")
 
 
-ArgSpec = EnumArg | IntArg | StringArg | BoolArg | TimeArg | RawArg
+ArgSpec = EnumArg | IntArg | NumberArg | StringArg | BoolArg | TimeArg | RawArg
 
 
 @dataclass(frozen=True)

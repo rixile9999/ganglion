@@ -20,3 +20,7 @@ htmlcov/
 .vscode/
 *.swp
 .DS_Store
+
+# BFCL replay artifacts
+examples/bfcl/v4/full/
+runs/bfcl/*.log

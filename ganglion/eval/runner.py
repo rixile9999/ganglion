@@ -5,7 +5,9 @@ import json
 from pathlib import Path
 from typing import Protocol
 
+from ganglion.bfcl.loader import CATEGORIES as BFCL_CATEGORIES, load_category
 from ganglion.dsl.catalog import Catalog
+from ganglion.eval.bfcl_runner import run_bfcl, summarize_bfcl
 from ganglion.eval.dataset import DEFAULT_DATASET, ADVERSARIAL_DATASET, load_dataset
 from ganglion.eval.metrics import CaseResult, RunResult, summarize
 from ganglion.runtime.qwen import (
@@ -17,6 +19,9 @@ from ganglion.runtime.qwen import (
 from ganglion.runtime.rules import RuleBasedJSONDSLClient
 from ganglion.runtime.types import ModelResult
 from ganglion.schema import get_catalog
+
+
+BFCL_CALLABLE_CATEGORIES = ("simple_python", "multiple", "parallel", "parallel_multiple")
 
 
 class ModelClient(Protocol):
@@ -100,6 +105,16 @@ def main() -> None:
         help="Catalog tier: iot_light_5 | home_iot_20 | smart_home_50.",
     )
     parser.add_argument(
+        "--bfcl",
+        default=None,
+        help=(
+            "Run BFCL v4 sample instead of the IoT dataset. "
+            "Use a category name (simple_python | multiple | parallel | "
+            "parallel_multiple | irrelevance), 'callable' for the four "
+            "non-irrelevance categories, or 'all' for all five."
+        ),
+    )
+    parser.add_argument(
         "--dataset",
         type=Path,
         default=DEFAULT_DATASET,
@@ -128,13 +143,63 @@ def main() -> None:
         default=1,
         help="Max repair retry attempts after the initial call.",
     )
+    parser.add_argument(
+        "--bfcl-per-category",
+        type=int,
+        default=None,
+        help="Take the first N cases from each BFCL category before merging.",
+    )
+    parser.add_argument(
+        "--bfcl-skip-per-category",
+        type=int,
+        default=0,
+        help="Skip the first N cases from each BFCL category (use with --bfcl-per-category to take a slice).",
+    )
+    parser.add_argument(
+        "--bfcl-output",
+        type=Path,
+        default=None,
+        help="Write per-case BFCL records as JSONL to this path.",
+    )
     args = parser.parse_args()
 
-    catalog = get_catalog(args.tier)
     repair = RepairConfig(
         enabled=args.repair,
         max_attempts=max(1, args.repair_max_attempts),
     )
+
+    if args.bfcl is not None:
+        if args.llm == "rules":
+            raise SystemExit(
+                "--llm rules has no BFCL adapter; use qwen or qwen-native."
+            )
+        categories = _resolve_bfcl_categories(args.bfcl)
+        cases = []
+        for category in categories:
+            cat_cases = load_category(category)
+            if args.bfcl_skip_per_category:
+                cat_cases = cat_cases[args.bfcl_skip_per_category:]
+            if args.bfcl_per_category is not None:
+                cat_cases = cat_cases[: args.bfcl_per_category]
+            cases.extend(cat_cases)
+        if args.limit is not None:
+            cases = cases[: args.limit]
+
+        def factory(catalog: Catalog) -> ModelClient:
+            return build_client(args.llm, catalog, repair=repair)
+
+        results = run_bfcl(factory, cases, repeat=args.repeat)
+        if args.bfcl_output is not None:
+            _write_bfcl_per_case(results, args.bfcl_output)
+        summary = summarize_bfcl(results)
+        summary["llm"] = args.llm
+        summary["bfcl_categories"] = list(categories)
+        summary["bfcl_per_category"] = args.bfcl_per_category
+        summary["bfcl_skip_per_category"] = args.bfcl_skip_per_category
+        print(json.dumps(summary, ensure_ascii=False, indent=2))
+        return
+
+    catalog = get_catalog(args.tier)
     client = build_client(args.llm, catalog, repair=repair)
 
     # Determine dataset path
@@ -163,6 +228,44 @@ def main() -> None:
     summary["dsl_catalog_chars"] = len(catalog.render_json_dsl())
     summary["openai_tools_chars"] = len(json.dumps(catalog.render_openai_tools()))
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+
+
+def _write_bfcl_per_case(results, path: Path) -> None:
+    """Persist per-case BFCL outcomes for post-hoc analysis (Phase E/G)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        for r in results:
+            run = r.runs[0] if r.runs else None
+            row = {
+                "id": r.case.id,
+                "category": r.case.category,
+                "tool_count": len(r.case.tools),
+                "expects_call": r.case.expects_call,
+                "ast_valid": r.grade.valid,
+                "grade_error_type": r.grade.error_type,
+                "syntax_valid": run is not None and run.plan is not None,
+                "error": run.error if run else None,
+                "latency_ms": run.latency_ms if run else None,
+                "input_tokens": run.input_tokens if run else None,
+                "output_tokens": run.output_tokens if run else None,
+                "dsl_chars": r.dsl_chars,
+                "native_chars": r.native_chars,
+                "predicted": r.predicted.to_jsonable() if r.predicted is not None else None,
+            }
+            f.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+
+
+def _resolve_bfcl_categories(arg: str) -> tuple[str, ...]:
+    if arg == "all":
+        return BFCL_CATEGORIES
+    if arg == "callable":
+        return BFCL_CALLABLE_CATEGORIES
+    if arg in BFCL_CATEGORIES:
+        return (arg,)
+    raise SystemExit(
+        f"unknown --bfcl value: {arg!r}. "
+        f"Choose one of: {', '.join(BFCL_CATEGORIES)}, callable, all."
+    )
 
 
 if __name__ == "__main__":

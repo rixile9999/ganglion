@@ -12,6 +12,7 @@ from ganglion.dsl.tool_spec import (
     DSLValidationError,
     EnumArg,
     IntArg,
+    NumberArg,
     RawArg,
     StringArg,
     TimeArg,
@@ -123,6 +124,9 @@ def _render_dsl_arg_value(spec: ArgSpec) -> str:
     if isinstance(spec, IntArg):
         bounds = _int_bounds(spec)
         return f"{optional}integer{bounds}"
+    if isinstance(spec, NumberArg):
+        bounds = _number_bounds(spec)
+        return f"{optional}number{bounds}"
     if isinstance(spec, StringArg):
         return f"{optional}string"
     if isinstance(spec, BoolArg):
@@ -142,6 +146,24 @@ def _int_bounds(spec: IntArg) -> str:
     if spec.max_value is not None:
         return f" <={spec.max_value}"
     return ""
+
+
+def _number_bounds(spec: NumberArg) -> str:
+    if spec.min_value is not None and spec.max_value is not None:
+        return f" {_format_number(spec.min_value)}..{_format_number(spec.max_value)}"
+    if spec.min_value is not None:
+        return f" >={_format_number(spec.min_value)}"
+    if spec.max_value is not None:
+        return f" <={_format_number(spec.max_value)}"
+    return ""
+
+
+def _format_number(value: float | int) -> str:
+    if isinstance(value, int):
+        return str(value)
+    if value.is_integer():
+        return str(int(value))
+    return str(value)
 
 
 def _render_openai_tool(tool: ToolSpec) -> dict[str, Any]:
@@ -178,6 +200,13 @@ def _render_openai_arg(spec: ArgSpec) -> dict[str, Any]:
         if spec.max_value is not None:
             schema["maximum"] = spec.max_value
         return schema
+    if isinstance(spec, NumberArg):
+        number_schema: dict[str, Any] = {"type": "number"}
+        if spec.min_value is not None:
+            number_schema["minimum"] = spec.min_value
+        if spec.max_value is not None:
+            number_schema["maximum"] = spec.max_value
+        return number_schema
     if isinstance(spec, StringArg):
         schema = {"type": "string"}
         if spec.pattern is not None:
@@ -223,6 +252,8 @@ def _normalize_value(name: str, spec: ArgSpec, raw: Any) -> Any:
         return _normalize_enum(name, spec, raw)
     if isinstance(spec, IntArg):
         return _normalize_int(name, spec, raw)
+    if isinstance(spec, NumberArg):
+        return _normalize_number(name, spec, raw)
     if isinstance(spec, StringArg):
         return _normalize_string(name, spec, raw)
     if isinstance(spec, BoolArg):
@@ -275,6 +306,29 @@ def _normalize_int(name: str, spec: IntArg, raw: Any) -> int:
         raise DSLValidationError(
             f"{name} must be <= {spec.max_value}"
         )
+    return value
+
+
+def _normalize_number(name: str, spec: NumberArg, raw: Any) -> int | float:
+    if isinstance(raw, bool):
+        raise DSLValidationError(f"{name} must be a number")
+    if isinstance(raw, str):
+        cleaned = raw.strip()
+        try:
+            value: int | float = int(cleaned)
+        except ValueError:
+            try:
+                value = float(cleaned)
+            except ValueError as exc:
+                raise DSLValidationError(f"{name} must be a number") from exc
+    elif isinstance(raw, (int, float)):
+        value = raw
+    else:
+        raise DSLValidationError(f"{name} must be a number")
+    if spec.min_value is not None and value < spec.min_value:
+        raise DSLValidationError(f"{name} must be >= {spec.min_value}")
+    if spec.max_value is not None and value > spec.max_value:
+        raise DSLValidationError(f"{name} must be <= {spec.max_value}")
     return value
 
 

@@ -1,0 +1,627 @@
+{
+  "total": 100,
+  "ast_match_rate": 0.74,
+  "syntax_valid_rate": 0.26,
+  "latency_ms_mean": 1986.83,
+  "latency_ms_p50": 1331.69,
+  "latency_ms_p95": 1916.77,
+  "latency_ms_stddev": 6201.71,
+  "input_tokens_total": 3039,
+  "output_tokens_total": 799,
+  "dsl_chars_mean": 247.25,
+  "native_chars_mean": 400.56,
+  "by_category": {
+    "irrelevance": {
+      "total": 100,
+      "ast_match_rate": 0.74,
+      "syntax_valid_rate": 0.26
+    }
+  },
+  "error_type_counts": {
+    "irrelevance:unexpected_call": 26
+  },
+  "failures": [
+    {
+      "id": "irrelevance_11",
+      "category": "irrelevance",
+      "user_message": "What is the closest integer to 30?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_closest_prime",
+            "args": {
+              "number": 30,
+              "skip": 0
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_114",
+      "category": "irrelevance",
+      "user_message": "What is the fastest route from Los Angeles to New York?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_closest_airport",
+            "args": {
+              "location": "Los Angeles"
+            }
+          },
+          {
+            "action": "get_closest_airport",
+            "args": {
+              "location": "New York"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 2."
+      ]
+    },
+    {
+      "id": "irrelevance_129",
+      "category": "irrelevance",
+      "user_message": "Give me the MTBI of my friend.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "personality_assessment.evaluate",
+            "args": {
+              "traits": [],
+              "detailed_output": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_137",
+      "category": "irrelevance",
+      "user_message": "Who signed the declaration of independence?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "historical_event.get_date",
+            "args": {
+              "event_name": "Signing of the Declaration of Independence",
+              "event_location": "Philadelphia"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_160",
+      "category": "irrelevance",
+      "user_message": "How frequent do members at the Museum of Modern Art visi last year?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "most_frequent_visitor",
+            "args": {
+              "museum_name": "Museum of Modern Art",
+              "start_date": "2023-01-01",
+              "end_date": "2023-12-31"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_164",
+      "category": "irrelevance",
+      "user_message": "Who is the best singer in Jazz",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "search_music_instrument_players",
+            "args": {
+              "instrument": "vocals",
+              "genre": "Jazz",
+              "top": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_169",
+      "category": "irrelevance",
+      "user_message": "Who is playing basketball game  at Madison Square Garden tonight?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "concert_search.find_concerts",
+            "args": {
+              "venue": "Madison Square Garden",
+              "date": "tonight"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_173",
+      "category": "irrelevance",
+      "user_message": "What are the primary triads in the key of C major?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "music_analysis.find_common_chords",
+            "args": {
+              "genre": "C major",
+              "num_chords": 3
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_180",
+      "category": "irrelevance",
+      "user_message": "Who are in the cricket matches scheduled for today?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "sports_analyzer.get_schedule",
+            "args": {
+              "date": "today",
+              "sport": "cricket"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_183",
+      "category": "irrelevance",
+      "user_message": "Who was the winner of Wimbledon Men's Singles in 2021?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "find_top_sports_celebrity",
+            "args": {
+              "name": "Wimbledon Men's Singles winner",
+              "year": 2021,
+              "sports_type": "tennis"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_188",
+      "category": "irrelevance",
+      "user_message": "Who won the championship of the World Series in 2020?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "sports.ranking.get_champion",
+            "args": {
+              "event": "World Series",
+              "year": 2020
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_223",
+      "category": "irrelevance",
+      "user_message": "Find a bakery that sells sourdough bread in Chicago.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "grocery_shop.find_specific_product",
+            "args": {
+              "city": "Chicago",
+              "product": "sourdough bread"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_224",
+      "category": "irrelevance",
+      "user_message": "Find a pet store near Los Angeles, CA",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "grocery_store.locate_nearby",
+            "args": {
+              "location": "Los Angeles, CA",
+              "store_type": [
+                "Convenience Store"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_227",
+      "category": "irrelevance",
+      "user_message": "When will be sunset in Beijing today?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_sunrise",
+            "args": {
+              "location": "Beijing"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_236",
+      "category": "irrelevance",
+      "user_message": "What is the quickest way to get to Tokyo from London by plane?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_flight_duration",
+            "args": {
+              "start_city": "London",
+              "destination_city": "Tokyo",
+              "flight_type": "quickest"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_25",
+      "category": "irrelevance",
+      "user_message": "What is the freezing point point of water at a pressure of 10 kPa?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "thermodynamics.calculate_boiling_point",
+            "args": {
+              "substance": "water",
+              "pressure": 10,
+              "unit": "kPa"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_26",
+      "category": "irrelevance",
+      "user_message": "How much gas is generated from heating a 2 m³ closed chamber with air at a temperature of 25°C to 100°C?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "thermodynamics.calc_gas_pressure",
+            "args": {
+              "volume": 2,
+              "initial_temperature": 25,
+              "final_temperature": 100
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_43",
+      "category": "irrelevance",
+      "user_message": "How can I apply Evolutionary Algorithm in game Artificial Intelligence?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "evolve_creatures",
+            "args": {
+              "population_size": 100,
+              "mutation_rate": 0.05,
+              "generations": 50
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_49",
+      "category": "irrelevance",
+      "user_message": "What is the time difference between Los Angeles and Berlin?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_co_ordinate",
+            "args": {
+              "location": "Los Angeles"
+            }
+          },
+          {
+            "action": "get_co_ordinate",
+            "args": {
+              "location": "Berlin"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 2."
+      ]
+    },
+    {
+      "id": "irrelevance_53",
+      "category": "irrelevance",
+      "user_message": "Who won the world series in 2018?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "database_query.run",
+            "args": {
+              "database": "sports_db",
+              "query": "SELECT winner FROM world_series WHERE year = 2018"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_56",
+      "category": "irrelevance",
+      "user_message": "What is the current bitcoin price?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "database_connect.select",
+            "args": {
+              "database_name": "crypto_prices",
+              "table_name": "bitcoin",
+              "condition": "latest"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_57",
+      "category": "irrelevance",
+      "user_message": "How to solve the quadratic equation with coefficients 2, 3 and 4?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "genetic_algorithm.optimize",
+            "args": {
+              "function": "(x) => 2*x*x + 3*x + 4",
+              "constraints": [],
+              "population_size": 100,
+              "mutation_rate": 0.01
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_68",
+      "category": "irrelevance",
+      "user_message": "Calculate the standard deviation of the null hypothesis test with a sample mean of 98.2, standard deviation of 1.4, and sample size of 40 for a population mean of 98.6.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "statistics.calculate_p_value",
+            "args": {
+              "sample_mean": 98.2,
+              "population_mean": 98.6,
+              "sample_std_dev": 1.4,
+              "sample_size": 40
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_74",
+      "category": "irrelevance",
+      "user_message": "What is the rate of return for a business with $15000 total revenue and $22000 total cost.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "investment_analysis.calculate_profit",
+            "args": {
+              "total_revenue": 15000,
+              "total_cost": 22000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_86",
+      "category": "irrelevance",
+      "user_message": "What's the penalty for burglary in California?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "law_info.get_penalty",
+            "args": {
+              "crime": "burglary",
+              "state": "California"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_91",
+      "category": "irrelevance",
+      "user_message": "Can I report noise complaint to my local council in city of Atlanta?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_law_categories",
+            "args": {
+              "law_type": "noise complaint",
+              "country": "USA",
+              "specific_category": "local council regulations"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    }
+  ],
+  "llm": "qwen",
+  "bfcl_categories": [
+    "irrelevance"
+  ],
+  "bfcl_per_category": null,
+  "bfcl_skip_per_category": 0
+}

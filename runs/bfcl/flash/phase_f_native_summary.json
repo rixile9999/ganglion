@@ -1,0 +1,529 @@
+{
+  "total": 50,
+  "ast_match_rate": 0.88,
+  "syntax_valid_rate": 0.96,
+  "latency_ms_mean": 1220.04,
+  "latency_ms_p50": 1073.7,
+  "latency_ms_p95": 2070.1,
+  "latency_ms_stddev": 419.77,
+  "input_tokens_total": 109625,
+  "output_tokens_total": 24192,
+  "dsl_chars_mean": 328.14,
+  "native_chars_mean": 734.84,
+  "by_category": {
+    "simple_python": {
+      "total": 13,
+      "ast_match_rate": 0.9231,
+      "syntax_valid_rate": 1.0
+    },
+    "multiple": {
+      "total": 13,
+      "ast_match_rate": 1.0,
+      "syntax_valid_rate": 1.0
+    },
+    "parallel": {
+      "total": 13,
+      "ast_match_rate": 0.7692,
+      "syntax_valid_rate": 1.0
+    },
+    "parallel_multiple": {
+      "total": 11,
+      "ast_match_rate": 0.8182,
+      "syntax_valid_rate": 0.8182
+    }
+  },
+  "error_type_counts": {
+    "type_error:nested": 1,
+    "parallel_function_checker_no_order:wrong_count": 3,
+    "parallel_function_checker_no_order:cannot_find_match": 2
+  },
+  "failures": [
+    {
+      "id": "simple_python_13",
+      "category": "simple_python",
+      "user_message": "Calculate the area under the curve y=x^2 from x=1 to x=3.",
+      "ground_truth": [
+        {
+          "calculate_area_under_curve": {
+            "function": [
+              "x**2",
+              "lambda x: x**2",
+              "y=x**2"
+            ],
+            "interval": [
+              [
+                1.0,
+                3.0
+              ]
+            ],
+            "method": [
+              "",
+              "trapezoidal"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_area_under_curve",
+            "args": {
+              "function": "x^2",
+              "interval": [
+                1,
+                3
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "type_error:nested",
+      "grade_errors": [
+        "Nested type checking failed for 'interval'. Expected outer array with inner <class 'float'>. Value: [1, 3]."
+      ]
+    },
+    {
+      "id": "parallel_114",
+      "category": "parallel",
+      "user_message": "Can you analyze the DNA sequence \"AGCTTAGCTA\" and \"AGCTTAGGCTA\" using the reference sequence \"AGCTTAGCTA\" to identify any potential 'insertion' mutations, then repeat the same analysis for 'deletion' and 'substitution' mutations?",
+      "ground_truth": [
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "insertion"
+            }
+          },
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "deletion"
+            }
+          },
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "substitution"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_119",
+      "category": "parallel",
+      "user_message": "\"Can you help me identify the bird species I saw during my recent trip? The first one was a small bird with a vibrant blue color that I spotted in a forest. The second one was a large bird with a mix of black colors that I saw near a lake. The third one was a medium-sized bird with a brown color that I noticed in a desert. Lastly, the fourth one was a large bird with a green color that I observed in a tropical rainforest. What could these birds be?\"",
+      "ground_truth": [
+        {
+          "identify_bird": {
+            "color": [
+              "blue"
+            ],
+            "habitat": [
+              "forest"
+            ],
+            "size": [
+              "small",
+              ""
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "black"
+            ],
+            "habitat": [
+              "lake"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "brown"
+            ],
+            "habitat": [
+              "desert"
+            ],
+            "size": [
+              "medium"
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "green"
+            ],
+            "habitat": [
+              "tropical rainforest"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "vibrant blue",
+              "habitat": "forest",
+              "size": "small"
+            }
+          },
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "black",
+              "habitat": "lake",
+              "size": "large"
+            }
+          },
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "brown",
+              "habitat": "desert",
+              "size": "medium"
+            }
+          },
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "green",
+              "habitat": "tropical rainforest",
+              "size": "large"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'identify_bird'."
+      ]
+    },
+    {
+      "id": "parallel_124",
+      "category": "parallel",
+      "user_message": "What would be the projected population growth of Japan and India in the next 10 and 20 years respectively, considering the current growth rate, and how would these projections change if we consider a growth rate of 1.5% for Japan and 2.1% for India instead of the current growth rate?",
+      "ground_truth": [
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              0.015
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              0.021
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "India",
+              "years": 20
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10,
+              "growth_rate": 1.5
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "India",
+              "years": 20,
+              "growth_rate": 2.1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'population_projections'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_114",
+      "category": "parallel_multiple",
+      "user_message": "\"Could you please help me order a custom sculpture of a horse made from Marble that is 20 inches in size, then another sculpture of a dog made from Wood that is 15 inches in size, followed by a custom painting of a sunset with the main color being Red that is 30 inches in size, and finally a painting of a cityscape with the main color being Blue that is 25 inches in size?\"",
+      "ground_truth": [
+        {
+          "sculpture.create_custom": {
+            "item": [
+              "horse"
+            ],
+            "material": [
+              "Marble"
+            ],
+            "size": [
+              20
+            ]
+          }
+        },
+        {
+          "sculpture.create_custom": {
+            "item": [
+              "dog"
+            ],
+            "material": [
+              "Wood"
+            ],
+            "size": [
+              15
+            ]
+          }
+        },
+        {
+          "painting.create_custom": {
+            "subject": [
+              "sunset"
+            ],
+            "color": [
+              "Red"
+            ],
+            "size": [
+              30
+            ]
+          }
+        },
+        {
+          "painting.create_custom": {
+            "subject": [
+              "cityscape"
+            ],
+            "color": [
+              "Blue"
+            ],
+            "size": [
+              25
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported material: Marble",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_116",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you provide me with the exhibition information for the Louvre museum for the next 3 months and then tell me about the best Italian and Chinese restaurants in the area of Paris?\"",
+      "ground_truth": [
+        {
+          "exhibition_info": {
+            "museum_name": [
+              "Louvre",
+              "Louvre museum"
+            ],
+            "month": [
+              3
+            ]
+          }
+        },
+        {
+          "restaurant_info": {
+            "location": [
+              "Paris",
+              "Paris area"
+            ],
+            "food_type": [
+              "Italian"
+            ]
+          }
+        },
+        {
+          "restaurant_info": {
+            "location": [
+              "Paris",
+              "Paris area"
+            ],
+            "food_type": [
+              "Chinese"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported food_type: Italian",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    }
+  ],
+  "llm": "qwen-native",
+  "bfcl_categories": [
+    "simple_python",
+    "multiple",
+    "parallel",
+    "parallel_multiple"
+  ],
+  "bfcl_per_category": 13,
+  "bfcl_skip_per_category": 0,
+  "bfcl_allow_empty_calls": false
+}

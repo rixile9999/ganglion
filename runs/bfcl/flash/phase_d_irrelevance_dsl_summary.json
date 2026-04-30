@@ -1,0 +1,954 @@
+{
+  "total": 100,
+  "ast_match_rate": 0.59,
+  "syntax_valid_rate": 0.41,
+  "latency_ms_mean": 996.1,
+  "latency_ms_p50": 965.66,
+  "latency_ms_p95": 1384.74,
+  "latency_ms_stddev": 241.84,
+  "input_tokens_total": 4833,
+  "output_tokens_total": 1825,
+  "dsl_chars_mean": 247.25,
+  "native_chars_mean": 400.56,
+  "by_category": {
+    "irrelevance": {
+      "total": 100,
+      "ast_match_rate": 0.59,
+      "syntax_valid_rate": 0.41
+    }
+  },
+  "error_type_counts": {
+    "irrelevance:unexpected_call": 41
+  },
+  "failures": [
+    {
+      "id": "irrelevance_1",
+      "category": "irrelevance",
+      "user_message": "Solve the quadratic equation with coefficients a = 1, b = 2, and c = 3.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "math.sum",
+            "args": {
+              "numbers": [
+                1,
+                2,
+                3
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_107",
+      "category": "irrelevance",
+      "user_message": "What's the composition of species in my backyard garden in Boston?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "soil_composition_analyze",
+            "args": {
+              "location": "Boston",
+              "soil_sample": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_11",
+      "category": "irrelevance",
+      "user_message": "What is the closest integer to 30?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_closest_prime",
+            "args": {
+              "number": 30,
+              "skip": 0
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_129",
+      "category": "irrelevance",
+      "user_message": "Give me the MTBI of my friend.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "personality_assessment.evaluate",
+            "args": {
+              "traits": [],
+              "detailed_output": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_137",
+      "category": "irrelevance",
+      "user_message": "Who signed the declaration of independence?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "historical_event.get_date",
+            "args": {
+              "event_name": "Signing of the Declaration of Independence",
+              "event_location": "Philadelphia"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_139",
+      "category": "irrelevance",
+      "user_message": "What is the largest planet in the universe?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "space.star_info",
+            "args": {
+              "star_name": "largest planet in the universe",
+              "information": "radius"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_14",
+      "category": "irrelevance",
+      "user_message": "What is the acceleration a ball will reach if it's thrown straight upwards with a velocity of 5 m/s?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_maximum_height",
+            "args": {
+              "initial_velocity": 5,
+              "gravity": 9.8
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_142",
+      "category": "irrelevance",
+      "user_message": "Who was the scientist that proposed the special theory of relativity?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_element_properties",
+            "args": {
+              "element": "Albert Einstein"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_160",
+      "category": "irrelevance",
+      "user_message": "How frequent do members at the Museum of Modern Art visi last year?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "most_frequent_visitor",
+            "args": {
+              "museum_name": "Museum of Modern Art",
+              "start_date": "2023-01-01",
+              "end_date": "2023-12-31"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_164",
+      "category": "irrelevance",
+      "user_message": "Who is the best singer in Jazz",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "search_music_instrument_players",
+            "args": {
+              "instrument": "vocals",
+              "genre": "jazz"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_169",
+      "category": "irrelevance",
+      "user_message": "Who is playing basketball game  at Madison Square Garden tonight?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "concert_search.find_concerts",
+            "args": {
+              "venue": "Madison Square Garden",
+              "date": "tonight"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_173",
+      "category": "irrelevance",
+      "user_message": "What are the primary triads in the key of C major?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "music_analysis.find_common_chords",
+            "args": {
+              "genre": "C major",
+              "num_chords": 3
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_177",
+      "category": "irrelevance",
+      "user_message": "Who won the Grammy Award for Best Album in 2017?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_song_chord_progression",
+            "args": {
+              "song_name": "25",
+              "artist_name": "Adele"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_178",
+      "category": "irrelevance",
+      "user_message": "Who is the most assist player in Premier League?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "sports_analysis.get_top_scorer",
+            "args": {
+              "league": "Premier League",
+              "season": "current"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_180",
+      "category": "irrelevance",
+      "user_message": "Who are in the cricket matches scheduled for today?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "sports_analyzer.get_schedule",
+            "args": {
+              "date": "today",
+              "sport": "cricket"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_183",
+      "category": "irrelevance",
+      "user_message": "Who was the winner of Wimbledon Men's Singles in 2021?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "find_top_sports_celebrity",
+            "args": {
+              "name": "Novak Djokovic",
+              "year": 2021,
+              "sports_type": "Tennis"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_185",
+      "category": "irrelevance",
+      "user_message": "What is the assist average of basketball player LeBron James?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "player_stats.average_scoring",
+            "args": {
+              "player_name": "LeBron James",
+              "season": "all"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_188",
+      "category": "irrelevance",
+      "user_message": "Who won the championship of the World Series in 2020?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "sports.ranking.get_champion",
+            "args": {
+              "event": "World Series",
+              "year": 2020
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_223",
+      "category": "irrelevance",
+      "user_message": "Find a bakery that sells sourdough bread in Chicago.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "grocery_shop.find_specific_product",
+            "args": {
+              "city": "Chicago",
+              "product": "sourdough bread"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_224",
+      "category": "irrelevance",
+      "user_message": "Find a pet store near Los Angeles, CA",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "grocery_store.locate_nearby",
+            "args": {
+              "location": "Los Angeles, CA"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_234",
+      "category": "irrelevance",
+      "user_message": "What's 10inch in meter",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "convert_currency",
+            "args": {
+              "amount": 10,
+              "from_currency": "inch",
+              "to_currency": "meter"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_236",
+      "category": "irrelevance",
+      "user_message": "What is the quickest way to get to Tokyo from London by plane?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_flight_duration",
+            "args": {
+              "start_city": "London",
+              "destination_city": "Tokyo",
+              "flight_type": "direct"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_237",
+      "category": "irrelevance",
+      "user_message": "Where is the nearest pharmacy in Los Angeles?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_route_to_location",
+            "args": {
+              "start_point": "Current Location",
+              "end_point": "Nearest Pharmacy in Los Angeles"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_25",
+      "category": "irrelevance",
+      "user_message": "What is the freezing point point of water at a pressure of 10 kPa?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "thermodynamics.calculate_boiling_point",
+            "args": {
+              "substance": "water",
+              "pressure": 10,
+              "unit": "kPa"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_26",
+      "category": "irrelevance",
+      "user_message": "How much gas is generated from heating a 2 m³ closed chamber with air at a temperature of 25°C to 100°C?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "thermodynamics.calc_gas_pressure",
+            "args": {
+              "volume": 2,
+              "initial_temperature": 25,
+              "final_temperature": 100,
+              "initial_pressure": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_43",
+      "category": "irrelevance",
+      "user_message": "How can I apply Evolutionary Algorithm in game Artificial Intelligence?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "evolve_creatures",
+            "args": {
+              "population_size": 50,
+              "mutation_rate": 0.1,
+              "generations": 100,
+              "fitness_goal": 1000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_53",
+      "category": "irrelevance",
+      "user_message": "Who won the world series in 2018?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "database_query.run",
+            "args": {
+              "database": "baseball_stats",
+              "query": "SELECT team_name FROM world_series_winners WHERE year = 2018"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_57",
+      "category": "irrelevance",
+      "user_message": "How to solve the quadratic equation with coefficients 2, 3 and 4?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "genetic_algorithm.optimize",
+            "args": {
+              "function": "2*x**2 + 3*x + 4",
+              "constraints": [],
+              "population_size": 100,
+              "mutation_rate": 0.1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_58",
+      "category": "irrelevance",
+      "user_message": "How much electricity will I need for my 2000 sq ft home?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "solar_panel.calculate_need",
+            "args": {
+              "square_footage": 2000,
+              "average_sunlight_hours": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_6",
+      "category": "irrelevance",
+      "user_message": "What's the area of a rectangle that has width of 5m and length of 7m?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "draw_circle",
+            "args": {
+              "radius": 5,
+              "unit": "m"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_67",
+      "category": "irrelevance",
+      "user_message": "What is the mean of an experiment with 50 successful outcomes out of 500 trials, under the null hypothesis that the probability of success is 0.1?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "hypothesis_testing.get_p_value",
+            "args": {
+              "successes": 50,
+              "n": 500,
+              "prob_null": 0.1,
+              "alternative": "two_sided"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_68",
+      "category": "irrelevance",
+      "user_message": "Calculate the standard deviation of the null hypothesis test with a sample mean of 98.2, standard deviation of 1.4, and sample size of 40 for a population mean of 98.6.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "statistics.calculate_p_value",
+            "args": {
+              "sample_mean": 98.2,
+              "population_mean": 98.6,
+              "sample_std_dev": 1.4,
+              "sample_size": 40,
+              "two_tailed": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_7",
+      "category": "irrelevance",
+      "user_message": "What is the area under the curve of the function f(x) = 3x^2 from x = 1 to x = 5?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "draw_circle",
+            "args": {
+              "radius": 28,
+              "unit": "px"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_70",
+      "category": "irrelevance",
+      "user_message": "Calculate the compounded interest for a principal amount of $10000, with a annual interest rate of 5% for a period of 3 years.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_mortgage_payment",
+            "args": {
+              "loan_amount": 10000,
+              "loan_term": 3,
+              "annual_interest_rate": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_71",
+      "category": "irrelevance",
+      "user_message": "Calculate the profit margin of a company with revenue of $200,000 and expenses of $150,000.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_ROI",
+            "args": {
+              "investment_amount": 150000,
+              "net_profit": 50000,
+              "duration_years": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_74",
+      "category": "irrelevance",
+      "user_message": "What is the rate of return for a business with $15000 total revenue and $22000 total cost.",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "investment_analysis.calculate_profit",
+            "args": {
+              "total_revenue": 15000,
+              "total_cost": 22000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_8",
+      "category": "irrelevance",
+      "user_message": "Find the integral of x^3 from 1 to 5",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "str_to_int",
+            "args": {
+              "value": "1"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_86",
+      "category": "irrelevance",
+      "user_message": "What's the penalty for burglary in California?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "law_info.get_penalty",
+            "args": {
+              "crime": "burglary",
+              "state": "California"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_91",
+      "category": "irrelevance",
+      "user_message": "Can I report noise complaint to my local council in city of Atlanta?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_law_categories",
+            "args": {
+              "law_type": "local_municipal_code",
+              "country": "United States",
+              "specific_category": "noise_ordinance"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_92",
+      "category": "irrelevance",
+      "user_message": "I need a security guard, where can I find the most popular one in New York?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "search_lawyer",
+            "args": {
+              "area": "New York",
+              "specialization": "Security Guard"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    },
+    {
+      "id": "irrelevance_93",
+      "category": "irrelevance",
+      "user_message": "What's the judgement in case XYZ?",
+      "ground_truth": null,
+      "predicted": {
+        "calls": [
+          {
+            "action": "law_firm.get_impactful_cases",
+            "args": {
+              "firm_name": "XYZ",
+              "year": 2023,
+              "top_n": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "irrelevance:unexpected_call",
+      "grade_errors": [
+        "Expected no call, got 1."
+      ]
+    }
+  ],
+  "llm": "qwen",
+  "bfcl_categories": [
+    "irrelevance"
+  ],
+  "bfcl_per_category": null,
+  "bfcl_skip_per_category": 0,
+  "bfcl_allow_empty_calls": false
+}

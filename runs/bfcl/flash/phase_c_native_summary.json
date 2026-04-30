@@ -1,0 +1,1022 @@
+{
+  "total": 100,
+  "ast_match_rate": 0.85,
+  "syntax_valid_rate": 0.98,
+  "latency_ms_mean": 1441.87,
+  "latency_ms_p50": 1236.98,
+  "latency_ms_p95": 2478.68,
+  "latency_ms_stddev": 522.16,
+  "input_tokens_total": 47837,
+  "output_tokens_total": 10825,
+  "dsl_chars_mean": 347.88,
+  "native_chars_mean": 810.98,
+  "by_category": {
+    "simple_python": {
+      "total": 25,
+      "ast_match_rate": 0.8,
+      "syntax_valid_rate": 1.0
+    },
+    "multiple": {
+      "total": 25,
+      "ast_match_rate": 0.92,
+      "syntax_valid_rate": 1.0
+    },
+    "parallel": {
+      "total": 25,
+      "ast_match_rate": 0.84,
+      "syntax_valid_rate": 1.0
+    },
+    "parallel_multiple": {
+      "total": 25,
+      "ast_match_rate": 0.84,
+      "syntax_valid_rate": 0.92
+    }
+  },
+  "error_type_counts": {
+    "type_error:nested": 1,
+    "value_error:others": 3,
+    "value_error:string": 3,
+    "parallel_function_checker_no_order:wrong_count": 3,
+    "parallel_function_checker_no_order:cannot_find_match": 5
+  },
+  "failures": [
+    {
+      "id": "simple_python_13",
+      "category": "simple_python",
+      "user_message": "Calculate the area under the curve y=x^2 from x=1 to x=3.",
+      "ground_truth": [
+        {
+          "calculate_area_under_curve": {
+            "function": [
+              "x**2",
+              "lambda x: x**2",
+              "y=x**2"
+            ],
+            "interval": [
+              [
+                1.0,
+                3.0
+              ]
+            ],
+            "method": [
+              "",
+              "trapezoidal"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_area_under_curve",
+            "args": {
+              "function": "x^2",
+              "interval": [
+                1,
+                3
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "type_error:nested",
+      "grade_errors": [
+        "Nested type checking failed for 'interval'. Expected outer array with inner <class 'float'>. Value: [1, 3]."
+      ]
+    },
+    {
+      "id": "simple_python_137",
+      "category": "simple_python",
+      "user_message": "Calculate the projected return on a $5000 investment in ABC company's stock, if the expected annual growth rate is 6% and the holding period is 5 years.",
+      "ground_truth": [
+        {
+          "calculate_stock_return": {
+            "investment_amount": [
+              5000
+            ],
+            "annual_growth_rate": [
+              0.06
+            ],
+            "holding_period": [
+              5
+            ],
+            "dividends": [
+              "",
+              false
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_stock_return",
+            "args": {
+              "investment_amount": 5000,
+              "annual_growth_rate": 6,
+              "holding_period": 5,
+              "dividends": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'annual_growth_rate': 6.0. Expected one of [0.06]."
+      ]
+    },
+    {
+      "id": "simple_python_142",
+      "category": "simple_python",
+      "user_message": "Find the NASDAQ stock price for the company Amazon at closing March.11, 2022.",
+      "ground_truth": [
+        {
+          "get_stock_price": {
+            "company_name": [
+              "Amazon",
+              "AMZN"
+            ],
+            "date": [
+              "2022-03-11"
+            ],
+            "exchange": [
+              "NASDAQ",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_stock_price",
+            "args": {
+              "company_name": "Amazon",
+              "date": "March.11, 2022",
+              "exchange": "NASDAQ"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'date': 'March.11, 2022'. Expected one of ['2022-03-11']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_150",
+      "category": "simple_python",
+      "user_message": "Calculate the return of investment of a bank's savings account with a deposit of $1000, annual interest rate of 3% for 1 year.",
+      "ground_truth": [
+        {
+          "calculate_roi": {
+            "deposit": [
+              1000
+            ],
+            "annual_interest_rate": [
+              0.03
+            ],
+            "years": [
+              1
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_roi",
+            "args": {
+              "deposit": 1000,
+              "annual_interest_rate": 3,
+              "years": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'annual_interest_rate': 3.0. Expected one of [0.03]."
+      ]
+    },
+    {
+      "id": "simple_python_166",
+      "category": "simple_python",
+      "user_message": "Find a lawyer specializing in divorce cases and charge fee less than 400 dollars per hour in Chicago.",
+      "ground_truth": [
+        {
+          "lawyer.find_nearby": {
+            "city": [
+              "Chicago, IL.",
+              "Chicago, IL"
+            ],
+            "specialty": [
+              [
+                "Divorce"
+              ]
+            ],
+            "fee": [
+              400
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "lawyer.find_nearby",
+            "args": {
+              "city": "Chicago",
+              "specialty": [
+                "Divorce"
+              ],
+              "fee": 400
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'city': 'Chicago'. Expected one of ['Chicago, IL.', 'Chicago, IL']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_132",
+      "category": "multiple",
+      "user_message": "Calculate the future value of an investment with an annual rate of return of 8%, an initial investment of $20000, and a time frame of 5 years.",
+      "ground_truth": [
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              20000
+            ],
+            "rate_of_return": [
+              0.08
+            ],
+            "years": [
+              5
+            ],
+            "contribution": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "finance.calculate_future_value",
+            "args": {
+              "initial_investment": 20000,
+              "rate_of_return": 8,
+              "years": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'rate_of_return': 8.0. Expected one of [0.08]."
+      ]
+    },
+    {
+      "id": "multiple_149",
+      "category": "multiple",
+      "user_message": "Analyze the sentiment of a customer review 'I love the food here! It's always fresh and delicious.'.",
+      "ground_truth": [
+        {
+          "sentiment_analysis": {
+            "text": [
+              "I love the food here! It's always fresh and delicious."
+            ],
+            "language": [
+              "english",
+              "English"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "sentiment_analysis",
+            "args": {
+              "text": "I love the food here! It's always fresh and delicious.",
+              "language": "en"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'language': 'en'. Expected one of ['english', 'English']. Case insensitive."
+      ]
+    },
+    {
+      "id": "parallel_114",
+      "category": "parallel",
+      "user_message": "Can you analyze the DNA sequence \"AGCTTAGCTA\" and \"AGCTTAGGCTA\" using the reference sequence \"AGCTTAGCTA\" to identify any potential 'insertion' mutations, then repeat the same analysis for 'deletion' and 'substitution' mutations?",
+      "ground_truth": [
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "insertion"
+            }
+          },
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "deletion"
+            }
+          },
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "substitution"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_119",
+      "category": "parallel",
+      "user_message": "\"Can you help me identify the bird species I saw during my recent trip? The first one was a small bird with a vibrant blue color that I spotted in a forest. The second one was a large bird with a mix of black colors that I saw near a lake. The third one was a medium-sized bird with a brown color that I noticed in a desert. Lastly, the fourth one was a large bird with a green color that I observed in a tropical rainforest. What could these birds be?\"",
+      "ground_truth": [
+        {
+          "identify_bird": {
+            "color": [
+              "blue"
+            ],
+            "habitat": [
+              "forest"
+            ],
+            "size": [
+              "small",
+              ""
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "black"
+            ],
+            "habitat": [
+              "lake"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "brown"
+            ],
+            "habitat": [
+              "desert"
+            ],
+            "size": [
+              "medium"
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "green"
+            ],
+            "habitat": [
+              "tropical rainforest"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "vibrant blue",
+              "habitat": "forest",
+              "size": "small"
+            }
+          },
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "black",
+              "habitat": "lake",
+              "size": "large"
+            }
+          },
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "brown",
+              "habitat": "desert",
+              "size": "medium"
+            }
+          },
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "green",
+              "habitat": "tropical rainforest",
+              "size": "large"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'identify_bird'."
+      ]
+    },
+    {
+      "id": "parallel_124",
+      "category": "parallel",
+      "user_message": "What would be the projected population growth of Japan and India in the next 10 and 20 years respectively, considering the current growth rate, and how would these projections change if we consider a growth rate of 1.5% for Japan and 2.1% for India instead of the current growth rate?",
+      "ground_truth": [
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              0.015
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              0.021
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "India",
+              "years": 20
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10,
+              "growth_rate": 1.5
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "India",
+              "years": 20,
+              "growth_rate": 2.1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'population_projections'."
+      ]
+    },
+    {
+      "id": "parallel_151",
+      "category": "parallel",
+      "user_message": "\"Can you help me calculate the total area of three different triangles? The first triangle has a base of 15 meters and a height of 20 meters. The second triangle has a base of 25 feet and a height of 30 feet. And the third triangle has a base of 35 inches and a height of 40 inches. I would like the area of each triangle in their respective units.\"",
+      "ground_truth": [
+        {
+          "geometry.area_triangle": {
+            "base": [
+              15
+            ],
+            "height": [
+              20
+            ],
+            "unit": [
+              "square meters",
+              "m^2",
+              ""
+            ]
+          }
+        },
+        {
+          "geometry.area_triangle": {
+            "base": [
+              25
+            ],
+            "height": [
+              30
+            ],
+            "unit": [
+              "square feet",
+              "ft^2"
+            ]
+          }
+        },
+        {
+          "geometry.area_triangle": {
+            "base": [
+              35
+            ],
+            "height": [
+              40
+            ],
+            "unit": [
+              "square inches",
+              "in^2"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 15,
+              "height": 20,
+              "unit": "meters"
+            }
+          },
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 25,
+              "height": 30,
+              "unit": "feet"
+            }
+          },
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 35,
+              "height": 40,
+              "unit": "inches"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'geometry.area_triangle'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_114",
+      "category": "parallel_multiple",
+      "user_message": "\"Could you please help me order a custom sculpture of a horse made from Marble that is 20 inches in size, then another sculpture of a dog made from Wood that is 15 inches in size, followed by a custom painting of a sunset with the main color being Red that is 30 inches in size, and finally a painting of a cityscape with the main color being Blue that is 25 inches in size?\"",
+      "ground_truth": [
+        {
+          "sculpture.create_custom": {
+            "item": [
+              "horse"
+            ],
+            "material": [
+              "Marble"
+            ],
+            "size": [
+              20
+            ]
+          }
+        },
+        {
+          "sculpture.create_custom": {
+            "item": [
+              "dog"
+            ],
+            "material": [
+              "Wood"
+            ],
+            "size": [
+              15
+            ]
+          }
+        },
+        {
+          "painting.create_custom": {
+            "subject": [
+              "sunset"
+            ],
+            "color": [
+              "Red"
+            ],
+            "size": [
+              30
+            ]
+          }
+        },
+        {
+          "painting.create_custom": {
+            "subject": [
+              "cityscape"
+            ],
+            "color": [
+              "Blue"
+            ],
+            "size": [
+              25
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported material: Marble",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_116",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you provide me with the exhibition information for the Louvre museum for the next 3 months and then tell me about the best Italian and Chinese restaurants in the area of Paris?\"",
+      "ground_truth": [
+        {
+          "exhibition_info": {
+            "museum_name": [
+              "Louvre",
+              "Louvre museum"
+            ],
+            "month": [
+              3
+            ]
+          }
+        },
+        {
+          "restaurant_info": {
+            "location": [
+              "Paris",
+              "Paris area"
+            ],
+            "food_type": [
+              "Italian"
+            ]
+          }
+        },
+        {
+          "restaurant_info": {
+            "location": [
+              "Paris",
+              "Paris area"
+            ],
+            "food_type": [
+              "Chinese"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported food_type: Italian",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_141",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you help me with a few things? First, I'm studying genetics and I came across a SNP mutation with the ID 'rs123456'. I'm not sure what type of mutation it is. Could you find out for me? The species is 'Homo sapiens'. Second, I'm planning to visit New York, NY next month (Feb) and I'm interested in attending an art exhibition, particularly one that displays sculptures. Could you find the most popular ones for me? I would prefer exhibitions with high user ratings. Lastly, I'm also studying cell biology and I need to know the list of proteins in the 'nucleus' cell compartment. Could you get that for me? And please include a brief description of each protein.\"",
+      "ground_truth": [
+        {
+          "mutation_type.find": {
+            "snp_id": [
+              "rs123456"
+            ],
+            "species": [
+              "Homo sapiens",
+              ""
+            ]
+          }
+        },
+        {
+          "find_exhibition": {
+            "location": [
+              "New York, NY"
+            ],
+            "art_form": [
+              "sculpture"
+            ],
+            "month": [
+              "February"
+            ],
+            "user_ratings": [
+              "high"
+            ]
+          }
+        },
+        {
+          "cellbio.get_proteins": {
+            "cell_compartment": [
+              "nucleus"
+            ],
+            "include_description": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "mutation_type.find",
+            "args": {
+              "snp_id": "rs123456",
+              "species": "Homo sapiens"
+            }
+          },
+          {
+            "action": "find_exhibition",
+            "args": {
+              "location": "New York, NY",
+              "art_form": "sculptures",
+              "month": "Feb",
+              "user_ratings": "high"
+            }
+          },
+          {
+            "action": "cellbio.get_proteins",
+            "args": {
+              "cell_compartment": "nucleus",
+              "include_description": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'find_exhibition'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_150",
+      "category": "parallel_multiple",
+      "user_message": "\"Could you help me with a few things? First, I'm interested in finding out all the movies that actor Leonardo DiCaprio starred in the year 2010, specifically in the Drama category. Second, I'd like to know about any lawsuits filed against the company 'Apple Inc.' in the location 'California' in the year 2015, and I'm particularly interested in civil cases. Lastly, I need to book a direct flight from 'New York' to 'London' on the date '2022-12-25', and I prefer the time to be around '10:00AM'. Can you assist me with these?\"",
+      "ground_truth": [
+        {
+          "imdb.find_movies_by_actor": {
+            "actor_name": [
+              "Leonardo DiCaprio"
+            ],
+            "year": [
+              2010
+            ],
+            "category": [
+              "Drama"
+            ]
+          }
+        },
+        {
+          "lawsuits_search": {
+            "company_name": [
+              "Apple Inc."
+            ],
+            "location": [
+              "California",
+              "CA"
+            ],
+            "year": [
+              2015
+            ],
+            "case_type": [
+              "civil",
+              ""
+            ]
+          }
+        },
+        {
+          "flight.book": {
+            "departure_location": [
+              "New York",
+              "NY"
+            ],
+            "destination_location": [
+              "London"
+            ],
+            "date": [
+              "2022-12-25",
+              "12/25/2022",
+              "Dec 25, 2022"
+            ],
+            "time": [
+              "10:00AM"
+            ],
+            "direct_flight": [
+              "",
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "imdb.find_movies_by_actor",
+            "args": {
+              "actor_name": "Leonardo DiCaprio",
+              "year": 2010,
+              "category": "Drama"
+            }
+          },
+          {
+            "action": "lawsuits_search",
+            "args": {
+              "company_name": "Apple Inc.",
+              "location": "California",
+              "year": 2015,
+              "case_type": "civil"
+            }
+          },
+          {
+            "action": "flight.book",
+            "args": {
+              "departure_location": "New York",
+              "destination_location": "London",
+              "date": "2022-12-25",
+              "time": "10:00",
+              "direct_flight": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'flight.book'."
+      ]
+    }
+  ],
+  "llm": "qwen-native",
+  "bfcl_categories": [
+    "simple_python",
+    "multiple",
+    "parallel",
+    "parallel_multiple"
+  ],
+  "bfcl_per_category": 25,
+  "bfcl_skip_per_category": 0,
+  "bfcl_allow_empty_calls": false
+}

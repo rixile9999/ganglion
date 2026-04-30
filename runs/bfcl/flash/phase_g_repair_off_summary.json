@@ -1,0 +1,1409 @@
+{
+  "total": 100,
+  "ast_match_rate": 0.79,
+  "syntax_valid_rate": 0.97,
+  "latency_ms_mean": 1339.69,
+  "latency_ms_p50": 1091.38,
+  "latency_ms_p95": 2083.01,
+  "latency_ms_stddev": 471.11,
+  "input_tokens_total": 17924,
+  "output_tokens_total": 9229,
+  "dsl_chars_mean": 347.88,
+  "native_chars_mean": 810.98,
+  "by_category": {
+    "simple_python": {
+      "total": 25,
+      "ast_match_rate": 0.8,
+      "syntax_valid_rate": 1.0
+    },
+    "multiple": {
+      "total": 25,
+      "ast_match_rate": 0.76,
+      "syntax_valid_rate": 0.96
+    },
+    "parallel": {
+      "total": 25,
+      "ast_match_rate": 0.84,
+      "syntax_valid_rate": 1.0
+    },
+    "parallel_multiple": {
+      "total": 25,
+      "ast_match_rate": 0.76,
+      "syntax_valid_rate": 0.92
+    }
+  },
+  "error_type_counts": {
+    "type_error:nested": 1,
+    "value_error:others": 6,
+    "value_error:string": 3,
+    "multiple_function_checker:wrong_count": 1,
+    "parallel_function_checker_no_order:cannot_find_match": 7,
+    "parallel_function_checker_no_order:wrong_count": 3
+  },
+  "failures": [
+    {
+      "id": "simple_python_13",
+      "category": "simple_python",
+      "user_message": "Calculate the area under the curve y=x^2 from x=1 to x=3.",
+      "ground_truth": [
+        {
+          "calculate_area_under_curve": {
+            "function": [
+              "x**2",
+              "lambda x: x**2",
+              "y=x**2"
+            ],
+            "interval": [
+              [
+                1.0,
+                3.0
+              ]
+            ],
+            "method": [
+              "",
+              "trapezoidal"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_area_under_curve",
+            "args": {
+              "function": "x**2",
+              "interval": [
+                1,
+                3
+              ],
+              "method": "analytical"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "type_error:nested",
+      "grade_errors": [
+        "Nested type checking failed for 'interval'. Expected outer array with inner <class 'float'>. Value: [1, 3]."
+      ]
+    },
+    {
+      "id": "simple_python_137",
+      "category": "simple_python",
+      "user_message": "Calculate the projected return on a $5000 investment in ABC company's stock, if the expected annual growth rate is 6% and the holding period is 5 years.",
+      "ground_truth": [
+        {
+          "calculate_stock_return": {
+            "investment_amount": [
+              5000
+            ],
+            "annual_growth_rate": [
+              0.06
+            ],
+            "holding_period": [
+              5
+            ],
+            "dividends": [
+              "",
+              false
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_stock_return",
+            "args": {
+              "investment_amount": 5000,
+              "annual_growth_rate": 6,
+              "holding_period": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'annual_growth_rate': 6.0. Expected one of [0.06]."
+      ]
+    },
+    {
+      "id": "simple_python_148",
+      "category": "simple_python",
+      "user_message": "Calculate the future value of an investment with an annual rate of return of 8%, an initial investment of $20000, and a time frame of 5 years.",
+      "ground_truth": [
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              20000
+            ],
+            "rate_of_return": [
+              0.08
+            ],
+            "years": [
+              5
+            ],
+            "contribution": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "finance.calculate_future_value",
+            "args": {
+              "initial_investment": 20000,
+              "rate_of_return": 8,
+              "years": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'rate_of_return': 8.0. Expected one of [0.08]."
+      ]
+    },
+    {
+      "id": "simple_python_150",
+      "category": "simple_python",
+      "user_message": "Calculate the return of investment of a bank's savings account with a deposit of $1000, annual interest rate of 3% for 1 year.",
+      "ground_truth": [
+        {
+          "calculate_roi": {
+            "deposit": [
+              1000
+            ],
+            "annual_interest_rate": [
+              0.03
+            ],
+            "years": [
+              1
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_roi",
+            "args": {
+              "deposit": 1000,
+              "annual_interest_rate": 3,
+              "years": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'annual_interest_rate': 3.0. Expected one of [0.03]."
+      ]
+    },
+    {
+      "id": "simple_python_166",
+      "category": "simple_python",
+      "user_message": "Find a lawyer specializing in divorce cases and charge fee less than 400 dollars per hour in Chicago.",
+      "ground_truth": [
+        {
+          "lawyer.find_nearby": {
+            "city": [
+              "Chicago, IL.",
+              "Chicago, IL"
+            ],
+            "specialty": [
+              [
+                "Divorce"
+              ]
+            ],
+            "fee": [
+              400
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "lawyer.find_nearby",
+            "args": {
+              "city": "Chicago",
+              "specialty": [
+                "Divorce"
+              ],
+              "fee": 400
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'city': 'Chicago'. Expected one of ['Chicago, IL.', 'Chicago, IL']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_119",
+      "category": "multiple",
+      "user_message": "Find records in database in user table where age is greater than 25 and job is 'engineer'.",
+      "ground_truth": [
+        {
+          "database.query": {
+            "table": [
+              "user"
+            ],
+            "conditions": [
+              [
+                {
+                  "field": [
+                    "age"
+                  ],
+                  "operation": [
+                    ">"
+                  ],
+                  "value": [
+                    "25"
+                  ]
+                },
+                {
+                  "field": [
+                    "job"
+                  ],
+                  "operation": [
+                    "="
+                  ],
+                  "value": [
+                    "engineer"
+                  ]
+                }
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: conditions[0].value must be string",
+      "grade_error_type": "multiple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "multiple_120",
+      "category": "multiple",
+      "user_message": "How much time will it take for the light to reach earth from a star 4 light years away?",
+      "ground_truth": [
+        {
+          "light_travel_time": {
+            "distance_in_light_years": [
+              4
+            ],
+            "speed_of_light": [
+              299792458,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "light_travel_time",
+            "args": {
+              "distance_in_light_years": 4,
+              "speed_of_light": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'speed_of_light': 1. Expected one of [299792458, '']."
+      ]
+    },
+    {
+      "id": "multiple_129",
+      "category": "multiple",
+      "user_message": "Find the compound interest for an investment of $10000 with an annual interest rate of 5% compounded monthly for 5 years.",
+      "ground_truth": [
+        {
+          "compound_interest": {
+            "principal": [
+              10000
+            ],
+            "annual_rate": [
+              5.0
+            ],
+            "compounding_freq": [
+              "monthly"
+            ],
+            "time_in_years": [
+              5
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "compound_interest",
+            "args": {
+              "principal": 10000,
+              "annual_rate": 0.05,
+              "compounding_freq": "monthly",
+              "time_in_years": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'annual_rate': 0.05. Expected one of [5.0]."
+      ]
+    },
+    {
+      "id": "multiple_132",
+      "category": "multiple",
+      "user_message": "Calculate the future value of an investment with an annual rate of return of 8%, an initial investment of $20000, and a time frame of 5 years.",
+      "ground_truth": [
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              20000
+            ],
+            "rate_of_return": [
+              0.08
+            ],
+            "years": [
+              5
+            ],
+            "contribution": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "finance.calculate_future_value",
+            "args": {
+              "initial_investment": 20000,
+              "rate_of_return": 8,
+              "years": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'rate_of_return': 8.0. Expected one of [0.08]."
+      ]
+    },
+    {
+      "id": "multiple_149",
+      "category": "multiple",
+      "user_message": "Analyze the sentiment of a customer review 'I love the food here! It's always fresh and delicious.'.",
+      "ground_truth": [
+        {
+          "sentiment_analysis": {
+            "text": [
+              "I love the food here! It's always fresh and delicious."
+            ],
+            "language": [
+              "english",
+              "English"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "sentiment_analysis",
+            "args": {
+              "text": "I love the food here! It's always fresh and delicious.",
+              "language": "en"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'language': 'en'. Expected one of ['english', 'English']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_151",
+      "category": "multiple",
+      "user_message": "Find the most followed person on twitter who tweets about psychology related to behaviour and group dynamics.",
+      "ground_truth": [
+        {
+          "social_media_analytics.most_followed": {
+            "topic": [
+              "psychology",
+              "Psychology"
+            ],
+            "sub_topics": [
+              [
+                "behaviour",
+                "group dynamics"
+              ],
+              [
+                "group dynamics",
+                "behaviour"
+              ]
+            ],
+            "region": [
+              "",
+              "global"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "social_media_analytics.most_followed",
+            "args": {
+              "topic": "psychology related to behaviour and group dynamics"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'topic': 'psychology related to behaviour and group dynamics'. Expected one of ['psychology', 'Psychology']. Case insensitive."
+      ]
+    },
+    {
+      "id": "parallel_108",
+      "category": "parallel",
+      "user_message": "Can you provide a detailed description of the structure and functioning of a neuron cell and then compare it with a less detailed description of a muscle cell in the human body?",
+      "ground_truth": [
+        {
+          "biology.get_cell_info": {
+            "cell_type": [
+              "neuron"
+            ],
+            "detailed": [
+              true
+            ]
+          }
+        },
+        {
+          "biology.get_cell_info": {
+            "cell_type": [
+              "muscle"
+            ],
+            "detailed": [
+              false,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "biology.get_cell_info",
+            "args": {
+              "cell_type": "neuron",
+              "detailed": true
+            }
+          },
+          {
+            "action": "biology.get_cell_info",
+            "args": {
+              "cell_type": "muscle cell",
+              "detailed": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'biology.get_cell_info'."
+      ]
+    },
+    {
+      "id": "parallel_114",
+      "category": "parallel",
+      "user_message": "Can you analyze the DNA sequence \"AGCTTAGCTA\" and \"AGCTTAGGCTA\" using the reference sequence \"AGCTTAGCTA\" to identify any potential 'insertion' mutations, then repeat the same analysis for 'deletion' and 'substitution' mutations?",
+      "ground_truth": [
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "insertion"
+            }
+          },
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGGCTA",
+              "mutation_type": "deletion"
+            }
+          },
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA",
+              "mutation_type": "substitution"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_124",
+      "category": "parallel",
+      "user_message": "What would be the projected population growth of Japan and India in the next 10 and 20 years respectively, considering the current growth rate, and how would these projections change if we consider a growth rate of 1.5% for Japan and 2.1% for India instead of the current growth rate?",
+      "ground_truth": [
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              0.015
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              0.021
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "India",
+              "years": 20
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10,
+              "growth_rate": 1.5
+            }
+          },
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "India",
+              "years": 20,
+              "growth_rate": 2.1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'population_projections'."
+      ]
+    },
+    {
+      "id": "parallel_151",
+      "category": "parallel",
+      "user_message": "\"Can you help me calculate the total area of three different triangles? The first triangle has a base of 15 meters and a height of 20 meters. The second triangle has a base of 25 feet and a height of 30 feet. And the third triangle has a base of 35 inches and a height of 40 inches. I would like the area of each triangle in their respective units.\"",
+      "ground_truth": [
+        {
+          "geometry.area_triangle": {
+            "base": [
+              15
+            ],
+            "height": [
+              20
+            ],
+            "unit": [
+              "square meters",
+              "m^2",
+              ""
+            ]
+          }
+        },
+        {
+          "geometry.area_triangle": {
+            "base": [
+              25
+            ],
+            "height": [
+              30
+            ],
+            "unit": [
+              "square feet",
+              "ft^2"
+            ]
+          }
+        },
+        {
+          "geometry.area_triangle": {
+            "base": [
+              35
+            ],
+            "height": [
+              40
+            ],
+            "unit": [
+              "square inches",
+              "in^2"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 15,
+              "height": 20,
+              "unit": "meters"
+            }
+          },
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 25,
+              "height": 30,
+              "unit": "feet"
+            }
+          },
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 35,
+              "height": 40,
+              "unit": "inches"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'geometry.area_triangle'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_114",
+      "category": "parallel_multiple",
+      "user_message": "\"Could you please help me order a custom sculpture of a horse made from Marble that is 20 inches in size, then another sculpture of a dog made from Wood that is 15 inches in size, followed by a custom painting of a sunset with the main color being Red that is 30 inches in size, and finally a painting of a cityscape with the main color being Blue that is 25 inches in size?\"",
+      "ground_truth": [
+        {
+          "sculpture.create_custom": {
+            "item": [
+              "horse"
+            ],
+            "material": [
+              "Marble"
+            ],
+            "size": [
+              20
+            ]
+          }
+        },
+        {
+          "sculpture.create_custom": {
+            "item": [
+              "dog"
+            ],
+            "material": [
+              "Wood"
+            ],
+            "size": [
+              15
+            ]
+          }
+        },
+        {
+          "painting.create_custom": {
+            "subject": [
+              "sunset"
+            ],
+            "color": [
+              "Red"
+            ],
+            "size": [
+              30
+            ]
+          }
+        },
+        {
+          "painting.create_custom": {
+            "subject": [
+              "cityscape"
+            ],
+            "color": [
+              "Blue"
+            ],
+            "size": [
+              25
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported material: Marble",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_116",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you provide me with the exhibition information for the Louvre museum for the next 3 months and then tell me about the best Italian and Chinese restaurants in the area of Paris?\"",
+      "ground_truth": [
+        {
+          "exhibition_info": {
+            "museum_name": [
+              "Louvre",
+              "Louvre museum"
+            ],
+            "month": [
+              3
+            ]
+          }
+        },
+        {
+          "restaurant_info": {
+            "location": [
+              "Paris",
+              "Paris area"
+            ],
+            "food_type": [
+              "Italian"
+            ]
+          }
+        },
+        {
+          "restaurant_info": {
+            "location": [
+              "Paris",
+              "Paris area"
+            ],
+            "food_type": [
+              "Chinese"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported food_type: Italian",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_127",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you help me plan my trip? I need to book a hotel room in Paris for 5 nights. I prefer a deluxe room and would like to add breakfast and spa services. After that, I need to rent a car in Paris for 7 days. I prefer a SUV and I will pick it up from the airport. Then, I need to book another hotel room in Rome for 3 nights. I prefer a suite and would like to add airport transfer service. Lastly, I need to rent a car in Rome for 5 days. I prefer a compact car and I will pick it up from the hotel.\"",
+      "ground_truth": [
+        {
+          "hotel.book": {
+            "location": [
+              "Paris"
+            ],
+            "roomType": [
+              "deluxe"
+            ],
+            "nights": [
+              5
+            ],
+            "additional_services": [
+              [
+                "breakfast",
+                "spa"
+              ],
+              [
+                "spa",
+                "breakfast"
+              ]
+            ]
+          }
+        },
+        {
+          "car.rental": {
+            "location": [
+              "Paris"
+            ],
+            "days": [
+              7
+            ],
+            "car_type": [
+              "SUV"
+            ],
+            "pick_up": [
+              "airport",
+              ""
+            ]
+          }
+        },
+        {
+          "hotel.book": {
+            "location": [
+              "Rome"
+            ],
+            "roomType": [
+              "suite"
+            ],
+            "nights": [
+              3
+            ],
+            "additional_services": [
+              [
+                "airport transfer service"
+              ],
+              [
+                "airport transfer"
+              ]
+            ]
+          }
+        },
+        {
+          "car.rental": {
+            "location": [
+              "Rome"
+            ],
+            "days": [
+              5
+            ],
+            "car_type": [
+              "compact"
+            ],
+            "pick_up": [
+              "hotel"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "hotel.book",
+            "args": {
+              "location": "Paris",
+              "roomType": "deluxe",
+              "nights": 5,
+              "additional_services": [
+                "breakfast",
+                "spa services"
+              ]
+            }
+          },
+          {
+            "action": "car.rental",
+            "args": {
+              "location": "Paris",
+              "days": 7,
+              "car_type": "SUV",
+              "pick_up": "airport"
+            }
+          },
+          {
+            "action": "hotel.book",
+            "args": {
+              "location": "Rome",
+              "roomType": "suite",
+              "nights": 3,
+              "additional_services": [
+                "airport transfer service"
+              ]
+            }
+          },
+          {
+            "action": "car.rental",
+            "args": {
+              "location": "Rome",
+              "days": 5,
+              "car_type": "compact",
+              "pick_up": "hotel"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'hotel.book'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_141",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you help me with a few things? First, I'm studying genetics and I came across a SNP mutation with the ID 'rs123456'. I'm not sure what type of mutation it is. Could you find out for me? The species is 'Homo sapiens'. Second, I'm planning to visit New York, NY next month (Feb) and I'm interested in attending an art exhibition, particularly one that displays sculptures. Could you find the most popular ones for me? I would prefer exhibitions with high user ratings. Lastly, I'm also studying cell biology and I need to know the list of proteins in the 'nucleus' cell compartment. Could you get that for me? And please include a brief description of each protein.\"",
+      "ground_truth": [
+        {
+          "mutation_type.find": {
+            "snp_id": [
+              "rs123456"
+            ],
+            "species": [
+              "Homo sapiens",
+              ""
+            ]
+          }
+        },
+        {
+          "find_exhibition": {
+            "location": [
+              "New York, NY"
+            ],
+            "art_form": [
+              "sculpture"
+            ],
+            "month": [
+              "February"
+            ],
+            "user_ratings": [
+              "high"
+            ]
+          }
+        },
+        {
+          "cellbio.get_proteins": {
+            "cell_compartment": [
+              "nucleus"
+            ],
+            "include_description": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "mutation_type.find",
+            "args": {
+              "snp_id": "rs123456",
+              "species": "Homo sapiens"
+            }
+          },
+          {
+            "action": "find_exhibition",
+            "args": {
+              "location": "New York, NY",
+              "art_form": "sculptures",
+              "month": "Feb",
+              "user_ratings": "high"
+            }
+          },
+          {
+            "action": "cellbio.get_proteins",
+            "args": {
+              "cell_compartment": "nucleus",
+              "include_description": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'find_exhibition'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_150",
+      "category": "parallel_multiple",
+      "user_message": "\"Could you help me with a few things? First, I'm interested in finding out all the movies that actor Leonardo DiCaprio starred in the year 2010, specifically in the Drama category. Second, I'd like to know about any lawsuits filed against the company 'Apple Inc.' in the location 'California' in the year 2015, and I'm particularly interested in civil cases. Lastly, I need to book a direct flight from 'New York' to 'London' on the date '2022-12-25', and I prefer the time to be around '10:00AM'. Can you assist me with these?\"",
+      "ground_truth": [
+        {
+          "imdb.find_movies_by_actor": {
+            "actor_name": [
+              "Leonardo DiCaprio"
+            ],
+            "year": [
+              2010
+            ],
+            "category": [
+              "Drama"
+            ]
+          }
+        },
+        {
+          "lawsuits_search": {
+            "company_name": [
+              "Apple Inc."
+            ],
+            "location": [
+              "California",
+              "CA"
+            ],
+            "year": [
+              2015
+            ],
+            "case_type": [
+              "civil",
+              ""
+            ]
+          }
+        },
+        {
+          "flight.book": {
+            "departure_location": [
+              "New York",
+              "NY"
+            ],
+            "destination_location": [
+              "London"
+            ],
+            "date": [
+              "2022-12-25",
+              "12/25/2022",
+              "Dec 25, 2022"
+            ],
+            "time": [
+              "10:00AM"
+            ],
+            "direct_flight": [
+              "",
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "imdb.find_movies_by_actor",
+            "args": {
+              "actor_name": "Leonardo DiCaprio",
+              "year": 2010,
+              "category": "Drama"
+            }
+          },
+          {
+            "action": "lawsuits_search",
+            "args": {
+              "company_name": "Apple Inc.",
+              "location": "California",
+              "year": 2015,
+              "case_type": "civil"
+            }
+          },
+          {
+            "action": "flight.book",
+            "args": {
+              "departure_location": "New York",
+              "destination_location": "London",
+              "date": "2022-12-25",
+              "time": "10:00",
+              "direct_flight": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'flight.book'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_151",
+      "category": "parallel_multiple",
+      "user_message": "\"Imagine you are planning a vacation to Paris, France. You want to stay at the 'Hotel Le Bristol Paris' in a suite room for 10 days starting from 12-01-2022. You also have a preference for a city view from your room. How would you book this hotel? After booking, you want to know how much 1000 US dollars would be in Euros. Can you find out the latest exchange rate? On your way to the hotel, you want to stop by a Safeway store in Palo Alto, CA to pick up some items. You need to order 2 bottles of water, 3 apples, and 1 loaf of bread. How would you place this order? Lastly, you are curious about the universe and want to know how long it would take for light to travel from Earth to Proxima Centauri, which is approximately 4.24 light years away, considering the speed of light in vacuum is 299792458 m/s. Can you calculate this?\"",
+      "ground_truth": [
+        {
+          "book_hotel": {
+            "hotel_name": [
+              "Hotel Le Bristol Paris"
+            ],
+            "location": [
+              "Paris, France",
+              "Paris"
+            ],
+            "room_type": [
+              "suite",
+              "Suite"
+            ],
+            "start_date": [
+              "12-01-2022",
+              "2022-12-01",
+              "Dec 1, 2022"
+            ],
+            "stay_duration": [
+              10
+            ],
+            "view": [
+              "city view",
+              "city"
+            ]
+          }
+        },
+        {
+          "latest_exchange_rate": {
+            "source_currency": [
+              "USD",
+              "US Dollars",
+              "US Dollar"
+            ],
+            "target_currency": [
+              "EUR",
+              "Euro"
+            ],
+            "amount": [
+              1000
+            ]
+          }
+        },
+        {
+          "safeway.order": {
+            "location": [
+              "Palo Alto, CA",
+              "Palo Alto",
+              "CA"
+            ],
+            "items": [
+              [
+                "water",
+                "apples",
+                "bread"
+              ]
+            ],
+            "quantity": [
+              [
+                2,
+                3,
+                1
+              ]
+            ]
+          }
+        },
+        {
+          "light_travel_time": {
+            "distance_in_light_years": [
+              4.24
+            ],
+            "speed_of_light": [
+              299792458,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "book_hotel",
+            "args": {
+              "hotel_name": "Hotel Le Bristol Paris",
+              "location": "Paris, France",
+              "room_type": "suite",
+              "start_date": "12-01-2022",
+              "stay_duration": 10,
+              "view": "city"
+            }
+          },
+          {
+            "action": "latest_exchange_rate",
+            "args": {
+              "source_currency": "USD",
+              "target_currency": "EUR",
+              "amount": 1000
+            }
+          },
+          {
+            "action": "safeway.order",
+            "args": {
+              "location": "Palo Alto, CA",
+              "items": [
+                "bottles of water",
+                "apples",
+                "loaf of bread"
+              ],
+              "quantity": [
+                2,
+                3,
+                1
+              ]
+            }
+          },
+          {
+            "action": "light_travel_time",
+            "args": {
+              "distance_in_light_years": 4.24,
+              "speed_of_light": 299792458
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'safeway.order'."
+      ]
+    }
+  ],
+  "llm": "qwen",
+  "bfcl_categories": [
+    "simple_python",
+    "multiple",
+    "parallel",
+    "parallel_multiple"
+  ],
+  "bfcl_per_category": 25,
+  "bfcl_skip_per_category": 0,
+  "bfcl_allow_empty_calls": false
+}

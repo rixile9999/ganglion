@@ -1,0 +1,3245 @@
+{
+  "total": 300,
+  "ast_match_rate": 0.83,
+  "syntax_valid_rate": 0.9633,
+  "latency_ms_mean": 1353.77,
+  "latency_ms_p50": 1146.8,
+  "latency_ms_p95": 2294.04,
+  "latency_ms_stddev": 494.69,
+  "input_tokens_total": 48753,
+  "output_tokens_total": 24727,
+  "dsl_chars_mean": 320.22,
+  "native_chars_mean": 720.01,
+  "by_category": {
+    "simple_python": {
+      "total": 75,
+      "ast_match_rate": 0.84,
+      "syntax_valid_rate": 0.9467
+    },
+    "multiple": {
+      "total": 75,
+      "ast_match_rate": 0.8533,
+      "syntax_valid_rate": 0.9733
+    },
+    "parallel": {
+      "total": 75,
+      "ast_match_rate": 0.8133,
+      "syntax_valid_rate": 0.96
+    },
+    "parallel_multiple": {
+      "total": 75,
+      "ast_match_rate": 0.8133,
+      "syntax_valid_rate": 0.9733
+    }
+  },
+  "error_type_counts": {
+    "value_error:string": 12,
+    "simple_function_checker:wrong_count": 4,
+    "type_error:nested": 1,
+    "multiple_function_checker:wrong_count": 3,
+    "value_error:others": 2,
+    "value_error:list/tuple": 1,
+    "parallel_function_checker_no_order:wrong_count": 11,
+    "parallel_function_checker_no_order:cannot_find_match": 17
+  },
+  "failures": [
+    {
+      "id": "simple_python_181",
+      "category": "simple_python",
+      "user_message": "Get details of a lawsuit with case number '123456-ABC' filed in Los Angeles court with verdict",
+      "ground_truth": [
+        {
+          "get_lawsuit_details": {
+            "case_number": [
+              "123456-ABC"
+            ],
+            "court_location": [
+              "Los Angeles"
+            ],
+            "with_verdict": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_lawsuit_details",
+            "args": {
+              "case_number": "123456-ABC",
+              "court_location": "Los Angeles court",
+              "with_verdict": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'court_location': 'Los Angeles court'. Expected one of ['Los Angeles']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_186",
+      "category": "simple_python",
+      "user_message": "What is the temperature in celsius and humidity level of Tokyo, Japan right now?",
+      "ground_truth": [
+        {
+          "current_weather_condition": {
+            "city": [
+              "Tokyo"
+            ],
+            "country": [
+              "Japan"
+            ],
+            "measurement": [
+              "c",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "current_weather_condition",
+            "args": {
+              "city": "Tokyo",
+              "country": "Japan",
+              "measurement": "celsius"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'measurement': 'celsius'. Expected one of ['c', '']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_194",
+      "category": "simple_python",
+      "user_message": "What are the top three plants suitable for a hill slope in terms of erosion prevention?",
+      "ground_truth": [
+        {
+          "get_plants_for_slope": {
+            "slope_type": [
+              "hill",
+              "steep",
+              "moderate"
+            ],
+            "num_results": [
+              3
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_plants_for_slope",
+            "args": {
+              "slope_type": "hill slope",
+              "num_results": 3
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'slope_type': 'hill slope'. Expected one of ['hill', 'steep', 'moderate']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_236",
+      "category": "simple_python",
+      "user_message": "Get start date on the American Civil War.",
+      "ground_truth": [
+        {
+          "us_history.get_event_info": {
+            "event_name": [
+              "American Civil War",
+              "Civil War"
+            ],
+            "specific_info": [
+              "Start Date"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported specific_info: Start Date",
+      "grade_error_type": "simple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "simple_python_285",
+      "category": "simple_python",
+      "user_message": "Find me a Rock concert in Chicago with ticket availability under $100.",
+      "ground_truth": [
+        {
+          "find_concert": {
+            "location": [
+              "Chicago, Illinois",
+              "Chicago, IL"
+            ],
+            "price": [
+              100
+            ],
+            "genre": [
+              "Rock"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported genre: Rock",
+      "grade_error_type": "simple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "simple_python_311",
+      "category": "simple_python",
+      "user_message": "Find me the detailed profile of basketball player Lebron James",
+      "ground_truth": [
+        {
+          "sports_db.find_athlete": {
+            "name": [
+              "Lebron James"
+            ],
+            "sport": [
+              "Basketball"
+            ],
+            "team": [
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported sport: Basketball",
+      "grade_error_type": "simple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "simple_python_346",
+      "category": "simple_python",
+      "user_message": "Get all collectable items from the game 'Animal Crossing: New Horizons' during the Spring season.",
+      "ground_truth": [
+        {
+          "get_collectables_in_season": {
+            "game_name": [
+              "Animal Crossing: New Horizons"
+            ],
+            "season": [
+              "Spring"
+            ],
+            "item_type": [
+              "",
+              "all"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_collectables_in_season",
+            "args": {
+              "game_name": "Animal Crossing: New Horizons",
+              "season": "Spring",
+              "item_type": "collectable"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'item_type': 'collectable'. Expected one of ['', 'all']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_35",
+      "category": "simple_python",
+      "user_message": "Find an all vegan restaurant in New York that opens until at least 11 PM.",
+      "ground_truth": [
+        {
+          "vegan_restaurant.find_nearby": {
+            "location": [
+              "New York, NY"
+            ],
+            "operating_hours": [
+              23
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "vegan_restaurant.find_nearby",
+            "args": {
+              "location": "New York",
+              "operating_hours": 23
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'location': 'New York'. Expected one of ['New York, NY']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_366",
+      "category": "simple_python",
+      "user_message": "How many teaspoons are in 2 tablespoons for measurement in my recipe?",
+      "ground_truth": [
+        {
+          "recipe.unit_conversion": {
+            "value": [
+              2
+            ],
+            "from_unit": [
+              "tablespoon",
+              "tbsp"
+            ],
+            "to_unit": [
+              "teaspoon",
+              "tsp"
+            ],
+            "precision": [
+              1,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "recipe.unit_conversion",
+            "args": {
+              "value": 2,
+              "from_unit": "tablespoons",
+              "to_unit": "teaspoons"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'from_unit': 'tablespoons'. Expected one of ['tablespoon', 'tbsp']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_387",
+      "category": "simple_python",
+      "user_message": "Book a hotel room at the Plaza Hotel in New York for 3 nights starting from 1st June 2022",
+      "ground_truth": [
+        {
+          "hotel_booking": {
+            "hotel_name": [
+              "Plaza Hotel"
+            ],
+            "location": [
+              "New York City, NY",
+              "New York, NY"
+            ],
+            "start_date": [
+              "2022-06-01",
+              "06/01/2022",
+              "Jun.1,2022"
+            ],
+            "end_date": [
+              "2022-06-04",
+              "06/04/2022",
+              "Jun.4,2022"
+            ],
+            "rooms": [
+              1,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "hotel_booking",
+            "args": {
+              "hotel_name": "Plaza Hotel",
+              "location": "New York",
+              "start_date": "2022-06-01",
+              "end_date": "2022-06-04"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'location': 'New York'. Expected one of ['New York City, NY', 'New York, NY']. Case insensitive."
+      ]
+    },
+    {
+      "id": "simple_python_396",
+      "category": "simple_python",
+      "user_message": "Find a hospital within 5 km radius around Denver, Colorado with pediatrics department.",
+      "ground_truth": [
+        {
+          "hospital.locate": {
+            "location": [
+              "Denver, Colorado",
+              "Denver, CO"
+            ],
+            "radius": [
+              5
+            ],
+            "department": [
+              "Pediatrics"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported department: Pediatrics",
+      "grade_error_type": "simple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "simple_python_87",
+      "category": "simple_python",
+      "user_message": "Sort the list [5, 3, 4, 1, 2] in ascending order.",
+      "ground_truth": [
+        {
+          "array_sort": {
+            "list": [
+              [
+                5.0,
+                3.0,
+                4.0,
+                1.0,
+                2.0
+              ]
+            ],
+            "order": [
+              "ascending"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "array_sort",
+            "args": {
+              "list": [
+                5,
+                3,
+                4,
+                1,
+                2
+              ],
+              "order": "ascending"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "type_error:nested",
+      "grade_errors": [
+        "Nested type checking failed for 'list'. Expected outer array with inner <class 'float'>. Value: [5, 3, 4, 1, 2]."
+      ]
+    },
+    {
+      "id": "multiple_168",
+      "category": "multiple",
+      "user_message": "Find the lyrics to the song 'Bohemian Rhapsody' by Queen.",
+      "ground_truth": [
+        {
+          "get_song_lyrics": {
+            "song_title": [
+              "Bohemian Rhapsody"
+            ],
+            "artist_name": [
+              "Queen"
+            ],
+            "lang": [
+              "English",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported lang: English",
+      "grade_error_type": "multiple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "multiple_169",
+      "category": "multiple",
+      "user_message": "What is the musical scale associated with C sharp major?",
+      "ground_truth": [
+        {
+          "musical_scale": {
+            "key": [
+              "C#",
+              "C sharp"
+            ],
+            "scale_type": [
+              "major",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "musical_scale",
+            "args": {
+              "key": "C sharp major"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'key': 'C sharp major'. Expected one of ['C#', 'C sharp']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_189",
+      "category": "multiple",
+      "user_message": "Convert time 3pm from New York time zone to London time zone.",
+      "ground_truth": [
+        {
+          "timezone.convert": {
+            "time": [
+              "3pm"
+            ],
+            "from_timezone": [
+              "America/New_York",
+              "New York",
+              "New York, NY",
+              "NY",
+              "NYC",
+              "Eastern Standard Time",
+              "EST"
+            ],
+            "to_timezone": [
+              "Europe/London",
+              "London",
+              "British Summer Time",
+              "BST",
+              "Greenwich Mean Time",
+              "GMT"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "timezone.convert",
+            "args": {
+              "time": "15:00",
+              "from_timezone": "America/New_York",
+              "to_timezone": "Europe/London"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'time': '15:00'. Expected one of ['3pm']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_29",
+      "category": "multiple",
+      "user_message": "Find the intersection points of the functions y=3x+2 and y=2x+3.",
+      "ground_truth": [
+        {
+          "functions.intersect": {
+            "function1": [
+              "3x + 2",
+              "lambda x: 3x + 2"
+            ],
+            "function2": [
+              "2x + 3",
+              "lambda x: 2x + 3"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: intersect",
+      "grade_error_type": "multiple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "multiple_53",
+      "category": "multiple",
+      "user_message": "Predict the house prices for next 5 years based on interest rates and unemployment rates.",
+      "ground_truth": [
+        {
+          "linear_regression": {
+            "independent_var": [
+              [
+                "interest rates",
+                "unemployment rates"
+              ],
+              [
+                "interest_rate",
+                "unemployment_rate"
+              ],
+              [
+                "interest rate",
+                "unemployment rate"
+              ]
+            ],
+            "dependent_var": [
+              "house_price",
+              "house price"
+            ],
+            "forecast_period": [
+              5
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "linear_regression",
+            "args": {
+              "independent_var": [
+                "interest_rates",
+                "unemployment_rates"
+              ],
+              "dependent_var": "house_prices",
+              "forecast_period": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'dependent_var': 'house_prices'. Expected one of ['house_price', 'house price']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_57",
+      "category": "multiple",
+      "user_message": "Can you please calculate the compound interest for a principle of $1000, annual rate of 5% over 10 years with 4 compound per year.",
+      "ground_truth": [
+        {
+          "financial.compound_interest": {
+            "principle": [
+              1000
+            ],
+            "rate": [
+              0.05
+            ],
+            "time": [
+              10
+            ],
+            "n": [
+              4
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "financial.compound_interest",
+            "args": {
+              "principle": 1000,
+              "rate": 5,
+              "time": 10,
+              "n": 4
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'rate': 5.0. Expected one of [0.05]."
+      ]
+    },
+    {
+      "id": "multiple_7",
+      "category": "multiple",
+      "user_message": "How to assess the population growth in deer and their impact on woodland in Washington state over the past decade?",
+      "ground_truth": [
+        {
+          "wildlife_population.assess_growth": {
+            "species": [
+              "deer",
+              "Deer"
+            ],
+            "location": [
+              "Washington state",
+              "WA",
+              "Washington"
+            ],
+            "duration": [
+              10
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "wildlife_population.assess_growth",
+            "args": {
+              "species": "deer",
+              "location": "Washington state",
+              "duration": 10
+            }
+          },
+          {
+            "action": "ecological_impact.analyze",
+            "args": {
+              "species": "deer",
+              "ecosystem": "woodland",
+              "location": "Washington state",
+              "timeframe": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "multiple_function_checker:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "multiple_75",
+      "category": "multiple",
+      "user_message": "Which paint color is currently most popular for living rooms?",
+      "ground_truth": [
+        {
+          "paint_color.trends": {
+            "room": [
+              "living room",
+              "Living room"
+            ],
+            "period": [
+              "",
+              "Daily"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "paint_color.trends",
+            "args": {
+              "room": "living rooms"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'room': 'living rooms'. Expected one of ['living room', 'Living room']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_77",
+      "category": "multiple",
+      "user_message": "Search for famous contemporary sculptures in New York.",
+      "ground_truth": [
+        {
+          "artwork_search.find": {
+            "type": [
+              "sculpture"
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "New York City",
+              "NYC"
+            ],
+            "era": [
+              "contemporary",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "artwork_search.find",
+            "args": {
+              "type": "sculptures",
+              "location": "New York",
+              "era": "contemporary"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:string",
+      "grade_errors": [
+        "Invalid value for parameter 'type': 'sculptures'. Expected one of ['sculpture']. Case insensitive."
+      ]
+    },
+    {
+      "id": "multiple_91",
+      "category": "multiple",
+      "user_message": "Can I find a good cooking recipe for apple pie using less than 5 ingredients?",
+      "ground_truth": [
+        {
+          "recipe.find": {
+            "mainIngredient": [
+              "apple pie",
+              "apple"
+            ],
+            "ingredientLimit": [
+              4
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "recipe.find",
+            "args": {
+              "mainIngredient": "apple",
+              "ingredientLimit": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:others",
+      "grade_errors": [
+        "Invalid value for parameter 'ingredientLimit': 5. Expected one of [4]."
+      ]
+    },
+    {
+      "id": "multiple_92",
+      "category": "multiple",
+      "user_message": "Get me a list of available vegetarian and gluten-free foods at the Walmart near Denver.",
+      "ground_truth": [
+        {
+          "walmart.vegan_products": {
+            "location": [
+              "Denver, CO",
+              "Denver"
+            ],
+            "categories": [
+              [
+                "vegan",
+                "gluten-free"
+              ],
+              [
+                "gluten-free",
+                "vegan"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "walmart.vegan_products",
+            "args": {
+              "location": "Denver",
+              "categories": [
+                "gluten-free"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "value_error:list/tuple",
+      "grade_errors": [
+        "Invalid value for parameter 'categories': ['gluten-free']. Expected one of [['vegan', 'gluten-free'], ['gluten-free', 'vegan']]."
+      ]
+    },
+    {
+      "id": "parallel_180",
+      "category": "parallel",
+      "user_message": "What were the 'Open', 'Close', 'High', and 'Low' stock prices for Microsoft and Apple over the past 30 days?",
+      "ground_truth": [
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Open",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Close",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "High",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Low",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Open",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Close",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "High",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Low",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "stock_price",
+            "args": {
+              "company": "Microsoft",
+              "days": 30,
+              "data_type": "OHLC"
+            }
+          },
+          {
+            "action": "stock_price",
+            "args": {
+              "company": "Apple",
+              "days": 30,
+              "data_type": "OHLC"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_181",
+      "category": "parallel",
+      "user_message": "Can you use the get_stock_prices function to retrieve the stock prices for Apple, Microsoft, Amazon, and Tesla over the duration of 1 week, 2 weeks, 3 weeks, and 1 month respectively?",
+      "ground_truth": [
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Apple"
+              ]
+            ],
+            "duration": [
+              "1 week"
+            ]
+          }
+        },
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Microsoft"
+              ]
+            ],
+            "duration": [
+              "2 weeks"
+            ]
+          }
+        },
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Amazon"
+              ]
+            ],
+            "duration": [
+              "3 weeks"
+            ]
+          }
+        },
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Tesla"
+              ]
+            ],
+            "duration": [
+              "1 month"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_stock_prices",
+            "args": {
+              "companies": [
+                "Apple",
+                "Microsoft",
+                "Amazon",
+                "Tesla"
+              ],
+              "duration": "1 week"
+            }
+          },
+          {
+            "action": "get_stock_prices",
+            "args": {
+              "companies": [
+                "Apple",
+                "Microsoft",
+                "Amazon",
+                "Tesla"
+              ],
+              "duration": "2 weeks"
+            }
+          },
+          {
+            "action": "get_stock_prices",
+            "args": {
+              "companies": [
+                "Apple",
+                "Microsoft",
+                "Amazon",
+                "Tesla"
+              ],
+              "duration": "3 weeks"
+            }
+          },
+          {
+            "action": "get_stock_prices",
+            "args": {
+              "companies": [
+                "Apple",
+                "Microsoft",
+                "Amazon",
+                "Tesla"
+              ],
+              "duration": "1 month"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'get_stock_prices'."
+      ]
+    },
+    {
+      "id": "parallel_182",
+      "category": "parallel",
+      "user_message": "\"John is planning to invest in a mutual fund. He is considering two scenarios. In the first scenario, he will make an initial investment of $5000 with an annual rate of return of 7% and he will not make any additional contributions. In the second scenario, he will make an initial investment of $3000 with an annual rate of return of 6% and he will make additional regular contributions of $200 every year. He wants to compare the future value of his investment after 10 years in both scenarios. Can you help him calculate the future value of his investment in both scenarios?\"",
+      "ground_truth": [
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              5000
+            ],
+            "rate_of_return": [
+              0.07
+            ],
+            "years": [
+              10
+            ],
+            "contribution": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              3000
+            ],
+            "rate_of_return": [
+              0.06
+            ],
+            "years": [
+              10
+            ],
+            "contribution": [
+              200
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "finance.calculate_future_value",
+            "args": {
+              "initial_investment": 5000,
+              "rate_of_return": 7,
+              "years": 10
+            }
+          },
+          {
+            "action": "finance.calculate_future_value",
+            "args": {
+              "initial_investment": 3000,
+              "rate_of_return": 6,
+              "years": 10,
+              "contribution": 200
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'finance.calculate_future_value'."
+      ]
+    },
+    {
+      "id": "parallel_183",
+      "category": "parallel",
+      "user_message": "\"Imagine you are a drone operator. You are currently operating a drone that is at a point (5, 7) in the sky. You are asked to move the drone to a new point (10, 15). After reaching the new point, you are again asked to move the drone to another point (20, 25). Can you calculate the total distance the drone has traveled using the Euclidean norm method?\"",
+      "ground_truth": [
+        {
+          "math.hypot": {
+            "x": [
+              5
+            ],
+            "y": [
+              7
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "math.hypot": {
+            "x": [
+              10
+            ],
+            "y": [
+              15
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "math.hypot": {
+            "x": [
+              20
+            ],
+            "y": [
+              25
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "math.hypot",
+            "args": {
+              "x": 5,
+              "y": 8
+            }
+          },
+          {
+            "action": "math.hypot",
+            "args": {
+              "x": 10,
+              "y": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_185",
+      "category": "parallel",
+      "user_message": "Can you estimate the population of Bengal Tigers in India for the year 2021, compare it with the estimated population of African Elephants in Kenya for the same year, and then estimate the population of both these species in their respective countries for year 2023?",
+      "ground_truth": [
+        {
+          "estimate_population": {
+            "species": [
+              "Bengal Tigers",
+              "Bengal Tiger"
+            ],
+            "country": [
+              "India"
+            ],
+            "year": [
+              2021
+            ]
+          }
+        },
+        {
+          "estimate_population": {
+            "species": [
+              "African Elephants"
+            ],
+            "country": [
+              "Kenya"
+            ],
+            "year": [
+              2021
+            ]
+          }
+        },
+        {
+          "estimate_population": {
+            "species": [
+              "Bengal Tigers",
+              "Bengal Tiger"
+            ],
+            "country": [
+              "India"
+            ],
+            "year": [
+              ""
+            ]
+          }
+        },
+        {
+          "estimate_population": {
+            "species": [
+              "African Elephants"
+            ],
+            "country": [
+              "Kenya"
+            ],
+            "year": [
+              2023
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "estimate_population",
+            "args": {
+              "species": "Bengal Tiger",
+              "country": "India",
+              "year": 2021
+            }
+          },
+          {
+            "action": "estimate_population",
+            "args": {
+              "species": "African Elephant",
+              "country": "Kenya",
+              "year": 2021
+            }
+          },
+          {
+            "action": "estimate_population",
+            "args": {
+              "species": "Bengal Tiger",
+              "country": "India",
+              "year": 2023
+            }
+          },
+          {
+            "action": "estimate_population",
+            "args": {
+              "species": "African Elephant",
+              "country": "Kenya",
+              "year": 2023
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'estimate_population'."
+      ]
+    },
+    {
+      "id": "parallel_190",
+      "category": "parallel",
+      "user_message": "What is the shortest driving distance from New York City to Los Angeles, and then from Los Angeles to Miami, considering both the shortest and scenic route preferences?",
+      "ground_truth": [
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "New York City",
+              "NYC"
+            ],
+            "end_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "route_preference": [
+              "Shortest"
+            ]
+          }
+        },
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "route_preference": [
+              "Shortest"
+            ]
+          }
+        },
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "New York City",
+              "NYC"
+            ],
+            "end_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "route_preference": [
+              "Scenic"
+            ]
+          }
+        },
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "route_preference": [
+              "Scenic"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported route_preference: Shortest",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_26",
+      "category": "parallel",
+      "user_message": "Find details of lawsuits with case numbers '67813', '71249' filed in the New York District court for type 'Civil' and 'Criminal' cases.",
+      "ground_truth": [
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "67813"
+              ]
+            ],
+            "case_type": [
+              "Civil",
+              ""
+            ]
+          }
+        },
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "71249"
+              ]
+            ],
+            "case_type": [
+              "Criminal"
+            ]
+          }
+        },
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "67813"
+              ]
+            ],
+            "case_type": [
+              "Criminal"
+            ]
+          }
+        },
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "71249"
+              ]
+            ],
+            "case_type": [
+              "Civil",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported case_type: Civil",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_29",
+      "category": "parallel",
+      "user_message": "Find out how much waste a family of four generates in Los Angeles, assuming two children and two adults. Also, calculate waste production for a bachelor in New York.",
+      "ground_truth": [
+        {
+          "waste_calculation.calculate": {
+            "population": [
+              {
+                "adults": [
+                  2
+                ],
+                "children": [
+                  2
+                ],
+                "singles": [
+                  0
+                ]
+              }
+            ],
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ]
+          }
+        },
+        {
+          "waste_calculation.calculate": {
+            "population": [
+              {
+                "adults": [
+                  0
+                ],
+                "children": [
+                  0
+                ],
+                "singles": [
+                  1
+                ]
+              }
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "NY",
+              "New York City",
+              "NYC"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: population.singles is required",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_39",
+      "category": "parallel",
+      "user_message": "Find opening hours and ticket prices for adults and children for the National Museum in Washington D.C. and the Louvre Museum in Paris.",
+      "ground_truth": [
+        {
+          "museum_info.get_info": {
+            "location": [
+              "Washington D.C.",
+              "Washington DC"
+            ],
+            "details": [
+              [
+                "Opening hours",
+                "Adult tickets",
+                "Child tickets"
+              ],
+              [
+                "Opening hours",
+                "Child tickets",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Opening hours",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Adult tickets",
+                "Opening hours"
+              ],
+              [
+                "Adult tickets",
+                "Opening hours",
+                "Child tickets"
+              ],
+              [
+                "Adult tickets",
+                "Child tickets",
+                "Opening hours"
+              ]
+            ]
+          }
+        },
+        {
+          "museum_info.get_info": {
+            "location": [
+              "Paris"
+            ],
+            "details": [
+              [
+                "Opening hours",
+                "Adult tickets",
+                "Child tickets"
+              ],
+              [
+                "Opening hours",
+                "Child tickets",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Opening hours",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Adult tickets",
+                "Opening hours"
+              ],
+              [
+                "Adult tickets",
+                "Opening hours",
+                "Child tickets"
+              ],
+              [
+                "Adult tickets",
+                "Child tickets",
+                "Opening hours"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "museum_info.get_info",
+            "args": {
+              "location": "National Museum in Washington D.C.",
+              "details": [
+                "Opening hours",
+                "Adult tickets",
+                "Child tickets"
+              ]
+            }
+          },
+          {
+            "action": "museum_info.get_info",
+            "args": {
+              "location": "Louvre Museum in Paris",
+              "details": [
+                "Opening hours",
+                "Adult tickets",
+                "Child tickets"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'museum_info.get_info'."
+      ]
+    },
+    {
+      "id": "parallel_4",
+      "category": "parallel",
+      "user_message": "Calculate the body mass index for a person who is 6 feet tall and weighs 80 kg, also for a person who is 5.6 feet and weighs 60 kg.",
+      "ground_truth": [
+        {
+          "calculate_bmi": {
+            "height": [
+              6.0
+            ],
+            "weight": [
+              80
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "height": [
+              5.6
+            ],
+            "weight": [
+              60
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_bmi",
+            "args": {
+              "height": 1.8288,
+              "weight": 80
+            }
+          },
+          {
+            "action": "calculate_bmi",
+            "args": {
+              "height": 1.70688,
+              "weight": 60
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'calculate_bmi'."
+      ]
+    },
+    {
+      "id": "parallel_68",
+      "category": "parallel",
+      "user_message": "\"John is working on a project where he needs to calculate the area of two right-angled triangles. The first triangle has a base of 12 meters and a height of 15 meters. The second triangle has a base of 18 meters and a height of 24 meters. He wants to know the total area of these two triangles in square meters. Can you help him calculate this?\"",
+      "ground_truth": [
+        {
+          "calculate_area": {
+            "base": [
+              12
+            ],
+            "height": [
+              15
+            ],
+            "unit": [
+              "m",
+              "meters",
+              "meter"
+            ]
+          }
+        },
+        {
+          "calculate_area": {
+            "base": [
+              18
+            ],
+            "height": [
+              24
+            ],
+            "unit": [
+              "m",
+              "meters",
+              "meter"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_area",
+            "args": {
+              "base": 12,
+              "height": 15,
+              "unit": "square meters"
+            }
+          },
+          {
+            "action": "calculate_area",
+            "args": {
+              "base": 18,
+              "height": 24,
+              "unit": "square meters"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'calculate_area'."
+      ]
+    },
+    {
+      "id": "parallel_71",
+      "category": "parallel",
+      "user_message": "\"Could you calculate the derivative of the polynomial function '3x^3 - 2x^2 + 5x - 7' and then evaluate this derivative at x=4? After that, could you also calculate the derivative of the resulting function and evaluate it at x=2?\"",
+      "ground_truth": [
+        {
+          "calculate_derivative": {
+            "function": [
+              "3x**3 - 2x**2 + 5x - 7",
+              "lambda x: 3x**3 - 2x**2 + 5x - 7"
+            ],
+            "x_value": [
+              4
+            ]
+          }
+        },
+        {
+          "calculate_derivative": {
+            "function": [
+              "9x**2 - 4x + 5",
+              "lambda x: 9x**2 - 4x + 5"
+            ],
+            "x_value": [
+              2
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_derivative",
+            "args": {
+              "function": "3x^3 - 2x^2 + 5x - 7"
+            }
+          },
+          {
+            "action": "calculate_derivative",
+            "args": {
+              "function": "9x^2 - 4x + 5",
+              "x_value": 4
+            }
+          },
+          {
+            "action": "calculate_derivative",
+            "args": {
+              "function": "18x - 4"
+            }
+          },
+          {
+            "action": "calculate_derivative",
+            "args": {
+              "function": "18",
+              "x_value": 2
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_74",
+      "category": "parallel",
+      "user_message": "What are the prime factors of the number 4567 and 7890, and can you provide these in a formatted string as well as an array?",
+      "ground_truth": [
+        {
+          "get_prime_factors": {
+            "number": [
+              4567
+            ],
+            "formatted": [
+              true
+            ]
+          }
+        },
+        {
+          "get_prime_factors": {
+            "number": [
+              4567
+            ],
+            "formatted": [
+              false
+            ]
+          }
+        },
+        {
+          "get_prime_factors": {
+            "number": [
+              7890
+            ],
+            "formatted": [
+              true
+            ]
+          }
+        },
+        {
+          "get_prime_factors": {
+            "number": [
+              7890
+            ],
+            "formatted": [
+              false
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_prime_factors",
+            "args": {
+              "number": 4567,
+              "formatted": true
+            }
+          },
+          {
+            "action": "get_prime_factors",
+            "args": {
+              "number": 7890,
+              "formatted": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_93",
+      "category": "parallel",
+      "user_message": "What would be the estimated travel time if I start my journey from New York, make stops at Philadelphia, Washington D.C., and Atlanta, and finally reach Miami? Also, what if I skip the stop at Atlanta and directly go to Miami from Washington D.C.? And lastly, what if I start from Philadelphia instead of New York, stop at Washington D.C., and then reach Miami?",
+      "ground_truth": [
+        {
+          "route.estimate_time": {
+            "start_location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ],
+              [
+                "Atlanta",
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Atlanta",
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Atlanta",
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "Atlanta"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "Atlanta"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "Atlanta"
+              ]
+            ]
+          }
+        },
+        {
+          "route.estimate_time": {
+            "start_location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Washington D.C."
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "New York"
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "NYC"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "New York"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "NYC"
+              ]
+            ]
+          }
+        },
+        {
+          "route.estimate_time": {
+            "start_location": [
+              "Philadelphia"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Washington D.C."
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "route.estimate_time",
+            "args": {
+              "start_location": "New York",
+              "end_location": "Miami",
+              "stops": [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ]
+            }
+          },
+          {
+            "action": "route.estimate_time",
+            "args": {
+              "start_location": "Washington D.C.",
+              "end_location": "Miami",
+              "stops": []
+            }
+          },
+          {
+            "action": "route.estimate_time",
+            "args": {
+              "start_location": "Philadelphia",
+              "end_location": "Miami",
+              "stops": [
+                "Washington D.C."
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'route.estimate_time'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_163",
+      "category": "parallel_multiple",
+      "user_message": "\"John is planning to invest in a mutual fund. He has $5000 to start with and the fund he is interested in has an annual yield rate of 7%. He plans to keep his money in the fund for 10 years. After 10 years, he wants to use part of his investment returns to build a circular garden in his backyard. The radius of the garden will be 5 meters. Can you help him calculate how much money he will have in his mutual fund after 10 years and what will be the area of his circular garden?\"",
+      "ground_truth": [
+        {
+          "geometry.calculate_area_circle": {
+            "radius": [
+              5
+            ],
+            "unit": [
+              "",
+              "meters",
+              "m",
+              "centimeters",
+              "cm"
+            ]
+          }
+        },
+        {
+          "calculate_mutual_fund_balance": {
+            "investment_amount": [
+              5000
+            ],
+            "annual_yield": [
+              0.07
+            ],
+            "years": [
+              10
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_mutual_fund_balance",
+            "args": {
+              "investment_amount": 5000,
+              "annual_yield": 7.0,
+              "years": 10
+            }
+          },
+          {
+            "action": "geometry.calculate_area_circle",
+            "args": {
+              "radius": 5,
+              "unit": "meters"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'calculate_mutual_fund_balance'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_166",
+      "category": "parallel_multiple",
+      "user_message": "\"Could you please help me with the following tasks? First, I would like to know the elevation and area of the Yellowstone National Park. Second, I am considering investing $5000 in a stock that has an expected annual growth rate of 7%. I plan to hold the stock for 10 years and I would like to know the projected return of this investment, taking into account potential dividends. Third, I need to fetch detailed information about a legal case with the ID 'LC12345'. Lastly, I would also like to know the location and the year when the Yosemite National Park was established.\"",
+      "ground_truth": [
+        {
+          "park_information": {
+            "park_name": [
+              "Yellowstone National Park"
+            ],
+            "information": [
+              [
+                "Elevation",
+                "Area"
+              ]
+            ]
+          }
+        },
+        {
+          "calculate_stock_return": {
+            "investment_amount": [
+              5000
+            ],
+            "annual_growth_rate": [
+              0.07
+            ],
+            "holding_period": [
+              10
+            ],
+            "dividends": [
+              true
+            ]
+          }
+        },
+        {
+          "legal_case.fetch": {
+            "case_id": [
+              "LC12345"
+            ],
+            "details": [
+              true
+            ]
+          }
+        },
+        {
+          "park_information": {
+            "park_name": [
+              "Yosemite National Park"
+            ],
+            "information": [
+              [
+                "Location",
+                "Established Year"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "park_information",
+            "args": {
+              "park_name": "Yellowstone National Park",
+              "information": [
+                "Elevation",
+                "Area"
+              ]
+            }
+          },
+          {
+            "action": "calculate_stock_return",
+            "args": {
+              "investment_amount": 5000,
+              "annual_growth_rate": 7.0,
+              "holding_period": 10,
+              "dividends": true
+            }
+          },
+          {
+            "action": "legal_case.fetch",
+            "args": {
+              "case_id": "LC12345",
+              "details": true
+            }
+          },
+          {
+            "action": "park_information",
+            "args": {
+              "park_name": "Yosemite National Park",
+              "information": [
+                "Location",
+                "Established Year"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'calculate_stock_return'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_17",
+      "category": "parallel_multiple",
+      "user_message": "How many steps do I need to walk in order to lose 500 calories and how much water do I need to intake today if I exercise for 2 hours?",
+      "ground_truth": [
+        {
+          "steps_calorie_calculation": {
+            "calorie": [
+              500.0
+            ]
+          }
+        },
+        {
+          "hydration_calculator": {
+            "exercise_time": [
+              2.0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "steps_calorie_calculation",
+            "args": {
+              "calorie": 500
+            }
+          },
+          {
+            "action": "hydration_calculator",
+            "args": {
+              "exercise_time": 120
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'hydration_calculator'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_198",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you first find me a vegan, main course recipe that can be prepared within 30 minutes? After that, could you please retrieve the details of the scientific discovery of Gravity using the most accepted method? Once done, I would also like to know about the discovery of the Higgs Boson particle using the same method. Lastly, could you find me a gluten-free dessert recipe that can be prepared within 45 minutes?\"",
+      "ground_truth": [
+        {
+          "find_recipe": {
+            "dietary_restrictions": [
+              "vegan"
+            ],
+            "recipe_type": [
+              "main course"
+            ],
+            "time": [
+              30
+            ]
+          }
+        },
+        {
+          "science_history.get_discovery_details": {
+            "discovery": [
+              "Gravity"
+            ],
+            "method_used": [
+              "default",
+              ""
+            ]
+          }
+        },
+        {
+          "science_history.get_discovery_details": {
+            "discovery": [
+              "Higgs Boson",
+              "Higgs Boson particle"
+            ],
+            "method_used": [
+              "default",
+              ""
+            ]
+          }
+        },
+        {
+          "find_recipe": {
+            "dietary_restrictions": [
+              "gluten free"
+            ],
+            "recipe_type": [
+              "dessert"
+            ],
+            "time": [
+              45
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "find_recipe",
+            "args": {
+              "dietary_restrictions": "vegan",
+              "recipe_type": "main course",
+              "time": 30
+            }
+          },
+          {
+            "action": "science_history.get_discovery_details",
+            "args": {
+              "discovery": "Gravity",
+              "method_used": "most accepted method"
+            }
+          },
+          {
+            "action": "science_history.get_discovery_details",
+            "args": {
+              "discovery": "Higgs Boson particle",
+              "method_used": "most accepted method"
+            }
+          },
+          {
+            "action": "find_recipe",
+            "args": {
+              "dietary_restrictions": "gluten-free",
+              "recipe_type": "dessert",
+              "time": 45
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'science_history.get_discovery_details'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_199",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you help me with two things? First, I am currently in New York and it's 2pm here. I have a meeting scheduled with a client in London and another one in Tokyo. I need to know what time it will be in both these cities when it's 2pm in New York. Second, I am considering switching to solar energy for my home in California and I want to understand the potential greenhouse gas emissions I could save. I plan to use it for 12 months. Can you calculate the emission savings for me?\"",
+      "ground_truth": [
+        {
+          "timezone.convert": {
+            "time": [
+              "2pm"
+            ],
+            "from_timezone": [
+              "New York",
+              "NY",
+              "America/New_York"
+            ],
+            "to_timezone": [
+              "London",
+              "Europe/London"
+            ]
+          }
+        },
+        {
+          "timezone.convert": {
+            "time": [
+              "2pm"
+            ],
+            "from_timezone": [
+              "New York",
+              "NY",
+              "America/New_York"
+            ],
+            "to_timezone": [
+              "Tokyo",
+              "Asia/Tokyo"
+            ]
+          }
+        },
+        {
+          "calculate_emission_savings": {
+            "energy_type": [
+              "solar"
+            ],
+            "usage_duration": [
+              12
+            ],
+            "region": [
+              "California",
+              "CA"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "timezone.convert",
+            "args": {
+              "time": "14:00",
+              "from_timezone": "America/New_York",
+              "to_timezone": "Europe/London"
+            }
+          },
+          {
+            "action": "timezone.convert",
+            "args": {
+              "time": "14:00",
+              "from_timezone": "America/New_York",
+              "to_timezone": "Asia/Tokyo"
+            }
+          },
+          {
+            "action": "calculate_emission_savings",
+            "args": {
+              "energy_type": "solar",
+              "usage_duration": 12,
+              "region": "California"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'timezone.convert'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_21",
+      "category": "parallel_multiple",
+      "user_message": "Use the data from dataset.csv file and fit a linear regression model to predict future sales by setting x=data['sales'] and y=data['future_sales']. Additionally, calculate and return the residuals.",
+      "ground_truth": [
+        {
+          "data_loading": {
+            "file_path": [
+              "dataset.csv"
+            ],
+            "delimiter": [
+              ",",
+              ""
+            ]
+          }
+        },
+        {
+          "linear_regression_fit": {
+            "x": [
+              "data['sales']"
+            ],
+            "y": [
+              "data['future_sales']"
+            ],
+            "return_residuals": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: linear_regression_fit.x is required",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_29",
+      "category": "parallel_multiple",
+      "user_message": "Find cases that pertain to 'Theft' from court record in 'New York' and from 'San Francisco', filed in year 2021, and display briefs of top 5 relevant cases.",
+      "ground_truth": [
+        {
+          "court_records.search_cases": {
+            "location": [
+              "New York"
+            ],
+            "query": [
+              "Theft"
+            ],
+            "year": [
+              2021
+            ],
+            "limit": [
+              5,
+              ""
+            ]
+          }
+        },
+        {
+          "court_records.search_cases": {
+            "location": [
+              "San Francisco"
+            ],
+            "query": [
+              "Theft"
+            ],
+            "year": [
+              2021
+            ],
+            "limit": [
+              5,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "court_records.search_cases",
+            "args": {
+              "location": "New York",
+              "query": "Theft",
+              "year": 2021,
+              "limit": 5
+            }
+          },
+          {
+            "action": "court_records.search_cases",
+            "args": {
+              "location": "San Francisco",
+              "query": "Theft",
+              "year": 2021,
+              "limit": 5
+            }
+          },
+          {
+            "action": "briefs.display_cases",
+            "args": {
+              "case_id": []
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_31",
+      "category": "parallel_multiple",
+      "user_message": "Find how many cases and the judge handling a specific lawsuit for Pacific Gas and Electric and Tesla Inc.",
+      "ground_truth": [
+        {
+          "lawsuit.fetch_details": {
+            "company_name": [
+              "Pacific Gas and Electric",
+              "PG&E"
+            ]
+          }
+        },
+        {
+          "lawsuit.judge": {
+            "company_name": [
+              "Pacific Gas and Electric",
+              "PG&E"
+            ],
+            "lawsuit_id": [
+              123,
+              ""
+            ]
+          }
+        },
+        {
+          "lawsuit.fetch_details": {
+            "company_name": [
+              "Tesla Inc.",
+              "Tesla"
+            ]
+          }
+        },
+        {
+          "lawsuit.judge": {
+            "company_name": [
+              "Tesla Inc.",
+              "Tesla"
+            ],
+            "lawsuit_id": [
+              123,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "lawsuit.fetch_details",
+            "args": {
+              "company_name": "Pacific Gas and Electric"
+            }
+          },
+          {
+            "action": "lawsuit.fetch_details",
+            "args": {
+              "company_name": "Tesla Inc."
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_55",
+      "category": "parallel_multiple",
+      "user_message": "I want a homemade healthy spaghetti recipe that is gluten free, how long will it take to prepare and cook, and what nutritional information could it provide me.",
+      "ground_truth": [
+        {
+          "recipe_search": {
+            "ingredient": [
+              "spaghetti"
+            ],
+            "dietary_requirements": [
+              [
+                "gluten_free"
+              ]
+            ],
+            "isHomemade": [
+              true
+            ]
+          }
+        },
+        {
+          "recipe_prep_time": {
+            "recipe": [
+              "spaghetti",
+              "homemade healthy spaghetti",
+              "Homemade healthy gluten free spaghetti",
+              "homemade_spaghetti"
+            ]
+          }
+        },
+        {
+          "recipe_nutrition_info": {
+            "recipe": [
+              "homemade_spaghetti",
+              "homemade healthy spaghetti",
+              "spaghetti",
+              "Homemade healthy gluten free spaghetti"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "recipe_search",
+            "args": {
+              "ingredient": "spaghetti",
+              "dietary_requirements": [
+                "gluten_free",
+                "vegetarian"
+              ],
+              "isHomemade": true
+            }
+          },
+          {
+            "action": "recipe_prep_time",
+            "args": {
+              "recipe": "homemade gluten free spaghetti"
+            }
+          },
+          {
+            "action": "recipe_nutrition_info",
+            "args": {
+              "recipe": "homemade gluten free spaghetti"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'recipe_search'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_67",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you help me with some math problems? First, I need to find the roots of a quadratic equation. The equation is 3x^2 + 4x - 7 = 0, where 3 is the coefficient of the second-degree term, 4 is the coefficient of the first-degree term, and -7 is the constant term. \n\nSecond, I have a cubic equation, 2x^3 - 5x^2 + 3x - 1 = 0. Here, 2 is the coefficient of the third-degree term, -5 is the coefficient of the second-degree term, 3 is the coefficient of the first-degree term, and -1 is the constant term. \n\nFinally, I have a polynomial equation of degree 4, which is 6x^4 - 3x^3 + 2x^2 - x + 1 = 0. The array of coefficients of the polynomial equation starting from the highest degree term is [6, -3, 2, -1, 1]. Can you calculate the roots for these equations?\"",
+      "ground_truth": [
+        {
+          "math_roots.quadratic": {
+            "a": [
+              3.0
+            ],
+            "b": [
+              4.0
+            ],
+            "c": [
+              -7.0
+            ]
+          }
+        },
+        {
+          "math.roots.cubic": {
+            "a": [
+              2.0
+            ],
+            "b": [
+              -5.0
+            ],
+            "c": [
+              3.0
+            ],
+            "d": [
+              -1.0
+            ]
+          }
+        },
+        {
+          "math.roots.polynomial": {
+            "coefficients": [
+              [
+                6.0,
+                -3.0,
+                2.0,
+                -1.0,
+                1.0
+              ]
+            ],
+            "degree": [
+              4.0,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "math_roots.quadratic",
+            "args": {
+              "a": 3,
+              "b": 4,
+              "c": -7
+            }
+          },
+          {
+            "action": "math.roots.cubic",
+            "args": {
+              "a": 2,
+              "b": -5,
+              "c": 3,
+              "d": -1
+            }
+          },
+          {
+            "action": "math.roots.polynomial",
+            "args": {
+              "coefficients": [
+                6,
+                -3,
+                2,
+                -1,
+                1
+              ],
+              "degree": 4
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'math.roots.polynomial'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_74",
+      "category": "parallel_multiple",
+      "user_message": "\"Can you provide me with the current statistics for the basketball player LeBron James, specifically his points, assists, rebounds, and minutes played? Then, can you also provide the current statistics for the Los Angeles Lakers, including their total points, total assists, total rebounds, and win rate? After that, could you give me the detailed statistical data from the game between the Los Angeles Lakers and the Golden State Warriors that occurred on January 18, 2021, including total points, total assists, total rebounds, and turnovers?\"",
+      "ground_truth": [
+        {
+          "basketball.player_stats.get": {
+            "player_name": [
+              "LeBron James"
+            ],
+            "stats_fields": [
+              [
+                "points",
+                "assists",
+                "rebounds",
+                "minutes"
+              ]
+            ]
+          }
+        },
+        {
+          "basketball.team_stats.get": {
+            "team_name": [
+              "Los Angeles Lakers"
+            ],
+            "stats_fields": [
+              [
+                "total points",
+                "total assists",
+                "total rebounds",
+                "win rate"
+              ]
+            ]
+          }
+        },
+        {
+          "basketball.game_stats.get": {
+            "team1": [
+              "Los Angeles Lakers"
+            ],
+            "team2": [
+              "Golden State Warriors"
+            ],
+            "date": [
+              "2021-01-18",
+              "01/18/2021",
+              "Jan 18, 2021",
+              "January 18, 2021"
+            ],
+            "stats_fields": [
+              [
+                "total points",
+                "total assists",
+                "total rebounds",
+                "turnovers"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "basketball.player_stats.get",
+            "args": {
+              "player_name": "LeBron James",
+              "stats_fields": [
+                "points",
+                "assists",
+                "rebounds",
+                "minutes_played"
+              ]
+            }
+          },
+          {
+            "action": "basketball.team_stats.get",
+            "args": {
+              "team_name": "Los Angeles Lakers",
+              "stats_fields": [
+                "total_points",
+                "total_assists",
+                "total_rebounds",
+                "win_rate"
+              ]
+            }
+          },
+          {
+            "action": "basketball.game_stats.get",
+            "args": {
+              "team1": "Los Angeles Lakers",
+              "team2": "Golden State Warriors",
+              "date": "2021-01-18",
+              "stats_fields": [
+                "total_points",
+                "total_assists",
+                "total_rebounds",
+                "turnovers"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'basketball.player_stats.get'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_91",
+      "category": "parallel_multiple",
+      "user_message": "\"Imagine you are a scientist studying the energy production of a certain type of bacteria. You have a sample of this bacteria that has consumed 5 moles of glucose (C6H12O6) and you know that the energy produced from glucose is typically 2800 kJ/mol. You also know that the bacteria's conversion efficiency, or the percentage of energy from glucose that is converted into biomass, is 10%. \n\nFirst, calculate the total energy produced by the bacteria from consuming the glucose. \n\nSecond, calculate the amount of biomass produced by the bacteria given the energy produced and the conversion efficiency. \n\nNow, imagine you are using this bacteria in a bioreactor to power a small machine. The machine needs to move a distance of 2 meters and you want to calculate the work done by the machine. \n\nThird, calculate the work done by the machine given the total energy produced by the bacteria and the distance the machine needs to move.\"",
+      "ground_truth": [
+        {
+          "biological.calc_energy": {
+            "mols": [
+              5.0
+            ],
+            "substance": [
+              "C6H12O6",
+              "glucose"
+            ],
+            "joules_per_mol": [
+              2800.0,
+              ""
+            ]
+          }
+        },
+        {
+          "biological.calc_biomass": {
+            "energy": [
+              14000.0
+            ],
+            "efficiency": [
+              0.1,
+              ""
+            ]
+          }
+        },
+        {
+          "physical.calc_work": {
+            "energy": [
+              1400.0
+            ],
+            "distance": [
+              2.0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "biological.calc_energy",
+            "args": {
+              "mols": 5,
+              "substance": "glucose",
+              "joules_per_mol": 2800000
+            }
+          },
+          {
+            "action": "biological.calc_biomass",
+            "args": {
+              "energy": 14000000,
+              "efficiency": 0.1
+            }
+          },
+          {
+            "action": "physical.calc_work",
+            "args": {
+              "energy": 14000000,
+              "distance": 2
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'biological.calc_energy'."
+      ]
+    },
+    {
+      "id": "parallel_multiple_94",
+      "category": "parallel_multiple",
+      "user_message": "\"Given the list of words ['apple', 'banana', 'cherry', 'date', 'elderberry'], can you first use the 'sort_list' function to sort this list in descending order? Then, using the 'filter_list' function, can you filter out the fruits that start with the letter 'b'? After that, consider the list of numbers [5, 10, 15, 20, 25]. Can you use the 'sum_elements' function to find the total sum of these numbers? Finally, use the 'sort_list' function again to sort the numbers [35, 10, 25, 5, 15] in ascending order?\"",
+      "ground_truth": [
+        {
+          "sort_list": {
+            "elements": [
+              [
+                "apple",
+                "banana",
+                "cherry",
+                "date",
+                "elderberry"
+              ],
+              [
+                "elderberry",
+                "cherry",
+                "banana",
+                "apple",
+                "date"
+              ]
+            ],
+            "order": [
+              "desc",
+              "descending"
+            ]
+          }
+        },
+        {
+          "filter_list": {
+            "elements": [
+              [
+                "apple",
+                "banana",
+                "cherry",
+                "date",
+                "elderberry"
+              ]
+            ],
+            "condition": [
+              "startswith(b)",
+              "startwith(b)"
+            ]
+          }
+        },
+        {
+          "sum_elements": {
+            "elements": [
+              [
+                5,
+                10,
+                15,
+                20,
+                25
+              ]
+            ]
+          }
+        },
+        {
+          "sort_list": {
+            "elements": [
+              [
+                35,
+                10,
+                25,
+                5,
+                15
+              ]
+            ],
+            "order": [
+              "asc",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: elements[0] must be integer",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_multiple_97",
+      "category": "parallel_multiple",
+      "user_message": "\"John has decided to invest his savings. He has $5000 that he wants to invest for a period of 5 years. He is considering two options. The first option is a simple interest scheme that offers an annual interest rate of 4%. The second option is a compound interest scheme that offers an annual interest rate of 3.5% and compounds interest annually. He also came across a third option where he can invest an initial amount of $3000 at an annual interest rate of 5% for 6 years with interest compounded twice a year. Can you help him calculate the returns for each of these options using the calc_Simple_Interest, calc_Compound_Interest, and future_value functions respectively?\"",
+      "ground_truth": [
+        {
+          "calc_Simple_Interest": {
+            "principle_amount": [
+              5000.0
+            ],
+            "duration": [
+              5.0
+            ],
+            "annual_rate": [
+              0.04
+            ]
+          }
+        },
+        {
+          "calc_Compound_Interest": {
+            "principle_amount": [
+              5000.0
+            ],
+            "duration": [
+              5.0
+            ],
+            "annual_rate": [
+              0.035
+            ],
+            "compound_freq": [
+              1,
+              ""
+            ]
+          }
+        },
+        {
+          "future_value": {
+            "initial_investment": [
+              3000.0
+            ],
+            "interest_rate": [
+              0.05
+            ],
+            "time": [
+              6
+            ],
+            "num_compoundings": [
+              2
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calc_Simple_Interest",
+            "args": {
+              "principle_amount": 5000,
+              "duration": 5,
+              "annual_rate": 4
+            }
+          },
+          {
+            "action": "calc_Compound_Interest",
+            "args": {
+              "principle_amount": 5000,
+              "duration": 5,
+              "annual_rate": 3.5,
+              "compound_freq": 1
+            }
+          },
+          {
+            "action": "future_value",
+            "args": {
+              "initial_investment": 3000,
+              "interest_rate": 5,
+              "time": 6,
+              "num_compoundings": 2
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:cannot_find_match",
+      "grade_errors": [
+        "No model output matches expected call for 'calc_Simple_Interest'."
+      ]
+    }
+  ],
+  "llm": "qwen",
+  "bfcl_categories": [
+    "simple_python",
+    "multiple",
+    "parallel",
+    "parallel_multiple"
+  ],
+  "bfcl_per_category": 75,
+  "bfcl_skip_per_category": 25,
+  "bfcl_allow_empty_calls": false
+}

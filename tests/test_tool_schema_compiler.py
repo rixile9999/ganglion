@@ -124,3 +124,15 @@ def test_compile_mcp_style_tool_schema() -> None:
     assert mapper.emit_tool_calls(
         {"calls": [{"action": "search_notes", "args": {"query": "paper", "limit": 5}}]}
     ) == [{"name": "search_notes", "arguments": {"query": "paper", "limit": 5}}]
+
+
+def test_compiler_can_enable_empty_call_plans() -> None:
+    mapper = compile_tool_calling_schema(
+        OPENAI_TOOLS,
+        name="timers",
+        allow_empty_calls=True,
+    )
+
+    assert mapper.parse_json_dsl({"calls": []}).calls == ()
+    assert mapper.emit_tool_calls({"calls": []}) == []
+    assert '{"calls":[]}' in mapper.render_json_dsl()

@@ -161,6 +161,14 @@ def main() -> None:
         default=None,
         help="Write per-case BFCL records as JSONL to this path.",
     )
+    parser.add_argument(
+        "--bfcl-allow-empty-calls",
+        action="store_true",
+        help=(
+            "Allow the BFCL DSL path to emit {\"calls\":[]} when no listed "
+            "tool is needed (M5 abstention/no-call support)."
+        ),
+    )
     args = parser.parse_args()
 
     repair = RepairConfig(
@@ -188,7 +196,12 @@ def main() -> None:
         def factory(catalog: Catalog) -> ModelClient:
             return build_client(args.llm, catalog, repair=repair)
 
-        results = run_bfcl(factory, cases, repeat=args.repeat)
+        results = run_bfcl(
+            factory,
+            cases,
+            repeat=args.repeat,
+            allow_empty_calls=args.bfcl_allow_empty_calls,
+        )
         if args.bfcl_output is not None:
             _write_bfcl_per_case(results, args.bfcl_output)
         summary = summarize_bfcl(results)
@@ -196,6 +209,7 @@ def main() -> None:
         summary["bfcl_categories"] = list(categories)
         summary["bfcl_per_category"] = args.bfcl_per_category
         summary["bfcl_skip_per_category"] = args.bfcl_skip_per_category
+        summary["bfcl_allow_empty_calls"] = args.bfcl_allow_empty_calls
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return
 

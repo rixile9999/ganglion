@@ -5,9 +5,8 @@ with a single shared `Catalog`. BFCL cases each ship their own tool list
 (`case.tools`), so we compile a fresh `Catalog` per case via
 `compile_tool_calling_schema` and hand it to a client factory.
 
-This module is the M1'-M4' measurement entry point. M5' (irrelevance /
-abstention) reuses the same scaffold but with abstention-aware catalogs and
-client adjustments; that work lands separately.
+This module is the M1'-M5' measurement entry point. M5' (irrelevance /
+abstention) enables abstention-aware catalogs with `allow_empty_calls`.
 """
 from __future__ import annotations
 
@@ -59,14 +58,22 @@ class BFCLCaseResult:
         return self.runs[0].plan
 
 
-def build_case_catalog(case: BFCLCase) -> Catalog:
+def build_case_catalog(
+    case: BFCLCase,
+    *,
+    allow_empty_calls: bool = False,
+) -> Catalog:
     """Compile a per-case `Catalog` from the BFCL tool list.
 
     `compile_tool_calling_schema` accepts a sequence of tool schemas and
     returns a `CompiledToolMapper`; we keep the underlying `Catalog` so the
     runner can call `render_json_dsl()` and `render_openai_tools()` directly.
     """
-    mapper = compile_tool_calling_schema(list(case.tools), name=f"bfcl_{case.id}")
+    mapper = compile_tool_calling_schema(
+        list(case.tools),
+        name=f"bfcl_{case.id}",
+        allow_empty_calls=allow_empty_calls,
+    )
     return mapper.catalog
 
 
@@ -75,11 +82,12 @@ def run_bfcl(
     cases: Sequence[BFCLCase],
     *,
     repeat: int = 1,
+    allow_empty_calls: bool = False,
 ) -> list[BFCLCaseResult]:
     """Run a sequence of BFCL cases with a fresh catalog + client per case."""
     results: list[BFCLCaseResult] = []
     for case in cases:
-        catalog = build_case_catalog(case)
+        catalog = build_case_catalog(case, allow_empty_calls=allow_empty_calls)
         dsl_chars = len(catalog.render_json_dsl())
         native_chars = len(json.dumps(catalog.render_openai_tools()))
         client = client_factory(catalog)

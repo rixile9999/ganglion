@@ -5,6 +5,7 @@ Reads the per-case JSONL files in runs/bfcl/ and produces:
     - M2': tool-count bin scaling (post-hoc on Phase D data)
     - M3': latency stats (Phase F repeats)
     - M4': repair on/off rescue rate (Phase G)
+    - M5': abstention/no-call support (M5)
 
 Run as:
     python runs/bfcl/aggregate.py [--out runs/bfcl/aggregated.json]
@@ -137,6 +138,15 @@ def m4_repair() -> dict[str, Any] | None:
     return out or None
 
 
+def m5_abstention() -> dict[str, Any] | None:
+    out: dict[str, Any] = {}
+    for label in ("irrelevance_dsl", "callable_dsl"):
+        path = RUN_DIR / f"phase_m5_{label}_summary.json"
+        if path.exists():
+            out[label] = json.loads(path.read_text())
+    return out or None
+
+
 def _p95(values: list[float]) -> float | None:
     if not values:
         return None
@@ -158,6 +168,7 @@ def main() -> None:
         "m2_prime": m2_bins(dsl_rows, native_rows),
         "m3_prime": m3_latency(),
         "m4_prime": m4_repair(),
+        "m5_prime": m5_abstention(),
     }
     args.out.write_text(json.dumps(aggregated, ensure_ascii=False, indent=2))
     print(f"wrote {args.out} (dsl={len(dsl_rows)} native={len(native_rows)})")

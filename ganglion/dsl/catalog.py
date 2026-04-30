@@ -29,6 +29,7 @@ class Catalog:
     tools: tuple[ToolSpec, ...]
     examples: tuple[tuple[str, str], ...] = ()
     extra_rules: tuple[str, ...] = ()
+    allow_empty_calls: bool = False
 
     def get_tool(self, name: str) -> ToolSpec | None:
         for tool in self.tools:
@@ -40,8 +41,10 @@ class Catalog:
         lines: list[str] = [
             "Return JSON only.",
             'JSON shape: {"calls":[{"action":"<action>","args":{...}}]}',
-            "Allowed actions:",
         ]
+        if self.allow_empty_calls:
+            lines.append('If no tool call is needed, return exactly {"calls":[]}.')
+        lines.append("Allowed actions:")
         for tool in self.tools:
             args_text = tool.dsl_args_override or _render_dsl_args(tool.args)
             lines.append(f"- {tool.name} args {args_text}")
@@ -70,6 +73,8 @@ class Catalog:
         if not isinstance(raw_calls, Sequence) or isinstance(raw_calls, (str, bytes)):
             raise DSLValidationError("'calls' must be an array")
         if not raw_calls:
+            if self.allow_empty_calls:
+                return ActionPlan(calls=())
             raise DSLValidationError("'calls' must not be empty")
         calls = tuple(self.validate_call(raw_call, depth=0) for raw_call in raw_calls)
         return ActionPlan(calls=calls)

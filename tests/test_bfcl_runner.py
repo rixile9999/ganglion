@@ -64,6 +64,13 @@ def test_build_case_catalog_compiles_per_case_tools() -> None:
     assert "calc" in catalog.render_json_dsl()
 
 
+def test_build_case_catalog_can_allow_empty_calls() -> None:
+    case = _case("0", None)
+    catalog = build_case_catalog(case, allow_empty_calls=True)
+    assert catalog.allow_empty_calls is True
+    assert catalog.validate({"calls": []}).calls == ()
+
+
 def test_run_bfcl_marks_correct_predictions_valid() -> None:
     case = _case("0", [{"calc": {"x": [5]}}])
     plan = ActionPlan(calls=(ToolCall("calc", {"x": 5}),))
@@ -134,6 +141,32 @@ def test_run_bfcl_irrelevance_passes_with_empty_plan() -> None:
     results = run_bfcl(lambda _catalog: client, [case])
     assert results[0].grade.valid
     assert results[0].case.category == "irrelevance"
+
+
+def test_run_bfcl_passes_allow_empty_calls_to_catalog() -> None:
+    case = _case("0", None)
+    seen: list[bool] = []
+
+    class _CatalogAwareClient:
+        def __init__(self, catalog: Catalog) -> None:
+            seen.append(catalog.allow_empty_calls)
+
+        def invoke(self, user_prompt: str) -> ModelResult:
+            return ModelResult(
+                plan=ActionPlan(calls=()),
+                raw=None,
+                latency_ms=10.0,
+                input_tokens=5,
+                output_tokens=3,
+            )
+
+    results = run_bfcl(
+        lambda catalog: _CatalogAwareClient(catalog),
+        [case],
+        allow_empty_calls=True,
+    )
+    assert seen == [True]
+    assert results[0].grade.valid
 
 
 def test_run_bfcl_irrelevance_fails_when_model_calls() -> None:

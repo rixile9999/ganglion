@@ -37,6 +37,29 @@ def test_unknown_action_rejected_in_tier_5() -> None:
     raise AssertionError("expected DSLValidationError for unknown action")
 
 
+def test_empty_calls_rejected_by_default() -> None:
+    catalog = get_catalog("iot_light_5")
+    try:
+        catalog.validate({"calls": []})
+    except DSLValidationError:
+        return
+    raise AssertionError("expected DSLValidationError for empty calls")
+
+
+def test_empty_calls_allowed_when_catalog_opts_in() -> None:
+    base = get_catalog("iot_light_5")
+    catalog = type(base)(
+        name=base.name,
+        tools=base.tools,
+        examples=base.examples,
+        extra_rules=base.extra_rules,
+        allow_empty_calls=True,
+    )
+    plan = catalog.validate({"calls": []})
+    assert plan.calls == ()
+    assert '{"calls":[]}' in catalog.render_json_dsl()
+
+
 def test_thermostat_supported_in_tier_20() -> None:
     catalog = get_catalog("home_iot_20")
     plan = catalog.validate(

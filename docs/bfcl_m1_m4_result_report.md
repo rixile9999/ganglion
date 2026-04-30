@@ -234,8 +234,8 @@ token/latency 이점이 유지되었고, callable tool-calling accuracy가 nativ
 우선순위는 다음 순서가 좋다.
 
 1. **M5: Abstention/no-call support**
-   `irrelevance` gap을 닫기 위해 `allow_empty_calls`, `{"calls":[]}`, 또는
-   `no_call` action을 명시적으로 도입한다.
+   `allow_empty_calls`와 `{"calls":[]}` contract로 진행했다. 결과는
+   `docs/bfcl_m5_abstention_report.md`를 참고한다.
 2. **M6: Value/unit canonicalization**
    `0.05` vs `5.0`, `Chicago` vs `Chicago, IL`, `en` vs `English` 같은 오류를
    compiler-generated normalizer 또는 alias discovery로 흡수한다.

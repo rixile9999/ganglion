@@ -76,6 +76,7 @@ def compile_tool_calling_schema(
     name: str = "compiled_tools",
     examples: Sequence[tuple[str, str]] = (),
     extra_rules: Sequence[str] = (),
+    allow_empty_calls: bool = False,
 ) -> CompiledToolMapper:
     """Compile OpenAI/DashScope or MCP-style tool schemas into a DSL mapper.
 
@@ -93,6 +94,7 @@ def compile_tool_calling_schema(
         tools=compiled,
         examples=tuple(examples),
         extra_rules=tuple(extra_rules),
+        allow_empty_calls=allow_empty_calls,
     )
     return CompiledToolMapper(
         catalog=catalog,
@@ -106,6 +108,7 @@ def compile_openai_tools(
     name: str = "compiled_tools",
     examples: Sequence[tuple[str, str]] = (),
     extra_rules: Sequence[str] = (),
+    allow_empty_calls: bool = False,
 ) -> Catalog:
     """Compile OpenAI-compatible tools into a Catalog."""
 
@@ -114,6 +117,7 @@ def compile_openai_tools(
         name=name,
         examples=examples,
         extra_rules=extra_rules,
+        allow_empty_calls=allow_empty_calls,
     ).catalog
 
 

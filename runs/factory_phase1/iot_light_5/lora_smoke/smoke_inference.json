@@ -1,0 +1,32 @@
+[
+  {
+    "intent": "Turn on the kitchen light",
+    "raw": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"kitchen\", \"state\": \"on\"}}]}",
+    "action": "set_light",
+    "valid": true
+  },
+  {
+    "intent": "거실 불 꺼져 있어?",
+    "raw": "{\"calls\": [{\"action\": \"get_light_state\", \"args\": {\"room\": \"living\"}}]}",
+    "action": "get_light_state",
+    "valid": true
+  },
+  {
+    "intent": "Schedule the bedroom light to turn on at 7am",
+    "raw": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"07:00\", \"room\": \"bedroom\", \"state\": \"on\"}}]}",
+    "action": "schedule_light",
+    "valid": true
+  },
+  {
+    "intent": "Set up a movie scene with the living room and bedroom lights on",
+    "raw": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"room\": \"living\", \"state\": \"on\"}}, {\"action\": \"set_light\", \"args\": {\"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}",
+    "action": "create_scene",
+    "valid": true
+  },
+  {
+    "intent": "What lights are available?",
+    "raw": "{\"calls\": [{\"action\": \"list_devices\", \"args\": {}}]}",
+    "action": "list_devices",
+    "valid": true
+  }
+]

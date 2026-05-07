@@ -1,0 +1,8 @@
+# Phase 1 trained artifacts: regenerated from synth.jsonl + smoke scripts.
+# Reports + data + metrics are committed; weights are not.
+*/adapter/
+*/trainer/
+*/lora_smoke/adapter/
+*/lora_smoke/trainer/
+*/holdout_eval/adapter/
+*/holdout_eval/trainer/

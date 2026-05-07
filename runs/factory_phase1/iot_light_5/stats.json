@@ -1,0 +1,22 @@
+{
+  "n_kept": 200,
+  "n_attempted": 210,
+  "n_dropped_parse": 10,
+  "n_dropped_wrong_tool": 0,
+  "n_dropped_other": 0,
+  "n_deduped": 74,
+  "pass_rate_by_tool": {
+    "list_devices": 1.0,
+    "get_light_state": 1.0,
+    "set_light": 1.0,
+    "schedule_light": 1.0,
+    "create_scene": 0.8
+  },
+  "estimated_cost_usd": 0.0755528,
+  "duration_sec": 417.9987712339989,
+  "cost_capped": false,
+  "n_calls": 42,
+  "input_tokens": 33790,
+  "output_tokens": 20217,
+  "pass_rate": 0.9523809523809523
+}

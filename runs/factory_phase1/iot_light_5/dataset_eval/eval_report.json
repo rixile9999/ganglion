@@ -1,0 +1,1063 @@
+{
+  "total": 500,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 0.994,
+  "exact_match_rate": 0.938,
+  "action_match_rate": 0.956,
+  "latency_ms_mean": 1387.93,
+  "latency_ms_p50": 1426.67,
+  "latency_ms_p95": 2539.48,
+  "latency_ms_stddev": 459.15,
+  "input_tokens_total": null,
+  "output_tokens_total": null,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [
+    {
+      "id": "a05f993e",
+      "prompt": "오후 1시에 거실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "01:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 1시에 거실 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"01:00\", \"room\": \"living\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "609dd410",
+      "prompt": "create movie mode scene. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "set_light.state is required",
+      "raw": {
+        "intent": "create movie mode scene. set bedroom light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"color_temp\": \"warm\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "6a7da86c",
+      "prompt": "거실 조명 밝기 10로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "00:10",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "거실 조명 밝기 10로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:10\", \"brightness\": 10, \"room\": \"living\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "a4ca723f",
+      "prompt": "거실 조명 밝기 20로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "00:20",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "거실 조명 밝기 20로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:20\", \"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "27b789d2",
+      "prompt": "오전 11시에 거실 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "11:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "23:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오전 11시에 거실 불 켜지게 예약해줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"23:00\", \"room\": \"living\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "eab3654c",
+      "prompt": "create movie mode #1. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "set_light.state is required",
+      "raw": {
+        "intent": "create movie mode #1. set bedroom light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"color_temp\": \"warm\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "dda84793",
+      "prompt": "오후 1시에 침실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "01:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 1시에 침실 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"01:00\", \"room\": \"bedroom\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "8b30eb14",
+      "prompt": "create movie mode #6. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "set_light.state is required",
+      "raw": {
+        "intent": "create movie mode #6. set bedroom light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"color_temp\": \"warm\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "e205fc5c",
+      "prompt": "침실 조명 밝기 10로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "침실 조명 밝기 10로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 10, \"room\": \"bedroom\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "12a4fb2e",
+      "prompt": "침실 조명 밝기 20로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "23:00",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "침실 조명 밝기 20로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"23:00\", \"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "7215d4ff",
+      "prompt": "오전 11시에 침실 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "11:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "23:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오전 11시에 침실 불 켜지게 예약해줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"23:00\", \"room\": \"bedroom\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "88943556",
+      "prompt": "오후 1시에 주방 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "01:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 1시에 주방 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"01:00\", \"room\": \"kitchen\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "4d9b00bc",
+      "prompt": "주방 조명 밝기 10로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "00:10",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 조명 밝기 10로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:10\", \"brightness\": 10, \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "1f27eeb4",
+      "prompt": "주방 조명 밝기 20로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 조명 밝기 20로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "3657cacf",
+      "prompt": "주방 조명 밝기 35로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 조명 밝기 35로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 35, \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "c581a59d",
+      "prompt": "오전 11시에 주방 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "11:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "23:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오전 11시에 주방 불 켜지게 예약해줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"23:00\", \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "0c731771",
+      "prompt": "주방 조명 밝기 80로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 80
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 80
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 조명 밝기 80로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 80, \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "ca3aaa1c",
+      "prompt": "오후 1시에 복도 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "01:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 1시에 복도 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"01:00\", \"room\": \"hallway\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "6e320438",
+      "prompt": "복도 조명 밝기 10로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 10로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 10, \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "b81175e1",
+      "prompt": "복도 조명 밝기 20로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 20로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "46421f1d",
+      "prompt": "복도 조명 밝기 35로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 35로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 35, \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "61c1706f",
+      "prompt": "복도 조명 밝기 50로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 50로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 50, \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "9af37bbe",
+      "prompt": "오전 11시에 복도 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "11:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "23:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오전 11시에 복도 불 켜지게 예약해줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"23:00\", \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "acfad2cb",
+      "prompt": "오후 1시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "01:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 1시에 서재 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"01:00\", \"room\": \"office\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "8b40d65c",
+      "prompt": "서재 조명 밝기 10로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "00:10",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "서재 조명 밝기 10로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:10\", \"brightness\": 10, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "44b2fbed",
+      "prompt": "서재 조명 밝기 20로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "00:20",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "서재 조명 밝기 20로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:20\", \"brightness\": 20, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "679b4c94",
+      "prompt": "서재 조명 밝기 35로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "00:35",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "서재 조명 밝기 35로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:35\", \"brightness\": 35, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "0449052f",
+      "prompt": "서재 조명 밝기 50로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "서재 조명 밝기 50로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 50, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "2bc4b7be",
+      "prompt": "복도 불 50%로 다시 켜줘 #3",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 50%로 다시 켜줘 #3",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 50, \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "0c22198d",
+      "prompt": "주방 불 10%로 다시 켜줘 #7",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 불 10%로 다시 켜줘 #7",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 10, \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "126b3fa8",
+      "prompt": "복도 불 20%로 다시 켜줘 #8",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "00:00",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 20%로 다시 켜줘 #8",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"00:00\", \"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}]}"
+      }
+    }
+  ],
+  "per_strategy": {
+    "dataset.jsonl": {
+      "n": 500,
+      "syntax_valid": 0.994,
+      "action_match": 0.956,
+      "exact_match": 0.938
+    }
+  }
+}

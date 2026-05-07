@@ -6,12 +6,28 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "openai>=1.0.0",
+    "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",
 ]
+factory = [
+    "transformers>=4.45",
+    "peft>=0.13",
+    "trl>=0.12",
+    "accelerate>=1.0",
+    "datasets>=3.0",
+    "sentence-transformers>=3.0",
+    "torch>=2.4",
+]
+factory-gpu = [
+    "bitsandbytes>=0.44",
+]
+
+[project.scripts]
+ganglion-factory = "ganglion.factory.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["ganglion*"]

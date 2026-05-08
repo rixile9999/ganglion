@@ -12,8 +12,10 @@ Provides:
 
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
+import os
 import random
 import time
 from collections import defaultdict
@@ -70,6 +72,27 @@ def split_train_eval(
     return train, holdout
 
 
+def _release_device_memory() -> None:
+    """Release per-iteration memory holds.
+
+    Phase 1 evaluated 26 cases on CUDA whose caching allocator hides per-call
+    KV-cache and intermediate-tensor leaks by recycling them in an internal
+    pool. MPS (PyTorch 2.11) lacks an equivalent pool, so the same code on a
+    long-context × many-case workload (smart_home_50: 92 cases × 1400-token
+    context) accumulates 1-1.5 GB per call until the system swap-thrashes. An
+    explicit gc + device cache flush closes the leak. No-op on CPU.
+    """
+    gc.collect()
+    try:
+        import torch  # local import: factory deps are optional
+        if torch.backends.mps.is_available():
+            torch.mps.empty_cache()
+        elif torch.cuda.is_available():
+            torch.cuda.empty_cache()
+    except (ImportError, AttributeError):
+        pass
+
+
 def evaluate_lora(
     catalog: Catalog,
     holdout: Iterable[SynthExample],
@@ -81,7 +104,17 @@ def evaluate_lora(
     """Run the model on each holdout example, return (summary, per-case results)."""
     cfg = config or EvalConfig()
     results: list[CaseResult] = []
-    for ex in holdout:
+    memory_log = os.environ.get("GANGLION_EVAL_MEMORY_LOG") == "1"
+    psutil_proc = None
+    if memory_log:
+        try:
+            import psutil
+            psutil_proc = psutil.Process()
+        except ImportError:
+            memory_log = False
+    holdout = list(holdout)
+    n_total = len(holdout)
+    for case_idx, ex in enumerate(holdout):
         case_id = hashlib.sha1(ex.intent.encode("utf-8")).hexdigest()[:8]
         try:
             expected_plan = catalog.parse_json_dsl(ex.expected_dsl)
@@ -139,6 +172,14 @@ def evaluate_lora(
         results.append(
             CaseResult(id=case_id, prompt=ex.intent, expected=expected_plan, runs=(run,))
         )
+
+        # Release per-call holds before next iteration. Without this, MPS
+        # accumulates ~1-1.5 GB per call on long-context workloads.
+        _release_device_memory()
+        if memory_log and psutil_proc is not None and (case_idx + 1) % 10 == 0:
+            rss_gb = psutil_proc.memory_info().rss / 1e9
+            print(f"[eval] case {case_idx + 1}/{n_total}  RSS={rss_gb:.2f}GB",
+                  flush=True)
 
     summary = summarize(results)
     summary["per_strategy"] = _per_strategy_breakdown(results, holdout)

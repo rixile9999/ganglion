@@ -203,8 +203,16 @@ def generate_dsl(
     *,
     max_new_tokens: int = 256,
     temperature: float = 0.0,
+    compiled_grammar=None,
 ) -> str:
-    """Run a single inference: intent → DSL string."""
+    """Run a single inference: intent → DSL string.
+
+    If ``compiled_grammar`` is provided (an XGrammar ``CompiledGrammar`` from
+    :func:`ganglion.factory.grammar.compile_catalog_grammar`), token sampling
+    is masked to grammar-valid tokens, guaranteeing parsable output. A fresh
+    LogitsProcessor is built per call because XGrammar matchers are
+    single-use.
+    """
     import torch
 
     system_content = SYSTEM_PROMPT_TEMPLATE.format(catalog_dsl=catalog.render_json_dsl())
@@ -233,6 +241,11 @@ def generate_dsl(
         gen_kwargs["temperature"] = temperature
     else:
         gen_kwargs["do_sample"] = False
+
+    if compiled_grammar is not None:
+        from ganglion.factory.grammar import make_logits_processor
+
+        gen_kwargs["logits_processor"] = [make_logits_processor(compiled_grammar)]
 
     with torch.no_grad():
         output = model.generate(

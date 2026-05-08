@@ -65,6 +65,8 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=None,
                         help="Optional: only eval first N cases (for quick smoke)")
     parser.add_argument("--base-model", default="Qwen/Qwen3-1.7B")
+    parser.add_argument("--no-grammar-mask", action="store_true",
+                        help="Disable XGrammar inference-time masking (default: ON).")
     args = parser.parse_args()
 
     out_dir = Path(args.out)
@@ -74,11 +76,24 @@ def main() -> int:
     examples = load_dataset_jsonl(Path(args.dataset), limit=args.limit)
     print(f"[dataset_eval] catalog={catalog.name} cases={len(examples)}")
     print(f"[dataset_eval] adapter={args.adapter}")
+    print(f"[dataset_eval] grammar_mask={'off' if args.no_grammar_mask else 'on'}")
 
     model, tokenizer = load_lora_for_inference(args.adapter, base_model=args.base_model)
 
+    compiled_grammar = None
+    if not args.no_grammar_mask:
+        from ganglion.factory.grammar import compile_catalog_grammar
+
+        # Pass the model's full vocab_size; tokenizer.vocab_size can be smaller
+        # than the embedding table (Qwen3 pads). Mismatch silently corrupts masks.
+        vocab_size = getattr(model.config, "vocab_size", None)
+        compiled_grammar = compile_catalog_grammar(
+            catalog, tokenizer, vocab_size=vocab_size
+        )
+
     summary, results = evaluate_lora(
-        catalog, examples, model, tokenizer, config=EvalConfig()
+        catalog, examples, model, tokenizer,
+        config=EvalConfig(compiled_grammar=compiled_grammar),
     )
     # Override "per_strategy" — for dataset eval there's no useful strategy split,
     # so collapse to a single "dataset" bucket for reporting.

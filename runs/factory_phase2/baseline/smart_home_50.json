@@ -1,0 +1,2719 @@
+{
+  "total": 500,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 0.868,
+  "exact_match_rate": 0.8,
+  "action_match_rate": 0.868,
+  "latency_ms_mean": 773.9,
+  "latency_ms_p50": 765.55,
+  "latency_ms_p95": 905.08,
+  "latency_ms_stddev": 69.94,
+  "input_tokens_total": 624763,
+  "output_tokens_total": 10601,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [
+    {
+      "id": "iot-004",
+      "prompt": "조명 장치 목록 보여줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-006",
+      "prompt": "복도 불 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-023",
+      "prompt": "거실 불 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-036",
+      "prompt": "list light devices",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-046",
+      "prompt": "what light devices are available",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-051",
+      "prompt": "조명 장치 목록 보여줘 #8",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-061",
+      "prompt": "등록된 조명 디바이스 목록 보여줘 #10",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-066",
+      "prompt": "집 안 조명 장치 목록 확인해줘 #11",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-076",
+      "prompt": "list light devices #13",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-081",
+      "prompt": "show available devices #14",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-086",
+      "prompt": "what light devices are available #15",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-089",
+      "prompt": "오후 8시에 거실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "20:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"living\",\"at\":\"16:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 27
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"living\",\"at\":\"16:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-091",
+      "prompt": "조명 장치 목록 보여줘 #16",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-092",
+      "prompt": "영화 모드 scene을 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"create_scene\",\"args\":{\"name\":\"movie\",\"actions\":[{\"action\":\"set_light\",\"args\":{\"room\":\"bedroom\",\"state\":\"on\",\"brightness\":20,\"color_temp\":\"warm\"}}]}}]}",
+            "input_tokens": 1452,
+            "output_tokens": 45
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"create_scene\",\"args\":{\"name\":\"movie\",\"actions\":[{\"action\":\"set_light\",\"args\":{\"room\":\"bedroom\",\"state\":\"on\",\"brightness\":20,\"color_temp\":\"warm\"}}]}}]}"
+      }
+    },
+    {
+      "id": "iot-096",
+      "prompt": "사용 가능한 조명 장치 목록 알려줘 #17",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-097",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 서재 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"create_scene\",\"args\":{\"name\":\"movie\",\"actions\":[{\"action\":\"set_light\",\"args\":{\"room\":\"bedroom\",\"state\":\"on\",\"brightness\":20,\"color_temp\":\"warm\"}}]}}]}",
+            "input_tokens": 1454,
+            "output_tokens": 45
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"create_scene\",\"args\":{\"name\":\"movie\",\"actions\":[{\"action\":\"set_light\",\"args\":{\"room\":\"bedroom\",\"state\":\"on\",\"brightness\":20,\"color_temp\":\"warm\"}}]}}]}"
+      }
+    },
+    {
+      "id": "iot-099",
+      "prompt": "오후 9시에 거실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "21:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "09:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"living\",\"at\":\"09:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 27
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"living\",\"at\":\"09:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-101",
+      "prompt": "등록된 조명 디바이스 목록 보여줘 #18",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-106",
+      "prompt": "집 안 조명 장치 목록 확인해줘 #19",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-109",
+      "prompt": "오후 10시에 거실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "22:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"living\",\"at\":\"14:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1443,
+            "output_tokens": 27
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"living\",\"at\":\"14:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-112",
+      "prompt": "영화 모드 #0 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.actions must be an array",
+      "raw": null
+    },
+    {
+      "id": "iot-116",
+      "prompt": "list light devices #21",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-117",
+      "prompt": "create movie mode #0. set living room light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.actions must be an array",
+      "raw": null
+    },
+    {
+      "id": "iot-121",
+      "prompt": "show available devices #22",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-122",
+      "prompt": "영화 모드 #1 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie #1'",
+      "raw": null
+    },
+    {
+      "id": "iot-125",
+      "prompt": "현재 서재 조명 상태 확인해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "bedroom"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"get_light_state\",\"args\":{\"room\":\"bedroom\"}}]}",
+            "input_tokens": 1437,
+            "output_tokens": 17
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"get_light_state\",\"args\":{\"room\":\"bedroom\"}}]}"
+      }
+    },
+    {
+      "id": "iot-126",
+      "prompt": "what light devices are available #23",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-127",
+      "prompt": "create movie mode #1. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #1'",
+      "raw": null
+    },
+    {
+      "id": "iot-131",
+      "prompt": "조명 장치 목록 보여줘 #24",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-132",
+      "prompt": "영화 모드 #2 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie #2'",
+      "raw": null
+    },
+    {
+      "id": "iot-136",
+      "prompt": "사용 가능한 조명 장치 목록 알려줘 #25",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-137",
+      "prompt": "create movie mode #2. set kitchen light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #2'",
+      "raw": null
+    },
+    {
+      "id": "iot-141",
+      "prompt": "등록된 조명 디바이스 목록 보여줘 #26",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-142",
+      "prompt": "영화 모드 #3 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie#3'",
+      "raw": null
+    },
+    {
+      "id": "iot-146",
+      "prompt": "집 안 조명 장치 목록 확인해줘 #27",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-147",
+      "prompt": "create movie mode #3. set hallway light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #3'",
+      "raw": null
+    },
+    {
+      "id": "iot-151",
+      "prompt": "list devices #28",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-152",
+      "prompt": "영화 모드 #4 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.actions must be an array",
+      "raw": null
+    },
+    {
+      "id": "iot-156",
+      "prompt": "list light devices #29",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-157",
+      "prompt": "create movie mode #4. set office light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #4'",
+      "raw": null
+    },
+    {
+      "id": "iot-158",
+      "prompt": "거실 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "brightness": 50,
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"living\",\"state\":\"on\",\"color_temp\":\"neutral\",\"brightness\":50}}]}",
+            "input_tokens": 1439,
+            "output_tokens": 29
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"living\",\"state\":\"on\",\"color_temp\":\"neutral\",\"brightness\":50}}]}"
+      }
+    },
+    {
+      "id": "iot-161",
+      "prompt": "show available devices #30",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-162",
+      "prompt": "영화 모드 #5 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.actions must be an array",
+      "raw": null
+    },
+    {
+      "id": "iot-166",
+      "prompt": "what light devices are available #31",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-167",
+      "prompt": "create movie mode #5. set living room light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #5'",
+      "raw": null
+    },
+    {
+      "id": "iot-171",
+      "prompt": "조명 장치 목록 보여줘 #32",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-172",
+      "prompt": "영화 모드 #6 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.actions must be an array",
+      "raw": null
+    },
+    {
+      "id": "iot-177",
+      "prompt": "create movie mode #6. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #6'",
+      "raw": null
+    },
+    {
+      "id": "iot-178",
+      "prompt": "침실 불 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-181",
+      "prompt": "등록된 조명 디바이스 목록 보여줘 #34",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-182",
+      "prompt": "영화 모드 #7 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie #7'",
+      "raw": null
+    },
+    {
+      "id": "iot-186",
+      "prompt": "집 안 조명 장치 목록 확인해줘 #35",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-187",
+      "prompt": "create movie mode #7. set kitchen light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #7'",
+      "raw": null
+    },
+    {
+      "id": "iot-191",
+      "prompt": "list devices #36",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: invalid JSON: Unterminated string starting at",
+      "raw": null
+    },
+    {
+      "id": "iot-192",
+      "prompt": "영화 모드 #8 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie #8'",
+      "raw": null
+    },
+    {
+      "id": "iot-196",
+      "prompt": "list light devices #37",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-197",
+      "prompt": "create movie mode #8. set hallway light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #8'",
+      "raw": null
+    },
+    {
+      "id": "iot-201",
+      "prompt": "show available devices #38",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-202",
+      "prompt": "영화 모드 #9 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.actions must be an array",
+      "raw": null
+    },
+    {
+      "id": "iot-206",
+      "prompt": "what light devices are available #39",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: list_devices does not accept args",
+      "raw": null
+    },
+    {
+      "id": "iot-207",
+      "prompt": "create movie mode #9. set office light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: create_scene.name: unsupported scene name 'movie mode #9'",
+      "raw": null
+    },
+    {
+      "id": "iot-230",
+      "prompt": "오후 8시에 침실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "20:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"16:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1443,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"16:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-236",
+      "prompt": "오후 9시에 침실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "21:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "09:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"09:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1443,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"09:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-242",
+      "prompt": "오후 10시에 침실 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "22:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"14:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1444,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"14:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-274",
+      "prompt": "침실 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "brightness": 100,
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"bedroom\",\"state\":\"on\",\"color_temp\":\"cool\",\"brightness\":100}}]}",
+            "input_tokens": 1439,
+            "output_tokens": 31
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"bedroom\",\"state\":\"on\",\"color_temp\":\"cool\",\"brightness\":100}}]}"
+      }
+    },
+    {
+      "id": "iot-281",
+      "prompt": "오후 1시에 주방 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-286",
+      "prompt": "주방 불 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-287",
+      "prompt": "오후 2시에 주방 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-323",
+      "prompt": "오후 8시에 주방 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "20:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"kitchen\",\"at\":\"16:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"kitchen\",\"at\":\"16:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-329",
+      "prompt": "오후 9시에 주방 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "21:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-335",
+      "prompt": "오후 10시에 주방 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "22:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "kitchen",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"kitchen\",\"at\":\"14:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1443,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"kitchen\",\"at\":\"14:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-370",
+      "prompt": "주방 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 50,
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"kitchen\",\"state\":\"on\",\"color_temp\":\"neutral\",\"brightness\":50}}]}",
+            "input_tokens": 1439,
+            "output_tokens": 30
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"kitchen\",\"state\":\"on\",\"color_temp\":\"neutral\",\"brightness\":50}}]}"
+      }
+    },
+    {
+      "id": "iot-404",
+      "prompt": "오후 8시에 복도 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "20:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"hallway\",\"at\":\"16:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1443,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"hallway\",\"at\":\"16:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-408",
+      "prompt": "오후 9시에 복도 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "21:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "09:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"hallway\",\"at\":\"09:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1443,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"hallway\",\"at\":\"09:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-412",
+      "prompt": "오후 10시에 복도 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "22:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "hallway",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"hallway\",\"at\":\"14:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1444,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"hallway\",\"at\":\"14:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-435",
+      "prompt": "make hallway light neutral",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: set_light.state is required",
+      "raw": null
+    },
+    {
+      "id": "iot-436",
+      "prompt": "오전 1시에 서재 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "01:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "01:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"01:00\",\"state\":\"on\"}}]}",
+            "input_tokens": 1445,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"01:00\",\"state\":\"on\"}}]}"
+      }
+    },
+    {
+      "id": "iot-437",
+      "prompt": "복도 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 50,
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"hallway\",\"state\":\"on\",\"color_temp\":\"neutral\",\"brightness\":50}}]}",
+            "input_tokens": 1439,
+            "output_tokens": 30
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"hallway\",\"state\":\"on\",\"color_temp\":\"neutral\",\"brightness\":50}}]}"
+      }
+    },
+    {
+      "id": "iot-438",
+      "prompt": "오후 1시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"13:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"13:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-440",
+      "prompt": "오전 2시에 서재 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "02:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "02:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"02:00\",\"state\":\"on\"}}]}",
+            "input_tokens": 1445,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"02:00\",\"state\":\"on\"}}]}"
+      }
+    },
+    {
+      "id": "iot-442",
+      "prompt": "오후 2시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"14:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"14:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-444",
+      "prompt": "오전 3시에 서재 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "03:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "03:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"03:00\",\"state\":\"on\"}}]}",
+            "input_tokens": 1445,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"03:00\",\"state\":\"on\"}}]}"
+      }
+    },
+    {
+      "id": "iot-445",
+      "prompt": "서재 불 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-446",
+      "prompt": "오후 3시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "15:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "15:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"15:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"15:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-448",
+      "prompt": "오전 4시에 서재 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "04:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "04:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"04:00\",\"state\":\"on\"}}]}",
+            "input_tokens": 1445,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"04:00\",\"state\":\"on\"}}]}"
+      }
+    },
+    {
+      "id": "iot-450",
+      "prompt": "오후 4시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"16:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"16:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-452",
+      "prompt": "오전 5시에 서재 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "05:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "05:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"05:00\",\"state\":\"on\"}}]}",
+            "input_tokens": 1445,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"05:00\",\"state\":\"on\"}}]}"
+      }
+    },
+    {
+      "id": "iot-454",
+      "prompt": "오후 5시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "17:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "17:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"17:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"17:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-458",
+      "prompt": "오후 6시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "18:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "18:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"18:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"18:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-460",
+      "prompt": "오전 7시에 서재 불 켜지게 예약해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "07:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "07:00",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"07:00\",\"state\":\"on\"}}]}",
+            "input_tokens": 1445,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"07:00\",\"state\":\"on\"}}]}"
+      }
+    },
+    {
+      "id": "iot-462",
+      "prompt": "오후 7시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "19:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "19:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"19:00\",\"state\":\"off\"}}]}",
+            "input_tokens": 1442,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"schedule_light\",\"args\":{\"room\":\"bedroom\",\"at\":\"19:00\",\"state\":\"off\"}}]}"
+      }
+    },
+    {
+      "id": "iot-479",
+      "prompt": "서재 조명을 중립으로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 0,
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"office\",\"state\":\"on\",\"brightness\":0,\"color_temp\":\"neutral\"}}]}",
+            "input_tokens": 1439,
+            "output_tokens": 28
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"office\",\"state\":\"on\",\"brightness\":0,\"color_temp\":\"neutral\"}}]}"
+      }
+    },
+    {
+      "id": "iot-481",
+      "prompt": "서재 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 50,
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"office\",\"state\":\"on\",\"brightness\":50,\"color_temp\":\"cool\"}}]}",
+            "input_tokens": 1439,
+            "output_tokens": 29
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"office\",\"state\":\"on\",\"brightness\":50,\"color_temp\":\"cool\"}}]}"
+      }
+    },
+    {
+      "id": "iot-484",
+      "prompt": "거실 불 다시 꺼줘 #0",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-486",
+      "prompt": "침실 불 다시 꺼줘 #1",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-488",
+      "prompt": "주방 불 다시 꺼줘 #2",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-492",
+      "prompt": "서재 불 다시 꺼줘 #4",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 100
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "attempts": [
+          {
+            "attempt": 0,
+            "content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"office\",\"state\":\"on\",\"brightness\":100}}]}",
+            "input_tokens": 1437,
+            "output_tokens": 25
+          }
+        ],
+        "final_content": "{\"calls\":[{\"action\":\"set_light\",\"args\":{\"room\":\"office\",\"state\":\"on\",\"brightness\":100}}]}"
+      }
+    },
+    {
+      "id": "iot-494",
+      "prompt": "거실 불 다시 꺼줘 #5",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-496",
+      "prompt": "침실 불 다시 꺼줘 #6",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    },
+    {
+      "id": "iot-498",
+      "prompt": "주방 불 다시 꺼줘 #7",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "DSLValidationError: unsupported action: stop_light",
+      "raw": null
+    }
+  ],
+  "tier": "smart_home_50",
+  "llm": "qwen",
+  "dsl_catalog_chars": 4670,
+  "openai_tools_chars": 15841
+}

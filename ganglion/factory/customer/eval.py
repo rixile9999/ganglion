@@ -33,6 +33,11 @@ from ganglion.factory.customer.train_lora import generate_dsl
 class EvalConfig:
     max_new_tokens: int = 256
     temperature: float = 0.0
+    # Optional XGrammar CompiledGrammar; when set, every generate() call is
+    # masked to grammar-valid tokens. Build via
+    # ``ganglion.factory.grammar.compile_catalog_grammar`` once per (catalog,
+    # tokenizer) pair and reuse across the whole holdout.
+    compiled_grammar: Any = None
 
 
 def split_train_eval(
@@ -94,6 +99,7 @@ def evaluate_lora(
                 ex.intent,
                 max_new_tokens=cfg.max_new_tokens,
                 temperature=cfg.temperature,
+                compiled_grammar=cfg.compiled_grammar,
             )
         except Exception as exc:  # generation crashed
             run = RunResult(

@@ -226,3 +226,45 @@ docs/research_vision_for_review.md       # full project context for external rev
 ## 9. Single-line summary
 
 > **Phase 2 = "make the Phase 1 pipeline shippable" (Track A, 1 week) + "close the quality gaps with GRPO and broader synth" (Track B, 2–4 weeks). Track C makes it a real product. Each track is independently scoped — pick whichever risk is highest priority for your context.**
+
+---
+
+## 10. Stage 1 measurement results (2026-05-08)
+
+> First quantitative read on what Phase 1's headline number actually buys, and where Phase 2's biggest leverage lies. All runs on `examples/iot_light/dataset.jsonl` (n=500), DashScope-intl, single seed.
+
+### 10.1 Numbers
+
+| Setting | iot_light_5 (5 tools) | smart_home_50 (50 tools) |
+|---|---:|---:|
+| Untuned qwen3-1.7B (DashScope) | exact 87.4% / syn 93.0% | exact 80.0% / syn 86.8% |
+| Phase 1 tuned 1.7B + LoRA | exact **93.8%** / syn 99.4% | exact **87.4%** / syn 93.0% |
+| Untuned qwen3-0.6B | exact 38.6% / syn 65.8% | exact 38.2% / syn 65.6% |
+| qwen3-0.6B + M4 repair (1 retry) | exact 41.8% / syn 72.2% | exact 40.6% / syn 71.6% |
+
+Cumulative API spend across the 6 baseline runs: **~$0.31**. Artifacts in `runs/factory_phase2/baseline/`.
+
+### 10.2 What this changes about the Phase 1 story
+
+- **Phase 1 LoRA's true delta is +6.4pp (iot_light_5) / +7.4pp (smart_home_50).** The 93.8% headline is *real*, but the untuned 1.7B was already at 87.4% on the same dataset — so the LoRA contribution is roughly an order of magnitude smaller than the 93.8% number suggests in isolation. The acceptance gates remain met; the *value attribution* needs to be honest.
+- **The 1.7B → 0.6B drop is a capacity cliff, not a schema-size effect.** Both catalogs land 0.6B at ~38% exact, despite a 10× tool-count gap. The 50-tool catalog at 4,670 chars is *not* what's breaking the small model; raw base capability is. This kills the implicit hope that "0.6B + tighter prompt" was a viable edge tier without LoRA.
+- **0.6B failure decomposition**: ~34% syntax-broken (unparseable), and a ~27pp gap between `action_match` and `exact_match` (right tool, wrong args). It picks tools tolerably; it cannot *format*.
+- **M4 repair loop helps but is bounded.** Repair only fires on `DSLValidationError` (parsable JSON, schema-violating). On 0.6B it lifts exact ~3pp and syntax ~6pp — useful, but it cannot rescue completely unparseable output, which is the bulk of the 0.6B failure mass.
+
+### 10.3 Implications for Phase 2 priorities
+
+- **Promote A3 (inference-time XGrammar masking) ahead of B1 (GRPO).** Constrained decoding forces `syntax_valid → 100%` by construction, which is the single largest failure category on the small model and a non-trivial slice (6.2%) on the 1.7B + LoRA path too. GRPO pursues a few more pp on the *correct-syntax* tail; XGrammar fixes an entire failure axis. Sequence A3 → B1, not B1 → A3.
+- **B6 (Qwen3-0.5B / 4B sweep) needs A3 first.** Without grammar masking the 0.5B branch is dead at 38% and any B6 result is dominated by syntax breakage rather than the recipe-transfer question we actually want to answer.
+- The +6.4-7.4pp Phase 1 delta is large enough to keep the LoRA-per-customer thesis alive, but small enough that **Phase 2's burden of proof rises**: GRPO must clear measurable headroom over the *untuned* baseline, not just over Phase 1.
+
+### 10.4 Caveats (not yet measured)
+
+- **Chat-template parity**: all numbers are DashScope-served. We have not yet validated that a HF-local serve of the same weights matches; tokenizer/template drift is a known class of silent regression.
+- **Single-seed CIs**: dataset.jsonl at n=500 gives ±2pp binomial CI per run, but we have one seed each. The 6.4pp / 7.4pp deltas are well outside CI; the 0.6B → repair lift (~3pp) is borderline and should be re-run with N≥3 before being load-bearing.
+- **No GPU-local validation of the LoRA against these baselines** — Phase 1 numbers were also DashScope-served via the same path, so the comparison is internally consistent, but the absolute numbers are not yet pinned to a reproducible local serve.
+
+### 10.5 Decision for Phase 2 direction (2026-05-08)
+
+**Going for 0.6B max-out (Arc A) as the primary research arc.** A3 (XGrammar inference) is the joint dependency that produces the first decision-relevant data point on both 0.6B and 1.7B; A3 land first, then commit to 0.6B SFT + grammar-masked training + self-bootstrap + DPO/GRPO. 1.7B polish (Arc B) is the fallback if 0.6B plateaus below ~60% post-A3.
+
+A3 implementation status (2026-05-08): module scaffold, generate-time wiring, EvalConfig threading, and unit tests landed in `ganglion/factory/grammar/xgrammar_processor.py` + `tests/factory/test_xgrammar_processor.py` (7 new tests, 52/52 factory tests pass). Awaiting GPU-box validation against actual Qwen3 checkpoints.

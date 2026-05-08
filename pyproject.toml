@@ -21,6 +21,7 @@ factory = [
     "datasets>=3.0",
     "sentence-transformers>=3.0",
     "torch>=2.4",
+    "xgrammar>=0.2.0",
 ]
 factory-gpu = [
     "bitsandbytes>=0.44",

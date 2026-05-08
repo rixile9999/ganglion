@@ -231,4 +231,17 @@ A full S2c cycle ran end-to-end on iot_light_5:
 
 The exact_match stayed nearly flat (77.2 v1+post-correction → 76.6 v2 alone), but **the failure mode shifted**: structural errors essentially disappeared (15% → 1%), while semantic args errors grew (12% → 22%). v2 is the cleaner foundation for S3 — the post-correction rule isn't doing anything anymore (no rescue cases), and the remaining errors are exactly what graded-reward RL is designed to fix.
 
-Plan §13 has the full report. **Next session: S3 (DPO) implementation.**
+Plan §13 has the full report.
+
+---
+
+## 13. S3 entry prep (same evening)
+
+S3 (DPO) infrastructure landed end-to-end in this session:
+- `ganglion/eval/metrics.py:graded_score()` — 0.0/0.25/0.5+/1.0 reward gradient (9 tests pass)
+- `runs/factory_phase2/dpo_pairs.py` — sample-and-score pair generator with margin filter
+- `runs/factory_phase2/dpo_train.py` — TRL DPOTrainer wrapper + PEFT auto-reference
+
+Wiring is correct, but smoke surfaced a **data-side blocker**: the v2 adapter is too saturated on the same paraphrase pool we used for S2c bootstrapping. ~85% of samples score 1.0 even at T=1.0, leaving ≤6% of intents producing usable preference pairs. Plan §14 documents this and proposes 4 resolutions for next session: (1) crank T to 1.2-1.5, (2) OOD paraphrase pool, (3) switch to OnlineDPO, (4) split off some dataset.jsonl examples for DPO. Default recommended path: (2)+(1).
+
+**Next session: pick a §14.3 path → re-run dpo_pairs.py at scale → dpo_train.py --smoke → full DPO run.**

@@ -502,3 +502,77 @@ API cost incremental: $0.027 (paraphrase generation). All other work was local M
 - smart_home_50 S2c cycle — same recipe should run, ~2x wall (50 tools, 1300-token context). Predicted v2 lift smaller because smart_home's failure mass is more diverse than iot's nested-state pattern.
 - Multi-seed CIs on the new v2 numbers.
 - Robust fallback extractor (proposed mid-session) — left as a parallel improvement; small CPU-only patch, not blocking.
+
+---
+
+## 14. S3 entry preparation (2026-05-08, evening)
+
+> Stage 3 (DPO with verifier-graded preference pairs) was prepared end-to-end
+> in this session: scoring function landed, pair generator and trainer
+> wiring scripted, smoke-tested. The smoke surfaced one *data-side* problem
+> that must be resolved before a full DPO run.
+
+### 14.1 What landed
+
+| component | file | purpose |
+|---|---|---|
+| graded_score | `ganglion/eval/metrics.py` | 0.0/0.25/0.5+/1.0 reward gradient over (predicted, expected) ActionPlans (9 unit tests) |
+| dpo_pairs.py | `runs/factory_phase2/dpo_pairs.py` | Sample model N times per intent, score each, emit (chosen, rejected) pairs above margin |
+| dpo_train.py | `runs/factory_phase2/dpo_train.py` | TRL DPOTrainer wrapper with PEFT integration (auto-derives reference via adapter disable) |
+
+Wiring confirmed: both scripts parse, import resolves, CLI works, dpo_pairs.py runs end-to-end and produces well-shaped output.
+
+### 14.2 Data-side blocker found in smoke
+
+| temperature | intents | samples | exact 1.0 | partial 0.5+ | wrong-action 0.25 | pairs kept |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0.7 | 5 | 20 | 80% | 20% | 0 | 0 |
+| 1.0 | 50 | 200 | 85% | 12% | 1.5% | 3 |
+
+The v2 adapter is *too saturated* on the same paraphrase pool we used for S2c bootstrapping. ~85% of samples score exactly 1.0 even at T=1.0; the rest score 0.5+. Almost no intents produce both a winner and a loser separated by ≥0.5 margin.
+
+→ **6% pair-yield**. To assemble the typical 1000-pair DPO dataset, we'd need ~17,000 intents — not viable on the current paraphrase pool.
+
+### 14.3 Resolution options for next session
+
+Pick one before running dpo_pairs.py at scale:
+
+1. **Crank temperature to 1.2-1.5.** Cheap. Risk: more nonsense outputs that fail to parse, dragging signal back down.
+2. **Out-of-distribution intent pool.** Generate fresh teacher paraphrases that intentionally cover phrasings *unseen* in train.jsonl — odd time formats, new aliases, compound commands. Direct attack on the saturation. Cost ~$0.05 per 100 intents.
+3. **Online DPO** (TRL's `OnlineDPOTrainer`). Sample-then-score live during training rather than from a static jsonl. Removes the static-dataset bottleneck; handles "model improves while training" naturally. Bigger code change, but a closer match to the modern RLHF stack.
+4. **Bootstrap-augmented dataset.jsonl portion.** dataset.jsonl has 500 examples we currently use only for eval. Splitting off, say, 100 as a DPO source keeps eval clean (400 cases) and gives genuinely-hard-for-v2 data. Risk: shrinks eval CI. Acceptable if v2 already over-fits the easy paraphrases.
+
+Default recommendation for the next agent: **(2) OOD paraphrase** + **(1) T=1.2**. If yield still too low, fall back to **(3) OnlineDPO**.
+
+### 14.4 Hyperparameters locked (per §11.5)
+
+- β = 0.1 (sweep {0.05, 0.1, 0.3} on plateau)
+- learning_rate = 5e-7 (DPO-typical, two orders below SFT)
+- num_train_epochs = 1
+- per_device_batch_size = 1 (M1-friendly; raise on CUDA)
+- gradient_accumulation_steps = 4
+- ref_model = None (TRL auto-derives via adapter disable on PEFT)
+
+### 14.5 Smoke recipe for dpo_train.py
+
+Once a usable pairs.jsonl exists, sanity-check wiring before any long run:
+
+```bash
+python runs/factory_phase2/dpo_train.py \
+    --catalog iot_light_5 \
+    --base-model Qwen/Qwen3-0.6B \
+    --adapter runs/factory_phase2/sft_0.6B_v2/iot_light_5/adapter \
+    --pairs <real_pairs.jsonl> \
+    --out runs/factory_phase2/_smoke_dpo \
+    --smoke
+```
+
+`--smoke` caps at 5 training steps. Confirms TRL DPOTrainer accepts our pair format, the model+ref pair loads on MPS, and gradient flow is sane. ~5-10 min wall.
+
+### 14.6 Predicted outcome and acceptance signal
+
+If we resolve the data blocker and DPO trains successfully:
+- Predicted: v3 ≥ 80% on iot_light_5 dataset.jsonl (≥+3.4pp over v2 76.6%)
+- Acceptance: ≥80% exact_match clears the Arc A thesis line for iot_light_5
+
+If DPO yields <+1pp despite a healthy pair set, conclude the remaining args-semantic gap is information-theoretic (not addressable by RL on the same data). At that point pivot to S3+ (GRPO graded) only if there's reason to believe sample diversity is the real constraint, otherwise call iot acceptance via v2 + post-correction (77.2%) and move smart_home into S2c.

@@ -91,6 +91,82 @@ class CaseResult:
         return True
 
 
+def graded_score(
+    predicted: ActionPlan | None, expected: ActionPlan
+) -> float:
+    """Score a single prediction against gold on a 0.0-1.0 gradation.
+
+    Designed as a reward signal for graded-preference RL (DPO/GRPO):
+    a smooth-ish gradient gives the trainer more information than a
+    binary right/wrong, especially in the args-level error regime that
+    dominates after S2c.
+
+    Step structure:
+        0.0   parse failure or no prediction
+        0.25  parse OK, action sequence wrong
+        0.5   action sequence right, args mostly wrong
+              (linearly interpolates up to 0.75 with arg overlap)
+        0.75  action sequence right, most args right
+        1.0   exact match (action + args)
+
+    For multi-call plans, the per-call scores are averaged. Different
+    call counts cap the score below 1.0 (alignment loss is real).
+    """
+    if predicted is None:
+        return 0.0
+    if predicted == expected:
+        return 1.0
+
+    pred_calls = predicted.calls
+    exp_calls = expected.calls
+
+    # Action-sequence alignment is required for partial credit above 0.25.
+    pred_actions = [c.action for c in pred_calls]
+    exp_actions = [c.action for c in exp_calls]
+    if pred_actions != exp_actions:
+        # Wrong tool sequence — the validator parsed but the model picked
+        # the wrong action(s). Floor reward, but >0 to distinguish from
+        # parse-fail.
+        return 0.25
+
+    # Same action sequence; score per-call args overlap and average.
+    per_call_scores: list[float] = []
+    for pc, ec in zip(pred_calls, exp_calls):
+        # Arg-set overlap as a Jaccard-like ratio over (key, value) pairs.
+        # Each correct (key, value) is worth one point; missing or wrong
+        # keys cost points symmetrically.
+        pred_items = set(_hashable_items(pc.args))
+        exp_items = set(_hashable_items(ec.args))
+        if not exp_items and not pred_items:
+            per_call_scores.append(1.0)
+            continue
+        union = pred_items | exp_items
+        intersection = pred_items & exp_items
+        ratio = len(intersection) / len(union) if union else 1.0
+        # Map ratio into [0.5, 1.0]: action right with no arg overlap → 0.5,
+        # action right with all args matching → 1.0 (caught by ==-fast-path
+        # already, but the math works).
+        per_call_scores.append(0.5 + 0.5 * ratio)
+
+    return sum(per_call_scores) / len(per_call_scores)
+
+
+def _hashable_items(args: dict[str, Any]) -> list[tuple[str, Any]]:
+    """Convert args dict to hashable (key, value) pairs for set comparison.
+
+    Nested values (lists, dicts) are JSON-serialized so we can compare them
+    structurally — important for create_scene whose actions are nested lists.
+    """
+    import json
+
+    out: list[tuple[str, Any]] = []
+    for k, v in args.items():
+        if isinstance(v, (list, dict)):
+            v = json.dumps(v, sort_keys=True, ensure_ascii=False)
+        out.append((k, v))
+    return out
+
+
 def summarize(results: list[CaseResult]) -> dict[str, Any]:
     total = len(results)
     valid = sum(result.valid for result in results)

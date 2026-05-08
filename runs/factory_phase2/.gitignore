@@ -1,0 +1,6 @@
+# Phase 2 trained artifacts: regenerated from synth + bootstrap scripts.
+# Reports + data + metrics are committed; weights and trainer state are not.
+*/adapter/
+*/trainer/
+*/*/adapter/
+*/*/trainer/

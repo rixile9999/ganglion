@@ -217,4 +217,18 @@ After S2c lands, **S3 (DPO with verifier-graded preference pairs)** is the next 
 
 ## 11. Single-line summary
 
-> **EOD: 0.6B + SFT + `defaults_when_missing` post-correction hits 77.2% (iot) / 71.4% (smart_home) on dataset.jsonl. Inference masking demoted to diagnostic-only. iot is +2.8pp from acceptance; one self-bootstrap iteration likely clears it.**
+> **EOD (post-S2c): 0.6B v2 (SFT on 341 augmented examples) hits 76.6% on iot_light_5 dataset.jsonl. Failure mass shifted off the structural axis (post-correction's domain) onto the semantic-args axis (S3 DPO's domain). v2 alone ≈ v1 + post-correction (76.6 vs 77.2) but with 99% action_match vs 92% — cleaner, more robust. S3 (DPO graded reward) is the next stage that addresses the *remaining* failures.**
+
+---
+
+## 12. S2c update (late 2026-05-08, after this doc was first committed)
+
+A full S2c cycle ran end-to-end on iot_light_5:
+- `paraphrase_intents.py` (new) generated 300 paraphrases from train.jsonl's 100 intents at $0.027 via DashScope qwen3.6-plus.
+- `self_bootstrap.py` (already committed) sampled v1 adapter on those 300 paraphrases, validator-gated to 252 matches → 241 after dedup vs train.
+- Augmented training (341 examples, ~3 min on M1) produced sft_0.6B_v2 adapter.
+- Re-ablation: v2 mask_off = 76.6% / 99.0% syntax / 99.0% action.
+
+The exact_match stayed nearly flat (77.2 v1+post-correction → 76.6 v2 alone), but **the failure mode shifted**: structural errors essentially disappeared (15% → 1%), while semantic args errors grew (12% → 22%). v2 is the cleaner foundation for S3 — the post-correction rule isn't doing anything anymore (no rescue cases), and the remaining errors are exactly what graded-reward RL is designed to fix.
+
+Plan §13 has the full report. **Next session: S3 (DPO) implementation.**

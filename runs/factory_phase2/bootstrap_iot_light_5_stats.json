@@ -1,0 +1,16 @@
+{
+  "catalog": "iot_light_5",
+  "base_model": "Qwen/Qwen3-0.6B",
+  "adapter": "runs/factory_phase2/sft_0.6B/iot_light_5/adapter",
+  "intents_path": "/Users/janghyoseog/workspace/reflex-language-model/runs/factory_phase2/paraphrased_iot_light_5.jsonl",
+  "n_intents": 300,
+  "samples_per_intent": 4,
+  "temperature": 0.7,
+  "n_samples_attempted": 455,
+  "n_parse_fail": 17,
+  "n_no_match": 186,
+  "n_match": 252,
+  "n_intents_with_match": 252,
+  "n_kept_after_dedup": 241,
+  "wall_seconds": 834.8
+}

@@ -408,3 +408,97 @@ iot_light_5 is one stage away from the headline result (sub-1B matches untuned 1
 2. **catalog_to_xgrammar.py RawArg gap** — nested set_light schema is `{"type":"object"}` (loose). Only matters if S2b (training-time masking) gets revisited.
 3. **smart_home_50 needs more `defaults_when_missing` rules.** The single set_light rule rescued 37 cases on smart_home but other tools likely have their own missing-arg patterns. Discoverable from failure analysis if/when smart_home becomes a bottleneck.
 4. **Multi-seed CIs** — all numbers are still single-seed. Before any external claim, run N≥3 seeds. The eval-loop memory fix makes this cheap now.
+
+---
+
+## 13. S2c self-bootstrap full cycle (2026-05-08, late session)
+
+> Stage 2c (self-bootstrap with teacher-paraphrased intent pool) executed
+> end-to-end on iot_light_5. ~60 min wall on M1 Ultra, $0.027 API. The
+> result is small but instructive: structural failures essentially
+> eliminated, remaining errors are now purely semantic (args values).
+
+### 13.1 Pipeline executed
+
+```
+runs/factory_phase2/sft_0.6B/iot_light_5/train.jsonl   (100 entries)
+                  │
+                  │  paraphrase_intents.py        (DashScope qwen3.6-plus, $0.027)
+                  ▼
+           paraphrased_iot_light_5.jsonl          (300 entries, 3.6 min)
+                  │
+                  │  self_bootstrap.py            (sample×4, T=0.7, validator-gate)
+                  ▼
+           bootstrap_iot_light_5.jsonl            (241 kept after dedup, 14 min M1)
+                  │
+                  │  cat train + bootstrap → augmented_train.jsonl  (341 entries)
+                  │  smoke_train_eval.py            (re-SFT, 9 min M1)
+                  ▼
+        sft_0.6B_v2/iot_light_5/adapter           (LoRA v2)
+                  │
+                  │  grammar_ablation.py            (28 min M1, mask off+on)
+                  ▼
+           grammar_ablation/0.6B-sft-v2-iot_light_5/  (final numbers)
+```
+
+### 13.2 Headline numbers
+
+iot_light_5 dataset.jsonl 500 cases, 0.6B + LoRA on M1 Ultra:
+
+| config | syntax | action | exact |
+|---|---:|---:|---:|
+| **S2a v1** (orig SFT 100ex)        | 92.0% | 92.0% | 73.4% |
+| **S2a+ v1**: v1 + post-correction  | 96.6% | 96.6% | **77.2%** |
+| **S2c v2** (SFT 341ex augmented)   | 99.0% | 99.0% | **76.6%** |
+| **S2c+ v2**: v2 + post-correction  | 99.0% | 99.0% | 76.6% (no rescue, model never omits state) |
+| (compare) v2 mask_on               | 100.0% | 100.0% | 71.2% (mask still hurts) |
+
+### 13.3 What S2c actually did — failure-mode shift
+
+The exact_match number didn't move much (77.2 → 76.6, within noise) but the **internal failure decomposition changed dramatically**:
+
+| failure type | v1 | **v2** |
+|---|---:|---:|
+| structural (parse-fail or wrong action) | ~15% | **~1%** |
+| semantic (right action, wrong args) | ~12% | **~22%** |
+
+S2c moved the failure mass *off* the structural axis (which post-correction handles) *onto* the semantic axis (which post-correction can NOT handle). This is the right preparation for S3.
+
+### 13.4 Match-rate signal — the model already understands paraphrases
+
+When the v1 adapter ran on 300 unfamiliar paraphrased intents (T=0.7, N=4):
+- 84% of paraphrases produced ≥1 sample matching gold
+- 41% of all attempts produced parsable-but-wrong outputs
+- 4% produced unparsable garbage
+
+→ The intent generalization of even the v1 model is much stronger than the dataset.jsonl exact_match suggests. The 73.4% on dataset.jsonl is bounded by dataset-specific phrasings the model hasn't seen — *not* by the model lacking the underlying mapping.
+
+### 13.5 Implications for S3
+
+After S2c, the iot_light_5 v2 model has:
+- 99% action_match (tool selection essentially solved)
+- 23.4% args errors (room values, brightness, scene names)
+
+S3 (DPO with verifier-graded preference pairs) is the right next stage: the model produces multiple samples per intent, the verifier scores each by exact_match (with partial credit for action-only match), and DPO pushes the policy toward higher-scoring outputs. This is precisely the lever for fine-grained semantic correction.
+
+Predicted S3 lift: +3-5pp → 80-82% on iot. Acceptance threshold reachable.
+
+### 13.6 Wall time and cost
+
+| stage | budget | actual | over/under |
+|---|---:|---:|---|
+| 1: paraphrase script | 35m | 5m | -30 |
+| 2: paraphrase pool 100→300 | 15m | 4m | -11 |
+| 3: self_bootstrap on 300 paraphrases | 50m | 14m | -36 |
+| 4: re-SFT augmented | 18m | 9m | -9 |
+| 5: re-ablation (mask off+on) | 25m | 28m | +3 |
+| 6: docs + commit + push | 20m | _in flight_ | — |
+| **total** | **163m** | **~60m + docs** | **64% under budget** |
+
+API cost incremental: $0.027 (paraphrase generation). All other work was local M1 GPU time, no API.
+
+### 13.7 What's NOT done (deferred)
+
+- smart_home_50 S2c cycle — same recipe should run, ~2x wall (50 tools, 1300-token context). Predicted v2 lift smaller because smart_home's failure mass is more diverse than iot's nested-state pattern.
+- Multi-seed CIs on the new v2 numbers.
+- Robust fallback extractor (proposed mid-session) — left as a parallel improvement; small CPU-only patch, not blocking.

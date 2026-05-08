@@ -150,7 +150,7 @@ def main() -> int:
                 continue
 
             try:
-                plan = catalog.parse_json_dsl(raw)
+                plan = catalog.parse_json_dsl(raw, prompt=ex.intent)
             except DSLValidationError:
                 n_parse_fail += 1
                 continue

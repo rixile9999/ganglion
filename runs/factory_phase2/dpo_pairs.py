@@ -139,7 +139,7 @@ def main() -> int:
                 continue
 
             try:
-                pred_plan = catalog.parse_json_dsl(raw)
+                pred_plan = catalog.parse_json_dsl(raw, prompt=ex.intent)
             except DSLValidationError:
                 samples.append((raw, 0.0))
                 continue

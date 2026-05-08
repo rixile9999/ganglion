@@ -152,7 +152,7 @@ def evaluate_lora(
         latency_ms = (time.perf_counter() - started) * 1000
 
         try:
-            predicted_plan = catalog.parse_json_dsl(raw_output)
+            predicted_plan = catalog.parse_json_dsl(raw_output, prompt=ex.intent)
             error: str | None = None
         except DSLValidationError as exc:
             predicted_plan = None

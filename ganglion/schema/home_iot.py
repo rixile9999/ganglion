@@ -134,4 +134,5 @@ CATALOG = Catalog(
     tools=HOME_IOT_TOOLS,
     examples=IOT_LIGHT_EXAMPLES,
     extra_rules=IOT_LIGHT_RULES,
+    default_strip_unknown_args=True,
 )

@@ -4,9 +4,8 @@ import re
 import time
 from typing import Any
 
-from ganglion.dsl.validator import parse_json_dsl
+from ganglion.schema.iot_light import CATALOG as IOT_LIGHT_CATALOG, ROOM_ALIASES
 from ganglion.runtime.types import ModelResult
-from ganglion.schema.iot_light import ROOM_ALIASES
 
 
 class RuleBasedJSONDSLClient:
@@ -15,7 +14,7 @@ class RuleBasedJSONDSLClient:
     def invoke(self, user_prompt: str) -> ModelResult:
         started = time.perf_counter()
         payload = self._to_payload(user_prompt)
-        plan = parse_json_dsl(payload)
+        plan = IOT_LIGHT_CATALOG.parse_json_dsl(payload, prompt=user_prompt)
         return ModelResult(
             plan=plan,
             raw=payload,

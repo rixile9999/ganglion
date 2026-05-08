@@ -79,6 +79,7 @@ ArgSpec = EnumArg | IntArg | NumberArg | StringArg | BoolArg | TimeArg | RawArg
 
 
 DefaultRule = tuple[str, Any, Callable[[Mapping[str, Any]], bool]]
+PromptCorrection = Callable[[dict[str, Any], str], dict[str, Any]]
 
 
 @dataclass(frozen=True)
@@ -98,6 +99,20 @@ class ToolSpec:
     # advertise these defaults — the contract still requires ``state``,
     # post-correction is purely a parse-time inference layer.
     defaults_when_missing: tuple[DefaultRule, ...] = ()
+    # If True, args not declared in ``args`` are silently dropped before
+    # validation instead of raising. Targets the ``#N`` trailing-token
+    # pattern in dataset.jsonl prompts where small models echo the trailing
+    # number back into args (e.g. list_devices(args={"id":"8"}) for prompt
+    # ``조명 장치 목록 보여줘 #8``). When False (default) unknown args
+    # raise ``DSLValidationError`` as before.
+    strip_unknown_args: bool = False
+    # Optional prompt-aware post-correction. Receives ``(args, prompt)``
+    # and returns the corrected ``args`` mapping. Runs AFTER
+    # ``defaults_when_missing`` and ``strip_unknown_args``, BEFORE the
+    # type validator. Use sparingly — only when prompt context provides a
+    # signal that the model can systematically miss (e.g. Korean
+    # 12-hour ``오전/오후 N시`` → 24h conversion for ``schedule_light.at``).
+    prompt_correction: PromptCorrection | None = None
 
     def get_arg(self, name: str) -> ArgSpec | None:
         for arg_name, spec in self.args:

@@ -167,7 +167,7 @@ def synthesize(
 
                 intent = pair["intent"].strip()
                 # Re-serialize DSL through the catalog parse to canonicalize
-                plan = catalog.parse_json_dsl(pair["dsl"])
+                plan = catalog.parse_json_dsl(pair["dsl"], prompt=intent)
                 expected_dsl = json.dumps(plan.to_jsonable(), ensure_ascii=False, sort_keys=True)
 
                 examples.append(
@@ -226,7 +226,7 @@ def synth_gate(
         return False, "parse"
 
     try:
-        plan = catalog.parse_json_dsl(dsl)
+        plan = catalog.parse_json_dsl(dsl, prompt=intent)
     except (DSLValidationError, Exception):
         return False, "parse"
 

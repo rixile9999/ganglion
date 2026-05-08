@@ -96,7 +96,7 @@ def run_dsl_with_repair(
         )
 
         try:
-            plan = catalog.parse_json_dsl(response.content)
+            plan = catalog.parse_json_dsl(response.content, prompt=user_prompt)
             latency_ms = (time.perf_counter() - started) * 1000
             return ModelResult(
                 plan=plan,
@@ -215,7 +215,9 @@ class QwenFreeformJSONDSLClient:
             usage = getattr(completion, "usage", None)
         latency_ms = (time.perf_counter() - started) * 1000
 
-        plan, parse_strategy = parse_json_dsl_lenient(content, catalog=self.catalog)
+        plan, parse_strategy = parse_json_dsl_lenient(
+            content, catalog=self.catalog, prompt=user_prompt,
+        )
         return ModelResult(
             plan=plan,
             raw={
@@ -297,7 +299,7 @@ class QwenNativeToolClient:
             function = raw_call.function
             args = json.loads(function.arguments or "{}")
             dsl_calls.append({"action": function.name, "args": args})
-        plan = self.catalog.parse_json_dsl({"calls": dsl_calls})
+        plan = self.catalog.parse_json_dsl({"calls": dsl_calls}, prompt=user_prompt)
 
         emitted_calls = [
             {"name": call.action, "arguments": call.args}

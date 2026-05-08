@@ -1,0 +1,338 @@
+{
+  "catalog": "iot_light_5",
+  "eval_report": "/home/rixile/workspace/reflex-language-model/runs/factory_phase2/grammar_ablation/0.6B-sft-v2-iot_light_5-cuda/mask_off/eval_report.json",
+  "n_total": 500,
+  "before": {
+    "syntax_valid_rate": 0.956,
+    "action_match_rate": 0.954,
+    "exact_match_rate": 0.864
+  },
+  "after": {
+    "syntax_valid_rate": 0.998,
+    "action_match_rate": 0.996,
+    "exact_match_rate": 0.992
+  },
+  "deltas": {
+    "syntax": 21,
+    "action": 21,
+    "exact": 64
+  },
+  "rescue_by_correction": {
+    "C1_strip_unknown": 21,
+    "C2_korean_time": 43,
+    "both": 0,
+    "other": 0
+  },
+  "rescue_examples": [
+    {
+      "id": "a35739fc",
+      "prompt": "오전 1시에 거실 불 켜지게 예약해줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "08:00",
+              "room": "living",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "01:00",
+              "room": "living",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "01:00",
+              "state": "on"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "a05f993e",
+      "prompt": "오후 1시에 거실 조명 꺼줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "23:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "13:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "13:00",
+              "state": "off"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "8b29fc1e",
+      "prompt": "오전 2시에 거실 불 켜지게 예약해줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "08:00",
+              "room": "living",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "02:00",
+              "room": "living",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "02:00",
+              "state": "on"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "5743d282",
+      "prompt": "오전 3시에 거실 불 켜지게 예약해줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "07:00",
+              "room": "living",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "03:00",
+              "room": "living",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "03:00",
+              "state": "on"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "ada16639",
+      "prompt": "오후 3시에 거실 조명 꺼줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "21:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "15:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "15:00",
+              "state": "off"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "f087962c",
+      "prompt": "오후 4시에 거실 조명 꺼줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "20:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "16:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "9c5c7545",
+      "prompt": "조명 장치 목록 보여줘 #8",
+      "raw": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {
+              "id": "8"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      }
+    },
+    {
+      "id": "2b798b99",
+      "prompt": "오후 5시에 거실 조명 꺼줘",
+      "raw": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "21:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "corrected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "at": "17:00",
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "living",
+              "at": "17:00",
+              "state": "off"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

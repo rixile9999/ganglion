@@ -1,0 +1,3038 @@
+{
+  "total": 500,
+  "runs_per_case": 1,
+  "syntax_valid_rate": 0.934,
+  "exact_match_rate": 0.824,
+  "action_match_rate": 0.904,
+  "latency_ms_mean": 1495.1,
+  "latency_ms_p50": 1541.01,
+  "latency_ms_p95": 2490.94,
+  "latency_ms_stddev": 622.74,
+  "input_tokens_total": null,
+  "output_tokens_total": null,
+  "parse_strategy_counts": null,
+  "reasoning_chars_total": null,
+  "repair_attempts_total": null,
+  "repair_successes_total": null,
+  "failures": [
+    {
+      "id": "8470b798",
+      "prompt": "서재 조명을 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "color_temp": "warm"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_thermostat",
+            "args": {
+              "room": "office",
+              "temperature": 20,
+              "mode": "cool"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "서재 조명을 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"cool\", \"room\": \"office\", \"temperature\": 20}}]}"
+      }
+    },
+    {
+      "id": "7df47071",
+      "prompt": "복도 불 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "set_thermostat.temperature is required",
+      "raw": {
+        "intent": "복도 불 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"off\", \"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "6081002b",
+      "prompt": "영화 모드 scene을 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 모드 scene을 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "9024ff85",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 거실 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 볼 때 쓸 scene 만들어줘. 거실 조명 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "6c818d85",
+      "prompt": "create movie mode scene. set living room light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "create movie mode scene. set living room light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "00f13c65",
+      "prompt": "movie scene for living room light, 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "movie scene for living room light, 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "1bb3a0ef",
+      "prompt": "영화 모드 scene을 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 모드 scene을 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "42b38e53",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 침실 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 볼 때 쓸 scene 만들어줘. 침실 조명 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "609dd410",
+      "prompt": "create movie mode scene. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "create movie mode scene. set bedroom light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "2b6e86e3",
+      "prompt": "movie scene for bedroom light, 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "movie scene for bedroom light, 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "a145ec9f",
+      "prompt": "영화 모드 scene을 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 모드 scene을 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "d97e4a6c",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 주방 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 볼 때 쓸 scene 만들어줘. 주방 조명 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "d7cbb991",
+      "prompt": "create movie mode scene. set kitchen light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "create movie mode scene. set kitchen light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "a630943d",
+      "prompt": "movie scene for kitchen light, 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "movie scene for kitchen light, 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "a380d3c5",
+      "prompt": "영화 모드 scene을 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 모드 scene을 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "734c49c4",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 복도 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 볼 때 쓸 scene 만들어줘. 복도 조명 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "d641e9d3",
+      "prompt": "create movie mode scene. set hallway light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "create movie mode scene. set hallway light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "2d11094c",
+      "prompt": "movie scene for hallway light, 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "movie scene for hallway light, 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "68e22221",
+      "prompt": "영화 모드 scene을 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 모드 scene을 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "10ebb4ac",
+      "prompt": "영화 볼 때 쓸 scene 만들어줘. 서재 조명 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "영화 볼 때 쓸 scene 만들어줘. 서재 조명 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "39719384",
+      "prompt": "복도 불 상태 알려줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 상태 알려줘",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "cff59ec9",
+      "prompt": "create movie mode scene. set office light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "create movie mode scene. set office light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"office\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "f976828f",
+      "prompt": "복도 조명 켜져 있는지 확인해줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 켜져 있는지 확인해줘",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "52bd04ac",
+      "prompt": "movie scene for office light, 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "movie scene for office light, 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"office\", \"state\": \"on\"}}], \"name\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "a34f7716",
+      "prompt": "영화 모드 #0 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#0'",
+      "raw": {
+        "intent": "영화 모드 #0 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"#0\"}}]}"
+      }
+    },
+    {
+      "id": "75cd946c",
+      "prompt": "list light devices #21",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "invalid JSON: Expecting ',' delimiter",
+      "raw": {
+        "intent": "list light devices #21",
+        "raw_output": "{\"calls\": [{\"action\": \"list_devices\", \"args\": {\"args\": {\"device\": \"light\", \"id\": \"21\"}}]}"
+      }
+    },
+    {
+      "id": "f42c50ea",
+      "prompt": "create movie mode #0. set living room light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#0'",
+      "raw": {
+        "intent": "create movie mode #0. set living room light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"#0\"}}]}"
+      }
+    },
+    {
+      "id": "1302bb0b",
+      "prompt": "영화 모드 #1 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#1'",
+      "raw": {
+        "intent": "영화 모드 #1 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"#1\"}}]}"
+      }
+    },
+    {
+      "id": "eab3654c",
+      "prompt": "create movie mode #1. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#1'",
+      "raw": {
+        "intent": "create movie mode #1. set bedroom light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"#1\"}}]}"
+      }
+    },
+    {
+      "id": "6e25706d",
+      "prompt": "영화 모드 #2 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#2'",
+      "raw": {
+        "intent": "영화 모드 #2 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"#2\"}}]}"
+      }
+    },
+    {
+      "id": "3fdd3a9e",
+      "prompt": "create movie mode #2. set kitchen light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "create movie mode #2. set kitchen light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"movie\", \"type\": \"movie\"}}]}"
+      }
+    },
+    {
+      "id": "ba371c21",
+      "prompt": "거실 조명을 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "color_temp": "warm"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "거실 조명을 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "5f6941eb",
+      "prompt": "영화 모드 #3 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#3'",
+      "raw": {
+        "intent": "영화 모드 #3 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"#3\"}}]}"
+      }
+    },
+    {
+      "id": "f84c102a",
+      "prompt": "create movie mode #3. set hallway light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#3'",
+      "raw": {
+        "intent": "create movie mode #3. set hallway light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"#3\"}}]}"
+      }
+    },
+    {
+      "id": "d6e2c6c5",
+      "prompt": "영화 모드 #4 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#4'",
+      "raw": {
+        "intent": "영화 모드 #4 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"#4\"}}]}"
+      }
+    },
+    {
+      "id": "46e2bab0",
+      "prompt": "list light devices #29",
+      "expected": {
+        "calls": [
+          {
+            "action": "list_devices",
+            "args": {}
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "invalid JSON: Expecting value",
+      "raw": {
+        "intent": "list light devices #29",
+        "raw_output": "{\"calls\": [{\"action\": \"list_devices\", \"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\": {\"args\":"
+      }
+    },
+    {
+      "id": "c265f6d2",
+      "prompt": "create movie mode #4. set office light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#4'",
+      "raw": {
+        "intent": "create movie mode #4. set office light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"office\", \"state\": \"on\"}}], \"name\": \"#4\"}}]}"
+      }
+    },
+    {
+      "id": "6e7cbcf5",
+      "prompt": "거실 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "living",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "거실 조명을 차갑게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"living\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "6dd17679",
+      "prompt": "영화 모드 #5 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#5'",
+      "raw": {
+        "intent": "영화 모드 #5 만들어줘. 거실 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"#5\"}}]}"
+      }
+    },
+    {
+      "id": "65c698f4",
+      "prompt": "create movie mode #5. set living room light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "living",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#5'",
+      "raw": {
+        "intent": "create movie mode #5. set living room light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"living\", \"state\": \"on\"}}], \"name\": \"#5\"}}]}"
+      }
+    },
+    {
+      "id": "14cdc245",
+      "prompt": "영화 모드 #6 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#6'",
+      "raw": {
+        "intent": "영화 모드 #6 만들어줘. 침실 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"#6\"}}]}"
+      }
+    },
+    {
+      "id": "8b30eb14",
+      "prompt": "create movie mode #6. set bedroom light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "bedroom",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#6'",
+      "raw": {
+        "intent": "create movie mode #6. set bedroom light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"#6\"}}]}"
+      }
+    },
+    {
+      "id": "4433b1f3",
+      "prompt": "영화 모드 #7 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#7'",
+      "raw": {
+        "intent": "영화 모드 #7 만들어줘. 주방 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"#7\"}}]}"
+      }
+    },
+    {
+      "id": "f64017ee",
+      "prompt": "복도 조명 상태 다시 확인해줘 #3",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #3",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "a0a7803d",
+      "prompt": "create movie mode #7. set kitchen light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "kitchen",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#7'",
+      "raw": {
+        "intent": "create movie mode #7. set kitchen light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}], \"name\": \"#7\"}}]}"
+      }
+    },
+    {
+      "id": "3bb13222",
+      "prompt": "영화 모드 #8 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#8'",
+      "raw": {
+        "intent": "영화 모드 #8 만들어줘. 복도 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"#8\"}}]}"
+      }
+    },
+    {
+      "id": "5888360b",
+      "prompt": "create movie mode #8. set hallway light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "hallway",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#8'",
+      "raw": {
+        "intent": "create movie mode #8. set hallway light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"hallway\", \"state\": \"on\"}}], \"name\": \"#8\"}}]}"
+      }
+    },
+    {
+      "id": "1f099537",
+      "prompt": "영화 모드 #9 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#9'",
+      "raw": {
+        "intent": "영화 모드 #9 만들어줘. 서재 조명은 20% 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}], \"name\": \"#9\"}}]}"
+      }
+    },
+    {
+      "id": "3d022bd1",
+      "prompt": "create movie mode #9. set office light to 20% warm",
+      "expected": {
+        "calls": [
+          {
+            "action": "create_scene",
+            "args": {
+              "name": "movie",
+              "actions": [
+                {
+                  "action": "set_light",
+                  "args": {
+                    "room": "office",
+                    "state": "on",
+                    "brightness": 20,
+                    "color_temp": "warm"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "create_scene.name: unsupported scene name '#9'",
+      "raw": {
+        "intent": "create movie mode #9. set office light to 20% warm",
+        "raw_output": "{\"calls\": [{\"action\": \"create_scene\", \"args\": {\"actions\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"office\", \"state\": \"on\"}}], \"name\": \"#9\"}}]}"
+      }
+    },
+    {
+      "id": "96c1eced",
+      "prompt": "복도 조명 상태 다시 확인해줘 #8",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #8",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "1ad607db",
+      "prompt": "복도 조명 상태 다시 확인해줘 #13",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #13",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "fe617bd5",
+      "prompt": "침실 조명을 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "color_temp": "warm"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "침실 조명을 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"bedroom\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "a4148e99",
+      "prompt": "침실 조명을 중립으로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "unsupported state: neutral",
+      "raw": {
+        "intent": "침실 조명을 중립으로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"bedroom\", \"state\": \"neutral\"}}]}"
+      }
+    },
+    {
+      "id": "bf521313",
+      "prompt": "침실 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "bedroom",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "침실 조명을 차갑게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"bedroom\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "a8aba91d",
+      "prompt": "복도 조명 상태 다시 확인해줘 #18",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #18",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "f5bb7004",
+      "prompt": "복도 조명 상태 다시 확인해줘 #23",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #23",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "693cb46a",
+      "prompt": "복도 조명 상태 다시 확인해줘 #28",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #28",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "308e9954",
+      "prompt": "주방 조명을 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "color_temp": "warm"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 조명을 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"kitchen\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "4862cbad",
+      "prompt": "주방 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "kitchen",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "주방 조명을 차갑게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"kitchen\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "3a556407",
+      "prompt": "복도 조명 상태 다시 확인해줘 #33",
+      "expected": {
+        "calls": [
+          {
+            "action": "get_light_state",
+            "args": {
+              "room": "hallway"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_thermostat",
+            "args": {
+              "room": "office"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 상태 다시 확인해줘 #33",
+        "raw_output": "{\"calls\": [{\"action\": \"get_thermostat\", \"args\": {\"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "a6f4333f",
+      "prompt": "복도 불 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_thermostat",
+            "args": {
+              "room": "office",
+              "temperature": 20,
+              "mode": "cool"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"cool\", \"room\": \"office\", \"temperature\": 20}}]}"
+      }
+    },
+    {
+      "id": "92882d5d",
+      "prompt": "복도 조명 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "6f6cf9c9",
+      "prompt": "복도 불 10%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "temperature must be >= 15",
+      "raw": {
+        "intent": "복도 불 10%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 10}}]}"
+      }
+    },
+    {
+      "id": "6e320438",
+      "prompt": "복도 조명 밝기 10로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 10로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 10, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "9e604f22",
+      "prompt": "복도 불 20%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_thermostat",
+            "args": {
+              "room": "office",
+              "temperature": 20,
+              "mode": "cool"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 20%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"cool\", \"room\": \"office\", \"temperature\": 20}}]}"
+      }
+    },
+    {
+      "id": "b81175e1",
+      "prompt": "복도 조명 밝기 20로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 20로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 20, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "4c1fa3ff",
+      "prompt": "복도 불 35%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_pool_temp",
+            "args": {
+              "temperature": 35
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 35%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 35}}]}"
+      }
+    },
+    {
+      "id": "46421f1d",
+      "prompt": "복도 조명 밝기 35로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 35
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 35로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 35, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "60e130cf",
+      "prompt": "복도 불 50%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "temperature must be <= 40",
+      "raw": {
+        "intent": "복도 불 50%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 50}}]}"
+      }
+    },
+    {
+      "id": "61c1706f",
+      "prompt": "복도 조명 밝기 50로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 50로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 50, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "aa33c44a",
+      "prompt": "복도 불 70%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 70
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "temperature must be <= 40",
+      "raw": {
+        "intent": "복도 불 70%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 70}}]}"
+      }
+    },
+    {
+      "id": "53a806c0",
+      "prompt": "복도 조명 밝기 70로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 70
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 70
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 70로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 70, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "c871ed0c",
+      "prompt": "복도 불 80%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 80
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "temperature must be <= 40",
+      "raw": {
+        "intent": "복도 불 80%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 80}}]}"
+      }
+    },
+    {
+      "id": "a6a5529e",
+      "prompt": "복도 조명 밝기 80로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 80
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 80
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 80로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 80, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "5378a651",
+      "prompt": "복도 불 100%로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 100
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "temperature must be <= 40",
+      "raw": {
+        "intent": "복도 불 100%로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 100}}]}"
+      }
+    },
+    {
+      "id": "da9ff992",
+      "prompt": "복도 조명 밝기 100로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 100
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "brightness": 100
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명 밝기 100로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"brightness\": 100, \"room\": \"office\", \"state\": \"on\"}}]}"
+      }
+    },
+    {
+      "id": "427da497",
+      "prompt": "복도 조명을 따뜻하게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "color_temp": "warm"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_thermostat",
+            "args": {
+              "room": "office",
+              "temperature": 20,
+              "mode": "cool"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명을 따뜻하게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"cool\", \"room\": \"office\", \"temperature\": 20}}]}"
+      }
+    },
+    {
+      "id": "af14a1e2",
+      "prompt": "복도 조명을 중립으로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "unsupported state: neutral",
+      "raw": {
+        "intent": "복도 조명을 중립으로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"office\", \"state\": \"neutral\"}}]}"
+      }
+    },
+    {
+      "id": "cee9107b",
+      "prompt": "복도 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 조명을 차갑게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"office\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "36a37522",
+      "prompt": "오후 2시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "14:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 2시에 서재 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"18:00\", \"room\": \"bedroom\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "f379fff1",
+      "prompt": "오후 4시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "16:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 4시에 서재 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"16:00\", \"room\": \"bedroom\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "ea9b1fbc",
+      "prompt": "오후 6시에 서재 조명 꺼줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "office",
+              "at": "18:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "schedule_light",
+            "args": {
+              "room": "bedroom",
+              "at": "18:00",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "오후 6시에 서재 조명 꺼줘",
+        "raw_output": "{\"calls\": [{\"action\": \"schedule_light\", \"args\": {\"at\": \"18:00\", \"room\": \"bedroom\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "1cf9f042",
+      "prompt": "서재 조명을 중립으로 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "color_temp": "neutral"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "unsupported state: neutral",
+      "raw": {
+        "intent": "서재 조명을 중립으로 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"office\", \"state\": \"neutral\"}}]}"
+      }
+    },
+    {
+      "id": "e05c6cb4",
+      "prompt": "서재 조명을 차갑게 켜줘",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "on",
+              "color_temp": "cool"
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "office",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "서재 조명을 차갑게 켜줘",
+        "raw_output": "{\"calls\": [{\"action\": \"set_light\", \"args\": {\"room\": \"office\", \"state\": \"off\"}}]}"
+      }
+    },
+    {
+      "id": "2bc4b7be",
+      "prompt": "복도 불 50%로 다시 켜줘 #3",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 50
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "temperature must be <= 40",
+      "raw": {
+        "intent": "복도 불 50%로 다시 켜줘 #3",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 50}}]}"
+      }
+    },
+    {
+      "id": "7cd77526",
+      "prompt": "복도 불 다시 꺼줘 #3",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "set_thermostat.temperature is required",
+      "raw": {
+        "intent": "복도 불 다시 꺼줘 #3",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"off\", \"room\": \"office\"}}]}"
+      }
+    },
+    {
+      "id": "126b3fa8",
+      "prompt": "복도 불 20%로 다시 켜줘 #8",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "on",
+              "brightness": 20
+            }
+          }
+        ]
+      },
+      "predicted": {
+        "calls": [
+          {
+            "action": "set_pool_temp",
+            "args": {
+              "temperature": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "raw": {
+        "intent": "복도 불 20%로 다시 켜줘 #8",
+        "raw_output": "{\"calls\": [{\"action\": \"set_pool_temp\", \"args\": {\"temperature\": 20}}]}"
+      }
+    },
+    {
+      "id": "8d190984",
+      "prompt": "복도 불 다시 꺼줘 #8",
+      "expected": {
+        "calls": [
+          {
+            "action": "set_light",
+            "args": {
+              "room": "hallway",
+              "state": "off"
+            }
+          }
+        ]
+      },
+      "predicted": null,
+      "error": "set_thermostat.temperature is required",
+      "raw": {
+        "intent": "복도 불 다시 꺼줘 #8",
+        "raw_output": "{\"calls\": [{\"action\": \"set_thermostat\", \"args\": {\"mode\": \"off\", \"room\": \"office\"}}]}"
+      }
+    }
+  ],
+  "per_strategy": {
+    "dataset.jsonl": {
+      "n": 500,
+      "syntax_valid": 0.934,
+      "action_match": 0.904,
+      "exact_match": 0.824
+    }
+  },
+  "wall_seconds": 875.8
+}

@@ -208,4 +208,7 @@ CATALOG = Catalog(
     tools=SMART_HOME_TOOLS,
     examples=IOT_LIGHT_EXAMPLES,
     extra_rules=IOT_LIGHT_RULES,
+    # 50-tool catalogs amplify the ``#N`` echo failure mode. Drop unknowns
+    # by default for every tool unless that tool explicitly opts out.
+    default_strip_unknown_args=True,
 )

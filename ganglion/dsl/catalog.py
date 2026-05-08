@@ -30,6 +30,12 @@ class Catalog:
     examples: tuple[tuple[str, str], ...] = ()
     extra_rules: tuple[str, ...] = ()
     allow_empty_calls: bool = False
+    # Catalog-level default for ``ToolSpec.strip_unknown_args``. When True,
+    # every tool in the catalog drops unknown args silently unless the
+    # tool explicitly sets ``strip_unknown_args=False``. Targets the
+    # ``#N`` echo failure pattern across large catalogs without forcing
+    # a per-tool annotation. Per-tool ``True`` always wins.
+    default_strip_unknown_args: bool = False
 
     def get_tool(self, name: str) -> ToolSpec | None:
         for tool in self.tools:
@@ -63,7 +69,11 @@ class Catalog:
     def render_openai_tools(self) -> list[dict[str, Any]]:
         return [_render_openai_tool(tool) for tool in self.tools]
 
-    def validate(self, payload: Mapping[str, Any]) -> ActionPlan:
+    def validate(
+        self,
+        payload: Mapping[str, Any],
+        prompt: str | None = None,
+    ) -> ActionPlan:
         if "calls" in payload:
             raw_calls = payload["calls"]
         elif "action" in payload:
@@ -76,10 +86,25 @@ class Catalog:
             if self.allow_empty_calls:
                 return ActionPlan(calls=())
             raise DSLValidationError("'calls' must not be empty")
-        calls = tuple(self.validate_call(raw_call, depth=0) for raw_call in raw_calls)
+        calls = tuple(
+            self.validate_call(raw_call, depth=0, prompt=prompt)
+            for raw_call in raw_calls
+        )
         return ActionPlan(calls=calls)
 
-    def parse_json_dsl(self, raw: str | Mapping[str, Any]) -> ActionPlan:
+    def parse_json_dsl(
+        self,
+        raw: str | Mapping[str, Any],
+        prompt: str | None = None,
+    ) -> ActionPlan:
+        """Parse and validate a DSL payload.
+
+        ``prompt`` enables prompt-aware post-correction (see
+        ``ToolSpec.prompt_correction``). Pass it whenever the caller knows
+        the user intent that produced ``raw``. Defaults to ``None`` for
+        backwards compatibility — without a prompt, prompt-aware rules
+        simply don't fire.
+        """
         if isinstance(raw, str):
             try:
                 payload = json.loads(raw)
@@ -87,9 +112,14 @@ class Catalog:
                 raise DSLValidationError(f"invalid JSON: {exc.msg}") from exc
         else:
             payload = dict(raw)
-        return self.validate(payload)
+        return self.validate(payload, prompt=prompt)
 
-    def validate_call(self, raw_call: Any, depth: int) -> ToolCall:
+    def validate_call(
+        self,
+        raw_call: Any,
+        depth: int,
+        prompt: str | None = None,
+    ) -> ToolCall:
         if not isinstance(raw_call, Mapping):
             raise DSLValidationError("each call must be an object")
         action = raw_call.get("action")
@@ -110,8 +140,32 @@ class Catalog:
         for arg_name, default_val, predicate in tool.defaults_when_missing:
             if arg_name not in args_with_defaults and predicate(args_with_defaults):
                 args_with_defaults[arg_name] = default_val
+        # Strip args not declared on the tool. Targets the ``#N`` echoed-
+        # token failure mode where small models leak the trailing number
+        # back into args. Fires when EITHER the tool opts in OR the
+        # catalog opts in via ``default_strip_unknown_args``.
+        strip_active = tool.strip_unknown_args or self.default_strip_unknown_args
+        if strip_active and tool.args:
+            declared = {name for name, _ in tool.args}
+            args_with_defaults = {
+                k: v for k, v in args_with_defaults.items() if k in declared
+            }
+        elif strip_active and not tool.args:
+            # Tools that accept no args (e.g. list_devices) — drop everything.
+            args_with_defaults = {}
+        # Prompt-aware correction. We don't apply this inside
+        # ``custom_validator`` paths automatically — custom validators
+        # implement nested call validation (e.g. create_scene.actions) and
+        # those nested calls go through ``validate_call`` recursively, so
+        # prompt-aware rules will run on each nested call individually.
+        if tool.prompt_correction is not None and prompt is not None:
+            args_with_defaults = dict(
+                tool.prompt_correction(args_with_defaults, prompt)
+            )
         if tool.custom_validator is not None:
-            normalized = tool.custom_validator(args_with_defaults, self, depth)
+            normalized = tool.custom_validator(
+                args_with_defaults, self, depth, prompt=prompt,
+            )
         else:
             normalized = _validate_flat_args(tool, args_with_defaults)
         return ToolCall(action=action, args=normalized)

@@ -26,7 +26,9 @@ class ScriptedCompleter:
 
 def test_repair_recovers_on_second_attempt() -> None:
     catalog = get_catalog("iot_light_5")
-    bad = '{"calls": [{"action": "set_light", "args": {"room": "moon", "state": "on"}}]}'
+    # Unknown action — prompt-aware post-correction can't rescue this, so
+    # it stays an invalid payload that exercises the repair loop.
+    bad = '{"calls": [{"action": "turn_on_lamp", "args": {"room": "living", "state": "on"}}]}'
     good = '{"calls": [{"action": "set_light", "args": {"room": "living", "state": "on"}}]}'
     completer = ScriptedCompleter([bad, good])
 
@@ -42,7 +44,7 @@ def test_repair_recovers_on_second_attempt() -> None:
     attempts = result.raw["attempts"]
     assert len(attempts) == 2
     assert "error" in attempts[0]
-    assert "moon" in attempts[0]["error"] or "room" in attempts[0]["error"]
+    assert "turn_on_lamp" in attempts[0]["error"] or "unsupported" in attempts[0]["error"]
     repair_user_msg = completer.calls[1][-1]
     assert repair_user_msg["role"] == "user"
     assert "previous JSON failed" in repair_user_msg["content"]
@@ -50,7 +52,9 @@ def test_repair_recovers_on_second_attempt() -> None:
 
 def test_repair_disabled_propagates_error() -> None:
     catalog = get_catalog("iot_light_5")
-    bad = '{"calls": [{"action": "set_light", "args": {"room": "moon", "state": "on"}}]}'
+    # Unknown action — prompt-aware post-correction can't rescue this, so
+    # it stays an invalid payload that exercises the repair loop.
+    bad = '{"calls": [{"action": "turn_on_lamp", "args": {"room": "living", "state": "on"}}]}'
     completer = ScriptedCompleter([bad])
 
     with pytest.raises(DSLValidationError):
@@ -64,7 +68,9 @@ def test_repair_disabled_propagates_error() -> None:
 
 def test_repair_exhausts_attempts() -> None:
     catalog = get_catalog("iot_light_5")
-    bad = '{"calls": [{"action": "set_light", "args": {"room": "moon", "state": "on"}}]}'
+    # Unknown action — prompt-aware post-correction can't rescue this, so
+    # it stays an invalid payload that exercises the repair loop.
+    bad = '{"calls": [{"action": "turn_on_lamp", "args": {"room": "living", "state": "on"}}]}'
     completer = ScriptedCompleter([bad, bad, bad])
 
     with pytest.raises(DSLValidationError):

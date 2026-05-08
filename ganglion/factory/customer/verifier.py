@@ -38,8 +38,9 @@ def make_verifier(catalog: Catalog) -> VerifierFn:
     """
 
     def verify(prompt: Mapping[str, Any], output: str) -> float:
+        intent_text = prompt.get("intent") or prompt.get("query") or prompt.get("prompt")
         try:
-            plan = catalog.parse_json_dsl(output)
+            plan = catalog.parse_json_dsl(output, prompt=intent_text)
         except DSLValidationError:
             return 0.0
         except Exception:  # malformed JSON, etc.

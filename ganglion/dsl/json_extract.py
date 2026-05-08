@@ -12,6 +12,7 @@ def parse_json_dsl_lenient(
     raw: str,
     *,
     catalog: Catalog | None = None,
+    prompt: str | None = None,
 ) -> tuple[ActionPlan, str]:
     if catalog is None:
         from ganglion.schema.iot_light import CATALOG as DEFAULT_CATALOG
@@ -19,13 +20,13 @@ def parse_json_dsl_lenient(
         catalog = DEFAULT_CATALOG
 
     try:
-        return catalog.parse_json_dsl(raw), "strict"
+        return catalog.parse_json_dsl(raw, prompt=prompt), "strict"
     except DSLValidationError as strict_error:
         last_error = strict_error
 
     for fenced in re.findall(r"```(?:json)?\s*(.*?)```", raw, flags=re.DOTALL | re.IGNORECASE):
         try:
-            return catalog.parse_json_dsl(fenced.strip()), "fenced"
+            return catalog.parse_json_dsl(fenced.strip(), prompt=prompt), "fenced"
         except DSLValidationError as exc:
             last_error = exc
 
@@ -38,7 +39,7 @@ def parse_json_dsl_lenient(
         except json.JSONDecodeError:
             continue
         try:
-            return catalog.parse_json_dsl(payload), "embedded"
+            return catalog.parse_json_dsl(payload, prompt=prompt), "embedded"
         except DSLValidationError as exc:
             last_error = exc
 

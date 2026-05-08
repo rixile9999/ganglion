@@ -1,0 +1,15 @@
+{
+  "source": "/home/rixile/workspace/reflex-language-model/runs/factory_phase2/sft_0.6B_v2/iot_light_5/train.jsonl",
+  "n_intents": 271,
+  "n_per_intent": 3,
+  "n_calls": 271,
+  "n_empty": 0,
+  "n_paraphrases": 813,
+  "input_tokens": 110403,
+  "output_tokens": 20275,
+  "cost_usd": 0.137,
+  "wall_seconds": 714.2,
+  "teacher_model": "qwen3.6-plus",
+  "teacher_temperature": 1.0,
+  "mode": "ood"
+}

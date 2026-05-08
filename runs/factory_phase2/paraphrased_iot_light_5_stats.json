@@ -1,0 +1,14 @@
+{
+  "source": "/Users/janghyoseog/workspace/reflex-language-model/runs/factory_phase2/sft_0.6B/iot_light_5/train.jsonl",
+  "n_intents": 100,
+  "n_per_intent": 3,
+  "n_calls": 100,
+  "n_empty": 0,
+  "n_paraphrases": 300,
+  "input_tokens": 14385,
+  "output_tokens": 6285,
+  "cost_usd": 0.0266,
+  "wall_seconds": 215.9,
+  "teacher_model": "qwen3.6-plus",
+  "teacher_temperature": 0.85
+}

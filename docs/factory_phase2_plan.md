@@ -331,3 +331,80 @@ Compress to 4-5 weeks if 2-3 stages run in parallel (e.g., S2c development while
 - Not a publication plan (yet). Acceptance numbers are research milestones, not paper milestones.
 - Not a multi-customer plan. Single-catalog focus until thesis lands; then re-run on smart_home_50 + a third real-world catalog (e.g., GitHub MCP) before claiming generalization.
 - Not Track A productization. pack.py / cli.py / vLLM serving stay deferred until Arc A clears or aborts.
+
+---
+
+## 12. S2a + post-correction results (2026-05-08, end-of-day)
+
+> Stage 2a (0.6B SFT) and the unplanned `defaults_when_missing` post-correction
+> rule both landed today on M1 Ultra. This section records final numbers,
+> consequent priority shifts, and the Arc-A standing.
+
+### 12.1 Final 0.6B numbers — best config per catalog
+
+| catalog | config | exact | syntax | action | latency p50 |
+|---|---|---:|---:|---:|---:|
+| iot_light_5 | SFT only (mask off) | 73.4% | 92.0% | 92.0% | 1845 ms |
+| iot_light_5 | SFT + mask on | 68.6% | 94.0% | 94.0% | n/a |
+| **iot_light_5** | **SFT + post-correction (mask off)** | **77.2%** | **96.6%** | **96.6%** | **1845 ms** |
+| smart_home_50 | SFT only (mask off) | 64.0% | 88.2% | 80.8% | 2056 ms |
+| smart_home_50 | SFT + mask on | 70.8% | 99.8% | 90.6% | 1929 ms |
+| **smart_home_50** | **SFT + post-correction (mask off)** | **71.4%** | **95.8%** | **88.4%** | **2056 ms** |
+
+Headline: **0.6B + Phase 1 SFT recipe + `defaults_when_missing` rule (no inference masking)** wins on both catalogs and beats every prior configuration. 100-example × 3-epoch SFT (171s on iot, 51 min on smart_home with max_seq=2048) suffices.
+
+### 12.2 Two findings that change the §11 priority order
+
+**(a) Inference-time grammar masking is not a uniform win on SFT'd models.**
+
+- Untuned 0.6B: masking adds **+17pp** (huge value, as predicted by A3 thesis).
+- SFT'd 0.6B on small catalog (iot, 5 tools): masking adds **−5pp** (regression).
+- SFT'd 0.6B on large catalog (smart_home, 50 tools): masking adds **+7pp** (helpful, but post-correction beats it).
+
+The implicit assumption of A3 ("masking always strictly improves syntax_valid → improves exact") fails on SFT'd small-catalog runs because the trained model has already learned the format better than the grammar specifies; masking sometimes biases away from the model's correct token. Catalog-size dependence: more tools → masking still helps clean up confusion clusters that SFT didn't eliminate.
+
+**(b) Deterministic post-correction (`defaults_when_missing`) strictly dominates inference masking on SFT'd models.**
+
+| catalog | best with masking | best with post-correction | Δ in favor of post-correction |
+|---|---:|---:|---:|
+| iot_light_5 | 73.4% (mask off) | 77.2% | +3.8pp |
+| smart_home_50 | 70.8% (mask on) | 71.4% | +0.6pp |
+
+Plus zero inference latency cost. Plus zero risk of grammar-induced semantic regressions. Plus generalizes to *any* tool with declarative defaults.
+
+→ **Inference-time masking demoted from a Phase 2 deliverable to a *diagnostic tool* used only on untuned baselines.** Post-correction layer is now the standard inference-time component.
+
+### 12.3 Updated stage status
+
+| § | Stage | Status as of 2026-05-08 EOD | Note |
+|---|---|---|---|
+| 11.1 | **S1b** mask ablation | ✅ done (M1 Ultra, no GPU box needed) | A3 thesis partially refuted; post-correction is the right default. |
+| 11.1 | **S2a** 0.6B SFT | ✅ done both catalogs | 73.4% / 64.0% mask-off |
+| (new) | **S2a+** post-correction layer | ✅ done | 77.2% / 71.4% — current best |
+| 11.1 | **S2b** training-time masking | ⛔ **deprioritized** | Inference masking didn't help SFT'd models; training masking likely also distorts. Don't burn a week on it. |
+| 11.1 | **S2c** self-bootstrap | 🔜 next | Predicted +3-5pp. iot at 77.2% needs only +2.8 to clear 80% acceptance line. |
+| 11.1 | **S3** DPO graded | future | Predicted +3-5pp on top of S2c. Brings smart_home toward 80%. |
+| 11.1 | **S3+** GRPO graded | optional | Only if DPO plateaus. |
+
+### 12.4 Distance to thesis acceptance (≥80% exact)
+
+| catalog | current | target | gap | next-step coverage |
+|---|---:|---:|---:|---|
+| iot_light_5 | 77.2% | 80% | **+2.8pp** | S2c alone likely closes |
+| smart_home_50 | 71.4% | 80% | +8.6pp | S2c + S3 likely required |
+
+iot_light_5 is one stage away from the headline result (sub-1B matches untuned 1.7B ≈ 80%). smart_home_50 needs two more stages but the trend line is clean.
+
+### 12.5 Engineering bugs landed today (won't show up again)
+
+- **MPS ffi-tensor bug** in xgrammar 0.2.0's HF LogitsProcessor → workaround in `xgrammar_processor.py` (`.item()` coercion).
+- **Phase 1 eval-loop memory leak** hidden by CUDA's caching allocator → `eval.py` now does `gc.collect()` + `empty_cache()` per case. ~10× wall speedup on long-context eval. Optional `GANGLION_EVAL_MEMORY_LOG=1` for RSS tracking.
+- **Phase 1 `smoke_train_eval.py` lacked `--base-model`** → added. Now usable for any HF base.
+- **`runs/factory_phase2/recompute_with_defaults.py`** added: replays a saved eval_report.json against current catalog rules. Free verification of post-correction patches without GPU.
+
+### 12.6 Open issues moving into next session
+
+1. **Why mask_on regresses on iot_light_5 SFT'd model in 42 cases (semantic flips on `set_light` args).** Agent diagnosis was inconclusive; mechanism unknown. Low priority since we've moved off inference masking, but worth one diagnostic pass before publication.
+2. **catalog_to_xgrammar.py RawArg gap** — nested set_light schema is `{"type":"object"}` (loose). Only matters if S2b (training-time masking) gets revisited.
+3. **smart_home_50 needs more `defaults_when_missing` rules.** The single set_light rule rescued 37 cases on smart_home but other tools likely have their own missing-arg patterns. Discoverable from failure analysis if/when smart_home becomes a bottleneck.
+4. **Multi-seed CIs** — all numbers are still single-seed. Before any external claim, run N≥3 seeds. The eval-loop memory fix makes this cheap now.

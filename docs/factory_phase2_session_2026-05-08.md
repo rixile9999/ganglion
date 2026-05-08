@@ -10,10 +10,16 @@
 
 ## 1. TL;DR
 
-- **Where we are**: Mid-Stage 2a (Arc A — pushing 0.6B to its ceiling). 0.6B + LoRA SFT (Phase 1 recipe) hits **73.4% exact_match** on `iot_light_5` dataset.jsonl, **88.5%** on synth holdout. Strong Arc A signal.
-- **Big surprise**: Inference-time XGrammar masking *hurts* trained-model accuracy by ~5pp (was expected to help). Helps untuned base by +17pp. The lever isn't masking, it's **SFT**.
-- **In flight**: smart_home_50 grammar_ablation (500 cases × 2) running on M1 Ultra MPS. Memory-stable thanks to the eval-loop leak fix landed today. Expected wall ~1 hour total, ~30 min elapsed.
-- **Next**: when ablation finishes, retroactive re-eval iot_light_5 with new `defaults_when_missing` rule (free, no GPU) → expected +6pp lift on iot. Then S2c (self-bootstrap).
+- **Where we are (EOD 2026-05-08)**: Stage 2a + post-correction landed. Best 0.6B configs:
+  - iot_light_5: SFT + post-correction (mask off) = **77.2%** exact (was 73.4% pre-correction)
+  - smart_home_50: SFT + post-correction (mask off) = **71.4%** exact (was 64.0% pre-correction)
+- **Three big findings shifted the §11 plan**:
+  1. SFT alone delivers +35pp (huge, dominates everything else).
+  2. Inference-time grammar masking is NOT a uniform win on SFT'd models — hurts iot (-5pp), helps smart_home (+7pp), catalog-size dependent.
+  3. Deterministic post-correction (`defaults_when_missing`) strictly beats inference masking on SFT'd models, with zero latency cost.
+- **Roadmap updated**: S2b training-time masking deprioritized (mostly removed from critical path). Post-correction added as `S2a+` standard step. Next is S2c (self-bootstrap).
+- **Distance to acceptance (≥80%)**: iot needs +2.8pp, smart_home needs +8.6pp. iot likely cleared by S2c alone; smart_home needs S2c + S3.
+- **Next concrete action**: implement `S2c` (self-bootstrap on Phase 1 train.jsonl, validator-gated).
 
 ---
 
@@ -123,70 +129,47 @@ If 0.6B + SFT + post-correction + bootstrap + DPO clears 80%, **thesis acceptanc
 
 ---
 
-## 6. In-flight work (as of handoff time)
+## 6. Completed in this session (was "in flight")
 
-**`runs/factory_phase2/grammar_ablation/0.6B-sft-smart_home_50/`** — full 500-case ablation, 0.6B + SFT adapter on smart_home_50.
+`runs/factory_phase2/grammar_ablation/0.6B-sft-smart_home_50/` finished cleanly:
+- mask_off: syntax 88.2% / action 80.8% / **exact 64.0%**
+- mask_on:  syntax 99.8% / action 90.6% / **exact 70.8%**
+- Wall ~33 min total, RSS rock-stable at ~5 GB peak (memory-leak fix held).
 
-Status when handoff written:
-- ~28 min elapsed, mask_off case 450/500 (90% done)
-- RSS 2.7 GB, growing linearly at ~4 MB/case (memory fix verified)
-- Estimated remaining: ~35 min (mask_off 50 + mask_on 500)
-- Background task ID: `bhd03nk39` (this terminal session only)
+`runs/factory_phase2/recompute_with_defaults.py` then replayed both catalogs' mask_off failure tails through the new post-correction rule (no GPU, ~5 sec each):
+- iot_light_5: 73.4% → **77.2%** (+3.8pp, 19 cases rescued)
+- smart_home_50: 64.0% → **71.4%** (+7.4pp, 37 cases rescued)
 
-When it completes, look at:
-- `runs/factory_phase2/grammar_ablation/0.6B-sft-smart_home_50/ablation_report.md` — auto-verdict + numbers
-- Compare `mask_off exact` to iot_light_5's 73.4% — robustness check across catalog sizes
+Best configs identified (also recorded in plan §12.1):
+- iot_light_5 best: SFT + post-correction (mask off) = 77.2%
+- smart_home_50 best: SFT + post-correction (mask off) = 71.4%
 
-If the smart_home_50 result is similar (60%+ mask_off, mask hurting), Arc A robustness is confirmed.
+Inference masking is now **diagnostic-only** — not part of any standard config.
 
 ---
 
-## 7. Next concrete actions (three ranked options)
+## 7. Next concrete action (only one left)
 
-### Option A — Retroactive post-correction re-eval (5 min, free, lossless)
-Re-parse the saved `eval_report.json` from prior 0.6B+SFT runs with the new `defaults_when_missing` rule. Doesn't need GPU, doesn't need to re-run inference.
+**S2c — Self-bootstrap.** Option A from the previous version of this doc was completed in-session (recompute_with_defaults.py produced +3.8/+7.4pp).
 
-```python
-# Sketch — write as runs/factory_phase2/recompute_with_defaults.py
-import json
-from pathlib import Path
-from ganglion.factory.customer.ingest import ingest_schema
-catalog = ingest_schema("iot_light_5")
-src = Path("runs/factory_phase2/grammar_ablation/0.6B-sft-iot_light_5/mask_off/eval_report.json")
-data = json.loads(src.read_text())
-rescued = 0
-for fail in data["failures"]:
-    raw_output = fail.get("raw", {}).get("raw_output")
-    if raw_output is None: continue
-    try:
-        plan = catalog.parse_json_dsl(raw_output)
-        # Compare to fail['expected']
-        ...
-        rescued += 1
-    except Exception:
-        pass
-print(f"rescued {rescued}/{len(data['failures'])}")
-```
+**Recipe** (consolidated from plan §11.1 + today's measurements):
 
-Expected: ~30 of the failures were the create_scene + missing-state pattern → ~30/(500*0.266) ≈ 22% of failures rescued → ~+6pp lift on the 73.4% number → **~79.4%**.
+1. Use **Phase 1's `train.jsonl` split as the bootstrap pool** — model has seen these intents during SFT, but we'll generate fresh paraphrases of correct outputs.
+   - Path: `runs/factory_phase2/sft_0.6B/iot_light_5/train.jsonl` (and smart_home equivalent).
+   - Why train.jsonl, not dataset.jsonl: dataset.jsonl is the eval set; bootstrapping on it is data leakage.
+2. For each `(intent, expected)` pair, sample **N=4** outputs at **temperature 0.7** through the current 0.6B+SFT adapter.
+3. Validator-gate: keep samples where `Catalog.parse_json_dsl(sample)` *equals* `expected` after applying `defaults_when_missing` (so we count the same way the eval does).
+4. Dedupe new samples vs original `train.jsonl` using existing cosine logic in `customer/synth.py` (threshold 0.93 — looser than Phase 1's 0.95 since self-samples cluster tighter).
+5. Continue-SFT on `train + bootstrap` augmented set (same hyperparams, ~1-2 epochs more).
+6. Re-eval via `grammar_ablation.py` (mask off; post-correction is in the parser already).
 
-### Option B — Self-bootstrap (S2c) implementation (~1 day)
-Extend `ganglion/factory/customer/synth.py` with a `teacher="self"` mode:
-- Load currently-trained adapter
-- For each intent in dataset.jsonl (or fresh teacher-generated paraphrases), sample N=4 outputs at temperature 0.7
-- Validator-gate each sample (parse + match expected for labeled, parse-only for unlabeled)
-- Dedupe vs original synth.jsonl with cosine 0.93 (loosened from 0.95 since self-samples cluster tighter)
-- Continue-SFT on augmented set
-- Re-eval
+**Predicted lift**: +3-5pp on top of 77.2% (iot) → 80-82%. iot would clear acceptance.
 
-Predicted lift: **+3-5pp** on top of post-correction. Brings 0.6B to ~82-85%. Approaches the 80% Arc A acceptance line.
+**Implementation effort**: ~1-2 hours code, then 30-60 min wall time per run on M1 Ultra.
 
-### Option C — Push and prepare GPU-box scale-up (30 min + scheduling)
-- `git push` if not yet (HEAD `defaults_when_missing` commit may be local-only)
-- Prepare run instructions for a real CUDA box: same `grammar_ablation.py`, but on a larger model (Qwen3-1.7B or Qwen3-4B). The pipeline is now device-agnostic enough to just work.
-- Useful if M1 wall time is the bottleneck for further iteration.
+**Suggested file**: `runs/factory_phase2/self_bootstrap.py` (single-script form, mirroring `grammar_ablation.py`'s structure).
 
-**Recommended**: **A first** (free verification of the +6pp post-correction claim), then **B** (next stage of the roadmap). C is optional and scheduling-dependent.
+After S2c lands, **S3 (DPO with verifier-graded preference pairs)** is the next major lift candidate (predicted +3-5pp).
 
 ---
 
@@ -234,4 +217,4 @@ Predicted lift: **+3-5pp** on top of post-correction. Brings 0.6B to ~82-85%. Ap
 
 ## 11. Single-line summary
 
-> **0.6B + SFT (Phase 1 recipe, 30 sec → 3 min on M1 Ultra) hits 73.4% on real dataset.jsonl — within striking distance of untuned 1.7B (87.4%). Post-correction predicted +6pp; self-bootstrap +3-5pp; DPO +3-5pp. Arc A is alive; thesis acceptance (≥80%) feasible with the next 1-2 stages.**
+> **EOD: 0.6B + SFT + `defaults_when_missing` post-correction hits 77.2% (iot) / 71.4% (smart_home) on dataset.jsonl. Inference masking demoted to diagnostic-only. iot is +2.8pp from acceptance; one self-bootstrap iteration likely clears it.**

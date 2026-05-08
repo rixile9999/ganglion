@@ -195,6 +195,30 @@ def load_lora_for_inference(
     return model, tokenizer
 
 
+def load_base_for_inference(
+    base_model: str,
+    *,
+    bf16: bool = True,
+):
+    """Load a base model (no LoRA) for inference.
+
+    Mirrors :func:`load_lora_for_inference` so ablation runners can switch
+    between tuned and untuned configurations with one parameter.
+    """
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model,
+        dtype=torch.bfloat16 if bf16 else torch.float32,
+        device_map="auto",
+        trust_remote_code=True,
+    )
+    model.eval()
+    return model, tokenizer
+
+
 def generate_dsl(
     model,
     tokenizer,

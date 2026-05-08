@@ -268,3 +268,66 @@ Cumulative API spend across the 6 baseline runs: **~$0.31**. Artifacts in `runs/
 **Going for 0.6B max-out (Arc A) as the primary research arc.** A3 (XGrammar inference) is the joint dependency that produces the first decision-relevant data point on both 0.6B and 1.7B; A3 land first, then commit to 0.6B SFT + grammar-masked training + self-bootstrap + DPO/GRPO. 1.7B polish (Arc B) is the fallback if 0.6B plateaus below ~60% post-A3.
 
 A3 implementation status (2026-05-08): module scaffold, generate-time wiring, EvalConfig threading, and unit tests landed in `ganglion/factory/grammar/xgrammar_processor.py` + `tests/factory/test_xgrammar_processor.py` (7 new tests, 52/52 factory tests pass). Awaiting GPU-box validation against actual Qwen3 checkpoints.
+
+---
+
+## 11. Arc A roadmap — 0.6B max-out
+
+> Detailed stage plan committed 2026-05-08. The single thesis under test:
+> *can compiler + RL replace ~3× capacity?* Each stage has an explicit
+> abort gate; if 0.6B fails to clear the gate, abort Arc A and pivot to
+> Arc B (1.7B polish).
+
+### 11.1 Stages
+
+| # | Name | Deliverable | Wall time | Cost | Abort gate (0.6B exact_match) |
+|---|---|---|---|---|---|
+| **S1b** | A3 inference grammar masking on GPU box | `runs/factory_phase2/grammar_ablation/{0.6B,1.7B-lora}-{iot,smart}/ablation_report.md` | 1 GPU session, ~50 min | GPU only | ≥ 50% to continue; <50% → Arc B |
+| **S2a** | 0.6B SFT (Phase 1 recipe, reuse synth.jsonl) | LoRA adapter at `runs/factory_phase2/sft_0.6B/{iot,smart}/adapter` + holdout report | 1-2 hr | GPU only | ≥ 65% post-mask to continue |
+| **S2b** | Training-time grammar masking | New: `train_lora.py` accepts `compiled_grammar`; logits masked during SFT generation steps; xgrammar-aware loss path | 5-7 days code | GPU + dev time | ≥ 70% post-mask to continue |
+| **S2c** | Self-bootstrap synth | Extend `customer/synth.py` with `--teacher=self` mode using current adapter; one bootstrap iteration, validator-gated | 2-3 days code + 1 GPU session | GPU only | ≥ 73% post-mask to continue |
+| **S3** | DPO with verifier-graded preference pairs | New: `customer/dpo.py` building (winner, loser) pairs from sampled outputs, scored by verifier (0/0.5/1) | 4-6 days code + 1 GPU session | GPU only | ≥ 76% post-mask to continue |
+| **S3+** | GRPO graded (optional) | Existing TRL GRPOTrainer + verifier reward wiring; group=8, KL=0.04 | 4-7 days code + 1-2 GPU sessions | GPU only | thesis acceptance: ≥ 80% |
+
+### 11.2 What "thesis acceptance" means
+
+A run that clears **80% exact_match on dataset.jsonl with 0.6B + LoRA** would be the headline result: a sub-1B model matching untuned 1.7B (87.4% / 80.0%) tier, with ~4× smaller deployment. Phrased honestly as "compiler + RL closes most of a 3× capacity gap on tool calling".
+
+Below 80%, Arc A still produces useful artifacts:
+- **75–80%**: strong "compiler narrows the gap" result, paper-publishable as a partial story.
+- **65–75%**: capacity floor partially overcome; "0.6B is workable for narrow domains" product positioning.
+- **<65%**: capacity floor confirmed; deliverable is the negative result + recommendation that 1.7B is the practical floor.
+
+### 11.3 Tooling to be built (in priority order)
+
+1. **GPU-box pull + Phase 1 reproducibility check** (S1b prerequisite). Re-run Phase 1 smoke once on the GPU box to confirm adapters reproduce; otherwise S1b's 1.7B+LoRA branch has no comparison baseline.
+2. **Multi-seed wrapper** (cuts across all stages). `runs/factory_phase2/sweep.py` — wraps any single-config eval and runs N seeds, emits mean ± stddev. Without this every result has ±2pp noise we can't separate from genuine effect.
+3. **Training-time grammar masking** (S2b). Largest new code item. Open question: do we mask only assistant-side generation during validation steps, or also during the generation that produces gradient targets? Decision pending — see §11.5.
+4. **Self-bootstrap pipeline** (S2c). Reuses `customer/synth.py` infra; the new piece is "use the trained adapter as teacher" plus deduplication against original synth.jsonl.
+5. **DPO loop** (S3). New module. Verifier-graded reward (0/0.5/1) feeds DPO loss with implicit margin via reward gap, not just binary winner/loser.
+
+### 11.4 Estimated timeline (focused work, single contributor)
+
+| Week | Output |
+|---|---|
+| 1 (this week) | S1b GPU run — Arc A go/no-go decision |
+| 2 | S2a (0.6B SFT, Phase 1 recipe) + multi-seed wrapper |
+| 3-4 | S2b training-time masking integration |
+| 5 | S2c self-bootstrap iteration |
+| 6-7 | S3 DPO loop |
+| 8 (optional) | S3+ GRPO if S3 plateaus |
+
+Compress to 4-5 weeks if 2-3 stages run in parallel (e.g., S2c development while S2b is training).
+
+### 11.5 Open decisions to lock before each stage
+
+- **Before S2a**: 0.6B LoRA rank — Phase 1 used r=32 on 1.7B. For 0.6B, options are r=32 (more headroom) or r=16 (faster, more efficient). Default: r=32 unless OOM.
+- **Before S2b**: training-time mask scope — assistant-only? full-sequence? validation-step-only? Default: assistant-only (mirrors `assistant_only_loss=True`).
+- **Before S2c**: self-bootstrap dedup threshold — Phase 1 used 0.95 cosine. Self-generated examples cluster tighter; 0.92-0.93 likely needed. Default: 0.93, revisit on data inspection.
+- **Before S3**: DPO β — start at 0.1, sweep {0.05, 0.1, 0.3} if S3 plateaus. Don't skip the sweep; β is the most sensitive DPO hyperparameter.
+
+### 11.6 What this roadmap is NOT
+
+- Not a publication plan (yet). Acceptance numbers are research milestones, not paper milestones.
+- Not a multi-customer plan. Single-catalog focus until thesis lands; then re-run on smart_home_50 + a third real-world catalog (e.g., GitHub MCP) before claiming generalization.
+- Not Track A productization. pack.py / cli.py / vLLM serving stay deferred until Arc A clears or aborts.

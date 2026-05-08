@@ -4,3 +4,10 @@
 */trainer/
 */*/adapter/
 */*/trainer/
+
+# Throwaway logs and smoke artifacts — runner logs are stderr captures,
+# rerunnable from the same scripts. Kept out of history.
+**/*.log
+**/_smoke_*
+**/_bootstrap_*.log
+**/_patch_smoke/

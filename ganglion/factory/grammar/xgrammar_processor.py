@@ -60,7 +60,68 @@ def make_logits_processor(compiled_grammar: Any) -> Any:
     XGrammar's matcher state is consumed during generation, so a new
     processor must be instantiated per call. Cheap — only ``compile_*`` is
     expensive.
+
+    Returns a subclass that overrides ``__call__`` to coerce the sampled
+    token to a Python ``int`` via ``.item()`` before passing it to
+    ``GrammarMatcher.accept_token``. Upstream xgrammar 0.2.0
+    (``contrib.hf.py``) hands the matcher a 0-dim tensor; the
+    ``GrammarMatcher.accept_token`` TVM-FFI signature strictly expects
+    ``int`` and rejects tensors with ``Expected int but got ffi.Tensor``
+    on Apple Silicon. The override mirrors upstream's body verbatim
+    except for the one ``.item()`` insertion; can be deleted once
+    upstream lands the fix.
     """
     import xgrammar as xgr
 
-    return xgr.contrib.hf.LogitsProcessor(compiled_grammar)
+    base_cls = xgr.contrib.hf.LogitsProcessor
+
+    class _IntCoercedLogitsProcessor(base_cls):
+        def __call__(self, input_ids, scores):
+            if len(self.matchers) == 0:
+                self.batch_size = input_ids.shape[0]
+                self.compiled_grammars = (
+                    self.compiled_grammars
+                    if len(self.compiled_grammars) > 1
+                    else self.compiled_grammars * self.batch_size
+                )
+                assert len(self.compiled_grammars) == self.batch_size, (
+                    "The number of compiled grammars must equal the batch size."
+                )
+                self.matchers = [
+                    xgr.GrammarMatcher(self.compiled_grammars[i])
+                    for i in range(self.batch_size)
+                ]
+                self.token_bitmask = xgr.allocate_token_bitmask(
+                    self.batch_size, self.full_vocab_size
+                )
+
+            if input_ids.shape[0] != self.batch_size:
+                raise RuntimeError(
+                    f"Expect input_ids.shape[0]={self.batch_size}, "
+                    f"got {input_ids.shape[0]}"
+                )
+
+            if not self.prefilled:
+                self.prefilled = True
+            else:
+                for i in range(self.batch_size):
+                    if not self.matchers[i].is_terminated():
+                        # The single-line fix: coerce 0-dim tensor → Python int.
+                        sampled_token = int(input_ids[i][-1].item())
+                        assert self.matchers[i].accept_token(sampled_token)
+
+            for i in range(self.batch_size):
+                if not self.matchers[i].is_terminated():
+                    self.matchers[i].fill_next_token_bitmask(self.token_bitmask, i)
+
+            device_type = scores.device.type
+            if device_type != "cuda":
+                scores = scores.to("cpu")
+            xgr.apply_token_bitmask_inplace(
+                scores, self.token_bitmask.to(scores.device)
+            )
+            if device_type != "cuda":
+                scores = scores.to(device_type)
+            return scores
+
+    return _IntCoercedLogitsProcessor(compiled_grammar)

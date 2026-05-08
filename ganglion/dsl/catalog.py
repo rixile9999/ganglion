@@ -102,10 +102,18 @@ class Catalog:
         args = raw_call.get("args", {})
         if not isinstance(args, Mapping):
             raise DSLValidationError("call.args must be an object")
+        # Apply post-correction defaults BEFORE validation so a small model
+        # that omits an obvious required arg (e.g. ``state`` when
+        # ``brightness`` is set) doesn't fail validation. Rules only fire
+        # when the predicate disambiguates the missing value uniquely.
+        args_with_defaults = dict(args)
+        for arg_name, default_val, predicate in tool.defaults_when_missing:
+            if arg_name not in args_with_defaults and predicate(args_with_defaults):
+                args_with_defaults[arg_name] = default_val
         if tool.custom_validator is not None:
-            normalized = tool.custom_validator(dict(args), self, depth)
+            normalized = tool.custom_validator(args_with_defaults, self, depth)
         else:
-            normalized = _validate_flat_args(tool, dict(args))
+            normalized = _validate_flat_args(tool, args_with_defaults)
         return ToolCall(action=action, args=normalized)
 
 

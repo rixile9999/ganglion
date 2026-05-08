@@ -165,6 +165,18 @@ IOT_LIGHT_TOOLS: tuple[ToolSpec, ...] = (
             ("brightness", BRIGHTNESS_ARG),
             ("color_temp", COLOR_TEMP_ARG),
         ),
+        # Small models routinely emit set_light(brightness=N) or
+        # set_light(color_temp=...) without state, especially in nested
+        # create_scene actions. Either signal makes "on" the only
+        # consistent reading. Empirical: ~6% of dataset.jsonl failures on
+        # the 0.6B+SFT path cluster on this missing-state pattern.
+        defaults_when_missing=(
+            (
+                "state",
+                "on",
+                lambda args: "brightness" in args or "color_temp" in args,
+            ),
+        ),
     ),
     ToolSpec(
         name="schedule_light",

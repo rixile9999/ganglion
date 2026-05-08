@@ -75,3 +75,93 @@ def test_normalizes_scene_name_alias() -> None:
     )
 
     assert plan.calls[0].args["name"] == "movie"
+
+
+# --- Post-correction defaults_when_missing rules ---
+
+def test_default_state_filled_when_brightness_present() -> None:
+    plan = parse_json_dsl(
+        {
+            "calls": [
+                {
+                    "action": "set_light",
+                    "args": {"room": "living", "brightness": 70},
+                }
+            ]
+        }
+    )
+    assert plan.calls[0].args["state"] == "on"
+    assert plan.calls[0].args["brightness"] == 70
+
+
+def test_default_state_filled_when_color_temp_present() -> None:
+    plan = parse_json_dsl(
+        {
+            "calls": [
+                {
+                    "action": "set_light",
+                    "args": {"room": "study", "color_temp": "warm"},
+                }
+            ]
+        }
+    )
+    assert plan.calls[0].args["state"] == "on"
+
+
+def test_default_does_not_override_explicit_state() -> None:
+    plan = parse_json_dsl(
+        {
+            "calls": [
+                {
+                    "action": "set_light",
+                    "args": {"room": "living", "state": "off", "brightness": 50},
+                }
+            ]
+        }
+    )
+    assert plan.calls[0].args["state"] == "off"
+
+
+def test_default_not_filled_without_brightness_or_color_temp() -> None:
+    """If brightness AND color_temp both absent, the call is genuinely
+    underspecified — let validation fail rather than guess."""
+    with pytest.raises(DSLValidationError):
+        parse_json_dsl(
+            {
+                "calls": [
+                    {
+                        "action": "set_light",
+                        "args": {"room": "living"},
+                    }
+                ]
+            }
+        )
+
+
+def test_default_applies_to_nested_create_scene_actions() -> None:
+    """The 30/500 failure pattern from 0.6B+SFT: nested set_light without
+    state inside create_scene.actions. Must rescue via the same rule."""
+    plan = parse_json_dsl(
+        {
+            "calls": [
+                {
+                    "action": "create_scene",
+                    "args": {
+                        "name": "movie",
+                        "actions": [
+                            {
+                                "action": "set_light",
+                                "args": {
+                                    "room": "living",
+                                    "brightness": 20,
+                                    "color_temp": "warm",
+                                },
+                            }
+                        ],
+                    },
+                }
+            ]
+        }
+    )
+    nested = plan.calls[0].args["actions"][0]
+    assert nested["args"]["state"] == "on"

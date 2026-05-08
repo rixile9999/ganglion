@@ -78,6 +78,9 @@ class RawArg:
 ArgSpec = EnumArg | IntArg | NumberArg | StringArg | BoolArg | TimeArg | RawArg
 
 
+DefaultRule = tuple[str, Any, Callable[[Mapping[str, Any]], bool]]
+
+
 @dataclass(frozen=True)
 class ToolSpec:
     name: str
@@ -85,6 +88,16 @@ class ToolSpec:
     args: tuple[tuple[str, ArgSpec], ...] = ()
     dsl_args_override: str | None = None
     custom_validator: Callable[..., dict[str, Any]] | None = None
+    # Post-correction rules: when a required arg is missing but the rest of
+    # ``args`` makes the right value unambiguous, fill it in before the
+    # validator runs. Each entry is ``(arg_name, default_value, predicate)``;
+    # the rule fires iff ``arg_name`` is absent AND ``predicate(args)`` is
+    # True. Used to absorb the ~6% failure mass on iot_light_5 from small
+    # models (e.g. 0.6B) that omit ``state`` when ``brightness`` makes the
+    # implied state self-evident. The grammar/OpenAI rendering does NOT
+    # advertise these defaults — the contract still requires ``state``,
+    # post-correction is purely a parse-time inference layer.
+    defaults_when_missing: tuple[DefaultRule, ...] = ()
 
     def get_arg(self, name: str) -> ArgSpec | None:
         for arg_name, spec in self.args:

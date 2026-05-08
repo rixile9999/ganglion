@@ -49,6 +49,8 @@ def main() -> int:
     parser.add_argument("--grad-accum", type=int, default=2)
     parser.add_argument("--lr", type=float, default=2e-4)
     parser.add_argument("--max-seq-length", type=int, default=1024)
+    parser.add_argument("--base-model", default=None,
+                        help="Override TrainConfig.base_model (e.g. Qwen/Qwen3-0.6B)")
     args = parser.parse_args()
 
     out_dir = Path(args.out)
@@ -64,7 +66,7 @@ def main() -> int:
     print(f"[smoke_train_eval] train={len(train)} holdout={len(holdout)}")
     write_split_jsonls(train, holdout, out_dir)
 
-    cfg = TrainConfig(
+    cfg_kwargs = dict(
         epochs=args.epochs,
         lora_rank=args.rank,
         per_device_batch_size=args.bs,
@@ -73,6 +75,9 @@ def main() -> int:
         seed=args.seed,
         max_seq_length=args.max_seq_length,
     )
+    if args.base_model:
+        cfg_kwargs["base_model"] = args.base_model
+    cfg = TrainConfig(**cfg_kwargs)
     print(f"[smoke_train_eval] training LoRA on {len(train)} examples...")
     adapter_dir = train_lora(catalog, train, out_dir, config=cfg)
     print(f"[smoke_train_eval] adapter saved to {adapter_dir}")

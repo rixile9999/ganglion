@@ -171,7 +171,7 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 |---|---|---|
 | S0 — train data acquisition | ✅ landed | `examples/bfcl/v4/build_train.py`, `examples/bfcl/v4/train/{*.jsonl, stats.json}` (740 cases, zero `id` overlap with `sample/`) |
 | Decision gate #1 — untuned 0.6B BFCL baseline ≥ 10% | ✅ passed (**46.0% AST**) | `runs/bfcl/baseline_0.6b_untuned_summary.json`, [`docs/bfcl_0.6b_untuned_baseline_note.md`](../bfcl_0.6b_untuned_baseline_note.md), `ganglion/runtime/local_hf.py` |
-| S1' — paraphrase synth | ☐ not started | — |
+| S1' — paraphrase synth | ✅ landed | `runs/factory_phase2/paraphrase_intents_bfcl.py`, `examples/bfcl/v4/train/synth.jsonl` (2,220 paraphrases, K=3 per source), `examples/bfcl/v4/train/synth_stats.json` |
 | S2a' — SFT Qwen3-0.6B + LoRA | ☐ not started | — |
 | Decision gate #2 — SFT lift ≥ +20pp | ☐ pending | — |
 | S2a+ — post-correction port | ☐ not started | — |
@@ -187,3 +187,20 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 Untuned `Qwen/Qwen3-0.6B` on BFCL 500 cases: AST **46.0%**, syntax-valid 94.0%. Category split is bimodal — `simple_python` 76%, `multiple` 71%, `irrelevance` 64% vs `parallel` 10%, `parallel_multiple` 9%. **67% of all failures are "wrong number of calls"**; this is the single highest-leverage SFT target. Full analysis: [`docs/bfcl_0.6b_untuned_baseline_note.md`](../bfcl_0.6b_untuned_baseline_note.md).
 
 Gate #2 must be measured **per-category** in addition to aggregate, since `simple_python`/`multiple` have low headroom (already 70%+) while `parallel*` has near-50pp of room. Aggregate-only reporting would mask the actually informative signal.
+
+### S1' summary (2026-05-19)
+
+Generated 2,220 paraphrases by passing each of the 740 train cases through DashScope `qwen3.6-plus` at temperature 0.85, asking for K=3 alternative phrasings of the user message while keeping `function` (per-case catalog) and `ground_truth` unchanged. Output is BFCL-native shape so `ganglion.bfcl.loader.load_cases` reads it without code changes.
+
+| Stat | Value |
+| --- | ---: |
+| Source train rows | 740 |
+| Teacher calls | 740 |
+| Empty / parse-fail | 0 |
+| Paraphrases produced | 2,220 |
+| Input tokens (total) | 130,445 |
+| Output tokens (total) | 83,758 |
+| Cost (USD) | **$0.305** |
+| Wall (s) | 2,187 |
+
+Category split of `synth.jsonl` (2,220 rows): `simple_python` 900 / `multiple` 300 / `parallel` 300 / `parallel_multiple` 300 / `irrelevance` 420 — exactly K=3 × source per category. Zero `id` overlap with `sample/`; the paraphrase id schema is `<orig_id>_p{0..2}`. Augmented SFT pool for S2a' is `train/*.jsonl ∪ train/synth.jsonl` = 740 + 2,220 = **2,960 cases**.

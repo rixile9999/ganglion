@@ -1,0 +1,29 @@
+{
+  "source": "/home/rixile/workspace/reflex-language-model/examples/bfcl/v4/train",
+  "categories": [
+    "simple_python",
+    "multiple",
+    "parallel",
+    "parallel_multiple",
+    "irrelevance"
+  ],
+  "n_source_rows": 740,
+  "n_per_intent": 3,
+  "n_calls": 740,
+  "n_empty": 0,
+  "n_paraphrases": 2220,
+  "by_category": {
+    "simple_python": 900,
+    "multiple": 300,
+    "parallel": 300,
+    "parallel_multiple": 300,
+    "irrelevance": 420
+  },
+  "input_tokens": 130445,
+  "output_tokens": 83758,
+  "cost_usd": 0.3054,
+  "wall_seconds": 2186.9,
+  "teacher_model": "qwen3.6-plus",
+  "teacher_temperature": 0.85,
+  "_note": "by_category recomputed post-run via longest-prefix match; original counter had a parallel/parallel_multiple collision (now fixed in paraphrase_intents_bfcl.py)."
+}

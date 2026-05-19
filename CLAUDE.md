@@ -42,9 +42,18 @@ python -m ganglion.eval.runner --llm qwen --repeat 5              # repeat each 
 python -m ganglion.eval.scaling                                   # measure DSL vs native catalog sizes
 bash runs/m2_run.sh   # batch experiment scripts; outputs JSON into runs/m{2,3,4}/
 python runs/aggregate.py                                         # compact tables from runs/*.json
+
+# BFCL v4 single-turn external benchmark (per-case Catalog, M1'~M5')
+python -m ganglion.eval.runner --llm qwen        --bfcl simple_python --bfcl-per-category 100
+python -m ganglion.eval.runner --llm qwen-native --bfcl all           --bfcl-per-category 100
+python -m ganglion.eval.runner --llm qwen        --bfcl irrelevance   --bfcl-allow-empty-calls
+python -m ganglion.eval.runner --llm qwen        --bfcl callable      --repair --repair-max-attempts 1
+python -m ganglion.eval.runner --llm qwen        --bfcl all --bfcl-output runs/bfcl/<name>_cases.jsonl \
+                                                  > runs/bfcl/<name>_summary.json
+python runs/bfcl/aggregate.py                                    # cross-phase BFCL tables
 ```
 
-`--llm` choices: `rules` | `qwen` | `qwen-text` | `qwen-thinking` | `qwen-native`. `--tier` choices: `iot_light_5` | `home_iot_20` | `smart_home_50`. The runner prints a JSON summary to stdout; redirect to capture.
+`--llm` choices: `rules` | `qwen` | `qwen-text` | `qwen-thinking` | `qwen-native`. `--tier` choices: `iot_light_5` | `home_iot_20` | `smart_home_50`. `--bfcl` choices: `simple_python` | `multiple` | `parallel` | `parallel_multiple` | `irrelevance` | `callable` (the four non-irrelevance categories) | `all` (all five). `rules` has no BFCL adapter — use one of the `qwen*` clients. The runner prints a JSON summary to stdout; redirect to capture.
 
 ## Required Environment
 
@@ -63,11 +72,13 @@ This dual rendering is what makes the DSL-vs-native comparison apples-to-apples.
 
 **ToolSpec / ArgSpec.** `ganglion/dsl/tool_spec.py` defines `ToolSpec` plus arg variants `EnumArg`, `IntArg`, `StringArg`, `TimeArg`, `RawArg`. `EnumArg.aliases` and `StringArg.aliases` are the canonicalisation hook (e.g. `"거실" → "living"`, `"영화 모드" → "movie"`). `RawArg` exists for shapes the generic renderer can't express, like nested `create_scene.actions`; pair it with a `custom_validator` on the `ToolSpec` (see `iot_light.py`).
 
-**Schema → DSL compiler.** `ganglion/dsl/compiler.py` is the M5 direction: it consumes external tool schemas (e.g. OpenAI/MCP) and produces `ToolSpec`s suitable for a `Catalog`. See `docs/tool_schema_compiler.md` for the intended pipeline and `tests/test_tool_schema_compiler.py` for current coverage. Treat this as the auto-generation entry point when extending beyond the hand-written `schema/` modules.
+**Schema → DSL compiler.** `ganglion/dsl/compiler.py:compile_tool_calling_schema` consumes external tool schemas (OpenAI / MCP / bare function schemas / BFCL `function` entries) and produces a `CompiledToolMapper` wrapping a `Catalog`. It normalises BFCL-specific type aliases (`dict→object`, `float→number`, `tuple→array`) at every nesting level and propagates `allow_empty_calls`. See `docs/tool_schema_compiler.md` for the long-form design and `docs/tasks/tool_schema_compiler.md` for the 6-section task spec. Tests live in `tests/test_tool_schema_compiler.py` and `tests/test_compiler_bfcl_features.py`.
+
+**External benchmark: BFCL v4.** `ganglion/bfcl/` ports the BFCL v4 single-turn evaluation surface — `loader.py` reads the deterministic subsample at `examples/bfcl/v4/sample/{simple_python,multiple,parallel,parallel_multiple,irrelevance}.jsonl`, and `grader.py` re-implements the upstream Python AST checker (string standardisation, list/dict checker, parallel no-order, irrelevance branch). `ganglion/eval/bfcl_runner.py` is the library entry (`run_bfcl`, `summarize_bfcl`, `build_case_catalog`), driven through the same `ganglion.eval.runner --bfcl …` CLI. Each BFCL case ships its own tool list, so the runner compiles a fresh `Catalog` per case via `compile_tool_calling_schema`. **Null action contract:** `Catalog.allow_empty_calls=True` makes `{"calls":[]}` a valid Action IR, closing the `irrelevance` abstention gap (see `docs/tasks/null_action_contract.md` and `docs/bfcl_m5_abstention_report.md`). Result artifacts live under `runs/bfcl/` (M1'~M5') and `runs/bfcl/flash/` (qwen3.6-flash replay).
 
 **Validator + emitter.** `Catalog.parse_json_dsl()` accepts either a string or mapping, normalises via `_validate_flat_args`, and returns an `ActionPlan` of immutable `ToolCall`s. `ActionPlan` equality is value equality, so `result.plan == expected` is the exact-match metric. There is no separate emitter step beyond this — the parsed plan IS the executable form, fed to `runtime/executor.py` (mock executor for tests).
 
-**Tiers.** `ganglion/schema/{iot_light,home_iot,smart_home}.py` each export a module-level `CATALOG`. `ganglion/schema/__init__.py:get_catalog(tier)` is the registry. The three tiers exist specifically for the M2 scaling experiment (5 / 20 / 50 tools); the same dataset prompts are reused across tiers because the IoT-light intents are a subset of the larger catalogs.
+**Tiers.** `ganglion/schema/{iot_light,home_iot,smart_home}.py` each export a module-level `CATALOG`. `ganglion/schema/__init__.py:get_catalog(tier)` is the registry. The three tiers exist specifically for the M2 scaling experiment (5 / 20 / 50 tools); the same dataset prompts are reused across tiers because the IoT-light intents are a subset of the larger catalogs. BFCL runs bypass this registry entirely — they construct catalogs per case from BFCL's `function` field via the schema compiler.
 
 **Runtime clients.** `ganglion/runtime/qwen.py` has three OpenAI-SDK-against-DashScope clients:
 - `QwenJSONDSLClient` — uses `response_format={"type": "json_object"}`; goes through `run_dsl_with_repair()` so it supports the M4 repair loop.
@@ -84,5 +95,26 @@ This dual rendering is what makes the DSL-vs-native comparison apples-to-apples.
 
 - Adding or modifying a tool requires updating: the schema module's `ToolSpec`, any normalisation aliases, the dataset templates if relevant, and the rule-based client only if the tool falls inside `iot_light_5`. Validator changes should be matched by tests in `tests/test_validator.py`.
 - The dataset (`examples/iot_light/dataset.jsonl`) is checked in and deterministic — regenerate via the script rather than hand-editing. `parse_json_dsl(row["expected"])` runs at load time, so a malformed `expected` field will surface as a load error in `tests/test_dataset_integrity.py`.
-- `runs/` is checked in and contains experiment outputs that back the report; treat it as data, not scratch.
+- `examples/bfcl/v4/sample/*.jsonl` is a deterministic seed=42 subsample of upstream BFCL v4. Regenerate via `python examples/bfcl/v4/subsample.py`; the upstream commit SHA is pinned in `examples/bfcl/v4/SOURCE.md`. Never hand-edit the sample rows — they are SSOT for `tests/test_bfcl_smoke.py` and the M1'~M5' reports.
+- `runs/` is checked in and contains experiment outputs that back the reports; treat it as data, not scratch. `runs/bfcl/` and `runs/bfcl/flash/` follow the same convention.
 - The package uses `from __future__ import annotations` and frozen dataclasses throughout — keep both when extending.
+
+## Self-maintenance task docs (spec layer)
+
+This repo carries two doc trees that govern how self-maintenance is designed and added:
+
+- [`docs/agent-forge/`](docs/agent-forge/) — imported seed principles from the [agent-forge](https://github.com/EngramAICompany/agent-forge) repo. Treat as **read-only upstream**. Never hand-edit; if a principle change is needed, file the issue against agent-forge and re-import.
+- [`docs/tasks/`](docs/tasks/) — Ganglion-side task specs that *apply* those principles to this repo's drift surfaces. The six-section template (`Role / Scope / Procedure / Contract / Observation`) from [`task_principle`](docs/agent-forge/task_principle.md) is mandatory.
+
+Editor-side rules when adding self-maintenance behavior:
+
+- **Spec first, impl after.** Write the task doc under `docs/tasks/` before authoring any `.github/workflows/*` or script. A workflow without its declaring doc is the anti-pattern called out in `task_principle`.
+- **`out-of-scope` must not be empty.** An empty `out-of-scope` is the scope-creep surface, per [`task_principle` §3](docs/agent-forge/task_principle.md). Enumerate adjacent areas the task does *not* touch.
+- **Connect via events, not direct calls.** Composite docs in `docs/tasks/` consume primitive events declared in their `Contract.event` clause. No task doc invokes another task doc by name.
+- **`out` must be machine-verifiable.** Natural-language "reports" are ✗; produce files, status checks, or named events.
+- **One responsibility per doc.** If the template is hard to fill, the task is too large — decompose. See [`workflow_principle`](docs/agent-forge/workflow_principle.md) for when to author atomic vs. composite.
+
+The `docs/tasks/` set has two layers:
+
+- **Self-maintenance specs (spec-only, impls deferred):** [dataset_integrity](docs/tasks/dataset_integrity.md), [catalog_spec_sync](docs/tasks/catalog_spec_sync.md), [eval_smoke_guard](docs/tasks/eval_smoke_guard.md), [report_freshness](docs/tasks/report_freshness.md), [release_health](docs/tasks/release_health.md). No `.github/workflows/*` impl yet; follow-up PRs must update the declaring doc in the same change.
+- **External-adapter specs (live impl, doc is post-hoc reconciliation):** [tool_schema_compiler](docs/tasks/tool_schema_compiler.md), [null_action_contract](docs/tasks/null_action_contract.md), [external_benchmark_bfcl](docs/tasks/external_benchmark_bfcl.md). Implementations already live in `ganglion/dsl/compiler.py`, `ganglion/dsl/catalog.py`, `ganglion/bfcl/`, `ganglion/eval/bfcl_runner.py`, and `ganglion/eval/runner.py`. New behaviour in these areas must update the doc in the same PR.

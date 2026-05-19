@@ -18,18 +18,29 @@ consumption and improves response latency.
 - **19% faster** mean latency vs native tool calling
 - Validated across 3 tool tiers: 5, 20, and 50 tools
 
+**External benchmark — BFCL v4 (M1'~M5):**
+- 500 cases (5 categories × 100, seed=42 deterministic subsample)
+- DSL **86.2% AST** vs native 85.6% (qwen3.6-plus, M5 full run)
+- **-62% input tokens, -25% p50 latency** preserved
+- Irrelevance 74% → **90%** via `{"calls":[]}` no-call contract
+- Replayed on qwen3.6-flash with similar deltas — framework value is model-agnostic
+
 ## Project Structure
 
 ```
 reflex-language-model/
 ├── ganglion/                 # Current implementation package namespace
 │   ├── dsl/                 # DSL definition & validation
-│   │   ├── catalog.py       # Tool catalog, DSL rendering, OpenAI tools
+│   │   ├── catalog.py       # Tool catalog, DSL rendering, OpenAI tools (allow_empty_calls)
+│   │   ├── compiler.py      # External schema (OpenAI/MCP/BFCL) → ToolSpec compiler
 │   │   ├── tool_spec.py     # ToolSpec, ArgSpec definitions (EnumArg, IntArg, etc.)
 │   │   ├── validator.py     # JSON DSL validation & normalization
 │   │   ├── emitter.py       # Deterministic tool-call emission
 │   │   ├── json_extract.py  # Lenient JSON extraction from model output
 │   │   └── types.py         # DSL type definitions (ActionPlan, ActionCall)
+│   ├── bfcl/                # BFCL v4 external benchmark adapter
+│   │   ├── loader.py        # 5 single-turn categories (subsample loader)
+│   │   └── grader.py        # Python AST checker re-impl
 │   ├── runtime/             # Model runtime implementations
 │   │   ├── qwen.py          # Qwen API clients (DSL, native, freeform)
 │   │   ├── rules.py         # Deterministic rule-based client (testing)
@@ -41,16 +52,27 @@ reflex-language-model/
 │   │   ├── smart_home.py    # 50-tool smart home domain
 │   │   └── __init__.py      # get_catalog(tier) registry
 │   └── eval/                # Evaluation infrastructure
-│       ├── runner.py        # Offline/LLM evaluation runner
+│       ├── runner.py        # Offline/LLM evaluation runner (--bfcl CLI included)
+│       ├── bfcl_runner.py   # Per-case BFCL library entry (run_bfcl/summarize_bfcl)
 │       ├── metrics.py       # Exact match, token stats, latency
 │       └── scaling.py       # Catalog size measurement
 ├── examples/
-│   └── iot_light/
-│       └── generate_dataset.py  # 500-case deterministic dataset
-├── tests/                   # Pytest test suite
+│   ├── iot_light/
+│   │   └── generate_dataset.py     # 500-case deterministic dataset
+│   └── bfcl/v4/
+│       ├── sample/                  # Deterministic seed=42 subsample (5×100)
+│       ├── subsample.py             # Regenerate the sample
+│       └── SOURCE.md                # Pinned upstream commit SHA
+├── tests/                   # Pytest test suite (incl. test_bfcl_*.py)
 ├── docs/
-│   └── poc_verification_report.md  # Detailed Korean research report
-└── runs/                    # Evaluation run outputs (generated)
+│   ├── poc_verification_report.md         # Detailed Korean research report
+│   ├── bfcl_m1_m4_result_report.md        # BFCL M1'~M4' results
+│   ├── bfcl_m5_abstention_report.md       # M5 null-action contract
+│   ├── bfcl_flash_replay_report.md        # qwen3.6-flash replay
+│   └── tasks/                              # 6-section task specs
+└── runs/
+    ├── m{2,3,4}/                           # IoT scaling/repeat/repair runs
+    └── bfcl/[flash/]                       # BFCL per-phase summaries + cases
 ```
 
 ## Building and Running
@@ -103,7 +125,17 @@ python -m ganglion.eval.runner --llm qwen --tier iot_light_5 --repeat 5
 
 # Limit cases for quick testing
 python -m ganglion.eval.runner --llm qwen --limit 10
+
+# BFCL v4 single-turn external benchmark (per-case Catalog from BFCL `function`)
+python -m ganglion.eval.runner --llm qwen        --bfcl simple_python --bfcl-per-category 100
+python -m ganglion.eval.runner --llm qwen-native --bfcl all           --bfcl-per-category 100
+python -m ganglion.eval.runner --llm qwen        --bfcl irrelevance   --bfcl-allow-empty-calls
+python -m ganglion.eval.runner --llm qwen        --bfcl callable      --repair
+python -m ganglion.eval.runner --llm qwen        --bfcl all --bfcl-output runs/bfcl/<name>_cases.jsonl \
+                                                  > runs/bfcl/<name>_summary.json
 ```
+
+`--bfcl` choices: `simple_python` | `multiple` | `parallel` | `parallel_multiple` | `irrelevance` | `callable` (the four non-irrelevance categories) | `all` (all five). `rules` client has no BFCL adapter.
 
 ### Dataset Generation
 
@@ -218,26 +250,28 @@ python -m ganglion.eval.runner --llm qwen --tier smart_home_50
 | M2 | ✅ Complete | Tool scaling (5→50 tools), token efficiency |
 | M3 | ✅ Complete | Repeat measurement infrastructure (n=250) |
 | M4 | ✅ Complete | Repair loop implementation |
-| M5 | ⏳ Pending | MCP schema → DSL catalog auto-generation |
+| M5 | ✅ Complete | External schema → Catalog compiler + BFCL adapter; `{"calls":[]}` null-action contract |
+| M1'~M5' | ✅ Complete | BFCL v4 replay on qwen3.6-plus (86.2% AST, -62% input, -25% latency) and qwen3.6-flash |
 
 ## Related Documentation
 
 - **Research Report:** `docs/poc_verification_report.md` (Korean, detailed analysis)
+- **BFCL Reports:** `docs/bfcl_m1_m4_result_report.md`, `docs/bfcl_m5_abstention_report.md`, `docs/bfcl_flash_replay_report.md`
 - **Project Goals:** `overview.md` (Korean, high-level vision)
-- **Dataset:** `examples/iot_light/dataset.jsonl` (500 cases)
+- **Dataset:** `examples/iot_light/dataset.jsonl` (500 cases) and `examples/bfcl/v4/sample/*.jsonl`
 
 ## Known Limitations
 
-1. **Synthetic dataset:** Template-generated, not real user queries
-2. **Single domain:** IoT lighting only (no multi-turn, no tool dependencies)
+1. **Synthetic IoT dataset:** Template-generated, not real user queries (BFCL covers the real-world side)
+2. **Single-turn only:** BFCL multi-turn / Java / live categories are out-of-scope
 3. **Validator complexity:** Alias rules may require maintenance as tools grow
-4. **Provider lock-in:** Currently tied to Qwen structured output
+4. **Provider lock-in:** Currently tied to Qwen DashScope; BFCL native-baseline path uses OpenAI-compatible `tools=[...]`
 5. **Latency variance:** Single-region API calls, no distributed statistics
 
 ## Future Work
 
-1. Expand to 20-50 tools with realistic usage patterns
-2. Add repair loop escalation for native tool calling failures
-3. Implement MCP schema → DSL catalog auto-generation
-4. Test on external benchmarks (e.g., BFCL)
-5. Explore fine-tuning/LoRA for small model optimization
+1. No-call prompt tuning: tighten `irrelevance` semantic gating (current DSL 90% vs target ≥native)
+2. Semantic abstention classifier: gate empty-plan emission when tool/request match is weak
+3. M6 value/unit canonicalization in compiler/validator layer
+4. MCP schema → DSL catalog auto-generation beyond compile-time `RawArg` fallback
+5. Explore fine-tuning/LoRA for small model optimization (see `ganglion/factory/`)

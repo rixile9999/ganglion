@@ -29,10 +29,19 @@ Specs covering Ganglion's external-benchmark and schema-ingestion surfaces. **Sp
 | [null_action_contract](./null_action_contract.md) | catalog contract | `{"calls":[]}` is a valid Action IR value when `Catalog.allow_empty_calls=True`. Closes BFCL irrelevance gap. | live |
 | [external_benchmark_bfcl](./external_benchmark_bfcl.md) | composite | Load BFCL v4 single-turn sample → per-case compiled catalog → DSL vs native run → AST grader → `runs/bfcl/*` summaries. | live |
 
+## Research arcs
+
+Specs declaring planned multi-stage research work that will produce code over many PRs. The doc is the source of truth for the arc's scope, decision points, and out-of-scope set; each implementation PR updates this doc with the actual numbers it found.
+
+| Doc | Kind | Purpose | Status |
+|---|---|---|---|
+| [factory_bfcl_arc](./factory_bfcl_arc.md) | composite | Re-derive the factory pipeline (synth → SFT → bootstrap → post-correction → DPO) around BFCL's per-case catalogs; train a Qwen3-0.6B adapter and report head-to-head against the existing `qwen3.6-plus / qwen3.6-flash` BFCL numbers. | plan |
+
 ## Implementation status
 
 - ☐ Self-maintenance docs (dataset_integrity, catalog_spec_sync, eval_smoke_guard, report_freshness, release_health) — spec only, no `.github/workflows/*` impl yet. Impls are deliberately deferred to a follow-up PR per `task_principle` (spec first, impl after).
 - ☑ External-adapter docs (tool_schema_compiler, null_action_contract, external_benchmark_bfcl) — impl already in tree; spec is a *post-hoc* reconciliation. New behaviour in these areas must update the doc in the same PR.
+- ☐ Research-arc docs (factory_bfcl_arc) — plan only. First implementation PR must link the doc, fill in the decision-point numbers, and check off the success-predicate items.
 - ☐ `runs/baselines/iot_light_5_rules.json` — placeholder pending a chosen reference run from `runs/m{2,3,4}/`. Until pinned, `eval_smoke_guard` runs observe-only and emits `eval_smoke_bootstrap_required`.
 - ☐ Marker convention `<!-- src:...#pointer -->` — not yet retrofitted into existing reports. `report_freshness` will emit `report_freshness_bootstrap_required` until a first report is stamped.
 
@@ -53,3 +62,4 @@ Explicit non-goals (per [task_principle §3](../agent-forge/task_principle.md), 
 - No automatic report rewriting — prose and number authorship stay with the author; only stamps are verified.
 - No multi-turn / Java / live BFCL categories — `external_benchmark_bfcl` is single-turn Python only by design.
 - No automatic alias discovery in `tool_schema_compiler` — locale and domain aliases are catalog-author authored.
+- No 1.7B+ comparisons in `factory_bfcl_arc` — the arc's thesis is sub-1B specialization; larger-base experiments belong in the factory_phase1 reports.

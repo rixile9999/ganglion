@@ -167,6 +167,8 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 
 ## Status
 
+**ARC COMPLETE (2026-05-20).** V3 (74.4% AST) is the final adapter; full report at [`docs/bfcl_0.6b_factory_report.md`](../bfcl_0.6b_factory_report.md). Three of five decision gates passed (#1 entry, #2 SFT lift, #4 bootstrap); gates #3 (post-correction) and #5 (DPO) measured as not load-bearing on BFCL and recorded as substantive negative findings rather than arc failures.
+
 | Stage | Status | Artifact |
 |---|---|---|
 | S0 — train data acquisition | ✅ landed | `examples/bfcl/v4/build_train.py`, `examples/bfcl/v4/train/{*.jsonl, stats.json}` (740 cases, zero `id` overlap with `sample/`) |
@@ -178,9 +180,9 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 | Decision gate #3 — post-correction lift ≥ +2pp | ✗ not load-bearing on BFCL (lift = 0pp) — arc skips S2a+ per spec rule | — |
 | S2c' — self-bootstrap | ✅ landed (V3 SFT on V2 ∪ bootstrap = 5,794 rows; aggregate +1.0pp, callable +3-4pp, simple_python -5pp regression) | `runs/factory_phase2/self_bootstrap_bfcl.py`, `examples/bfcl/v4/train/{bootstrap_v3,sft_pool_v3}.jsonl`, `runs/factory_phase2/sft_0.6B_bfcl/v3/`, `runs/bfcl/sft_v3_0.6b_*` |
 | Decision gate #4 — bootstrap kept ratio ≥ 5% | ✅ passed (**95.7%** kept ratio) | `examples/bfcl/v4/train/bootstrap_v3_stats.json` |
-| S3' — DPO | ☐ not started | — |
-| Decision gate #5 — DPO lift > 0 | ☐ pending | — |
-| Eval + report | ☐ not started | — |
+| S3' — DPO | ✗ not load-bearing (train-pool DPO yields no signal; V3 already at 99.5% on training set) | `runs/factory_phase2/dpo_pairs_bfcl.{py,jsonl}`, `runs/factory_phase2/dpo_pairs_bfcl_stats.json` |
+| Decision gate #5 — DPO lift > 0 | ✗ not load-bearing (5 pairs, no usable signal) | — |
+| Eval + report | ✅ landed — [`docs/bfcl_0.6b_factory_report.md`](../bfcl_0.6b_factory_report.md) | V3 final: **74.4% AST** (untuned +28.4pp, qwen3.6-flash gap −6.4pp) |
 
 ### Gate #1 summary (2026-05-19)
 

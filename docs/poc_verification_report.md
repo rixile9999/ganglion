@@ -2,7 +2,7 @@
 
 > *compiler-guided optimization for LLM tool calling*
 
-작성일: 2026-04-28
+작성일: 2026-04-28 (§1~§17), §18 BFCL 외부 검증 추가: 2026-04-30
 
 ## 1. 요약
 
@@ -335,8 +335,8 @@ JSON DSL 방식의 장점:
 2차 연구 과제:
 
 1. 텍스트 DSL + EBNF parser 비교군 추가
-2. BFCL 일부 케이스로 외부 벤치마크 연결
-3. tool schema 입력에서 JSON DSL catalog와 validator stub을 자동 생성
+2. ~~BFCL 일부 케이스로 외부 벤치마크 연결~~ → **§18 완료** (BFCL v4 500건, M1'~M5)
+3. ~~tool schema 입력에서 JSON DSL catalog와 validator stub을 자동 생성~~ → **부분 완료** (`compile_tool_calling_schema`, see [`docs/tasks/tool_schema_compiler.md`](tasks/tool_schema_compiler.md))
 4. 축적된 dataset으로 small model SFT/LoRA 가능성 검증
 5. MCP server tool schema를 입력으로 받아 RLM adapter를 자동 구성
 

@@ -613,3 +613,83 @@ M4 (Qwen API, 50건 × repair on/off = 100 calls):
 ```
 
 Qwen API 토큰/latency 측정은 비용 동반이므로 별도 승인 후 §14.4, §15.3, §16.4의 명령으로 실행한다.
+
+## 18. BFCL 외부 벤치마크 검증 (M1'~M5, 2026-04-30)
+
+§1~§17의 결과는 모두 자체 IoT-light template dataset에서 얻은 수치다. 일반화
+가능성을 확인하기 위해, BFCL v4 single-turn benchmark의 deterministic
+subsample (5 category × 100 = 500건, seed=42)에 같은 두 경로를 적용해 재실험했다.
+DSL/native 두 경로는 동일 BFCL `function` 스키마에서 `compile_tool_calling_schema`로
+생성된 per-case `Catalog`를 공유한다 — 따라서 비교는 같은 source-of-truth 위에서
+이루어지는 apples-to-apples 비교다.
+
+### 18.1 실행 요지
+
+```bash
+# DSL 경로 (M5 abstention 포함)
+python -m ganglion.eval.runner --llm qwen --bfcl all \
+    --bfcl-per-category 100 --bfcl-allow-empty-calls \
+    --bfcl-output runs/bfcl/m5_full_run.jsonl > runs/bfcl/m5_full_summary.json
+
+# Native baseline
+python -m ganglion.eval.runner --llm qwen-native --bfcl all \
+    --bfcl-per-category 100 > runs/bfcl/phase_c_native_summary.json
+```
+
+상세 절차 / phase별 호출 수 / 재현 명령은 다음 보고서에 분리되어 있다.
+
+- 정확도·토큰·지연 (M1'~M4'): [`docs/bfcl_m1_m4_result_report.md`](bfcl_m1_m4_result_report.md)
+- 거부/no-call contract (M5): [`docs/bfcl_m5_abstention_report.md`](bfcl_m5_abstention_report.md)
+- 약한 모델 재실험 (qwen3.6-flash): [`docs/bfcl_flash_replay_report.md`](bfcl_flash_replay_report.md)
+- 초기 replay 정리: [`docs/bfcl_replay_report.md`](bfcl_replay_report.md)
+
+### 18.2 핵심 결과 (qwen3.6-plus, 500건 fresh full run)
+
+| Metric | DSL (M5) | Native (M1') | Δ |
+| --- | ---: | ---: | ---: |
+| 전체 AST match | **86.2%** | 85.6% | DSL +0.6pp (역전) |
+| Syntax-valid | **97.6%** | 81.0% | +16.6pp |
+| Input tokens mean | 171.5 | 371.8 | **-53.9%** |
+| Latency p50 (ms) | 1,819 | 2,441 | **-25.5%** |
+
+Category breakdown (M5 DSL vs M1' native):
+
+| Category | DSL M5 | Native M1' |
+| --- | ---: | ---: |
+| `simple_python` | 85.0% | 85.0% |
+| `multiple` | 89.0% | 89.0% |
+| `parallel` | 86.0% | 85.0% |
+| `parallel_multiple` | 81.0% | 83.0% |
+| `irrelevance` | **90.0%** | 86.0% |
+
+Callable 400건만 따로 보면 DSL 85.2% vs native 85.25% — 사실상 동률. 정확도 gap의
+대부분은 `irrelevance`에서 발생했으며, M5의 `{"calls":[]}` no-call contract
+([`docs/tasks/null_action_contract.md`](tasks/null_action_contract.md))로 그 gap이
+역전되었다. False abstention (callable이 빈 plan으로 도망가는 사례)은 0/400 건이었다.
+
+### 18.3 약한 모델 재실험 (qwen3.6-flash, 500건)
+
+`qwen3.6-plus`는 모델 자체가 강해 framework 효과가 묻힐 수 있다는 우려가 있어
+같은 500건을 `qwen3.6-flash`로 다시 돌렸다.
+
+| 모델 | DSL (M5) | Native (M1') | Δ | Input 절감 | p50 절감 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| qwen3.6-plus | 86.2% | 85.6% | **+0.6pp** | -53.9% | -25.5% |
+| qwen3.6-flash | 80.8% | 80.4% | **+0.4pp** | -54.7% | -14.9% |
+
+플래시에서는 callable에서도 DSL이 native를 +2.5pp 앞섰고 (plus는 -0.25pp), M4
+repair loop도 정확도를 +2pp 개선했다 (plus에서는 variance 범위). **약한 모델일수록
+framework value가 더 강하게 드러난다**는 일관된 신호.
+
+### 18.4 종합
+
+§1~§17의 IoT toy-domain 결과는 BFCL 실세계 function-call benchmark에서도 유지된다:
+
+- *정확도*: callable 사실상 동률, abstention 포함 시 DSL이 native를 미세 역전.
+- *효율*: input token -54~62%, p50 latency -15~25%.
+- *모델 강도 비례*: 약한 모델일수록 framework 효과 커짐 (model-invariant 절감 + model-dependent 신호 증폭).
+
+따라서 §1의 H1/H2/H3 가설은 toy domain을 벗어난 외부 벤치마크에서도 지지된다.
+다만 multi-turn / Java / live BFCL 카테고리는 명시적으로 out-of-scope다 — 한방
+emission 가설의 측정 surface를 좁게 유지하기 위함이며, scope 경계는
+[`docs/tasks/external_benchmark_bfcl.md`](tasks/external_benchmark_bfcl.md)에 박혀 있다.

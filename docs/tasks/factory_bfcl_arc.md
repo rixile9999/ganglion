@@ -172,8 +172,8 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 | S0 — train data acquisition | ✅ landed | `examples/bfcl/v4/build_train.py`, `examples/bfcl/v4/train/{*.jsonl, stats.json}` (740 cases, zero `id` overlap with `sample/`) |
 | Decision gate #1 — untuned 0.6B BFCL baseline ≥ 10% | ✅ passed (**46.0% AST**) | `runs/bfcl/baseline_0.6b_untuned_summary.json`, [`docs/bfcl_0.6b_untuned_baseline_note.md`](../bfcl_0.6b_untuned_baseline_note.md), `ganglion/runtime/local_hf.py` |
 | S1' — paraphrase synth | ✅ landed | `runs/factory_phase2/paraphrase_intents_bfcl.py`, `examples/bfcl/v4/train/synth.jsonl` (2,220 paraphrases, K=3 per source), `examples/bfcl/v4/train/synth_stats.json` |
-| S2a' — SFT Qwen3-0.6B + LoRA | ☐ not started | — |
-| Decision gate #2 — SFT lift ≥ +20pp | ☐ pending | — |
+| S2a' — SFT Qwen3-0.6B + LoRA | ✅ landed (V2 fix; V1 = mode collapse preserved as failure evidence) | `runs/factory_phase2/{build_sft_pool_bfcl,train_sft_bfcl}.py`, `examples/bfcl/v4/train/sft_pool_v2.jsonl`, `runs/factory_phase2/sft_0.6B_bfcl/{v1,v2}/`, `runs/bfcl/sft_v{1,2}_0.6b_*` |
+| Decision gate #2 — SFT lift ≥ +20pp | ✅ passed (**V2: 46.0% → 73.4% aggregate, +27.4pp**; +51–53pp on `parallel*`) | [`docs/bfcl_0.6b_sft_v1_v2_note.md`](../bfcl_0.6b_sft_v1_v2_note.md) |
 | S2a+ — post-correction port | ☐ not started | — |
 | Decision gate #3 — post-correction lift ≥ +2pp | ☐ pending | — |
 | S2c' — self-bootstrap | ☐ not started | — |
@@ -204,3 +204,25 @@ Generated 2,220 paraphrases by passing each of the 740 train cases through DashS
 | Wall (s) | 2,187 |
 
 Category split of `synth.jsonl` (2,220 rows): `simple_python` 900 / `multiple` 300 / `parallel` 300 / `parallel_multiple` 300 / `irrelevance` 420 — exactly K=3 × source per category. Zero `id` overlap with `sample/`; the paraphrase id schema is `<orig_id>_p{0..2}`. Augmented SFT pool for S2a' is `train/*.jsonl ∪ train/synth.jsonl` = 740 + 2,220 = **2,960 cases**.
+
+### Gate #2 summary (2026-05-19)
+
+Two SFT iterations were needed before the gate cleared:
+
+- **V1 (mode collapse)** — `build_sft_pool_bfcl.py` initially set `allow_empty_calls=True` only on `irrelevance` rows. Inference always sets the flag globally via `--bfcl-allow-empty-calls`, so the model learned "prompt contains no-call clause ⇒ emit `{"calls":[]}`" — which happens to be the prompt shape of every eval row. Result: 488/500 empty-plan outputs, aggregate 21.4% (−24.6pp vs untuned), `irrelevance` 100%, every other category ≤ 5%. Preserved as a regression fixture; the buggy mode is reachable via `--allow-empty-mode irrelevance-only`.
+- **V2 (fixed)** — every training row's catalog now has `allow_empty_calls=True`. The signal shifts from "is the no-call clause present in the prompt?" (always yes) to "does the user message describe a request that can be served by a listed tool?" (the right learning target).
+
+V2 numbers:
+
+| Category | Untuned | V2 | Lift |
+| --- | ---: | ---: | ---: |
+| simple_python | 76.0% | 77.0% | +1.0 |
+| multiple | 71.0% | 80.0% | +9.0 |
+| `parallel` | 10.0% | **63.0%** | **+53.0** |
+| `parallel_multiple` | 9.0% | **60.0%** | **+51.0** |
+| `irrelevance` | 64.0% | 87.0% | +23.0 |
+| **aggregate** | **46.0%** | **73.4%** | **+27.4** |
+
+The arc's gate-#2 rule (≥ +20pp aggregate AND no per-category regression) is cleared by 7.4pp on aggregate and the lift is concentrated exactly where the untuned baseline cliffed (`parallel*` +51–53pp). V2 closes **77% of the gap** between untuned-0.6B (46.0%) and `qwen3.6-flash` M5 (80.8%). Full analysis: [`docs/bfcl_0.6b_sft_v1_v2_note.md`](../bfcl_0.6b_sft_v1_v2_note.md).
+
+Failure-mode distribution suggests roughly +5–10pp of further headroom is reachable through the next three stages: 16 `value_error:string` failures → S2a+ post-correction, 38 residual `wrong_count` → S2c' self-bootstrap, 45 `cannot_find_match` in `parallel*` → S3' DPO graded reward.

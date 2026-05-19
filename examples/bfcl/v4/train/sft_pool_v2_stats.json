@@ -1,0 +1,13 @@
+{
+  "n_rows": 2960,
+  "n_skipped": 0,
+  "by_category": {
+    "simple_python": 1200,
+    "multiple": 400,
+    "parallel": 400,
+    "parallel_multiple": 400,
+    "irrelevance": 560
+  },
+  "include_synth": true,
+  "train_root": "/home/rixile/workspace/reflex-language-model/examples/bfcl/v4/train"
+}

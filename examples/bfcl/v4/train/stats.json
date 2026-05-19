@@ -1,0 +1,32 @@
+{
+  "simple_python": {
+    "full": 400,
+    "sample": 100,
+    "train": 300
+  },
+  "multiple": {
+    "full": 200,
+    "sample": 100,
+    "train": 100
+  },
+  "parallel": {
+    "full": 200,
+    "sample": 100,
+    "train": 100
+  },
+  "parallel_multiple": {
+    "full": 200,
+    "sample": 100,
+    "train": 100
+  },
+  "irrelevance": {
+    "full": 240,
+    "sample": 100,
+    "train": 140
+  },
+  "_total": {
+    "full": 1240,
+    "sample": 500,
+    "train": 740
+  }
+}

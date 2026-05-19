@@ -167,4 +167,14 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 
 ## Status
 
-Plan only. Implementation has not started. Per `task_principle` (spec first, impl after), no code lands in `ganglion/factory/`, `runs/factory_phase2/`, or `examples/bfcl/v4/train/` until this doc is reviewed and merged. The first implementation PR must (a) link this doc, (b) update it with the actual numbers at each decision point, and (c) check off the success-predicate items.
+| Stage | Status | Artifact |
+|---|---|---|
+| S0 — train data acquisition | ✅ landed | `examples/bfcl/v4/build_train.py`, `examples/bfcl/v4/train/{*.jsonl, stats.json}` (740 cases, zero `id` overlap with `sample/`) |
+| S1' — paraphrase synth | ☐ not started | — |
+| S2a' — SFT Qwen3-0.6B + LoRA | ☐ not started | — |
+| S2a+ — post-correction port | ☐ not started | — |
+| S2c' — self-bootstrap | ☐ not started | — |
+| S3' — DPO | ☐ not started | — |
+| Eval + report | ☐ not started | — |
+
+Decision-point numbers will be filled in here as each stage lands. The first stage requiring measurement (entry-gate untuned-0.6B BFCL baseline) belongs to S2a' as a prerequisite check, not S0.

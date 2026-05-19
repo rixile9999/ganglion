@@ -170,11 +170,20 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 | Stage | Status | Artifact |
 |---|---|---|
 | S0 — train data acquisition | ✅ landed | `examples/bfcl/v4/build_train.py`, `examples/bfcl/v4/train/{*.jsonl, stats.json}` (740 cases, zero `id` overlap with `sample/`) |
+| Decision gate #1 — untuned 0.6B BFCL baseline ≥ 10% | ✅ passed (**46.0% AST**) | `runs/bfcl/baseline_0.6b_untuned_summary.json`, [`docs/bfcl_0.6b_untuned_baseline_note.md`](../bfcl_0.6b_untuned_baseline_note.md), `ganglion/runtime/local_hf.py` |
 | S1' — paraphrase synth | ☐ not started | — |
 | S2a' — SFT Qwen3-0.6B + LoRA | ☐ not started | — |
+| Decision gate #2 — SFT lift ≥ +20pp | ☐ pending | — |
 | S2a+ — post-correction port | ☐ not started | — |
+| Decision gate #3 — post-correction lift ≥ +2pp | ☐ pending | — |
 | S2c' — self-bootstrap | ☐ not started | — |
+| Decision gate #4 — bootstrap kept ratio ≥ 5% | ☐ pending | — |
 | S3' — DPO | ☐ not started | — |
+| Decision gate #5 — DPO lift > 0 | ☐ pending | — |
 | Eval + report | ☐ not started | — |
 
-Decision-point numbers will be filled in here as each stage lands. The first stage requiring measurement (entry-gate untuned-0.6B BFCL baseline) belongs to S2a' as a prerequisite check, not S0.
+### Gate #1 summary (2026-05-19)
+
+Untuned `Qwen/Qwen3-0.6B` on BFCL 500 cases: AST **46.0%**, syntax-valid 94.0%. Category split is bimodal — `simple_python` 76%, `multiple` 71%, `irrelevance` 64% vs `parallel` 10%, `parallel_multiple` 9%. **67% of all failures are "wrong number of calls"**; this is the single highest-leverage SFT target. Full analysis: [`docs/bfcl_0.6b_untuned_baseline_note.md`](../bfcl_0.6b_untuned_baseline_note.md).
+
+Gate #2 must be measured **per-category** in addition to aggregate, since `simple_python`/`multiple` have low headroom (already 70%+) while `parallel*` has near-50pp of room. Aggregate-only reporting would mask the actually informative signal.

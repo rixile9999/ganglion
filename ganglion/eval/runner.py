@@ -20,6 +20,8 @@ from ganglion.runtime.rules import RuleBasedJSONDSLClient
 from ganglion.runtime.types import ModelResult
 from ganglion.schema import get_catalog
 
+_LOCAL_HF_CLIENT_CACHE: dict[tuple[str, str], object] = {}
+
 
 BFCL_CALLABLE_CATEGORIES = ("simple_python", "multiple", "parallel", "parallel_multiple")
 
@@ -33,6 +35,8 @@ def build_client(
     catalog: Catalog,
     *,
     repair: RepairConfig | None = None,
+    base_model: str = "Qwen/Qwen3-0.6B",
+    adapter_path: str | None = None,
 ) -> ModelClient:
     if name == "rules":
         return RuleBasedJSONDSLClient()
@@ -44,6 +48,35 @@ def build_client(
         return QwenFreeformJSONDSLClient(catalog=catalog, enable_thinking=True)
     if name == "qwen-native":
         return QwenNativeToolClient(catalog=catalog)
+    if name in ("local-base", "bfcl-0.6b-base"):
+        # Local HF base model (no adapter). The model is cached across
+        # case-bound catalogs so BFCL doesn't reload the 0.6B per case —
+        # only the wrapping Catalog changes between invocations.
+        cache_key = (name, base_model)
+        cached = _LOCAL_HF_CLIENT_CACHE.get(cache_key)
+        if cached is not None:
+            cached.catalog = catalog  # rebind per-case catalog
+            return cached  # type: ignore[return-value]
+        from ganglion.runtime.local_hf import LocalQwenDSLClient
+
+        client = LocalQwenDSLClient(catalog=catalog, base_model=base_model)
+        _LOCAL_HF_CLIENT_CACHE[cache_key] = client
+        return client
+    if name in ("local-lora", "bfcl-0.6b-lora"):
+        if adapter_path is None:
+            raise ValueError(f"--llm {name} requires --adapter <path>")
+        cache_key = (name, adapter_path)
+        cached = _LOCAL_HF_CLIENT_CACHE.get(cache_key)
+        if cached is not None:
+            cached.catalog = catalog
+            return cached  # type: ignore[return-value]
+        from ganglion.runtime.local_hf import LocalQwenLoRAClient
+
+        client = LocalQwenLoRAClient(
+            catalog=catalog, adapter_path=adapter_path, base_model=base_model
+        )
+        _LOCAL_HF_CLIENT_CACHE[cache_key] = client
+        return client
     raise ValueError(f"unknown llm: {name}")
 
 
@@ -95,9 +128,23 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--llm",
-        choices=["rules", "qwen", "qwen-text", "qwen-thinking", "qwen-native"],
+        choices=[
+            "rules", "qwen", "qwen-text", "qwen-thinking", "qwen-native",
+            "local-base", "local-lora",
+            "bfcl-0.6b-base", "bfcl-0.6b-lora",
+        ],
         default="rules",
         help="Model path to evaluate.",
+    )
+    parser.add_argument(
+        "--base-model",
+        default="Qwen/Qwen3-0.6B",
+        help="HF base model id for local-* / bfcl-0.6b-* llm choices.",
+    )
+    parser.add_argument(
+        "--adapter",
+        default=None,
+        help="LoRA adapter dir for local-lora / bfcl-0.6b-lora.",
     )
     parser.add_argument(
         "--tier",
@@ -194,7 +241,13 @@ def main() -> None:
             cases = cases[: args.limit]
 
         def factory(catalog: Catalog) -> ModelClient:
-            return build_client(args.llm, catalog, repair=repair)
+            return build_client(
+                args.llm,
+                catalog,
+                repair=repair,
+                base_model=args.base_model,
+                adapter_path=args.adapter,
+            )
 
         results = run_bfcl(
             factory,
@@ -214,7 +267,13 @@ def main() -> None:
         return
 
     catalog = get_catalog(args.tier)
-    client = build_client(args.llm, catalog, repair=repair)
+    client = build_client(
+        args.llm,
+        catalog,
+        repair=repair,
+        base_model=args.base_model,
+        adapter_path=args.adapter,
+    )
 
     # Determine dataset path
     dataset_path = args.dataset

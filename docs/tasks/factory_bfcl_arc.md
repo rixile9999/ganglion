@@ -174,10 +174,10 @@ Each decision point is a stop-the-arc-and-write-a-paragraph moment. The session 
 | S1' — paraphrase synth | ✅ landed | `runs/factory_phase2/paraphrase_intents_bfcl.py`, `examples/bfcl/v4/train/synth.jsonl` (2,220 paraphrases, K=3 per source), `examples/bfcl/v4/train/synth_stats.json` |
 | S2a' — SFT Qwen3-0.6B + LoRA | ✅ landed (V2 fix; V1 = mode collapse preserved as failure evidence) | `runs/factory_phase2/{build_sft_pool_bfcl,train_sft_bfcl}.py`, `examples/bfcl/v4/train/sft_pool_v2.jsonl`, `runs/factory_phase2/sft_0.6B_bfcl/{v1,v2}/`, `runs/bfcl/sft_v{1,2}_0.6b_*` |
 | Decision gate #2 — SFT lift ≥ +20pp | ✅ passed (**V2: 46.0% → 73.4% aggregate, +27.4pp**; +51–53pp on `parallel*`) | [`docs/bfcl_0.6b_sft_v1_v2_note.md`](../bfcl_0.6b_sft_v1_v2_note.md) |
-| S2a+ — post-correction port | ☐ not started | — |
-| Decision gate #3 — post-correction lift ≥ +2pp | ☐ pending | — |
-| S2c' — self-bootstrap | ☐ not started | — |
-| Decision gate #4 — bootstrap kept ratio ≥ 5% | ☐ pending | — |
+| S2a+ — post-correction port | ✅ measured (no lift) | retroactive replay in `docs/bfcl_0.6b_post_correction_note.md` |
+| Decision gate #3 — post-correction lift ≥ +2pp | ✗ not load-bearing on BFCL (lift = 0pp) — arc skips S2a+ per spec rule | — |
+| S2c' — self-bootstrap | ✅ landed (V3 SFT on V2 ∪ bootstrap = 5,794 rows; aggregate +1.0pp, callable +3-4pp, simple_python -5pp regression) | `runs/factory_phase2/self_bootstrap_bfcl.py`, `examples/bfcl/v4/train/{bootstrap_v3,sft_pool_v3}.jsonl`, `runs/factory_phase2/sft_0.6B_bfcl/v3/`, `runs/bfcl/sft_v3_0.6b_*` |
+| Decision gate #4 — bootstrap kept ratio ≥ 5% | ✅ passed (**95.7%** kept ratio) | `examples/bfcl/v4/train/bootstrap_v3_stats.json` |
 | S3' — DPO | ☐ not started | — |
 | Decision gate #5 — DPO lift > 0 | ☐ pending | — |
 | Eval + report | ☐ not started | — |

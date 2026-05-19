@@ -1,0 +1,22 @@
+{
+  "pool": "/home/rixile/workspace/reflex-language-model/examples/bfcl/v4/train/sft_pool_v2.jsonl",
+  "adapter": "/home/rixile/workspace/reflex-language-model/runs/factory_phase2/sft_0.6B_bfcl/v2/adapter",
+  "base_model": "Qwen/Qwen3-0.6B",
+  "n_pool_rows": 2960,
+  "n_attempted": 3089,
+  "n_parse_fail": 208,
+  "n_no_match": 47,
+  "n_match": 2834,
+  "kept_ratio": 0.9574,
+  "by_category": {
+    "simple_python": 1141,
+    "multiple": 382,
+    "parallel": 392,
+    "parallel_multiple": 359,
+    "irrelevance": 560
+  },
+  "missing_train_cases": 0,
+  "samples_per_intent": 2,
+  "temperature": 0.7,
+  "wall_seconds": 5308.7
+}

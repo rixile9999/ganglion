@@ -4,8 +4,8 @@ import re
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from ganglion.dsl.catalog import Catalog
-from ganglion.dsl.tool_spec import (
+from ganglion.contract.catalog import Catalog
+from ganglion.contract.tool_spec import (
     DSLValidationError,
     EnumArg,
     IntArg,

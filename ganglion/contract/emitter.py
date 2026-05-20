@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from ganglion.dsl.catalog import Catalog
-from ganglion.dsl.types import ActionPlan
-from ganglion.dsl.validator import parse_json_dsl
+from ganglion.contract.catalog import Catalog
+from ganglion.contract.parse import parse_json_dsl
+from ganglion.contract.types import ActionPlan
 
 
 def emit_tool_calls(

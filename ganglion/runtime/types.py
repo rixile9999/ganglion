@@ -1,15 +1,12 @@
+"""Deprecated. `ModelResult` moved to `ganglion.lm.client`."""
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any
+import warnings
 
-from ganglion.dsl.types import ActionPlan
+warnings.warn(
+    "ganglion.runtime.types is deprecated; use ganglion.lm.client instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
-
-@dataclass(frozen=True)
-class ModelResult:
-    plan: ActionPlan
-    raw: Any
-    latency_ms: float
-    input_tokens: int | None = None
-    output_tokens: int | None = None
+from ganglion.lm.client import ModelResult  # noqa: E402, F401

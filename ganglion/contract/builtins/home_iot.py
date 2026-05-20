@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from ganglion.dsl.catalog import Catalog
-from ganglion.dsl.tool_spec import EnumArg, IntArg, StringArg, TimeArg, ToolSpec
-from ganglion.schema.iot_light import (
+from ganglion.contract.catalog import Catalog
+from ganglion.contract.tool_spec import EnumArg, IntArg, StringArg, TimeArg, ToolSpec
+from ganglion.contract.builtins.iot_light import (
     IOT_LIGHT_EXAMPLES,
     IOT_LIGHT_RULES,
     IOT_LIGHT_TOOLS,

@@ -7,8 +7,8 @@ import json
 import re
 from typing import Any
 
-from ganglion.dsl.catalog import Catalog
-from ganglion.dsl.tool_spec import (
+from ganglion.contract.catalog import Catalog
+from ganglion.contract.tool_spec import (
     ArgSpec,
     BoolArg,
     DSLValidationError,
@@ -20,6 +20,7 @@ from ganglion.dsl.tool_spec import (
     TimeArg,
     ToolSpec,
 )
+from ganglion.contract.types import ActionPlan
 
 # BFCL v4 uses non-standard JSON Schema type names; normalise them up front
 # so the rest of the compiler and validator only see standard types.
@@ -28,7 +29,6 @@ _TYPE_ALIASES = {
     "float": "number",
     "tuple": "array",
 }
-from ganglion.dsl.types import ActionPlan
 
 _TIME_PATTERN_HINTS = (
     r"^[0-2][0-9]:[0-5][0-9]$",

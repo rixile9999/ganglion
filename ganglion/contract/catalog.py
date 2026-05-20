@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
-from ganglion.dsl.tool_spec import (
+from ganglion.contract.tool_spec import (
     ArgSpec,
     BoolArg,
     DSLValidationError,
@@ -18,7 +18,7 @@ from ganglion.dsl.tool_spec import (
     TimeArg,
     ToolSpec,
 )
-from ganglion.dsl.types import ActionPlan, ToolCall
+from ganglion.contract.types import ActionPlan, ToolCall
 
 _TIME_PATTERN = re.compile(r"[0-2][0-9]:[0-5][0-9]")
 

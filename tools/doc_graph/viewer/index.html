@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Ganglion · docs/tasks graph viewer</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/cytoscape@3.30.0/dist/cytoscape.min.js"></script>
+  <script src="https://unpkg.com/layout-base@2.0.1/layout-base.js"></script>
+  <script src="https://unpkg.com/cose-base@2.2.0/cose-base.js"></script>
+  <script src="https://unpkg.com/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
+  <script src="https://unpkg.com/marked@11.1.1/marked.min.js"></script>
+</head>
+<body>
+  <header id="top">
+    <div class="title">
+      <strong>Ganglion · docs/tasks</strong>
+      <span class="hint">click a module to zoom · click a task to read · esc to reset</span>
+    </div>
+    <div class="controls">
+      <label><input type="checkbox" id="toggle-event" checked /> event edges</label>
+      <label><input type="checkbox" id="toggle-wikilink" /> wikilink edges</label>
+      <label><input type="checkbox" id="toggle-event-labels" checked /> event labels</label>
+      <input id="search" type="search" placeholder="search node id…" />
+      <button id="reset">reset view</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="cy"></div>
+    <aside id="drawer" class="hidden">
+      <div class="drawer-head">
+        <div>
+          <h2 id="drawer-title">—</h2>
+          <div class="meta">
+            <span id="drawer-kind" class="chip">—</span>
+            <span id="drawer-module" class="chip">—</span>
+            <span id="drawer-lines" class="chip">—</span>
+          </div>
+        </div>
+        <button id="drawer-close" aria-label="close">×</button>
+      </div>
+      <div class="drawer-quick">
+        <div><strong>events consumed</strong><ul id="drawer-consumed"></ul></div>
+        <div><strong>events emitted</strong><ul id="drawer-emitted"></ul></div>
+      </div>
+      <article id="drawer-body" class="markdown"></article>
+    </aside>
+  </main>
+
+  <footer>
+    <span id="status">loading…</span>
+    <span id="dangling-warn"></span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

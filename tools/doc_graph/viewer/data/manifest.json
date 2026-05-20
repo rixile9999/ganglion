@@ -1,0 +1,1717 @@
+{
+  "generated_by": "tools/doc_graph/extract.py",
+  "source_dir": "docs/tasks",
+  "modules": [
+    {
+      "id": "contract",
+      "label": "Module 3 — contract/",
+      "nodes": [
+        "contract_catalog",
+        "contract_null_action",
+        "contract_schema_compiler"
+      ]
+    },
+    {
+      "id": "lm",
+      "label": "Module 1 — lm/",
+      "nodes": [
+        "lm_client",
+        "lm_data_synth",
+        "lm_finetune",
+        "lm_grammar_mask"
+      ]
+    },
+    {
+      "id": "analyzer",
+      "label": "Module 2 — analyzer/",
+      "nodes": [
+        "analyzer_failure_taxonomy",
+        "analyzer_metrics",
+        "analyzer_repair_policy",
+        "analyzer_rule_synthesis",
+        "analyzer_trace_store",
+        "analyzer_verifier"
+      ]
+    },
+    {
+      "id": "benchmark",
+      "label": "Consumers — benchmarks/",
+      "nodes": [
+        "benchmark_bfcl",
+        "benchmark_iot"
+      ]
+    },
+    {
+      "id": "factory",
+      "label": "Composites",
+      "nodes": [
+        "factory_evaluation",
+        "factory_pipeline"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "analyzer_failure_taxonomy",
+      "title": "analyzer_failure_taxonomy",
+      "kind": "atomic",
+      "module": "analyzer",
+      "summary": "Deterministic, rule-based classifier that buckets every recorded trace into exactly one FailureType. The output is the substrate that [[analyzer_rule_synthesis]] (ToolSpec patch proposal from frequencies) and [[analyzer_metrics]] (by-type breakdowns over [[contract_catalog]] runs) build on top of. This primitive does not classify with an LLM judge — only regex / structural matchers over already-recorded fields from [[analyzer_trace_store]].",
+      "role": "Map one `Trace` → one `(FailureType, confidence)` pair via priority-ordered deterministic rules. Persist the classification as a sidecar JSONL (never as a mutation of the trace store). Emit one `analyzer.failure.classified` event per classified trace so downstreams can aggregate without re-reading the JSONL.",
+      "in_scope": [
+        "FailureType enum (one classification per trace; priority-ordered when multiple causes apply):",
+        "syntax_invalid — JSON parse failed (parse_strategy=\"failed\" in the trace).",
+        "unknown_tool — predicted action name not present in the catalog's tool set.",
+        "wrong_action — predicted call's action != ground-truth tool name (only when ground truth available).",
+        "missing_required_arg — a required arg from contract_catalog is absent in the predicted call.",
+        "unknown_arg — predicted call carries an arg name not declared on the tool.",
+        "type_mismatch — predicted arg value's runtime type incompatible with declared ArgSpec (e.g. string where IntArg expected).",
+        "value_out_of_enum — EnumArg value not in allowed set and no alias matched.",
+        "value_out_of_range — IntArg / NumberArg / TimeArg value falls outside [min_value, max_value].",
+        "alias_unrecognised — string value \"looks like\" a known alias (e.g. \"living room\" when alias key is \"living\") but is not mapped; this is the synthesis hook for analyzer_rule_synthesis.",
+        "abstention_miss_should_call — predicted empty calls when ground truth expects ≥1 call (callable case wrongly abstained — relates to contract_null_action).",
+        "abstention_miss_should_abstain — predicted ≥1 call when ground truth expects empty (BFCL irrelevance).",
+        "parallel_order_mismatch — BFCL parallel categories: right set of calls, wrong matching after permutation check.",
+        "partial_arg_value_mismatch — arg name set matches ground truth but values are only partially correct (Jaccard over (name, value) pairs < 1).",
+        "no_failure — exact-match trace; included so the classifier is total over the trace stream.",
+        "classify(trace) -> (FailureType, confidence ∈ [0, 1]). Confidence is rule-source-derived: 1.0 for deterministic regex / structural matches (e.g. catalog membership lookup); <1.0 when a heuristic matcher fires (notably alias_unrecognised, which uses fuzzy comparison and is the only sub-1.0 path in v1).",
+        "Priority order (first match wins): syntax_invalid > unknown_tool > wrong_action > abstention_miss_should_call > abstention_miss_should_abstain > missing_required_arg > unknown_arg > type_mismatch > value_out_of_enum > alias_unrecognised > value_out_of_range > parallel_order_mismatch > partial_arg_value_mismatch > no_failure.",
+        "Persistence: classified output is a **sidecar** JSONL at runs/traces/<catalog_id>/<run_id>/classified.jsonl. Each row: {trace_id, failure_type, confidence, evidence}. The trace store is never mutated (append-only contract from analyzer_trace_store).",
+        "Re-classification: when matchers change, re-running classify over an existing trace store writes classified-v<N>.jsonl alongside the previous file; older files are kept for diffing.",
+        "Target module path: ganglion/analyzer/taxonomy.py.",
+        "Surface today's informal classifications: regex matchers consume DSLValidationError message strings from ganglion/dsl/tool_spec.py and field paths from ganglion/dsl/catalog.py:validate_call; the existing post-hoc analyser runs/factory_bfcl/analyze_failures.py is the reference implementation that this task formalises. BFCL-side bucketed types from ganglion/bfcl/grader.py:GraderResult.error_type (func_match, wrong_count, unexpected_param, …) map into the enum above."
+      ],
+      "out_of_scope": [
+        "LLM-judge classification — deterministic rules only in this primitive; a future task may add a separate judge primitive that emits its own event.",
+        "Training a classifier (logistic / tree / NN over trace features) — out of scope; classification stays deterministic.",
+        "Cross-case root-cause analysis (\"most failures share the same arg name\") — that aggregation belongs to analyzer_rule_synthesis.",
+        "Retroactive mutation of traces.jsonl — forbidden by analyzer_trace_store's append-only contract.",
+        "Coverage gap analysis (\"we have no failures in category X because we never tested X\") — separate concern from per-trace classification.",
+        "Confidence calibration / probability estimation — current confidence is rule-source-derived, not learned; no Brier-score work here.",
+        "Repair-policy decisions (\"which failures are auto-fixable\") — see analyzer_repair_policy."
+      ],
+      "events_consumed": [
+        "analyzer.trace.recorded"
+      ],
+      "events_emitted": [
+        "analyzer.failure.classified"
+      ],
+      "wikilinks": [
+        "analyzer_metrics",
+        "analyzer_repair_policy",
+        "analyzer_rule_synthesis",
+        "analyzer_trace_store",
+        "contract_catalog",
+        "contract_null_action"
+      ],
+      "file": "docs/tasks/analyzer_failure_taxonomy.md",
+      "lines": 127
+    },
+    {
+      "id": "analyzer_metrics",
+      "title": "analyzer_metrics",
+      "kind": "atomic",
+      "module": "analyzer",
+      "summary": "Pure offline aggregation surface over the [[analyzer_trace_store]] and the [[analyzer_failure_taxonomy]] classification sidecar. Consumes traces + classifications for a single (catalog_id, run_id), folds them into a canonical summary.json, renders a stamped markdown report.md, and emits exactly one analyzer.metrics.summarized event. This task does not read traces from anywhere except [[analyzer_trace_store]]; it does not mutate them; it does not classify; it does not synthesise repair rules.",
+      "role": "Aggregate `Trace + Classification` pairs for one `(catalog_id, run_id)` into a versioned `summary.json` plus a stamped markdown report, and announce completion via `analyzer.metrics.summarized`.",
+      "in_scope": [
+        "Aggregation functions over Trace + Classification pairs:",
+        "Rates: syntax_valid_rate, exact_match_rate, action_match_rate, ast_match_rate (BFCL benches only — see benchmark_bfcl), abstention_correct_rate (from Catalog.allow_empty_calls cases via null_action_contract semantics).",
+        "Latency: latency_ms_mean, latency_ms_p50, latency_ms_p95, latency_ms_stddev.",
+        "Token totals: input_tokens_total, output_tokens_total (plus per-trace means as a drift signal).",
+        "Parse-strategy counts: strict | fenced | embedded | failed (Counter dict).",
+        "Repair counts: repair_attempts_total, repair_successes_total, sourced from the analyzer_repair_policy sidecar if present, falling back to the Trace.attempts field.",
+        "Breakdowns (each a sub-object of summary.json):",
+        "by_tool — per-tool failure attribution from Classification.failed_tool.",
+        "by_arg — per-arg failure attribution from Classification.evidence.arg_name.",
+        "by_strategy — per synth strategy if Trace.meta.strategy is populated.",
+        "by_category — per BFCL category for benchmark_bfcl runs; absent otherwise.",
+        "by_failure_type — histogram keyed on the analyzer_failure_taxonomy enum.",
+        "Graded score: per-trace graded_score ∈ {0, 0.25, 0.5, 0.75, 1.0} distribution + mean, ported from ganglion/eval/metrics.py:graded_score.",
+        "Canonical JSON schema with schema_version: 1 (bump on any field rename / removal; additive fields are backwards-compatible).",
+        "Markdown report renderer suitable for docs/*_report.md files: one headline block, per-breakdown tables, top-N failures.",
+        "Persistence to runs/traces/<catalog_id>/<run_id>/summary.json + runs/traces/<catalog_id>/<run_id>/report.md.",
+        "Stamp convention: every numeric in report.md is followed by an HTML comment <!-- src:summary.json#/path/to/field --> so downstream verifiers (the legacy report_freshness concept, now under docs/tasks/legacy/) can cross-check prose against the underlying JSON.",
+        "Target implementation paths: ganglion/analyzer/metrics.py (aggregator + schema) and ganglion/analyzer/reports.py (markdown renderer + stamp helper)."
+      ],
+      "out_of_scope": [
+        "Trace ingestion, persistence, retention — see analyzer_trace_store (append-only contract; this task is read-only).",
+        "Classification rules, failure-type assignment, taxonomy evolution — see analyzer_failure_taxonomy.",
+        "Repair rule *synthesis* from failure frequencies — see analyzer_rule_synthesis.",
+        "Trace mutation of any kind, including in-place enrichment — forbidden by the analyzer_trace_store append-only contract.",
+        "Dashboards / interactive UI / web rendering — this task writes JSON + markdown to disk only.",
+        "Cross-run statistical tests (paired t-tests, bootstrap CIs, significance markers) — defer to a future analyzer_compare task.",
+        "Real-time / streaming aggregation — strictly offline batch over completed runs only.",
+        "Editing or backfilling historical runs/m{2,3,4}/*.json artifacts — those remain as-is; this task writes under runs/traces/… exclusively."
+      ],
+      "events_consumed": [
+        "analyzer.trace.recorded",
+        "analyzer.failure.classified"
+      ],
+      "events_emitted": [
+        "analyzer.metrics.summarized"
+      ],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_repair_policy",
+        "analyzer_rule_synthesis",
+        "analyzer_trace_store",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "null_action_contract",
+        "report_freshness"
+      ],
+      "file": "docs/tasks/analyzer_metrics.md",
+      "lines": 137
+    },
+    {
+      "id": "analyzer_repair_policy",
+      "title": "analyzer_repair_policy",
+      "kind": "atomic",
+      "module": "analyzer",
+      "summary": "Specify the repair-loop as a configurable policy rather than a fixed retry. Today, ganglion/runtime/qwen.py:run_dsl_with_repair (lines 72-124) hard-codes one corrective user message and one budget knob (RepairConfig(enabled, max_attempts)). This task lifts that into a RepairPolicy protocol so different policies — per-FailureType retry messages, custom budgets, A/B ablations — can be tried live or replayed against recorded traces without making new API calls.",
+      "role": "Decide, given the conversation-so-far and the most recent validation error, whether the [[lm_client]] should retry (and with what corrective message) or give up.",
+      "in_scope": [
+        "RepairPolicy protocol with a single method:",
+        "decide(attempts: list[dict], last_error: DSLValidationError) -> RepairAction",
+        "RepairAction = Retry(retry_message: list[dict]) | GiveUp(reason: str). Policies are *stateless* — input is the recorded attempts log, output is the next decision.",
+        "Concrete policies, all in ganglion/analyzer/repair.py:",
+        "NoRepairPolicy() — always returns GiveUp(\"repair_disabled\"). Reproduces today's RepairConfig(enabled=False).",
+        "FixedRetryPolicy(max_attempts=1, message_template=DEFAULT) — reproduces today's RepairConfig(enabled=True, max_attempts=1) byte-for-byte. **Drop-in default.**",
+        "PerFailureTypePolicy(rules: Mapping[FailureType, PolicyRule]) — branches on the analyzer_failure_taxonomy classification of last_error and applies a per-type budget + retry-message template.",
+        "AblationPolicy(policies: Sequence[RepairPolicy], branch_fn: Callablelist[dict, int]) — routes between sibling policies for offline A/B comparison (e.g. by trace_id % n, by catalog tag).",
+        "Retry-message templates:",
+        "Default — \"Your previous JSON failed validation: {error}. Return only valid JSON conforming to the catalog.\" (verbatim with today's run_dsl_with_repair message at qwen.py:117-120).",
+        "Per-FailureType specialisations (consumed by PerFailureTypePolicy):",
+        "syntax_invalid → restate the catalog headers (the Return JSON only. + JSON-shape lines from Catalog.render_json_dsl()).",
+        "unknown_action → list the allowed action names from the catalog, framed as \"Use one of: …\".",
+        "unknown_arg → enumerate the allowed arg names for the predicted tool.",
+        "value_out_of_enum → list the allowed enum values for the offending arg.",
+        "wrong_action (catalog-validated but semantically off, surfaced via grader) → retry with a corrected tool subset.",
+        "Templates are pure functions of (last_error, catalog); no state is captured. This keeps decide cheap to replay.",
+        "**Replay support.** Given a recorded Trace from analyzer_trace_store, simulate \"what would policy P have done?\" by re-feeding trace.attempts to policy.decide() step-by-step, **without** any model call. Used to ablate policies offline against the historical corpus.",
+        "Integration surface: lm_client accepts an optional RepairPolicy (replacing today's RepairConfig knob). When set, after each DSLValidationError the client calls policy.decide(attempts_so_far, exc) and acts on the returned Retry / GiveUp.",
+        "Target path: ganglion/analyzer/repair.py (new module under the new analyzer/ peer of lm/ and contract/ — see [docs/goal/goal.md](../goal/goal.md))."
+      ],
+      "out_of_scope": [
+        "Actual model invocation, conversation-state mutation, token accounting — owned by lm_client. This task is the *brain* telling the client when to retry; it never opens a network connection.",
+        "Synthesising new validator rules / catalog aliases from observed failures — that feedback edge belongs to analyzer_rule_synthesis (rules flow back into Catalog, not into retry messages).",
+        "Training a learned / policy-gradient repair policy — defer. This primitive is deterministic; learning is a downstream consumer.",
+        "Persisting per-attempt artifacts — analyzer_trace_store records all attempts of a single case as one Trace. This task only *reads* trace.attempts.",
+        "Cross-attempt prompt mutation beyond the retry-message append (e.g. rewriting the system prompt, swapping the catalog mid-loop). One corrective user message per attempt; full prompt rewrites are a separate task.",
+        "Concurrency / parallel retries / speculative branching. Strictly single-threaded per case.",
+        "Native tool-call client (QwenNativeToolClient) — its retries follow the OpenAI tool API contract, not this policy. Wiring the policy into freeform / native paths is a follow-up."
+      ],
+      "events_consumed": [
+        "analyzer.trace.recorded"
+      ],
+      "events_emitted": [
+        "analyzer.repair.replayed"
+      ],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_rule_synthesis",
+        "analyzer_trace_store",
+        "lm_client"
+      ],
+      "file": "docs/tasks/analyzer_repair_policy.md",
+      "lines": 116
+    },
+    {
+      "id": "analyzer_rule_synthesis",
+      "title": "analyzer_rule_synthesis",
+      "kind": "atomic",
+      "module": "analyzer",
+      "summary": "Promote the hand-coded R1–R11 post-correction rules in runs/factory_bfcl/post_correction.py to a first-class synthesis loop that consumes bucketed failure classifications from [[analyzer_failure_taxonomy]] and emits proposed ToolSpec rule patches as events. This is the literal \"module 2 (analysis) outputs data that module 3 (contract) consumes to refine itself\" feedback edge from docs/goal/goal.md §2 — the compiler / error-correction surface.",
+      "role": "Mine bucketed failure traces for repeated, narrow patterns and emit machine-readable `ToolSpec` patch proposals (`defaults_when_missing`, `strip_unknown_args`, `prompt_correction`, `EnumArg.aliases`, `StringArg.aliases`, type-relaxation `ArgSpec` extensions) — one event per proposal, never auto-applied.",
+      "in_scope": [
+        "Target module: ganglion/analyzer/rules.py.",
+        "Consume analyzer.failure.classified payloads produced by analyzer_failure_taxonomy (read from analyzer_trace_store).",
+        "Pattern matchers, one per FailureType bucket:",
+        "missing_required_arg — when the SAME default value would close the gap in ≥ N traces (N defaults to 5), propose a defaults_when_missing=(arg_name, value, predicate) rule. Predicate is synthesised from the other-args co-occurrence pattern in the failing traces (e.g. lambda a: \"brightness\" in a).",
+        "unknown_arg — when the SAME arg name appears in ≥ M traces (M defaults to 5):",
+        "If N_safe_to_drop / (N_safe_to_drop + N_carries_signal) > 0.8 → propose strip_unknown_args=True on the target tool.",
+        "Else if value shape is consistent (same JSON type, narrow value set) → propose extending ArgSpec with a new entry (typically a RawArg carrying the observed JSON schema fragment). The extension is flagged as a ToolSpec *shape* change → see on violation.",
+        "value_out_of_enum — when traces show a consistent (observed_value → accepted_enum_value) mapping in ≥ K traces (K defaults to 3) and the mapping is functional (no observed_value maps to two different accepted values), propose EnumArg.aliases extension {observed: accepted, ...}.",
+        "alias_unrecognised — analogous to value_out_of_enum but for StringArg.aliases (free-form string canonicalisation, e.g. \"거실\" → \"living\").",
+        "abstention_miss_should_call — when a cluster of traces shows the model returned {\"calls\":[]} for prompts that DO match a tool (closest-tool similarity above the analyzer_failure_taxonomy threshold), propose a prompt_correction patch that injects a system-level nudge (e.g. \"When the user request matches a known tool, call it; only abstain when no tool applies.\").",
+        "type_mismatch — when a consistent transform recovers the right value (e.g. string \"42\" → int 42, \"5%\" → 0.05, \"175cm\" → 175), propose the smallest ArgSpec relaxation that absorbs it (IntArg(allow_percent=True), widened pattern on StringArg, etc.). When the transform requires a brand-new ArgSpec variant, escalate (see on violation).",
+        "Evidence object attached to every proposed patch:",
+        "failure_count — number of traces matched by the matcher.",
+        "support_share = failure_count / total_failures_of_this_type_for_target.",
+        "example_trace_ids — up to 5 trace IDs (from analyzer_trace_store) for human inspection.",
+        "confidence ∈ [0, 1] = frequency × consistency × narrowness, where:",
+        "frequency ∈ [0,1] = min(1, failure_count / saturation_count) (saturation defaults to 20).",
+        "consistency ∈ [0,1] = fraction of matched traces whose recovery transform is identical.",
+        "narrowness ∈ [0,1] = 1 − (other_tools_with_same_pattern / total_tools_in_catalog). A patch firing on 90 % of one specific arg's failures is high confidence; a patch firing on 30 % of unknown_arg failures spread across the catalog is low.",
+        "Patch shape (JSON Patch-style, one record per line in proposed_patches.jsonl):",
+        "Emit one analyzer.rule.proposed(catalog_id, rule_patch, evidence) event per record; the event payload is the JSON record verbatim.",
+        "**Dry-run only.** Synthesis writes proposed_patches.jsonl and emits events. It does NOT mutate any ToolSpec / Catalog module under ganglion/schema/ or any compiled catalog under ganglion/dsl/compiler.py. Application is owned by factory_pipeline (composite) gated by humans or a flag."
+      ],
+      "out_of_scope": [
+        "Automatic application of proposed patches to a Catalog. Humans (or factory_pipeline with a gating flag) decide. **This is the most important non-goal** — the analyzer suggests, the contract_catalog author approves. Bypassing this boundary collapses the module 2 ↔ module 3 separation.",
+        "Repair-loop policy changes (max-attempts, repair prompt wording) — owned by analyzer_repair_policy.",
+        "Training-data augmentation from failures (turning failing traces into adversarial SFT examples) — owned by lm_data_synth (a sibling feedback edge: failures fuel synth instead of patches).",
+        "Trace ingestion, storage, retention — owned by analyzer_trace_store.",
+        "Error classification / taxonomy bucketing — owned by analyzer_failure_taxonomy. This task consumes its events, does not redefine them.",
+        "LLM-judge rule discovery — explicitly deferred. Only deterministic pattern matchers in this primitive; an LLM-judge variant is a separate task once we can A/B against the deterministic baseline.",
+        "Cross-catalog rule transfer (proposing a patch for home_iot_20 based on iot_light_5 evidence) — separate concern; each invocation is scoped to a single (catalog_id, run_id) window.",
+        "Metrics aggregation across runs — owned by analyzer_metrics. This task emits per-run observation fields only.",
+        "Provider-side or DashScope-side mitigations (e.g. switching to native tool-calling) — out of band; rule synthesis targets the DSL contract surface only."
+      ],
+      "events_consumed": [
+        "analyzer.failure.classified"
+      ],
+      "events_emitted": [
+        "analyzer.rule.proposed",
+        "analyzer.rule.proposed_escalated"
+      ],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_metrics",
+        "analyzer_repair_policy",
+        "analyzer_trace_store",
+        "contract_catalog",
+        "factory_pipeline",
+        "lm_data_synth"
+      ],
+      "file": "docs/tasks/analyzer_rule_synthesis.md",
+      "lines": 142
+    },
+    {
+      "id": "analyzer_trace_store",
+      "title": "analyzer_trace_store",
+      "kind": "atomic",
+      "module": "analyzer",
+      "summary": "Append-only JSONL store of every inference trace produced by Ganglion's [[lm_client]] and benchmark runners. This task is the substrate that every other analyzer task ([[analyzer_failure_taxonomy]], [[analyzer_metrics]], [[analyzer_rule_synthesis]], [[analyzer_repair_policy]]) reads from. Today's per-run artifacts (runs/m{2,3,4}/*.json, runs/bfcl/*_cases.jsonl, runs/factory_bfcl/<cat>/eval_holdout_cases.jsonl) hold the same logical thing in three scattered shapes; this spec canonicalises one shape so the analyzer can do its job uniformly.",
+      "role": "Capture every inference attempt as an immutable, content-addressed JSONL record in a fixed on-disk layout, and emit a `analyzer.trace.recorded` event per record so downstream analyzer primitives can subscribe without polling the filesystem.",
+      "in_scope": [
+        "Trace frozen dataclass with fields:",
+        "trace_id: str — content-hash of (case_id, model_id, run_id, attempt_index). Stable across re-ingestion.",
+        "case_id: str — case identifier from the source dataset (BFCL id, IoT case.id, factory holdout row id, …).",
+        "catalog_id: str — identifier of the Catalog the inference ran against (e.g. iot_light_5, bfcl/simple_python/<case_id>).",
+        "source: str — one of \"benchmark.iot\", \"benchmark.bfcl\", \"lm.invoke\", \"factory.eval\".",
+        "prompt: str — full user prompt sent to the model.",
+        "expected_plan: dict | None — JSON form of the gold ActionPlan if known; None for irrelevance / open-ended invocations.",
+        "raw_output: str — model's raw string output (pre-parse).",
+        "attempts: list[dict] — per-repair-attempt records {attempt_index, content, input_tokens, output_tokens, error_msg}.",
+        "parse_strategy: str — one of \"strict\", \"fenced\", \"embedded\", \"failed\".",
+        "error_type: str | None — left None by this store; populated by analyzer_failure_taxonomy in a separate sidecar.",
+        "plan: dict | None — final parsed ActionPlan as JSON, or None on parse failure.",
+        "latency_ms: float.",
+        "input_tokens_total: int, output_tokens_total: int.",
+        "model_id: str — e.g. qwen3.6-plus, qwen3.6-flash, rules.",
+        "timestamp: str — ISO 8601 UTC, second precision.",
+        "TraceStore class living at ganglion/analyzer/trace.py with:",
+        "append(trace: Trace) -> str — writes one JSONL line; returns trace_id. Idempotent: same trace_id already on disk → skip silently.",
+        "iter(catalog_id: str | None = None, run_id: str | None = None) -> Iterable[Trace] — read path; filters by directory level when supplied.",
+        "by_id(trace_id: str) -> Trace | None — direct lookup (scans the indexed subtree).",
+        "Persistence layout: runs/traces/<catalog_id>/<run_id>/traces.jsonl. Uncompressed by default for grep-ability; gzip is a downstream concern.",
+        "Event subscription: consume lm.inference.completed, lm.inference.failed, benchmark.iot.completed, benchmark.bfcl.completed. For benchmark events, the payload references per-case detail (inline list or file path) which the store unfolds into one Trace per case.",
+        "Idempotency: re-running the same (case_id, model_id, run_id, attempt_index) is a no-op — trace_id collides and the duplicate write is skipped. This lets benchmark replays be safely re-ingested.",
+        "**Append-only invariant**: traces are NEVER mutated in place. Classification, annotation, or repair-replay results live in *separate* files. If a downstream consumer wants to \"fix\" a trace, the contract is to emit a NEW trace with a fresh trace_id, never to rewrite an existing line.",
+        "Target source path: ganglion/analyzer/trace.py."
+      ],
+      "out_of_scope": [
+        "Trace classification (error-type bucketing) — owned by analyzer_failure_taxonomy.",
+        "Aggregation and statistical summaries (rates, percentiles, token totals across traces) — owned by analyzer_metrics.",
+        "Rule / alias / repair-prompt synthesis driven by trace clusters — owned by analyzer_rule_synthesis.",
+        "Repair replay or policy fitting — owned by analyzer_repair_policy.",
+        "**In-place mutation of recorded traces** — this is a strict invariant; consumers that need annotation write sidecar files keyed by trace_id.",
+        "Retention / GC / compaction of runs/traces/** — separate operational concern; this primitive only appends.",
+        "Cross-run trace correlation, joins, or schema migrations — separate analyzer-level concerns layered on top of iter().",
+        "Backfilling legacy runs/m{2,3,4}/*.json and runs/bfcl/*_cases.jsonl into the canonical shape — a migration task, tracked separately."
+      ],
+      "events_consumed": [
+        "lm.inference.completed",
+        "lm.inference.failed",
+        "benchmark.iot.completed",
+        "benchmark.bfcl.completed"
+      ],
+      "events_emitted": [
+        "analyzer.trace.recorded"
+      ],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_metrics",
+        "analyzer_repair_policy",
+        "analyzer_rule_synthesis",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "lm_client"
+      ],
+      "file": "docs/tasks/analyzer_trace_store.md",
+      "lines": 119
+    },
+    {
+      "id": "analyzer_verifier",
+      "title": "analyzer_verifier",
+      "kind": "atomic",
+      "module": "analyzer",
+      "summary": "Catalog-bound, deterministic, continuous reward function over LM outputs. Used by [[lm_data_synth]] as a synthesis-gate predicate and by [[lm_finetune]] as the DPO/RL reward signal. The shape is fixed by contract: 0.0 on parse failure, 0.3 on parse-only (no gold), 0.3 + 0.4·action_match_ratio + 0.2·arg_match_ratio on partial match against gold, 1.0 on exact-match. Catalog-bound by construction — one verifier per [[contract_catalog]], never pluggable across catalogs.",
+      "role": "Compute a continuous, deterministic reward in `[0, 1]` for a raw LM output, given an optional gold `ActionPlan`, against a fixed `Catalog`.",
+      "in_scope": [
+        "VerifierFn = Callable[[raw_output: str, gold: ActionPlan | None, prompt: str | None], float] bound to a single Catalog.",
+        "make_verifier(catalog: Catalog) -> VerifierFn factory — one verifier per contract_catalog; the catalog is closed over at construction time.",
+        "Reward shape (deterministic, continuous, [0, 1]):",
+        "0.0 — catalog.parse_json_dsl(raw_output) raises.",
+        "0.3 — parses OK, gold is None (structural validity only; no semantic ground truth).",
+        "0.3 + 0.4·action_match_ratio + 0.2·arg_match_ratio — gold supplied, partial match.",
+        "1.0 — predicted_plan == gold (ActionPlan value equality).",
+        "Per-call decomposition for multi-call plans: each call scored independently and averaged. Position-aligned (call i in predicted vs call i in gold); a length mismatch contributes 0.0 for the missing positions, not a reordering search. Reorder-tolerance is a benchmark_bfcl grader concern (parallel categories), not a reward concern. action_match_ratio = positions where action names agree / max(len(predicted), len(gold)). arg_match_ratio = per-call Jaccard of (k, v) arg pairs, averaged over gold calls; calls whose action does not match contribute 0.0.",
+        "Determinism: identical (raw, gold, prompt, catalog) always yields the same float. No clocks, no RNG, no I/O.",
+        "Consumers:",
+        "lm_data_synth — synth-gate predicate reward >= 0.95 (effectively exact match) to keep a synthesised (prompt, expected) pair.",
+        "lm_finetune — DPO pair construction reads verifier scores to order chosen vs rejected; GRPO/PPO use the raw [0, 1] value as the reward signal.",
+        "Target implementation path: ganglion/analyzer/verifier.py. Existing prototype at ganglion/factory/customer/verifier.py:make_verifier is the source of the contract; the analyzer module is its principled relocation."
+      ],
+      "out_of_scope": [
+        "Training a learned reward model. The verifier is deterministic by definition; learned reward is a separate task surface.",
+        "Discrete match-shaped graders. Benchmark graders own their own scoring: benchmark_iot exact_match (boolean) and benchmark_bfcl ast_match (boolean over AST checker). The verifier is reward-shaped (continuous, gradient-friendly), not match-shaped.",
+        "Discrete graded scoring. ganglion/eval/metrics.py:graded_score (0 / 0.25 / 0.5 / 0.75 / 1.0) is a *different* signal for a *different* consumer; do not collapse the two.",
+        "Trace / failure classification — see analyzer_failure_taxonomy for the syntax_invalid | wrong_action | wrong_arg | hallucinated_tool partition.",
+        "Cross-catalog reward transfer. One verifier per Catalog; not pluggable. If a different catalog is in play, construct a different verifier.",
+        "Asynchronous / streaming reward computation. The verifier is synchronous and pure.",
+        "Reward calibration / scaling per RL algorithm (e.g. advantage normalisation, KL coefficients). Defer to downstream training in lm_finetune — DPO/GRPO handle their own scaling."
+      ],
+      "events_consumed": [],
+      "events_emitted": [],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "contract_catalog",
+        "lm_data_synth",
+        "lm_finetune"
+      ],
+      "file": "docs/tasks/analyzer_verifier.md",
+      "lines": 92
+    },
+    {
+      "id": "benchmark_bfcl",
+      "title": "benchmark_bfcl",
+      "kind": "atomic",
+      "module": "benchmark",
+      "summary": "BFCL v4 single-turn benchmark consumer. Loads the deterministic seed=42 subsample at examples/bfcl/v4/sample/*.jsonl, compiles a fresh Catalog per case via [[contract_schema_compiler]], drives a ModelClient from [[lm_client]] against each case, and grades the resulting ActionPlan with a Python re-implementation of upstream BFCL's AST checker. One trace per case is emitted into [[analyzer_trace_store]]; cross-phase aggregation belongs to [[analyzer_metrics]] / [[factory_evaluation]]. Each BFCL case ships its own tool list, so per-case catalogs are compiled and discarded — nothing is cached across cases.",
+      "role": "Run BFCL v4 single-turn Python categories against a configurable `ModelClient`\nand emit a per-case trace + a per-category completion event suitable for the\ndownstream metrics pipeline.",
+      "in_scope": [
+        "Five-category loader: simple_python, multiple, parallel,",
+        "Per-case Catalog compile via contract_schema_compiler",
+        "Catalog.allow_empty_calls set conditionally — True for the",
+        "BFCL AST grader (Python port of upstream ast_checker):",
+        "irrelevance (no ground_truth): valid iff predicted_calls == ().",
+        "simple (1 call): _simple() checker against the single answer set.",
+        "multiple (1 call out of N candidate functions): _multiple().",
+        "parallel / parallel_multiple (N calls, order-insensitive):",
+        "Type coercion: int → float promotion, tuple → list normalisation,",
+        "is_variable placeholder support on the BFCL ground-truth side.",
+        "Per-case runner: takes (client_factory, cases, repeat, allow_empty_calls),",
+        "CLI surface: --bfcl <category|callable|all>,",
+        "Target paths: ganglion/benchmarks/bfcl/{loader,grader,case_catalog,runner}.py."
+      ],
+      "out_of_scope": [
+        "BFCL multi-turn categories (multi_turn_*). Single-turn only — the",
+        "Non-Python categories (Java, JavaScript, REST). convert_func_name and",
+        "BFCL exec match (running tool calls against a sandbox). AST match only.",
+        "Live / enterprise-contributed BFCL categories. Sample is non-live only.",
+        "Dataset regeneration. examples/bfcl/v4/subsample.py is a separate tool",
+        "Fine-tuning data generation from BFCL — that is lm_data_synth",
+        "Upstream bfcl_eval invocation. The AST checker is re-implemented in",
+        "Cross-phase / cross-category aggregation tables. Per-category run here;"
+      ],
+      "events_consumed": [
+        "contract.catalog.published"
+      ],
+      "events_emitted": [
+        "lm.inference.completed",
+        "lm.inference.failed",
+        "benchmark.bfcl.completed"
+      ],
+      "wikilinks": [
+        "analyzer_metrics",
+        "analyzer_trace_store",
+        "benchmark_iot",
+        "contract_catalog",
+        "contract_null_action",
+        "contract_schema_compiler",
+        "factory_evaluation",
+        "lm_client",
+        "lm_data_synth"
+      ],
+      "file": "docs/tasks/benchmark_bfcl.md",
+      "lines": 169
+    },
+    {
+      "id": "benchmark_iot",
+      "title": "benchmark_iot",
+      "kind": "atomic",
+      "module": "benchmark",
+      "summary": "Adapter that drives the IoT-light tier benchmarks (iot_light_5 / home_iot_20 / smart_home_50) as a *consumer* of a constructed [[contract_catalog]] and [[lm_client]]. Loads the IoT JSONL datasets, invokes the client per case, grades with exact-match + action-match semantics, and emits one trace per case for [[analyzer_trace_store]] plus a single run-level event for downstream aggregation in [[analyzer_metrics]].",
+      "role": "Run a catalog against the IoT dataset under a given client and emit per-case traces plus a run-completion event — never construct the catalog or the client itself.",
+      "in_scope": [
+        "Per-tier dataset loaders for iot_light_5, home_iot_20, and smart_home_50. All three load from the same examples/iot_light/dataset.jsonl because the smaller-tier intents are a subset of the larger catalogs; the tier label travels with the run for downstream slicing, not for filtering rows.",
+        "Adversarial merge: when adversarial=True, concatenate examples/iot_light/dataset.jsonl with examples/iot_light/adversarial_cases.jsonl (M4 adversarial set) into the case stream. The merge is in-memory and deterministic (base first, then adversarial in file order).",
+        "Grader.match(predicted: ActionPlan | None, expected: ActionPlan) -> GradeResult carrying {exact_match: bool, action_match: bool, syntax_valid: bool, error_type: str | None}. exact_match is ActionPlan value equality; action_match compares the action-name sequence only; syntax_valid is predicted is not None. This is today's IoT-side scoring — the BFCL AST grader is a sibling and lives under benchmark_bfcl.",
+        "Per-case runner: (client: ModelClient, catalog: Catalog, dataset, *, repeat: int = 1, repair_policy=None) -> RunHandle. Iterates cases, calls client.invoke(case.prompt) repeat times, grades each invocation, and emits one lm.inference.completed event per invocation (consumed by analyzer_trace_store). On final case completion, emits one benchmark.iot.completed(catalog_id, tier, summary_path) where summary_path is the trace-store run directory.",
+        "--repeat N for latency stats (each repeat is its own trace; the grader runs per repeat so the analyzer can compute pass/repeat distributions).",
+        "--limit N flag wiring (slice the cases list before iteration).",
+        "--repair flag wiring: the repair *policy* is supplied externally (see analyzer_repair_policy); this task only forwards a repair_policy handle to the client factory boundary and records repair attempt counts surfaced by the client into the per-case trace payload.",
+        "Target paths: ganglion/benchmarks/iot/{dataset,grader,runner}.py."
+      ],
+      "out_of_scope": [
+        "Client construction (QwenJSONDSLClient, QwenNativeToolClient, RuleBasedJSONDSLClient, factories) — see lm_client; the runner accepts a ready-constructed ModelClient and never imports a concrete client class.",
+        "Catalog construction — see contract_catalog and ganglion/contract/builtins/; the runner consumes a Catalog by reference, never instantiates ToolSpecs or resolves aliases.",
+        "Summarisation / aggregation across cases — syntax_valid_rate, exact_match_rate, latency percentiles, repair totals — see analyzer_metrics which consumes the trace store, not this runner.",
+        "Trace persistence (file layout, schema versioning, retention) — see analyzer_trace_store; this task only *emits* events.",
+        "BFCL benchmark — different dataset, per-case compiled catalog, AST grader. See benchmark_bfcl.",
+        "Dataset regeneration — examples/iot_light/generate_dataset.py and examples/iot_light/adversarial_cases.py remain the SSOT for row content; this task only consumes the JSONL.",
+        "Tier dataset divergence — the same prompt rows are used across iot_light_5 / home_iot_20 / smart_home_50 by design. If a future tier needs its own dataset, that is a separate task and a new examples/<tier>/ tree.",
+        "Reward shaping (graded_score) — staying in the analyzer's domain; the grader here is binary per metric."
+      ],
+      "events_consumed": [
+        "contract.catalog.published"
+      ],
+      "events_emitted": [
+        "lm.inference.completed",
+        "lm.inference.failed",
+        "benchmark.iot.completed",
+        "benchmark.iot.failed"
+      ],
+      "wikilinks": [
+        "analyzer_metrics",
+        "analyzer_repair_policy",
+        "analyzer_trace_store",
+        "benchmark_bfcl",
+        "contract_catalog",
+        "lm_client"
+      ],
+      "file": "docs/tasks/benchmark_iot.md",
+      "lines": 104
+    },
+    {
+      "id": "contract_catalog",
+      "title": "contract_catalog",
+      "kind": "atomic",
+      "module": "contract",
+      "summary": "The Catalog / ToolSpec / ArgSpec contract — the load-bearing surface of Module 3 ([contract/](../goal/goal.md)) that Modules 1 (lm/) and 2 (analyzer/) speak through. A single Catalog instance is the source-of-truth: it renders the compact DSL prompt and the OpenAI native tool schema and validates model output back into an ActionPlan. This dual rendering is what makes the IR-vs-native comparison apples-to-apples.",
+      "role": "Define the immutable Catalog contract (Catalog, ToolSpec, ArgSpec taxonomy, ActionPlan) that every other module imports — never mutates — to render prompts, validate outputs, and compare plans by value.",
+      "in_scope": [
+        "Catalog frozen dataclass — fields name, tools: tuple[ToolSpec, ...], examples, extra_rules, allow_empty_calls: bool, default_strip_unknown_args: bool. Methods get_tool, render_json_dsl(), render_openai_tools(), parse_json_dsl(), validate(), validate_call().",
+        "**Dual rendering** from one SSOT: render_json_dsl() produces the short text appended to the system prompt; render_openai_tools() produces the full OpenAI tools=[...] list. Adding a tool updates both.",
+        "ToolSpec frozen dataclass — name, description, args: tuple[ArgSpec, ...], dsl_args_override, custom_validator, plus the **post-correction hooks**: defaults_when_missing: tuple[DefaultRule, ...], strip_unknown_args: bool | None, prompt_correction: PromptCorrection | None.",
+        "ArgSpec taxonomy (EnumArg, IntArg, NumberArg, StringArg, BoolArg, TimeArg, RawArg) with the locale/domain canonicalisation hooks EnumArg.aliases and StringArg.aliases (e.g. \"거실\" → \"living\", \"movie mode\" → \"movie\"). RawArg is the escape hatch for shapes the generic renderer cannot express, paired with ToolSpec.custom_validator.",
+        "parse_json_dsl() pipeline: str | Mapping → strict JSON → fenced `json` fallback → first decodable {...} → validate() → ActionPlan(calls=tuple[ToolCall, ...]). Frozen ToolCall(name, args); value equality semantics so result.plan == expected` is the exact-match metric.",
+        "allow_empty_calls opt-in flag — linkage point with contract_null_action (does not own the abstention semantics, only carries the boolean).",
+        "DSLValidationError taxonomy with field-path information for unknown tool, missing required arg, alias miss, enum miss, type miss.",
+        "Target post-redesign paths: ganglion/contract/catalog.py, ganglion/contract/tool_spec.py, ganglion/contract/arg_spec.py, ganglion/contract/types.py, ganglion/contract/parse.py, ganglion/contract/builtins/{iot_light,home_iot_20,smart_home_50}.py (benchmark_iot hands these out)."
+      ],
+      "out_of_scope": [
+        "External schema ingestion (OpenAI / MCP / bare function schemas / BFCL function entries) → contract_schema_compiler.",
+        "Benchmark-specific per-case Catalog construction (e.g. one Catalog per BFCL row) → benchmark_iot, benchmark_bfcl.",
+        "Automated alias / default discovery from failure traces → analyzer_rule_synthesis *proposes* patches in the DefaultRule / PromptCorrection shape, but this doc only defines that shape — never produces patches itself.",
+        "Provider-specific output adapters beyond the neutral {name, arguments} shape (Anthropic tool_use blocks, Gemini functionCall, etc.) — deferred.",
+        "Direct execution of tool calls — that boundary belongs to the runtime executor, not the contract.",
+        "Repair loop control flow → analyzer_repair_policy; the contract only raises DSLValidationError, it does not retry."
+      ],
+      "events_consumed": [
+        "analyzer.rule.proposed"
+      ],
+      "events_emitted": [
+        "contract.catalog.published"
+      ],
+      "wikilinks": [
+        "analyzer_metrics",
+        "analyzer_repair_policy",
+        "analyzer_rule_synthesis",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "contract_null_action",
+        "contract_schema_compiler"
+      ],
+      "file": "docs/tasks/contract_catalog.md",
+      "lines": 96
+    },
+    {
+      "id": "contract_null_action",
+      "title": "contract_null_action",
+      "kind": "atomic",
+      "module": "contract",
+      "summary": "Catalog-level contract that promotes {\"calls\": []} to a first-class Action IR value — ActionPlan(calls=()) — gated by an explicit per-catalog allow_empty_calls flag. Refresh of the legacy [null_action_contract](./legacy/null_action_contract.md) spec for Module 3 (contract/) of the redesigned [[goal]] layout. Closes the BFCL irrelevance abstention gap measured in M5' (see docs/bfcl_m5_abstention_report.md).",
+      "role": "Define when an empty `calls` array is a valid Action IR value, how the [[contract_catalog]] surface advertises that capability to the LM, and how downstream graders interpret it — without inventing model-side abstention semantics.",
+      "in_scope": [],
+      "out_of_scope": [],
+      "events_consumed": [],
+      "events_emitted": [],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_repair_policy",
+        "benchmark_bfcl",
+        "contract_catalog",
+        "goal"
+      ],
+      "file": "docs/tasks/contract_null_action.md",
+      "lines": 87
+    },
+    {
+      "id": "contract_schema_compiler",
+      "title": "contract_schema_compiler",
+      "kind": "atomic",
+      "module": "contract",
+      "summary": "Compile arbitrary external tool schemas (OpenAI / DashScope / MCP / bare function schemas / BFCL function entries) into a Ganglion Catalog so DSL and native baselines render from the same single source of truth.",
+      "role": "Translate external tool-calling schemas into Ganglion `ToolSpec` / `Catalog` and expose a runtime mapper that bridges the compiled DSL output back to a provider-neutral `{name, arguments}` call. Lives under the redesigned `contract/` module alongside [[contract_catalog]] and [[contract_null_action]].",
+      "in_scope": [],
+      "out_of_scope": [],
+      "events_consumed": [],
+      "events_emitted": [],
+      "wikilinks": [
+        "analyzer_rule_synthesis",
+        "benchmark_bfcl",
+        "contract_catalog",
+        "contract_null_action",
+        "lm_data_synth"
+      ],
+      "file": "docs/tasks/contract_schema_compiler.md",
+      "lines": 87
+    },
+    {
+      "id": "factory_evaluation",
+      "title": "factory_evaluation",
+      "kind": "composite",
+      "module": "factory",
+      "summary": "Measurement-only composite. Pick a (client, catalog, benchmark) tuple, run it once, summarise once, emit one terminal verdict. This is today's python -m ganglion.eval.runner --llm … --tier … / --bfcl … invocation, promoted to a named composite so other workflows can compose against it. No training, no rule synthesis, no catalog mutation — those live in [[factory_pipeline]]. This composite answers exactly one question: *is this catalog already good against this benchmark for this client?*",
+      "role": "Dispatch a single measurement run against a chosen `(client, catalog, benchmark)` tuple by wiring [[benchmark_iot]] / [[benchmark_bfcl]] into [[analyzer_trace_store]] + [[analyzer_metrics]], and emit exactly one `factory.evaluation.completed` event per invocation.",
+      "in_scope": [
+        "CLI dispatch: python -m ganglion eval --client <client> --catalog <id> --benchmark <iot|bfcl> [--tier <iot_light_5|home_iot_20|smart_home_50>] [--bfcl-category <cat|callable|all>] [--repeat N] [--limit N]. Target path: ganglion/cli.py (the eval subcommand).",
+        "Single (client, catalog, benchmark) tuple per invocation. The CLI rejects ambiguous combinations (e.g. --tier together with --bfcl-category) at parse time.",
+        "Wiring lm_client (selected via --client) and contract_catalog (selected via --catalog) into the chosen benchmark primitive.",
+        "Subscribing to benchmark.iot.completed or benchmark.bfcl.completed, waiting for analyzer_trace_store ingest, then requesting analyzer_metrics summarisation.",
+        "Aggregate emit: factory.evaluation.completed(client_id, catalog_id, benchmark_id, summary_path).",
+        "Forwarding the analyzer_metrics summary JSON path + markdown report path; the composite never writes either artifact itself.",
+        "Per-invocation observation aggregates (evaluation_runs_total, evaluation_wall_minutes)."
+      ],
+      "out_of_scope": [
+        "Training — lm_finetune is **not** invoked from this composite. Eval is read-only against weights.",
+        "Data synth — lm_data_synth is not invoked. Datasets are taken as-is from the benchmark primitive.",
+        "Rule synthesis — analyzer_rule_synthesis does not run during measurement-only flows. Eval observes; it does not propose patches.",
+        "Catalog mutation — the contract_catalog passed in is read-only for the duration of this composite. No ToolSpec edits, no alias additions.",
+        "A/B comparisons across multiple clients or multiple catalogs in one run — exactly one tuple per invocation. Cross-run comparison is downstream report tooling (e.g. runs/aggregate.py, runs/bfcl/aggregate.py), not this composite.",
+        "Real-time dashboards / progress streaming — composite emits one terminal factory.evaluation.completed event; live observability is left to the event bus.",
+        "Defining new metrics — composite forwards the metrics analyzer_metrics already computes; it does not invent its own headline numbers."
+      ],
+      "events_consumed": [
+        "benchmark.iot.completed",
+        "benchmark.bfcl.completed",
+        "analyzer.metrics.summarized"
+      ],
+      "events_emitted": [
+        "factory.evaluation.completed",
+        "factory.evaluation.aborted"
+      ],
+      "wikilinks": [
+        "analyzer_metrics",
+        "analyzer_rule_synthesis",
+        "analyzer_trace_store",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "contract_catalog",
+        "factory_pipeline",
+        "lm_client",
+        "lm_data_synth",
+        "lm_finetune",
+        "release_health",
+        "workflow_principle"
+      ],
+      "file": "docs/tasks/factory_evaluation.md",
+      "lines": 109
+    },
+    {
+      "id": "factory_pipeline",
+      "title": "factory_pipeline",
+      "kind": "composite",
+      "module": "factory",
+      "summary": "This is a composite task doc. It names the redesigned Ganglion *factory* — the feedback loop that wires lm/, analyzer/, and contract/ (per [goal.md](../goal/goal.md)) into one event-driven optimisation cycle on a Catalog. Per [workflow_principle](../agent-forge/workflow_principle.md), a composite earns its keep when its outer contract is not reducible to any single primitive's contract — and \"iterate a catalog until it converges\" is exactly that: no primitive owns the loop.",
+      "role": "Drive a `Catalog` through repeated `synth → finetune → benchmark → trace_store → taxonomy → metrics → rule_synthesis → catalog patch → next-iteration synth` cycles, emitting exactly one `factory.pipeline.iterated` per cycle and exactly one `factory.pipeline.aborted` on stop conditions — by subscribing to primitive events only.",
+      "in_scope": [
+        "Subscribing to lm.synth.completed and triggering lm.finetune.request for the catalog under iteration.",
+        "Subscribing to lm.finetune.completed and triggering benchmark.iot.request + benchmark.bfcl.request against the new adapter.",
+        "Subscribing to benchmark.{iot,bfcl}.completed and waiting on analyzer.trace.recorded events (counted) for trace-store ingestion.",
+        "Subscribing to analyzer.failure.classified and accumulating a per-iteration failure histogram.",
+        "Subscribing to analyzer.metrics.summarized and recording per-iteration exact_match_rate / action_match_rate / ast_match_rate.",
+        "Subscribing to analyzer.rule.proposed and accumulating proposed patches for the iteration.",
+        "Applying patches **only when** auto_apply=True (default False — humans gate by default) → emit contract.catalog.published(new_catalog_id, version+1) to begin the next iteration.",
+        "Iteration control: max_iter cap, plateau detection (no exact_match_rate improvement for K consecutive iterations), early termination on exact_match_rate ≥ threshold.",
+        "Idempotency: skip an iteration whose catalog_id/version pair matches a prior cycle.",
+        "Aggregate emit: factory.pipeline.iterated(catalog_id, iteration, eval_summary) per cycle; factory.pipeline.aborted(catalog_id, reason) on stop conditions.",
+        "Target implementation path: ganglion/factory.py."
+      ],
+      "out_of_scope": [
+        "Re-running primitives. This composite *delegates fully* — it does not duplicate synth, finetune, benchmark, classify, metrics, or rule-synthesis logic. Those live in lm_data_synth, lm_finetune, benchmark_iot, benchmark_bfcl, analyzer_failure_taxonomy, analyzer_metrics, analyzer_rule_synthesis.",
+        "Applying patches autonomously without an opt-in flag — patch application requires auto_apply=True OR a human approval signal observed on the event bus. Default behaviour holds patches and surfaces pending_patches in the iteration's eval summary.",
+        "Mutating any primitive's contract — composite reads events; it does not change what primitives do. Composite would-be-changes to primitive contracts must restructure responsibilities first (per [workflow_principle §Anti-patterns](../agent-forge/workflow_principle.md)).",
+        "Cross-catalog joint optimisation — one catalog_id per pipeline instance. Multi-catalog meta-optimisation, if ever needed, is a separate higher-order composite.",
+        "Concurrent pipelines on the same catalog — serialised by catalog_id; idempotency keyed off catalog version.",
+        "Real-time / streaming iteration — batch / event-driven only. There is no in-cycle dataflow; everything is on event → action.",
+        "Persistence of intermediate adapters, datasets, or trace records — defer to lm_finetune (adapter storage), lm_data_synth (dataset storage), and analyzer_trace_store (trace persistence). The composite only references their IDs.",
+        "Defining the eval_summary schema — that is owned by analyzer_metrics and factory_evaluation. This composite passes it through, not edits it."
+      ],
+      "events_consumed": [
+        "lm.synth.completed",
+        "lm.finetune.completed",
+        "benchmark.iot.completed",
+        "benchmark.bfcl.completed",
+        "analyzer.trace.recorded",
+        "analyzer.failure.classified",
+        "analyzer.metrics.summarized",
+        "analyzer.rule.proposed",
+        "contract.catalog.published"
+      ],
+      "events_emitted": [
+        "factory.pipeline.iterated",
+        "factory.pipeline.aborted",
+        "contract.catalog.published"
+      ],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_metrics",
+        "analyzer_rule_synthesis",
+        "analyzer_trace_store",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "contract_catalog",
+        "factory_bfcl",
+        "factory_bfcl_phase3",
+        "factory_evaluation",
+        "lm_data_synth",
+        "lm_finetune"
+      ],
+      "file": "docs/tasks/factory_pipeline.md",
+      "lines": 170
+    },
+    {
+      "id": "lm_client",
+      "title": "lm_client",
+      "kind": "atomic",
+      "module": "lm",
+      "summary": "Module-1 inference surface. Specifies the ModelClient protocol and three concrete adapters — DashScope (Qwen JSON-DSL / Qwen freeform / Qwen native tool-call), deterministic rules, local HF (transformers + PEFT) — that turn a per-case prompt + a [[contract_catalog]] into a validated ActionPlan. Every invocation emits a lm.inference.{completed|failed} event so [[analyzer_trace_store]] can ingest a uniform trace regardless of transport.",
+      "role": "Define the synchronous `ModelClient` protocol and pin the contract of its three transport modules (DashScope / rules / local HF) so the analyzer and benchmark layers see one shape across providers.",
+      "in_scope": [
+        "ganglion/lm/client.py — ModelClient Protocol with single method invoke(prompt: str) -> ModelResult, plus the shared ModelResult (frozen dataclass: plan: ActionPlan | None, raw: dict, latency_ms: float, input_tokens: int | None, output_tokens: int | None).",
+        "ganglion/lm/dashscope.py — three OpenAI-SDK-against-DashScope clients sharing a single DashScopeConfig:",
+        "ganglion/lm/rules.py — RuleBasedJSONDSLClient: deterministic regex/keyword stand-in bound to a specific catalog (today: iot_light_5); zero network, used by pytest and the offline runner.",
+        "ganglion/lm/local_hf.py — LocalHFClient: wraps transformers.AutoModelForCausalLM + optional PEFT LoRA adapter; calls tokenizer.apply_chat_template with the prompt from lm_prompts; accepts an optional logits_processor slot for the grammar mask from lm_grammar_mask.",
+        "Repair-policy injection: clients accept an optional RepairPolicy from analyzer_repair_policy; on DSLValidationError they consult the policy to decide retry vs raise. Only QwenJSONDSLClient and LocalHFClient wire the slot — the freeform, native, and rules clients raise straight through.",
+        "System-prompt loading: every client renders its system prompt from lm_prompts (ganglion/lm/prompts.py) so the DSL/native-template strings are a single SSOT shared with lm_finetune training data.",
+        "Event emission: one event per invoke() — lm.inference.completed{case_id, catalog_id, model_id, plan, raw, latency_ms, input_tokens, output_tokens, parse_strategy} on success; lm.inference.failed{case_id, catalog_id, model_id, error_type, error_msg, raw, attempts} on terminal failure."
+      ],
+      "out_of_scope": [
+        "Model training / LoRA SFT / DPO — see lm_finetune.",
+        "Training-data synthesis — see lm_data_synth.",
+        "Per-case iteration, dataset loading, metric aggregation — see benchmark_iot and benchmark_bfcl.",
+        "Trace persistence — this task only *emits* events; storage and replay live in analyzer_trace_store and analyzer_repair_replay.",
+        "Repair policy authoring — the slot is wired here; the policy lives in analyzer_repair_policy (which retries on which errors, backoff, attempt budget).",
+        "Grammar compilation — lm_grammar_mask owns the catalog → logits-processor pipeline; this task only accepts the compiled processor.",
+        "Catalog construction / DSL rendering / validation — owned by contract_catalog.",
+        "Provider adapters beyond DashScope and local HF (Anthropic, OpenAI proper, Together, vLLM HTTP, etc.) — deferred; a future task per provider.",
+        "Async / streaming variants of invoke — QwenFreeformJSONDSLClient may stream internally for thinking-mode token capture, but the public surface stays synchronous; an async protocol is out of scope."
+      ],
+      "events_consumed": [],
+      "events_emitted": [
+        "lm.inference.completed",
+        "lm.inference.failed"
+      ],
+      "wikilinks": [
+        "analyzer_repair_policy",
+        "analyzer_repair_replay",
+        "analyzer_trace_store",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "code_migration",
+        "contract_catalog",
+        "lm_data_synth",
+        "lm_finetune",
+        "lm_grammar_mask",
+        "lm_prompts"
+      ],
+      "file": "docs/tasks/lm_client.md",
+      "lines": 139
+    },
+    {
+      "id": "lm_data_synth",
+      "title": "lm_data_synth",
+      "kind": "atomic",
+      "module": "lm",
+      "summary": "Teacher-driven synthesis of (intent, expected_dsl) training examples anchored to a [[contract_catalog]]. Phase 1 ships tool_anchored (one tool per pair). Phase 2 adds multi_tool, adversarial, and abstain strategies — the last one exercises [[contract_null_action]]. Every kept row is validator-gated through Catalog.parse_json_dsl, so the JSONL output is by construction a legal Action IR corpus against its source catalog.",
+      "role": "Generate, validate, dedup, and persist a catalog-anchored `(intent, expected_dsl)` corpus from a teacher LM, with per-strategy budget and quality accounting.",
+      "in_scope": [
+        "Teacher protocol: Teacher.generate(prompt) -> (content, input_tokens, output_tokens). Default DashScopeTeacher against qwen3.6-plus (OpenAI SDK against DashScope, same pattern as ganglion/runtime/qwen.py); pluggable FakeTeacher for offline tests.",
+        "Strategy base class with two methods:",
+        "render_prompt(catalog, **kwargs) -> list[dict] — system + user messages.",
+        "gate(catalog, candidate, **kwargs) -> tuple[bool, str] — validator + strategy-specific structural check, returns (kept, reason).",
+        "Concrete strategies under ganglion/lm/synth/strategies.py:",
+        "Synth pipeline ganglion/lm/synth/pipeline.py:",
+        "Budget caps: max_cost_usd (global), max_attempts_per_tool (per anchor), max_attempts_per_strategy (per non-anchored strategy).",
+        "Dedup: embedding cosine ≥ 0.92 → drop (sentence-transformers; falls back to exact-string equality when sentence-transformers is unavailable). Dedup runs **within strategy** and **across all kept rows** at the end.",
+        "Per-strategy stats accounting: n_attempted, n_kept, n_dropped_{parse, structural, dedup}, cost, tokens, duration.",
+        "Validator gate: every candidate must catalog.parse_json_dsl(expected_dsl) cleanly; strategy-specific extra checks layered on top.",
+        "Persistence: JSONL output with one row per kept example carrying {intent, expected_dsl, strategy, origin, teacher_score, case_id} — origin ∈ {tool_anchored, multi_tool, adversarial, abstain}, case_id is a content hash over (intent, expected_dsl, catalog_id) for stable dedup across runs.",
+        "Target paths: ganglion/lm/synth/{teacher.py, strategies.py, pipeline.py}, public entry ganglion.lm.synth.run(catalog, config, teacher) -> SynthStats."
+      ],
+      "out_of_scope": [
+        "Training that consumes the JSONL output — see lm_finetune.",
+        "Inference / serving — see lm_client.",
+        "Grader choice / benchmark integration — see benchmark_iot and benchmark_bfcl.",
+        "Inference-time grammar masking — see lm_grammar_mask.",
+        "Reward modelling — analyzer_verifier supplies the deterministic Catalog-bound reward; synth uses it as a *gate*, not a training target.",
+        "Hand-curated catalog authoring — Catalog is **input** to synth, not output. Catalog construction lives in contract_catalog / tool_schema_compiler.",
+        "Cross-catalog transfer / synthetic-data style transfer between catalogs — separate task.",
+        "In-loop self-correction of failed candidates — see analyzer_repair_policy (that is an *inference-time* concern, not a synth-time one)."
+      ],
+      "events_consumed": [],
+      "events_emitted": [
+        "lm.synth.completed",
+        "contract.catalog.published"
+      ],
+      "wikilinks": [
+        "analyzer_failure_taxonomy",
+        "analyzer_repair_policy",
+        "analyzer_verifier",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "contract_catalog",
+        "contract_null_action",
+        "lm_client",
+        "lm_finetune",
+        "lm_grammar_mask"
+      ],
+      "file": "docs/tasks/lm_data_synth.md",
+      "lines": 123
+    },
+    {
+      "id": "lm_finetune",
+      "title": "lm_finetune",
+      "kind": "atomic",
+      "module": "lm",
+      "summary": "LoRA SFT + DPO graded-reward training of a base LLM against a [[contract_catalog]] Catalog. Produces a PEFT adapter that the [[lm_client]] loads at inference time. Load-bearing invariant: the training prompt template MUST be byte-identical to the inference prompt template emitted by [[lm_prompts]]. A whitespace-level divergence breaks adapter transfer; the build aborts on detected diff.",
+      "role": "Train a LoRA adapter (and optionally DPO-refine it) against a fixed `Catalog`, consuming the synth output from [[lm_data_synth]] and emitting a PEFT-loadable adapter directory plus a `lm.finetune.completed` event.",
+      "in_scope": [
+        "ganglion/lm/finetune/config.py — TrainConfig dataclass:",
+        "ganglion/lm/finetune/data.py — build_messages(catalog, example) -> list[dict]",
+        "ganglion/lm/finetune/sft.py — TRL SFTTrainer driver:",
+        "ganglion/lm/finetune/dpo.py — TRL DPOTrainer driver. β=0.1, lr=5e-7,",
+        "**Per-category training** (default; matches factory_bfcl_phase3 Phase 3 layout).",
+        "**Train/inference parity check.** sft.py renders both templates at startup"
+      ],
+      "out_of_scope": [
+        "GRPO / PPO / online RL — defer; DPO is the only post-SFT optimiser in this task.",
+        "Base-model selection (0.5B vs 1.7B vs 4B tradeoff) — separate decision; this",
+        "Inference-time decoding (greedy / temperature / grammar masking) — see",
+        "Data synthesis — see lm_data_synth; this task consumes a finalised train JSONL.",
+        "Cross-category transfer / joint multi-category SFT — explicitly deferred. One",
+        "RLHF reward modelling — the reward signal is the deterministic Catalog-bound",
+        "Quantisation-aware training (QLoRA-int4, GPTQ, AWQ) — defer.",
+        "Hyperparameter search / Bayesian sweeps — TrainConfig defaults are pinned."
+      ],
+      "events_consumed": [
+        "lm.synth.completed"
+      ],
+      "events_emitted": [
+        "lm.finetune.completed"
+      ],
+      "wikilinks": [
+        "analyzer_metrics",
+        "analyzer_verifier",
+        "contract_catalog",
+        "lm_client",
+        "lm_data_synth",
+        "lm_grammar_mask",
+        "lm_prompts"
+      ],
+      "file": "docs/tasks/lm_finetune.md",
+      "lines": 163
+    },
+    {
+      "id": "lm_grammar_mask",
+      "title": "lm_grammar_mask",
+      "kind": "atomic",
+      "module": "lm",
+      "summary": "Compile a published [[contract_catalog]] into a JSON Schema → XGrammar-compiled grammar → HF LogitsProcessor, and expose a mask-on / mask-off ablation contract so [[analyzer_metrics]] can measure constrained vs unconstrained decoding deltas under fixed model + prompts.",
+      "role": "Translate a `Catalog` into a single-use, per-`generate()` HF `LogitsProcessor` whose admissible-token mask is the DSL envelope grammar, amortising the expensive XGrammar compile across many generations.",
+      "in_scope": [
+        "catalog_to_json_schema(catalog: Catalog) -> dict — DSL envelope {type:object, properties:{calls:{...}}, required:[calls], additionalProperties:false} where properties.calls = {type:array, items: <branch> | {anyOf:[<branch>_1, …]}}. Each per-tool branch is {type:object, properties:{action:{const:<name>}, args:<tool.parameters>}, required:[action,args], additionalProperties:false}. Single-tool catalogs inline the branch (no anyOf).",
+        "minItems clause: minItems = 0 (omitted) iff catalog.allow_empty_calls=True, else minItems = 1 — the null-action gate from contract_catalog / null_action_contract flows through unchanged.",
+        "compile_catalog_grammar(catalog, tokenizer, *, vocab_size, stop_token_ids) -> CompiledGrammar — amortised once per (catalog, tokenizer) pair via xgr.GrammarCompiler(TokenizerInfo.from_huggingface(...)).compile_json_schema(schema).",
+        "make_logits_processor(compiled_grammar) -> LogitsProcessor — instantiated per model.generate() call because the underlying GrammarMatcher carries per-generation state and cannot be reused.",
+        "Vocab / stop-token contract: vocab_size is the **model config**'s vocab_size, not tokenizer.vocab_size (they diverge for Qwen3 due to padded embedding tables); stop_token_ids must include <|im_end|> and <|endoftext|> for Qwen3 to avoid premature termination.",
+        "Apple Silicon int-coercion workaround: a _IntCoercedLogitsProcessor subclass casting the 0-dim sampled-token tensor to a Python int via .item() before GrammarMatcher.accept_token. Upstream xgrammar 0.2.0 contrib.hf.LogitsProcessor passes the matcher a tensor; TVM-FFI rejects this on MPS. Mirrors upstream body otherwise; delete once upstream lands the fix.",
+        "Mask-on / mask-off ablation contract: a single boolean (compiled_grammar=None or the compiled object) in the evaluation config; identical catalog, identical model, identical prompts. Used by analyzer_metrics to compute mask-uplift on syntax_valid_rate and post-SFT regression on exact_match_rate.",
+        "Target path: ganglion/lm/grammar.py (current implementation lives at ganglion/factory/grammar/{catalog_to_xgrammar.py,xgrammar_processor.py} and will be re-homed under ganglion/lm/ as part of the three-module redesign)."
+      ],
+      "out_of_scope": [
+        "Model training, SFT, LoRA adapters — see lm_finetune.",
+        "Benchmark integration and per-case dataset loops (iot_light_5, BFCL v4) — see benchmark_iot and benchmark_bfcl. This task ships the building block; benchmarks decide when to apply it.",
+        "Alternative constrained-decoding backends (Outlines, JSONFormer, llama.cpp grammar, vLLM guided decoding). XGrammar is the chosen backend; alternatives are deferred until concretely needed.",
+        "Mid-generation or between-turn grammar mutation. Single-turn only; the grammar is fixed for the duration of a generate call.",
+        "Grammar **synthesis from failure traces**. Failure-driven grammar refinement is analyzer territory (see analyzer_metrics); this task only consumes the Catalog published by contract_catalog.",
+        "Non-Qwen tokenizer special-token handling beyond what xgr.TokenizerInfo.from_huggingface() already discovers. Exotic tokenizers may need adapters elsewhere.",
+        "HF generate() invocation, sampling-config tuning, batch decoding orchestration — caller's responsibility (lm_client local_hf path)."
+      ],
+      "events_consumed": [],
+      "events_emitted": [],
+      "wikilinks": [
+        "analyzer_metrics",
+        "benchmark_bfcl",
+        "benchmark_iot",
+        "contract_catalog",
+        "lm_client",
+        "lm_finetune",
+        "null_action_contract"
+      ],
+      "file": "docs/tasks/lm_grammar_mask.md",
+      "lines": 90
+    }
+  ],
+  "event_edges": [
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "analyzer_metrics",
+      "event": "analyzer.failure.classified",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "analyzer_rule_synthesis",
+      "event": "analyzer.failure.classified",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "factory_pipeline",
+      "event": "analyzer.failure.classified",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "factory_evaluation",
+      "event": "analyzer.metrics.summarized",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "factory_pipeline",
+      "event": "analyzer.metrics.summarized",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "contract_catalog",
+      "event": "analyzer.rule.proposed",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "factory_pipeline",
+      "event": "analyzer.rule.proposed",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_failure_taxonomy",
+      "event": "analyzer.trace.recorded",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_metrics",
+      "event": "analyzer.trace.recorded",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_repair_policy",
+      "event": "analyzer.trace.recorded",
+      "kind": "event"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "factory_pipeline",
+      "event": "analyzer.trace.recorded",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "analyzer_trace_store",
+      "event": "benchmark.bfcl.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "factory_evaluation",
+      "event": "benchmark.bfcl.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "factory_pipeline",
+      "event": "benchmark.bfcl.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "analyzer_trace_store",
+      "event": "benchmark.iot.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "factory_evaluation",
+      "event": "benchmark.iot.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "factory_pipeline",
+      "event": "benchmark.iot.completed",
+      "kind": "event"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "benchmark_bfcl",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "benchmark_iot",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "factory_pipeline",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "benchmark_bfcl",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "benchmark_iot",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "benchmark_bfcl",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "benchmark_iot",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "factory_pipeline",
+      "event": "contract.catalog.published",
+      "kind": "event"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "factory_pipeline",
+      "event": "lm.finetune.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "analyzer_trace_store",
+      "event": "lm.inference.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "analyzer_trace_store",
+      "event": "lm.inference.completed",
+      "kind": "event"
+    },
+    {
+      "source": "lm_client",
+      "target": "analyzer_trace_store",
+      "event": "lm.inference.completed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "analyzer_trace_store",
+      "event": "lm.inference.failed",
+      "kind": "event"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "analyzer_trace_store",
+      "event": "lm.inference.failed",
+      "kind": "event"
+    },
+    {
+      "source": "lm_client",
+      "target": "analyzer_trace_store",
+      "event": "lm.inference.failed",
+      "kind": "event"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "factory_pipeline",
+      "event": "lm.synth.completed",
+      "kind": "event"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "lm_finetune",
+      "event": "lm.synth.completed",
+      "kind": "event"
+    }
+  ],
+  "wikilink_edges": [
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_failure_taxonomy",
+      "target": "contract_null_action",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_metrics",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_repair_policy",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_repair_policy",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_repair_policy",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_repair_policy",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "factory_pipeline",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_rule_synthesis",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_trace_store",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_verifier",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_verifier",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_verifier",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_verifier",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_verifier",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "analyzer_verifier",
+      "target": "lm_finetune",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "contract_null_action",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "contract_schema_compiler",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "factory_evaluation",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_bfcl",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "benchmark_iot",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "contract_null_action",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_catalog",
+      "target": "contract_schema_compiler",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_null_action",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_null_action",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_null_action",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_null_action",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_schema_compiler",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_schema_compiler",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_schema_compiler",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_schema_compiler",
+      "target": "contract_null_action",
+      "kind": "wikilink"
+    },
+    {
+      "source": "contract_schema_compiler",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "factory_pipeline",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_evaluation",
+      "target": "lm_finetune",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "analyzer_rule_synthesis",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "factory_evaluation",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "factory_pipeline",
+      "target": "lm_finetune",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "analyzer_trace_store",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "lm_finetune",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_client",
+      "target": "lm_grammar_mask",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "analyzer_failure_taxonomy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "analyzer_repair_policy",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "analyzer_verifier",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "contract_null_action",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "lm_finetune",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_data_synth",
+      "target": "lm_grammar_mask",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "analyzer_verifier",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "lm_data_synth",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_finetune",
+      "target": "lm_grammar_mask",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_grammar_mask",
+      "target": "analyzer_metrics",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_grammar_mask",
+      "target": "benchmark_bfcl",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_grammar_mask",
+      "target": "benchmark_iot",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_grammar_mask",
+      "target": "contract_catalog",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_grammar_mask",
+      "target": "lm_client",
+      "kind": "wikilink"
+    },
+    {
+      "source": "lm_grammar_mask",
+      "target": "lm_finetune",
+      "kind": "wikilink"
+    }
+  ],
+  "dangling_events": [
+    {
+      "event": "analyzer.repair.replayed",
+      "emitters": [
+        "analyzer_repair_policy"
+      ],
+      "consumers": []
+    },
+    {
+      "event": "analyzer.rule.proposed_escalated",
+      "emitters": [
+        "analyzer_rule_synthesis"
+      ],
+      "consumers": []
+    },
+    {
+      "event": "benchmark.iot.failed",
+      "emitters": [
+        "benchmark_iot"
+      ],
+      "consumers": []
+    },
+    {
+      "event": "factory.evaluation.aborted",
+      "emitters": [
+        "factory_evaluation"
+      ],
+      "consumers": []
+    },
+    {
+      "event": "factory.evaluation.completed",
+      "emitters": [
+        "factory_evaluation"
+      ],
+      "consumers": []
+    },
+    {
+      "event": "factory.pipeline.aborted",
+      "emitters": [
+        "factory_pipeline"
+      ],
+      "consumers": []
+    },
+    {
+      "event": "factory.pipeline.iterated",
+      "emitters": [
+        "factory_pipeline"
+      ],
+      "consumers": []
+    }
+  ]
+}

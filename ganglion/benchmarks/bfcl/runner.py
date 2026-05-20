@@ -18,10 +18,8 @@ from dataclasses import dataclass
 from statistics import median, pstdev
 from typing import Any, Protocol
 
-# TODO(cleanup): switch to canonical ganglion.benchmarks.bfcl.grader once M3-A lands
-from ganglion.bfcl.grader import GraderResult, ast_match
-# TODO(cleanup): switch to canonical ganglion.benchmarks.bfcl.loader once M3-A lands
-from ganglion.bfcl.loader import BFCLCase
+from ganglion.benchmarks.bfcl.grader import GraderResult, ast_match
+from ganglion.benchmarks.bfcl.loader import BFCLCase
 from ganglion.benchmarks.bfcl.case_catalog import build_case_catalog
 from ganglion.contract.catalog import Catalog
 from ganglion.contract.types import ActionPlan

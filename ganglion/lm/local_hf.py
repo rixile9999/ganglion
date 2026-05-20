@@ -26,7 +26,7 @@ from typing import Any
 
 from ganglion.contract.catalog import Catalog
 from ganglion.contract.tool_spec import DSLValidationError
-from ganglion.eval.metrics import CaseResult, RunResult, summarize
+from ganglion.analyzer.metrics import CaseResult, RunResult, summarize
 from ganglion.lm.finetune.sft import generate_dsl
 from ganglion.lm.synth.pipeline import SynthExample
 

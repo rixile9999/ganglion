@@ -6,8 +6,7 @@ small but warrants its own module per `docs/tasks/benchmark_bfcl.md`.
 """
 from __future__ import annotations
 
-# TODO(cleanup): switch to canonical ganglion.benchmarks.bfcl.loader once M3-A lands
-from ganglion.bfcl.loader import BFCLCase
+from ganglion.benchmarks.bfcl.loader import BFCLCase
 from ganglion.contract.catalog import Catalog
 from ganglion.contract.schema_compiler import compile_tool_calling_schema
 

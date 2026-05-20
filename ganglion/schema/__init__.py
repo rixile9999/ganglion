@@ -1,18 +1,26 @@
-"""Tool and DSL schema definitions."""
+"""Deprecated compatibility shim.
 
+Built-in catalogs moved to `ganglion.contract.builtins`. This module
+re-exports `get_catalog` / `TIERS` and emits ``DeprecationWarning`` once
+per process. It will be removed in Batch 6 of `docs/redesign_plan.md`.
+Update imports to ``from ganglion.contract.builtins import …``.
+"""
 from __future__ import annotations
 
-from ganglion.dsl.catalog import Catalog
-from ganglion.schema import home_iot, iot_light, smart_home
+import warnings
 
-TIERS: dict[str, Catalog] = {
-    "iot_light_5": iot_light.CATALOG,
-    "home_iot_20": home_iot.CATALOG,
-    "smart_home_50": smart_home.CATALOG,
-}
+warnings.warn(
+    "ganglion.schema is deprecated; use ganglion.contract.builtins instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
+from ganglion.contract.builtins import (  # noqa: E402,F401
+    TIERS,
+    get_catalog,
+    home_iot,
+    iot_light,
+    smart_home,
+)
 
-def get_catalog(tier: str) -> Catalog:
-    if tier not in TIERS:
-        raise ValueError(f"unknown tier: {tier!r}; available: {sorted(TIERS)}")
-    return TIERS[tier]
+__all__ = ["TIERS", "get_catalog", "home_iot", "iot_light", "smart_home"]

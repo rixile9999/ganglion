@@ -1,55 +1,77 @@
-# Self-maintenance task docs
+# Ganglion task specs
 
-Specs for Ganglion's self-maintenance loop. Each doc follows the [task delegation principles](../agent-forge/task_principle.md) (six-section template: `Role / Scope / Procedure / Contract / Observation`) and is the SSOT for its corresponding (eventual) `.github/workflows/*` impl.
+This directory holds the task specs for Ganglion's three-module architecture (see [`docs/goal/goal.md`](../goal/goal.md) and [`docs/factory_design.md`](../factory_design.md)). Every doc follows the six-section template from [`task_principle`](../agent-forge/task_principle.md) — `Role / Scope / Procedure / Contract / Observation` — with a non-empty `out-of-scope`.
 
-**Docs are spec. Impls follow the docs, never the other way around.** Authoring a workflow without its declaring doc is the anti-pattern.
+**Specs are the SSOT. Implementations follow them, not the other way around.** Composition rules for atomic vs. composite tasks live in [`workflow_principle`](../agent-forge/workflow_principle.md).
 
-## Atomic primitives
+## Module 3 — `ganglion/contract/`
 
-| Doc | Kind | Purpose |
-|---|---|---|
-| [dataset_integrity](./dataset_integrity.md) | deterministic CI | Every dataset row parses against its tier's catalog and is uniquely identified. |
-| [catalog_spec_sync](./catalog_spec_sync.md) | LLM agent | Detect `ToolSpec` ↔ rule client / dataset templates / report drift; open classified PR. |
-| [eval_smoke_guard](./eval_smoke_guard.md) | deterministic CI | Block PRs whose offline (`rules + iot_light_5`) eval regresses below the pinned baseline. |
-| [report_freshness](./report_freshness.md) | deterministic CI | Stamped numeric claims in `docs/*_report.md` match underlying `runs/**/*.json`. |
+Common schema/DSL surface. Built first because it's a leaf in the DAG; both `lm/` and `analyzer/` depend on it.
 
-## Composite
+| Doc | Purpose |
+|---|---|
+| [contract_catalog](./contract_catalog.md) | `Catalog` / `ToolSpec` / `ArgSpec` contract surface. Dual rendering (DSL + OpenAI tools) from one SSOT. |
+| [contract_schema_compiler](./contract_schema_compiler.md) | Compile OpenAI / MCP / bare / BFCL schemas into a `Catalog`. Live; supersedes [`legacy/tool_schema_compiler`](./legacy/tool_schema_compiler.md). |
+| [contract_null_action](./contract_null_action.md) | `{"calls": []}` valid iff `Catalog.allow_empty_calls=True`. Live; supersedes [`legacy/null_action_contract`](./legacy/null_action_contract.md). |
+
+## Module 1 — `ganglion/lm/`
+
+Language-model production: data synthesis, training, inference.
+
+| Doc | Purpose |
+|---|---|
+| [lm_client](./lm_client.md) | `ModelClient` protocol + adapters (dashscope DSL JSON / freeform / native, rules, local HF). Emits `lm.inference.{completed,failed}` per case. |
+| [lm_grammar_mask](./lm_grammar_mask.md) | Catalog → JSON Schema → XGrammar logits-processor; mask on/off ablation. |
+| [lm_finetune](./lm_finetune.md) | LoRA SFT + DPO graded-reward against a Catalog. Training-prompt parity invariant with `lm/prompts.py`. |
+| [lm_data_synth](./lm_data_synth.md) | Teacher-driven synthesis anchored to a Catalog. Strategies: tool-anchored / multi-tool / adversarial / abstain. |
+
+## Module 2 — `ganglion/analyzer/`
+
+Statistical analysis driving the calibration/correction process (goal §2). This module unifies today's scattered surface — `eval/metrics`, `runtime/qwen.run_dsl_with_repair`, `factory/verifier`, and the ad-hoc scripts under `runs/factory_bfcl/` — into one coherent feedback loop.
+
+| Doc | Purpose |
+|---|---|
+| [analyzer_trace_store](./analyzer_trace_store.md) | Append-only JSONL trace substrate every other analyzer task reads from. |
+| [analyzer_failure_taxonomy](./analyzer_failure_taxonomy.md) | Deterministic classification of traces into bucketed `FailureType`. |
+| [analyzer_metrics](./analyzer_metrics.md) | Unified summary surface — replaces today's three eval-summary code paths. |
+| [analyzer_rule_synthesis](./analyzer_rule_synthesis.md) | **The goal §2 feedback edge:** propose `ToolSpec` patches from failure histograms. |
+| [analyzer_repair_policy](./analyzer_repair_policy.md) | Repair-loop policy as a configurable + replayable thing. |
+| [analyzer_verifier](./analyzer_verifier.md) | Continuous reward function bound to a Catalog. |
+
+## Consumers — `ganglion/benchmarks/`
+
+Benchmark adapters. Not a peer module; they consume `Catalog` + `ModelClient` and emit traces into `analyzer_trace_store`.
+
+| Doc | Purpose |
+|---|---|
+| [benchmark_iot](./benchmark_iot.md) | `iot_light_5` / `home_iot_20` / `smart_home_50` datasets + grader + runner. |
+| [benchmark_bfcl](./benchmark_bfcl.md) | BFCL v4 single-turn loader + AST grader + per-case `Catalog` compile. Supersedes [`legacy/external_benchmark_bfcl`](./legacy/external_benchmark_bfcl.md). |
+
+## Composites — orchestrators
 
 | Doc | Aggregates | Outer signal |
 |---|---|---|
-| [release_health](./release_health.md) | `dataset_integrity` + `eval_smoke_guard` + `report_freshness` | `release_ready(sha) \| release_blocked(sha, cause) \| release_stale(sha, missing)` |
+| [factory_pipeline](./factory_pipeline.md) | All three modules + benchmarks | `factory.pipeline.iterated(catalog_id, iteration, eval_summary)` |
+| [factory_evaluation](./factory_evaluation.md) | benchmark + analyzer (measure-only) | `factory.evaluation.completed(client_id, catalog_id, benchmark_id, summary_path)` |
 
-## External adapters
+Composites consume primitive events from their `Contract.event` clause; they never invoke another task doc by name.
 
-Specs covering Ganglion's external-benchmark and schema-ingestion surfaces. **Spec written post-hoc** — implementations were already in tree when these docs were authored. Marked `(live)` to distinguish from the self-maintenance specs above (which are still spec-only).
+## Legacy specs (superseded)
 
-| Doc | Kind | Purpose | Status |
-|---|---|---|---|
-| [tool_schema_compiler](./tool_schema_compiler.md) | compiler | Compile OpenAI / MCP / bare schemas into a `Catalog`; shared source of truth for DSL and native baselines. | live |
-| [null_action_contract](./null_action_contract.md) | catalog contract | `{"calls":[]}` is a valid Action IR value when `Catalog.allow_empty_calls=True`. Closes BFCL irrelevance gap. | live |
-| [external_benchmark_bfcl](./external_benchmark_bfcl.md) | composite | Load BFCL v4 single-turn sample → per-case compiled catalog → DSL vs native run → AST grader → `runs/bfcl/*` summaries. | live |
+Pre-redesign task docs live under [`./legacy/`](./legacy/). Each carries a one-line `Superseded by [...]` pointer back into this TOC. They are retained for historical reference and for reproducibility of the M0–M5' / Phase 1–3 reports under `runs/`:
 
-## Implementation status
+- [`legacy/tool_schema_compiler`](./legacy/tool_schema_compiler.md) → [contract_schema_compiler](./contract_schema_compiler.md)
+- [`legacy/null_action_contract`](./legacy/null_action_contract.md) → [contract_null_action](./contract_null_action.md)
+- [`legacy/external_benchmark_bfcl`](./legacy/external_benchmark_bfcl.md) → [benchmark_bfcl](./benchmark_bfcl.md)
+- [`legacy/factory_bfcl`](./legacy/factory_bfcl.md), [`legacy/factory_bfcl_phase3`](./legacy/factory_bfcl_phase3.md) → [factory_pipeline](./factory_pipeline.md)
+- [`legacy/dataset_integrity`](./legacy/dataset_integrity.md), [`legacy/catalog_spec_sync`](./legacy/catalog_spec_sync.md), [`legacy/eval_smoke_guard`](./legacy/eval_smoke_guard.md), [`legacy/report_freshness`](./legacy/report_freshness.md), [`legacy/release_health`](./legacy/release_health.md) — self-maintenance specs, deferred under the redesign.
 
-- ☐ Self-maintenance docs (dataset_integrity, catalog_spec_sync, eval_smoke_guard, report_freshness, release_health) — spec only, no `.github/workflows/*` impl yet. Impls are deliberately deferred to a follow-up PR per `task_principle` (spec first, impl after).
-- ☑ External-adapter docs (tool_schema_compiler, null_action_contract, external_benchmark_bfcl) — impl already in tree; spec is a *post-hoc* reconciliation. New behaviour in these areas must update the doc in the same PR.
-- ☐ `runs/baselines/iot_light_5_rules.json` — placeholder pending a chosen reference run from `runs/m{2,3,4}/`. Until pinned, `eval_smoke_guard` runs observe-only and emits `eval_smoke_bootstrap_required`.
-- ☐ Marker convention `<!-- src:...#pointer -->` — not yet retrofitted into existing reports. `report_freshness` will emit `report_freshness_bootstrap_required` until a first report is stamped.
+## Reading order
 
-## Why these and not others
-
-Each primitive targets a *drift surface* identified by reading the project against the seed principles in [`docs/agent-forge/`](../agent-forge/):
-
-- `dataset_integrity` — drift between checked-in `expected` rows and current catalogs.
-- `catalog_spec_sync` — drift between `ToolSpec` and its three dependents (rule client, dataset templates, report tool counts).
-- `eval_smoke_guard` — silent regressions in offline accuracy that current tests do not gate.
-- `report_freshness` — numbers in reports drifting from the `runs/` data that backs them.
-- `release_health` — composite verdict; without it no single signal answers "is this SHA shippable?".
-
-Explicit non-goals (per [task_principle §3](../agent-forge/task_principle.md), every doc has a non-empty `out-of-scope`):
-
-- No KO mirror (`*.ko.md`) of these task docs — `ko_sync` from agent-forge was not imported.
-- No catalog editing by any agent — `ToolSpec` is a human authoring surface.
-- No automatic report rewriting — prose and number authorship stay with the author; only stamps are verified.
-- No multi-turn / Java / live BFCL categories — `external_benchmark_bfcl` is single-turn Python only by design.
-- No automatic alias discovery in `tool_schema_compiler` — locale and domain aliases are catalog-author authored.
+1. [`docs/goal/goal.md`](../goal/goal.md) — the anchor.
+2. [`docs/factory_design.md`](../factory_design.md) — the narrative.
+3. [`docs/redesign_plan.md`](../redesign_plan.md) — the migration map.
+4. [contract_catalog](./contract_catalog.md) — start with Module 3, the leaf module.
+5. [lm_client](./lm_client.md) — Module 1 entry point.
+6. [analyzer_trace_store](./analyzer_trace_store.md) — Module 2 substrate; everything else in analyzer reads from it.
+7. [factory_pipeline](./factory_pipeline.md) — how it all comes together.

@@ -1,8 +1,8 @@
 import pytest
 
-from ganglion.dsl.compiler import compile_openai_tools, compile_tool_calling_schema
-from ganglion.dsl.emitter import emit_tool_calls
-from ganglion.dsl.tool_spec import DSLValidationError
+from ganglion.contract.schema_compiler import compile_openai_tools, compile_tool_calling_schema
+from ganglion.contract.emitter import emit_tool_calls
+from ganglion.contract.tool_spec import DSLValidationError
 
 
 OPENAI_TOOLS = [

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from ganglion.factory.grammar import catalog_to_json_schema
-from ganglion.schema import get_catalog
+from ganglion.lm.grammar import catalog_to_json_schema
+from ganglion.contract.builtins import get_catalog
 
 
 def test_envelope_shape_iot_light_5() -> None:

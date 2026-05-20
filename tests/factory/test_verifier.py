@@ -4,8 +4,8 @@ import json
 
 import pytest
 
-from ganglion.factory.customer.verifier import make_verifier
-from ganglion.schema import get_catalog
+from ganglion.analyzer.verifier import make_verifier
+from ganglion.contract.builtins import get_catalog
 
 
 @pytest.fixture()

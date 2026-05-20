@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from ganglion.dsl.catalog import Catalog
-from ganglion.dsl.tool_spec import DSLValidationError, NumberArg, ToolSpec
+from ganglion.contract.catalog import Catalog
+from ganglion.contract.tool_spec import DSLValidationError, NumberArg, ToolSpec
 
 
 def _catalog(arg: NumberArg) -> Catalog:

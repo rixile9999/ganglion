@@ -1,0 +1,38 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - strong [ref=e4]: Ganglion · docs/tasks
+      - text: click a module to zoom · click a task to read · esc to reset
+    - generic [ref=e5]:
+      - generic [ref=e6] [cursor=pointer]:
+        - checkbox "event edges" [checked] [ref=e7]
+        - text: event edges
+      - generic [ref=e8] [cursor=pointer]:
+        - checkbox "wikilink edges" [ref=e9]
+        - text: wikilink edges
+      - generic [ref=e10] [cursor=pointer]:
+        - checkbox "event labels" [checked] [ref=e11]
+        - text: event labels
+      - searchbox "search node id…" [ref=e12]
+      - button "reset view" [ref=e13] [cursor=pointer]
+  - main [ref=e14]:
+    - complementary [ref=e20]:
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - heading "—" [level=2] [ref=e23]
+          - generic [ref=e24]:
+            - generic [ref=e25]: —
+            - generic [ref=e26]: —
+            - generic [ref=e27]: —
+        - button "close" [ref=e28] [cursor=pointer]: ×
+      - generic [ref=e29]:
+        - generic [ref=e30]:
+          - strong [ref=e31]: events consumed
+          - list
+        - generic [ref=e32]:
+          - strong [ref=e33]: events emitted
+          - list
+      - article [ref=e34]
+  - contentinfo [ref=e35]:
+    - generic [ref=e36]: 5 modules · 17 task docs · 34 event edges · 117 wikilink edges
+    - generic [ref=e37]: "· dangling: analyzer.repair.replayed, analyzer.rule.proposed_escalated, benchmark.iot.failed, factory.evaluation.aborted, factory.evaluation.completed, factory.pipeline.aborted (+1 more)"

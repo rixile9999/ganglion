@@ -3,9 +3,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from ganglion.bfcl.grader import ast_match
-from ganglion.bfcl.loader import BFCLCase
-from ganglion.dsl.types import ToolCall
+from ganglion.benchmarks.bfcl.grader import ast_match
+from ganglion.benchmarks.bfcl.loader import BFCLCase
+from ganglion.contract.types import ToolCall
 
 
 def _case(

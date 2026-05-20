@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from ganglion.eval.metrics import summarize
-from ganglion.eval.runner import run_eval
-from ganglion.runtime.rules import RuleBasedJSONDSLClient
+from ganglion.analyzer.metrics import summarize
+from ganglion.cli import run_eval
+from ganglion.lm.rules import RuleBasedJSONDSLClient
 
 
 def test_rule_model_matches_dataset() -> None:

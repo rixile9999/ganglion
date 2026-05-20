@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from ganglion.factory.prompts.synth_templates import (
+from ganglion.lm.synth.strategies import (
     SYSTEM_PROMPT,
     render_tool_anchored_prompt,
     render_tool_spec,
 )
-from ganglion.schema import get_catalog
+from ganglion.contract.builtins import get_catalog
 
 
 def test_messages_have_system_and_user() -> None:
@@ -54,7 +54,7 @@ def test_korean_alias_triggers_locale_hint() -> None:
 def test_no_korean_alias_no_korean_hint() -> None:
     """Synthetic catalog without Korean aliases should default to English-only hint."""
     from dataclasses import replace
-    from ganglion.dsl.tool_spec import EnumArg, ToolSpec
+    from ganglion.contract.tool_spec import EnumArg, ToolSpec
 
     bare_tool = ToolSpec(
         name="ping",

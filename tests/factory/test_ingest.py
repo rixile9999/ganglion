@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from ganglion.factory.customer.ingest import ingest_schema
+from ganglion.lm.synth.ingest import ingest_schema
 
 
 def test_ingest_builtin_tier_name() -> None:

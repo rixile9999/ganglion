@@ -1,4 +1,4 @@
-# Ganglion — *compiler-guided optimization for LLM tool calling*
+# Ganglion — *spec-based tool-calling optimisation model factory*
 
 ## Project Overview
 
@@ -29,33 +29,37 @@ consumption and improves response latency.
 
 ```
 reflex-language-model/
-├── ganglion/                 # Current implementation package namespace
-│   ├── dsl/                 # DSL definition & validation
-│   │   ├── catalog.py       # Tool catalog, DSL rendering, OpenAI tools (allow_empty_calls)
-│   │   ├── compiler.py      # External schema (OpenAI/MCP/BFCL) → ToolSpec compiler
-│   │   ├── tool_spec.py     # ToolSpec, ArgSpec definitions (EnumArg, IntArg, etc.)
-│   │   ├── validator.py     # JSON DSL validation & normalization
-│   │   ├── emitter.py       # Deterministic tool-call emission
-│   │   ├── json_extract.py  # Lenient JSON extraction from model output
-│   │   └── types.py         # DSL type definitions (ActionPlan, ActionCall)
-│   ├── bfcl/                # BFCL v4 external benchmark adapter
-│   │   ├── loader.py        # 5 single-turn categories (subsample loader)
-│   │   └── grader.py        # Python AST checker re-impl
-│   ├── runtime/             # Model runtime implementations
-│   │   ├── qwen.py          # Qwen API clients (DSL, native, freeform)
-│   │   ├── rules.py         # Deterministic rule-based client (testing)
-│   │   ├── executor.py      # Mock tool executor
-│   │   └── types.py         # Runtime types (ModelResult, etc.)
-│   ├── schema/              # Tool schema definitions
-│   │   ├── iot_light.py     # 5-tool IoT lighting domain
-│   │   ├── home_iot.py      # 20-tool home automation domain
-│   │   ├── smart_home.py    # 50-tool smart home domain
-│   │   └── __init__.py      # get_catalog(tier) registry
-│   └── eval/                # Evaluation infrastructure
-│       ├── runner.py        # Offline/LLM evaluation runner (--bfcl CLI included)
-│       ├── bfcl_runner.py   # Per-case BFCL library entry (run_bfcl/summarize_bfcl)
-│       ├── metrics.py       # Exact match, token stats, latency
-│       └── scaling.py       # Catalog size measurement
+├── ganglion/                       # Package namespace (post-redesign)
+│   ├── cli.py                     # CLI dispatch (`python -m ganglion.cli`)
+│   ├── factory.py                 # Composite orchestrator (`run_pipeline`)
+│   ├── contract/                  # Module 3 — schemas, DSL, validation (leaf)
+│   │   ├── catalog.py             # Catalog, render_json_dsl, render_openai_tools
+│   │   ├── tool_spec.py           # ToolSpec + ArgSpec subclasses (Enum/Int/Number/String/Time/Bool/Raw)
+│   │   ├── types.py               # ActionPlan, ToolCall, DSLValidationError
+│   │   ├── schema_compiler.py     # External-schema → Catalog (OpenAI/MCP/BFCL)
+│   │   ├── parse.py               # parse_json_dsl, parse_json_dsl_lenient
+│   │   ├── emitter.py             # Provider-neutral {name, arguments} emission
+│   │   └── builtins/{iot_light,home_iot,smart_home}.py + get_catalog
+│   ├── lm/                        # Module 1 — language-model production
+│   │   ├── client.py              # ModelClient protocol + ModelResult
+│   │   ├── dashscope.py           # QwenJSONDSL / Freeform / Native clients + QwenConfig
+│   │   ├── rules.py               # Deterministic rule-based client (iot_light_5)
+│   │   ├── local_hf.py            # Local HF + PEFT inference (generate_dsl, evaluate_lora)
+│   │   ├── grammar.py             # catalog → JSON Schema → XGrammar LogitsProcessor
+│   │   ├── prompts.py             # SYSTEM_PROMPT_TEMPLATE + _dsl_messages (parity SSOT)
+│   │   ├── synth/{ingest,pipeline,strategies}.py     # Teacher-driven synthesis
+│   │   └── finetune/sft.py        # LoRA SFT (TRL SFTTrainer, assistant_only_loss)
+│   ├── analyzer/                  # Module 2 — statistical-analysis + compiler-correction (goal §2)
+│   │   ├── trace.py               # Trace + TraceStore (append-only JSONL substrate)
+│   │   ├── taxonomy.py            # FailureType enum (14 buckets) + classify()
+│   │   ├── metrics.py             # summarize, CaseResult, RunResult, graded_score
+│   │   ├── rules.py               # RulePatch proposals from failure histograms (R1-R11 promoted)
+│   │   ├── repair.py              # RepairConfig + run_dsl_with_repair
+│   │   ├── verifier.py            # Continuous reward fn make_verifier(catalog)
+│   │   └── reports.py             # Markdown renderer over summary JSON
+│   └── benchmarks/                # Consumers — emit traces
+│       ├── iot/{dataset,runner,scaling,executor}.py
+│       └── bfcl/{loader,grader,case_catalog,runner}.py
 ├── examples/
 │   ├── iot_light/
 │   │   └── generate_dataset.py     # 500-case deterministic dataset
@@ -63,13 +67,16 @@ reflex-language-model/
 │       ├── sample/                  # Deterministic seed=42 subsample (5×100)
 │       ├── subsample.py             # Regenerate the sample
 │       └── SOURCE.md                # Pinned upstream commit SHA
-├── tests/                   # Pytest test suite (incl. test_bfcl_*.py)
+├── tests/                          # Pytest test suite (232 tests)
 ├── docs/
-│   ├── poc_verification_report.md         # Detailed Korean research report
+│   ├── goal/goal.md                       # Original goal (Korean)
+│   ├── factory_design.md                  # Cornerstone design narrative
+│   ├── redesign_plan.md                   # Old→new path migration map
+│   ├── poc_verification_report.md         # Research report
 │   ├── bfcl_m1_m4_result_report.md        # BFCL M1'~M4' results
 │   ├── bfcl_m5_abstention_report.md       # M5 null-action contract
 │   ├── bfcl_flash_replay_report.md        # qwen3.6-flash replay
-│   └── tasks/                              # 6-section task specs
+│   └── tasks/                              # 6-section task specs (+ legacy/)
 └── runs/
     ├── m{2,3,4}/                           # IoT scaling/repeat/repair runs
     └── bfcl/[flash/]                       # BFCL per-phase summaries + cases
@@ -103,35 +110,35 @@ python -m pytest
 
 ```bash
 # Deterministic offline evaluation (no API cost)
-python -m ganglion.eval.runner --llm rules --tier iot_light_5
+python -m ganglion.cli --llm rules --tier iot_light_5
 
 # Qwen structured JSON DSL evaluation (default: 500 cases)
-python -m ganglion.eval.runner --llm qwen --tier iot_light_5
+python -m ganglion.cli --llm qwen --tier iot_light_5
 
 # Qwen native tool calling baseline
-python -m ganglion.eval.runner --llm qwen-native --tier iot_light_5
+python -m ganglion.cli --llm qwen-native --tier iot_light_5
 
 # Qwen freeform (no response_format)
-python -m ganglion.eval.runner --llm qwen-text --tier iot_light_5
+python -m ganglion.cli --llm qwen-text --tier iot_light_5
 
 # Qwen thinking mode (no response_format)
-python -m ganglion.eval.runner --llm qwen-thinking --tier iot_light_5
+python -m ganglion.cli --llm qwen-thinking --tier iot_light_5
 
 # With repair loop (auto-retry on validation failure)
-python -m ganglion.eval.runner --llm qwen --tier iot_light_5 --repair --repair-max-attempts 1
+python -m ganglion.cli --llm qwen --tier iot_light_5 --repair --repair-max-attempts 1
 
 # With repeated measurements (for latency statistics)
-python -m ganglion.eval.runner --llm qwen --tier iot_light_5 --repeat 5
+python -m ganglion.cli --llm qwen --tier iot_light_5 --repeat 5
 
 # Limit cases for quick testing
-python -m ganglion.eval.runner --llm qwen --limit 10
+python -m ganglion.cli --llm qwen --limit 10
 
 # BFCL v4 single-turn external benchmark (per-case Catalog from BFCL `function`)
-python -m ganglion.eval.runner --llm qwen        --bfcl simple_python --bfcl-per-category 100
-python -m ganglion.eval.runner --llm qwen-native --bfcl all           --bfcl-per-category 100
-python -m ganglion.eval.runner --llm qwen        --bfcl irrelevance   --bfcl-allow-empty-calls
-python -m ganglion.eval.runner --llm qwen        --bfcl callable      --repair
-python -m ganglion.eval.runner --llm qwen        --bfcl all --bfcl-output runs/bfcl/<name>_cases.jsonl \
+python -m ganglion.cli --llm qwen        --bfcl simple_python --bfcl-per-category 100
+python -m ganglion.cli --llm qwen-native --bfcl all           --bfcl-per-category 100
+python -m ganglion.cli --llm qwen        --bfcl irrelevance   --bfcl-allow-empty-calls
+python -m ganglion.cli --llm qwen        --bfcl callable      --repair
+python -m ganglion.cli --llm qwen        --bfcl all --bfcl-output runs/bfcl/<name>_cases.jsonl \
                                                   > runs/bfcl/<name>_summary.json
 ```
 
@@ -148,7 +155,7 @@ python examples/iot_light/generate_dataset.py
 
 ```bash
 # Measure DSL vs native schema sizes across tiers
-python -m ganglion.eval.scaling
+python -m ganglion.benchmarks.iot.scaling
 ```
 
 ### Environment Variables
@@ -179,7 +186,7 @@ export GANGLION_ENABLE_THINKING=false   # Set to true to enable thinking mode
 
 ### Architecture Patterns
 
-1. **Catalog-driven design:** All tool definitions derive from `ToolSpec` in `ganglion/dsl/tool_spec.py`
+1. **Catalog-driven design:** All tool definitions derive from `ToolSpec` in `ganglion/contract/tool_spec.py`
 2. **Validator first:** JSON DSL is validated before emission to tool executor
 3. **Repair loop:** Optional retry mechanism for validation failures
 4. **Tier system:** Three tool tiers (5, 20, 50 tools) for scaling experiments
@@ -239,7 +246,7 @@ export GANGLION_ENABLE_THINKING=false   # Set to true to enable thinking mode
 
 Select tier via `--tier` flag:
 ```bash
-python -m ganglion.eval.runner --llm qwen --tier smart_home_50
+python -m ganglion.cli --llm qwen --tier smart_home_50
 ```
 
 ## Milestones Summary

@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Event Bus Timeline — Sheet 07</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">event bus timeline · sheet 07</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html" class="active"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Bus</div><div class="opbar__meta-v"><span class="live-dot"></span>streaming</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Last min</div><div class="opbar__meta-v">192 events</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 07 / 07 <span>◦</span> substrate <span>◦</span> all module emissions</div>
+      <h1 class="page__title">event bus <em>timeline</em></h1>
+      <p class="page__sub">The linearised event log. Per <b>principle §4 composition</b>, modules connect <i>only</i> through events — never by direct call. Each row identifies the <span class="t-amber">module</span> that produced or consumed it. <span class="t-bright">Idempotent re-emits</span> (§8) appear at 35% opacity to make duplicates visible without alarm.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/FACTORY</b><br>
+      Sheet <b>07</b> of <b>07</b> · rev 1.3<br>
+      <b>shared substrate · not a consumer</b><br>
+      Schema · namespaced `<i>module.action.state</i>`
+    </div>
+  </section>
+
+  <!-- BUS LEGEND / FILTER -->
+  <section class="panel">
+    <div class="panel__head">
+      <div class="panel__head-title">producers · 5 modules</div>
+      <div class="panel__head-tools">
+        <span class="seg"><span class="seg__opt active">all</span><span class="seg__opt">consume only</span><span class="seg__opt">emit only</span><span class="seg__opt">ghosts</span></span>
+      </div>
+    </div>
+    <div class="contract">
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">module emissions</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">linearised log (read-only view)</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">— substrate, not a consumer</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">re-emit not idempotent (bug)</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">duplicates ghosted · not re-applied</div></div>
+    </div>
+    <div class="panel__body">
+      <div class="grid-4">
+        <div><div class="t-eng" style="color:var(--chartreuse)">contract</div><div class="t-dim fs-11">module 03 · leaf · DSL render publishing</div></div>
+        <div><div class="t-eng" style="color:var(--amber)">lm</div><div class="t-dim fs-11">module 01 · synth + finetune emissions</div></div>
+        <div><div class="t-eng" style="color:var(--teal)">analyzer</div><div class="t-dim fs-11">module 02 · trace · classify · summarise · propose</div></div>
+        <div><div class="t-eng" style="color:var(--violet)">benchmark</div><div class="t-dim fs-11">consumer · iot + bfcl</div></div>
+      </div>
+      <div class="grid-4 mt-16">
+        <div><div class="t-eng" style="color:var(--bone-bright)">factory</div><div class="t-dim fs-11">composites · pipeline + evaluation</div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TIMELINE TABLE -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">timeline · last 60 seconds <small>monotone t · idempotent ghosts at 35% opacity</small></div>
+      <div class="panel__head-tools"><span class="t-dim">no direct calls (§4) · ✓</span></div>
+    </div>
+    <div class="events" style="grid-template-columns:100px 110px 1.4fr 2fr 80px">
+      <div class="events__head"><div>t · UTC+09</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+
+      <div class="events__row"><div class="events__t">14:30:12.041</div><div class="events__mod events__mod--factory">factory</div><div class="events__name">factory.pipeline.start</div><div class="events__pay">catalog=iot_light_5 iter=6 thr=0.93 auto_apply=False</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:30:12.046</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.synth.request</div><div class="events__pay">catalog=iot_light_5 strategies=[tool_anchored, multi_tool, adversarial]</div><div class="right t-mute">consume</div></div>
+      <div class="events__row"><div class="events__t">14:30:14.812</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.synth.completed</div><div class="events__pay">dataset=ds_2026_05_21_001 n=2200 invalid=0</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:30:14.815</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.finetune.request</div><div class="events__pay">catalog=iot_light_5 dataset=ds_2026_05_21_001</div><div class="right t-mute">consume</div></div>
+      <div class="events__row"><div class="events__t">14:31:48.290</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.finetune.completed</div><div class="events__pay">adapter=ad_iter6 train_loss=0.142 prompt_parity=ok</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:31:48.297</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.request</div><div class="events__pay">adapter=ad_iter6 tier=iot_light_5</div><div class="right t-mute">consume</div></div>
+      <div class="events__row"><div class="events__t">14:31:48.297</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.bfcl.request</div><div class="events__pay">adapter=ad_iter6 cat=callable</div><div class="right t-mute">consume</div></div>
+
+      <div class="events__row"><div class="events__t">14:32:06.118</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.completed</div><div class="events__pay">n=500 em=0.871 path=runs/iot/iter6.json</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:32:09.471</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.bfcl.completed</div><div class="events__pay">n=400 em=0.768 path=runs/bfcl/iter6.json</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:32:09.503</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.trace.recorded</div><div class="events__pay">trace_id=T-2206 catalog=iot_light_5</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:32:09.504</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.trace.recorded</div><div class="events__pay">trace_id=T-2207 catalog=iot_light_5</div><div class="right t-mute">emit</div></div>
+      <div class="events__row events__row--ghost"><div class="events__t">14:32:09.506</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.trace.recorded</div><div class="events__pay">trace_id=T-2208 catalog=iot_light_5</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:32:09.514</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.failure.classified</div><div class="events__pay">trace=T-2206 label=F04</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:32:09.518</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.failure.classified</div><div class="events__pay">trace=T-2208 label=F03</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:32:09.521</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.failure.classified</div><div class="events__pay">trace=T-2209 label=F09</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:32:11.044</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.metrics.summarized</div><div class="events__pay">em=0.871 am=0.901 ast=0.847 n=900 summary=runs/iot/iter6.json</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:32:11.812</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-014 rule=R3 conf=0.94 target=iot_light_5/set_light/room</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:32:11.844</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-015 rule=R7 conf=0.82</div><div class="right t-mute">emit</div></div>
+      <div class="events__row"><div class="events__t">14:32:11.901</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-016 rule=R9 conf=0.71</div><div class="right t-mute">emit</div></div>
+
+      <div class="events__row"><div class="events__t">14:32:12.017</div><div class="events__mod events__mod--factory">factory</div><div class="events__name">factory.pipeline.iterated</div><div class="events__pay">catalog=iot_light_5 iter=6 pending_patches=3 (held)</div><div class="right t-mute">emit</div></div>
+    </div>
+  </section>
+
+  <!-- COUNTS PER MODULE -->
+  <section class="grid-4 mt-24">
+    <div class="kpi"><div class="kpi__label">A · contract emits</div>
+      <div class="kpi__num" style="color:var(--chartreuse)">1</div><div class="kpi__unit">last min</div>
+      <div class="kpi__defn">= count(contract.*) on bus · catalog publish only</div></div>
+    <div class="kpi"><div class="kpi__label">B · lm emits</div>
+      <div class="kpi__num" style="color:var(--amber)">4</div><div class="kpi__unit">last min</div>
+      <div class="kpi__defn">= count(lm.*) on bus</div></div>
+    <div class="kpi"><div class="kpi__label">C · analyzer emits</div>
+      <div class="kpi__num" style="color:var(--teal)">907</div><div class="kpi__unit">last min</div>
+      <div class="kpi__defn">= count(analyzer.*) on bus · dominated by trace.recorded</div></div>
+    <div class="kpi"><div class="kpi__label">D · ghost rate (§8)</div>
+      <div class="kpi__num">0.4<small>%</small></div><div class="kpi__unit">re-emits / total</div>
+      <div class="kpi__defn">= idempotent re-emits / total events · normal</div></div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 07 · event bus · <b>substrate — no module owns it</b></div>
+  <div>§4 composition · §8 idempotency · direct calls forbidden</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+<script>
+document.querySelectorAll('.seg').forEach((seg) => {
+  seg.addEventListener('click', (e) => {
+    const opt = e.target.closest('.seg__opt'); if (!opt) return;
+    seg.querySelectorAll('.seg__opt').forEach((o) => o.classList.remove('active'));
+    opt.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

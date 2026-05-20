@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Observability Dashboard — Sheet 08</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">observability dashboard · sheet 08</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html" class="active"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Window</div><div class="opbar__meta-v">30 d</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">SLO</div><div class="opbar__meta-v t-chart">●</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 08 / 07 <span>◦</span> derived view <span>◦</span> §9 visible surface</div>
+      <h1 class="page__title">observability <em>dashboard</em></h1>
+      <p class="page__sub">Principle §9: <i>anything outside the contract is assumed invisible from the outside.</i> Every metric tile carries its <span class="t-bright">definition</span> — the predicate that computes it. There are no decorative numbers here. <span class="t-amber">protocol_violation_count</span> is the contract-conformance alarm and must remain 0.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/FACTORY</b><br>
+      Sheet <b>08</b> of <b>07</b> · rev 1.3<br>
+      <b>derived view · not a consumer</b><br>
+      Sources <b>analyzer_metrics · factory_pipeline · evaluation</b>
+    </div>
+  </section>
+
+  <!-- contract chip for the dashboard itself -->
+  <section class="panel">
+    <div class="panel__head">
+      <div class="panel__head-title">dashboard contract</div>
+      <div class="panel__head-tools"><span class="t-dim">forward-only · no new metrics defined here</span></div>
+    </div>
+    <div class="contract">
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">primitive metric streams</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">aggregated tiles + sparklines</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">— derived view, not a consumer</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">protocol_violation_count &gt; 0</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">every metric carries a definition</div></div>
+    </div>
+  </section>
+
+  <!-- KPI GRID -->
+  <section class="grid-4 mt-24">
+
+    <div class="kpi">
+      <div class="kpi__label">A · pipeline_iterations_total</div>
+      <div class="kpi__id">[catalog_id=iot_light_5]</div>
+      <div class="kpi__num">47<small>· +6 today</small></div>
+      <div class="kpi__unit">count · 30d</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#E8E4D4" stroke-width="1.5"
+          points="0,30 11,28 22,25 33,21 44,17 55,14 66,11 77,9 88,8 99,7 110,7 121,6 132,5 143,5 154,4 165,3 176,3 187,2 198,2"/>
+      </svg>
+      <div class="kpi__defn">= count of factory.pipeline.iterated emitted for catalog_id</div>
+    </div>
+
+    <div class="kpi kpi--good">
+      <div class="kpi__label">B · pipeline_uplift_per_iter</div>
+      <div class="kpi__id">median · current run</div>
+      <div class="kpi__num">+0.024</div>
+      <div class="kpi__unit">Δ em / iter</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <line x1="0" y1="22" x2="200" y2="22" stroke="#3D3D36" stroke-dasharray="2,3"/>
+        <polyline fill="none" stroke="#C3E88D" stroke-width="1.5"
+          points="0,4 25,4 50,16 75,16 100,16 125,18 150,28 175,26 200,26"/>
+      </svg>
+      <div class="kpi__defn">= em_i − em_{i−1} read from analyzer_metrics summaries</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__label">C · pipeline_abort_rate</div>
+      <div class="kpi__id">rolling 30d</div>
+      <div class="kpi__num">0.085</div>
+      <div class="kpi__unit">aborted / start</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#E8E4D4" stroke-width="1.5"
+          points="0,12 25,14 50,14 75,16 100,16 125,18 150,18 175,20 200,19"/>
+      </svg>
+      <div class="kpi__defn">= count(aborted) ÷ count(start)</div>
+    </div>
+
+    <div class="kpi kpi--warn">
+      <div class="kpi__label">D · plateau_rate</div>
+      <div class="kpi__id">aborted breakdown</div>
+      <div class="kpi__num">0.286</div>
+      <div class="kpi__unit">plateau / aborted</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#F4B860" stroke-width="1.5"
+          points="0,24 25,22 50,22 75,20 100,18 125,14 150,12 175,11 200,10"/>
+      </svg>
+      <div class="kpi__defn">= aborts with reason="plateau" ÷ total aborts · signals K / threshold mis-tuning</div>
+    </div>
+
+    <div class="kpi kpi--good">
+      <div class="kpi__label">E · protocol_violation_count</div>
+      <div class="kpi__id">rolling 30d</div>
+      <div class="kpi__num">0</div>
+      <div class="kpi__unit">count · clean</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#C3E88D" stroke-width="1.5"
+          points="0,32 25,32 50,32 75,32 100,32 125,32 150,32 175,32 200,32"/>
+      </svg>
+      <div class="kpi__defn">= aborts with reason="protocol_violation:*" · target 0 after primitives stabilise</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__label">F · evaluation_runs_total</div>
+      <div class="kpi__id">lifetime</div>
+      <div class="kpi__num">312<small>· +24 today</small></div>
+      <div class="kpi__unit">count</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#E8E4D4" stroke-width="1.5"
+          points="0,30 25,26 50,24 75,20 100,18 125,14 150,11 175,8 200,5"/>
+      </svg>
+      <div class="kpi__defn">= count of factory.evaluation.{completed,aborted} per (client, catalog, benchmark)</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__label">G · pipeline_wall_hours</div>
+      <div class="kpi__id">current run · iot_light_5</div>
+      <div class="kpi__num">4.18</div>
+      <div class="kpi__unit">hours</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <line x1="0" y1="32" x2="200" y2="2" stroke="#E8E4D4" stroke-width="1.5"/>
+      </svg>
+      <div class="kpi__defn">= terminal_event_t − pipeline.start_t (or last iterated_t if running)</div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi__label">H · patches_applied_per_iter</div>
+      <div class="kpi__id">current run</div>
+      <div class="kpi__num">7</div>
+      <div class="kpi__unit">cumulative</div>
+      <svg class="spark" viewBox="0 0 200 36" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#E8E4D4" stroke-width="1.5"
+          points="0,30 25,27 50,24 75,18 100,12 125,12 150,10 175,8 200,8"/>
+      </svg>
+      <div class="kpi__defn">= Σ len(applied_patches) across iterations · 0 when auto_apply=False</div>
+    </div>
+
+  </section>
+
+  <!-- bus health -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">bus health · per-module emission rates <small>last 60 seconds</small></div>
+      <div class="panel__head-tools"><span class="t-chart">all green</span></div>
+    </div>
+    <div class="panel__body">
+      <div class="hbar hbar--ok"><div class="hbar__name"><span class="id">M01</span>lm</div><div class="hbar__track"><div class="hbar__fill" style="width:5%"></div></div><div class="hbar__count">4</div></div>
+      <div class="hbar hbar--ok"><div class="hbar__name"><span class="id">M02</span>analyzer</div><div class="hbar__track"><div class="hbar__fill" style="width:96%"></div></div><div class="hbar__count">907</div></div>
+      <div class="hbar hbar--ok"><div class="hbar__name"><span class="id">M03</span>contract</div><div class="hbar__track"><div class="hbar__fill" style="width:2%"></div></div><div class="hbar__count">1</div></div>
+      <div class="hbar hbar--ok"><div class="hbar__name"><span class="id">consumer</span>benchmark</div><div class="hbar__track"><div class="hbar__fill" style="width:4%"></div></div><div class="hbar__count">4</div></div>
+      <div class="hbar hbar--ok"><div class="hbar__name"><span class="id">composite</span>factory</div><div class="hbar__track"><div class="hbar__fill" style="width:3%"></div></div><div class="hbar__count">3</div></div>
+      <div class="hbar hbar--ghost"><div class="hbar__name"><span class="id">§8</span>idempotent re-emits</div><div class="hbar__track"><div class="hbar__fill" style="width:4%"></div></div><div class="hbar__count">4</div></div>
+    </div>
+  </section>
+
+  <!-- HONESTY: invisible surface -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">invisible surface · principle §9</div>
+      <div class="panel__head-tools"><span class="t-dim italic">"contract 밖은 외부에서 invisible"</span></div>
+    </div>
+    <div class="panel__body">
+      <table class="dtable">
+        <thead><tr><th>candidate metric</th><th>why not surfaced</th><th>where it lives instead</th></tr></thead>
+        <tbody>
+          <tr><td>per-row token cost</td><td class="t-dim">primitive internal · not on bus</td><td class="t-mute">benchmark log only</td></tr>
+          <tr><td>finetune GPU utilisation</td><td class="t-dim">not in lm_finetune contract</td><td class="t-mute">nvidia-smi · external</td></tr>
+          <tr><td>per-trace classifier latency</td><td class="t-dim">not in analyzer_failure_taxonomy contract</td><td class="t-mute">profiler · external</td></tr>
+          <tr><td>operator console click stream</td><td class="t-dim">UI is not a contracted producer</td><td class="t-mute">not collected</td></tr>
+        </tbody>
+      </table>
+      <div class="callout mt-16">to surface any of these, add the metric to the relevant task doc Observation section <i>first</i> · §9 contract-first</div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 08 · observability · <b>§9 contract surface = visible surface</b></div>
+  <div>derived view · forwards primitive metrics · no new metrics here</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+</body>
+</html>

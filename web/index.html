@@ -1,0 +1,1251 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ OPERATOR WORKBENCH</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<!-- ============================================================
+     OPBAR
+     ============================================================ -->
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">operator workbench · rev poc-4.7</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html" class="active">
+      <span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html">
+      <span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html">
+      <span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html">
+      <span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html">
+      <span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html">
+      <span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html">
+      <span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html">
+      <span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell">
+      <div class="opbar__meta-k">Bus</div>
+      <div class="opbar__meta-v"><span class="live-dot"></span>online</div>
+    </div>
+    <div class="opbar__meta-cell">
+      <div class="opbar__meta-k">Pipeline</div>
+      <div class="opbar__meta-v">iter 6 / 12</div>
+    </div>
+    <div class="opbar__meta-cell">
+      <div class="opbar__meta-k">Cat ver</div>
+      <div class="opbar__meta-v">iot_light_5 · v07</div>
+    </div>
+    <div class="opbar__meta-cell">
+      <div class="opbar__meta-k">UTC+09</div>
+      <div class="opbar__meta-v">14:32:17</div>
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     WORKBENCH SPLIT  (Left: schematic · Right: focus pane)
+     ============================================================ -->
+<section class="wb">
+
+  <!-- ====================================================
+       LEFT  ·  SYSTEM SCHEMATIC (always visible)
+       ==================================================== -->
+  <div class="wb__pane">
+
+    <!-- ─── triad mini ─────────────────────────────────── -->
+    <div class="triad-mini">
+      <div class="triad-mini__cell lm" data-target="synth,finetune">
+        <div class="num">MODULE · 01</div>
+        <div class="name"><b>lm</b> · language-model production</div>
+      </div>
+      <div class="triad-mini__cell analyzer" data-target="trace,taxonomy,metrics,rules">
+        <div class="num">MODULE · 02</div>
+        <div class="name"><b>analyzer</b> · statistical · correction</div>
+      </div>
+      <div class="triad-mini__cell contract" data-target="catalog">
+        <div class="num">MODULE · 03</div>
+        <div class="name"><b>contract</b> · DSL · schema (leaf)</div>
+      </div>
+    </div>
+
+    <!-- ─── pane head ───────────────────────────────────── -->
+    <div class="wb__pane-head">
+      <h2>OPS SCHEMATIC <small>factory_pipeline · 9-stage closed loop</small></h2>
+      <div class="wb__pane-tools">
+        <span><span class="live-dot"></span>iter 6</span>
+        <span>auto_apply <b class="t-amber">OFF</b></span>
+      </div>
+    </div>
+
+    <!-- ─── schematic SVG ──────────────────────────────── -->
+    <div class="sch" style="padding: 22px 22px 6px;">
+      <svg viewBox="0 0 660 380" class="sch__svg" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <pattern id="dg2" width="18" height="18" patternUnits="userSpaceOnUse">
+            <circle cx="0.5" cy="0.5" r="0.5" fill="#2A2A26"/>
+          </pattern>
+          <marker id="arr-t" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#7DD8C6"/>
+          </marker>
+          <marker id="arr-a" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#F4B860"/>
+          </marker>
+          <marker id="arr-g" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+            <path d="M0,0 L9,4.5 L0,9 z" fill="#5C564B"/>
+          </marker>
+        </defs>
+        <rect width="660" height="380" fill="url(#dg2)"/>
+
+        <!-- corner crops -->
+        <g stroke="#5C564B" stroke-width="1" fill="none">
+          <path d="M 8,8 h10 M 8,8 v10"/>
+          <path d="M 652,8 h-10 M 652,8 v10"/>
+          <path d="M 8,372 h10 M 8,372 v-10"/>
+          <path d="M 652,372 h-10 M 652,372 v-10"/>
+        </g>
+
+        <!-- ROW 1: forward pass (synth → finetune → bench fork) -->
+        <!-- stage 01: synth -->
+        <g class="sch__stage is-done" data-stage="synth">
+          <rect class="body" x="30" y="40" width="112" height="58" fill="#181814" stroke="#3D3D36"/>
+          <text x="38" y="58" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#9A9485" letter-spacing="2">01 · LM</text>
+          <text x="38" y="76" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">SYNTH</text>
+          <text x="38" y="91" font-family="IBM Plex Mono,monospace" font-size="9" fill="#7DD8C6">lm.synth.completed</text>
+          <circle class="dot" cx="135" cy="46" r="3" fill="#C3E88D"/>
+        </g>
+
+        <!-- stage 02: finetune -->
+        <g class="sch__stage is-done" data-stage="finetune">
+          <rect class="body" x="172" y="40" width="112" height="58" fill="#181814" stroke="#3D3D36"/>
+          <text x="180" y="58" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#9A9485" letter-spacing="2">02 · LM</text>
+          <text x="180" y="76" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">FINETUNE</text>
+          <text x="180" y="91" font-family="IBM Plex Mono,monospace" font-size="9" fill="#7DD8C6">lm.finetune.completed</text>
+          <circle class="dot" cx="277" cy="46" r="3" fill="#C3E88D"/>
+        </g>
+
+        <!-- stage 03: bench-iot -->
+        <g class="sch__stage is-done" data-stage="bench-iot">
+          <rect class="body" x="314" y="14" width="112" height="46" fill="#181814" stroke="#3D3D36"/>
+          <text x="322" y="30" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#9A9485" letter-spacing="2">03 · CONSUMER</text>
+          <text x="322" y="46" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="12" fill="#E8E4D4" font-weight="500">BENCH · IOT</text>
+          <circle class="dot" cx="419" cy="20" r="3" fill="#C3E88D"/>
+        </g>
+
+        <!-- stage 04: bench-bfcl -->
+        <g class="sch__stage is-done" data-stage="bench-bfcl">
+          <rect class="body" x="314" y="78" width="112" height="46" fill="#181814" stroke="#3D3D36"/>
+          <text x="322" y="94" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#9A9485" letter-spacing="2">04 · CONSUMER</text>
+          <text x="322" y="110" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="12" fill="#E8E4D4" font-weight="500">BENCH · BFCL</text>
+          <circle class="dot" cx="419" cy="84" r="3" fill="#C3E88D"/>
+        </g>
+
+        <!-- ROW 2: traces and analyzer fold-back -->
+        <!-- stage 05: trace -->
+        <g class="sch__stage is-streaming" data-stage="trace">
+          <rect class="body" x="456" y="40" width="112" height="58" fill="#181814" stroke="#7DD8C6"/>
+          <text x="464" y="58" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#7DD8C6" letter-spacing="2">05 · ANALYZER</text>
+          <text x="464" y="76" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">TRACE</text>
+          <text x="464" y="91" font-family="IBM Plex Mono,monospace" font-size="9" fill="#7DD8C6">analyzer.trace.recorded</text>
+          <circle class="dot" cx="561" cy="46" r="3" fill="#C3E88D"/>
+        </g>
+
+        <!-- stage 06: taxonomy -->
+        <g class="sch__stage is-streaming" data-stage="taxonomy">
+          <rect class="body" x="456" y="146" width="112" height="58" fill="#181814" stroke="#7DD8C6"/>
+          <text x="464" y="164" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#7DD8C6" letter-spacing="2">06 · ANALYZER</text>
+          <text x="464" y="182" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">TAXONOMY</text>
+          <text x="464" y="197" font-family="IBM Plex Mono,monospace" font-size="9" fill="#7DD8C6">failure.classified · 14b</text>
+          <circle class="dot" cx="561" cy="152" r="3" fill="#C3E88D"/>
+        </g>
+
+        <!-- stage 07: metrics -->
+        <g class="sch__stage is-pending" data-stage="metrics">
+          <rect class="body" x="314" y="146" width="112" height="58" fill="#181814" stroke="#7DD8C6"/>
+          <text x="322" y="164" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#7DD8C6" letter-spacing="2">07 · ANALYZER</text>
+          <text x="322" y="182" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">METRICS</text>
+          <text x="322" y="197" font-family="IBM Plex Mono,monospace" font-size="9" fill="#7DD8C6">metrics.summarized</text>
+        </g>
+
+        <!-- stage 08: rules (FEEDBACK EDGE - amber) -->
+        <g class="sch__stage is-pending" data-stage="rules">
+          <rect class="body" x="172" y="146" width="112" height="58" fill="#181814" stroke="#F4B860" stroke-dasharray="4,3"/>
+          <text x="180" y="164" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#F4B860" letter-spacing="2">08 · FEEDBACK</text>
+          <text x="180" y="182" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">RULES</text>
+          <text x="180" y="197" font-family="IBM Plex Mono,monospace" font-size="9" fill="#F4B860">rule.proposed · goal §2</text>
+        </g>
+
+        <!-- stage 09: patch (contract catalog) -->
+        <g class="sch__stage is-pending" data-stage="catalog">
+          <rect class="body" x="30" y="146" width="112" height="58" fill="#181814" stroke="#C3E88D"/>
+          <text x="38" y="164" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#C3E88D" letter-spacing="2">09 · CONTRACT</text>
+          <text x="38" y="182" class="stage-label" font-family="IBM Plex Mono,monospace" font-size="13" fill="#E8E4D4" font-weight="500">PATCH</text>
+          <text x="38" y="197" font-family="IBM Plex Mono,monospace" font-size="9" fill="#C3E88D">catalog.published · v+1</text>
+        </g>
+
+        <!-- ─── edges ──────────────────────────────────── -->
+        <g fill="none" stroke-dasharray="4,3">
+          <!-- forward -->
+          <path d="M 142,69 L 172,69" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <path d="M 284,69 C 295,69 300,37 314,37" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <path d="M 284,69 C 295,69 300,101 314,101" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <path d="M 426,37 C 442,37 442,69 456,69" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <path d="M 426,101 C 442,101 442,69 456,69" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <!-- fold to row 2 -->
+          <path d="M 512,98 L 512,146" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <!-- back leftward row 2 -->
+          <path d="M 456,175 L 426,175" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <path d="M 314,175 L 284,175" stroke="#7DD8C6" stroke-width="1.5" marker-end="url(#arr-t)"/>
+          <path d="M 172,175 L 142,175" stroke="#F4B860" stroke-width="1.5" marker-end="url(#arr-a)"/>
+          <!-- patch back up to synth (loop) -->
+          <path d="M 86,146 C 86,128 86,118 86,98" stroke="#C3E88D" stroke-width="1.5" marker-end="url(#arr-t)"/>
+        </g>
+
+        <!-- iteration loop label -->
+        <g>
+          <text x="660" y="68" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#5C564B" letter-spacing="3" text-anchor="end">[ FORWARD ]</text>
+          <text x="660" y="178" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#5C564B" letter-spacing="3" text-anchor="end">[ FEEDBACK ]</text>
+        </g>
+
+        <!-- abort guard rail (bottom) -->
+        <g>
+          <line x1="30" y1="240" x2="630" y2="240" stroke="#3D3D36" stroke-dasharray="2,4"/>
+          <text x="30" y="260" font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" fill="#5C564B" letter-spacing="2">STOP CONDITIONS  (PRINCIPLE §7 · FAIL LOUD)</text>
+        </g>
+
+        <!-- abort markers — visualised as small pill -->
+        <g font-family="IBM Plex Mono,monospace" font-size="9" font-weight="500" letter-spacing="0.5">
+          <g><rect x="30"  y="270" width="86" height="20" fill="#0E0E0C" stroke="#6E8050"/><text x="73" y="284" fill="#C3E88D" text-anchor="middle">threshold</text></g>
+          <g><rect x="122" y="270" width="86" height="20" fill="#0E0E0C" stroke="#8A6736"/><text x="165" y="284" fill="#F4B860" text-anchor="middle">max_iter</text></g>
+          <g><rect x="214" y="270" width="86" height="20" fill="#0E0E0C" stroke="#8A6736"/><text x="257" y="284" fill="#F4B860" text-anchor="middle">plateau</text></g>
+          <g><rect x="306" y="270" width="86" height="20" fill="#0E0E0C" stroke="#8A3A3A"/><text x="349" y="284" fill="#E55E5E" text-anchor="middle">patch_fail</text></g>
+          <g><rect x="398" y="270" width="86" height="20" fill="#0E0E0C" stroke="#8A3A3A"/><text x="441" y="284" fill="#E55E5E" text-anchor="middle">prim_fail</text></g>
+          <g><rect x="490" y="270" width="86" height="20" fill="#0E0E0C" stroke="#8A3A3A"/><text x="533" y="284" fill="#E55E5E" text-anchor="middle">timeout</text></g>
+          <g><rect x="30"  y="294" width="86" height="20" fill="#0E0E0C" stroke="#8A3A3A"/><text x="73" y="308" fill="#E55E5E" text-anchor="middle">protocol</text></g>
+        </g>
+
+        <!-- legend -->
+        <g font-family="IBM Plex Sans Condensed,sans-serif" font-size="9" letter-spacing="2">
+          <text x="160" y="346" fill="#5C564B">— DASHED&nbsp; = EVENT EDGE  · §4</text>
+          <text x="360" y="346" fill="#5C564B">— TEAL&nbsp;&nbsp;&nbsp; = FORWARD  · § procedure</text>
+          <text x="540" y="346" fill="#5C564B">— AMBER&nbsp; = FEEDBACK · §2-edge</text>
+        </g>
+      </svg>
+    </div>
+
+    <!-- ─── em_curve mini ──────────────────────────────── -->
+    <div class="embox">
+      <h3><span>EXACT-MATCH CURVE <span class="t-mute">· iter 0 → 6 · plateau_K=3</span></span><b>0.871 ▲ +0.009</b></h3>
+      <svg viewBox="0 0 600 80" style="display:block; width:100%; height:80px;">
+        <defs>
+          <linearGradient id="emfill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stop-color="#C3E88D" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#C3E88D" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- grid lines -->
+        <g stroke="#2A2A26" stroke-width="1">
+          <line x1="0" y1="20" x2="600" y2="20"/>
+          <line x1="0" y1="40" x2="600" y2="40"/>
+          <line x1="0" y1="60" x2="600" y2="60"/>
+        </g>
+        <g font-family="IBM Plex Sans Condensed,sans-serif" font-size="8" fill="#5C564B">
+          <text x="2" y="18">1.0</text>
+          <text x="2" y="38">0.8</text>
+          <text x="2" y="58">0.6</text>
+        </g>
+        <!-- threshold 0.93 -->
+        <line x1="0" y1="14" x2="600" y2="14" stroke="#F4B860" stroke-dasharray="3,3" stroke-width="1"/>
+        <text x="598" y="11" font-family="IBM Plex Sans Condensed,sans-serif" font-size="8" fill="#F4B860" text-anchor="end" letter-spacing="2">THR=0.93</text>
+        <!-- area + line; em_curve = [.612,.701,.748,.802,.847,.862,.871] across 7 points, x 0..600 -->
+        <path d="M 0,77.6 L 100,59.8 L 200,50.4 L 300,39.6 L 400,30.6 L 500,27.6 L 600,25.8 L 600,80 L 0,80 Z"
+              fill="url(#emfill)"/>
+        <path d="M 0,77.6 L 100,59.8 L 200,50.4 L 300,39.6 L 400,30.6 L 500,27.6 L 600,25.8"
+              fill="none" stroke="#C3E88D" stroke-width="2"/>
+        <!-- markers -->
+        <g fill="#0E0E0C" stroke="#C3E88D" stroke-width="1.5">
+          <circle cx="0"   cy="77.6" r="3"/>
+          <circle cx="100" cy="59.8" r="3"/>
+          <circle cx="200" cy="50.4" r="3"/>
+          <circle cx="300" cy="39.6" r="3"/>
+          <circle cx="400" cy="30.6" r="3"/>
+          <circle cx="500" cy="27.6" r="3"/>
+          <circle cx="600" cy="25.8" r="3.5" fill="#C3E88D"/>
+        </g>
+      </svg>
+      <div class="flex-bw mt-8">
+        <span class="t-eng t-mute">iter&nbsp;0&nbsp;·&nbsp;.612</span>
+        <span class="t-eng t-mute">iter&nbsp;3&nbsp;·&nbsp;.802</span>
+        <span class="t-eng t-mute">iter&nbsp;6&nbsp;·&nbsp;.871 <span class="t-chart">current</span></span>
+      </div>
+    </div>
+
+    <!-- ─── abort reasons ranked ───────────────────────── -->
+    <div class="abox">
+      <h3>STOP CONDITIONS · RANKED &amp; CURRENT COUNT (rolling 30d)</h3>
+      <div class="ranked">
+        <div class="ranked__row ranked__row--1">
+          <div class="ranked__rank">01</div>
+          <div class="ranked__name"><span class="t-chart">threshold_reached</span><small>exact_match ≥ threshold</small></div>
+          <div class="ranked__count">4</div>
+        </div>
+        <div class="ranked__row">
+          <div class="ranked__rank">02</div>
+          <div class="ranked__name"><span class="t-amber">max_iter_reached</span><small>iter ≥ max_iter</small></div>
+          <div class="ranked__count">1</div>
+        </div>
+        <div class="ranked__row">
+          <div class="ranked__rank">03</div>
+          <div class="ranked__name"><span class="t-amber">plateau</span><small>no improvement K=3</small></div>
+          <div class="ranked__count">2</div>
+        </div>
+        <div class="ranked__row">
+          <div class="ranked__rank">04</div>
+          <div class="ranked__name"><span class="t-verm">patch_apply_failed</span><small>contract_catalog rejected</small></div>
+          <div class="ranked__count">0</div>
+        </div>
+        <div class="ranked__row">
+          <div class="ranked__rank">05</div>
+          <div class="ranked__name"><span class="t-verm">primitive_failed</span><small>synth / finetune / bench</small></div>
+          <div class="ranked__count">1</div>
+        </div>
+        <div class="ranked__row">
+          <div class="ranked__rank">06</div>
+          <div class="ranked__name"><span class="t-verm">primitive_timeout</span><small>window W elapsed · no extend</small></div>
+          <div class="ranked__count">0</div>
+        </div>
+        <div class="ranked__row">
+          <div class="ranked__rank">07</div>
+          <div class="ranked__name"><span class="t-verm">protocol_violation</span><small>missing catalog_id / schema</small></div>
+          <div class="ranked__count">0</div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /left pane -->
+
+  <!-- ====================================================
+       RIGHT  ·  FOCUS PANE
+       ==================================================== -->
+  <div class="wb__pane">
+
+    <!-- ─── ID strip ───────────────────────────────────── -->
+    <div class="fp__id">
+      <div>
+        <div class="fp__id-l">FOCUS · <span data-focus-sub>click any stage to zoom</span></div>
+        <h2 class="fp__id-title" data-focus-title>factory_pipeline</h2>
+      </div>
+      <div class="fp__id-kind" data-focus-kind>
+        <b class="composite">COMPOSITE</b><br>
+        <span class="t-mute">docs/tasks/factory_pipeline.md</span>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · composite (default)
+         ============================================================ -->
+    <div class="fctx is-active" data-ctx="pipeline"
+         data-title="factory_pipeline <em>· composite</em>"
+         data-kind="<b class='composite'>COMPOSITE</b><br><span class='t-mute'>docs/tasks/factory_pipeline.md</span>"
+         data-sub="root composite · iterates a Catalog until convergence">
+
+      <!-- contract chip row -->
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">factory.pipeline.start</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">iterated · aborted</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">consume × 9 · emit × 3</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">7 ranked stop</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">monotone iteration</div></div>
+      </div>
+
+      <!-- scope -->
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div>
+          <div class="scope__v">Synth → finetune → bench → trace → failure → metrics → rule → patch → next-iteration synth · iteration control · idempotency by (catalog_id, version).</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div>
+          <div class="scope__v">Re-running primitives · auto-applying patches without <span class="t-amber">auto_apply=True</span> · cross-catalog joint optimisation · streaming dataflow · adapter / dataset persistence.</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div>
+          <div class="scope__v">Direct call into a primitive (not via event) → STOP &amp; escalate (workflow_principle §Anti-patterns).</div></div>
+      </div>
+
+      <!-- tabs -->
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters <small>· 6</small></div>
+        <div class="fp__tab" data-sub="data">Data / Output <small>· 3 artifacts</small></div>
+        <div class="fp__tab" data-sub="events">Events <small>· 18 today</small></div>
+      </div>
+
+      <div class="fp__body">
+
+        <!-- ── PARAMETERS ───────────────────────────── -->
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="gate">
+            <div class="gate__head"><span>HUMAN APPROVAL GATE · §3 default-deny</span><b>3 pending patches</b></div>
+            <div class="gate__body t-dim">
+              <span class="t-amber">auto_apply = False</span> ↔ patches accumulate as <span class="t-bright">pending_patches</span>. Toggle ON to allow the next iteration to publish a new catalog version without manual review. <span class="italic t-mute">Default-deny is intentional — see scope row.</span>
+            </div>
+            <div class="flex gap-16 mt-16" style="align-items:center">
+              <div class="toggle" id="auto-apply-toggle">
+                <div class="toggle__sw"></div>
+                <span>auto_apply</span>
+              </div>
+              <span class="callout">currently off</span>
+            </div>
+          </div>
+
+          <div class="params">
+            <div class="params__head">
+              <div>parameter</div><div>value</div><div>source</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">catalog_id<small>scope key</small></div>
+              <div class="params__v">
+                <select><option>iot_light_5 · v07</option><option>home_iot_20 · v04</option><option>smart_home_50 · v02</option><option>bfcl_v4_simple · v01</option></select>
+              </div>
+              <div class="params__src">CONTRACT</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">max_iter<small>iteration cap</small></div>
+              <div class="params__v"><input type="number" value="12" min="1" max="50"></div>
+              <div class="params__src">PIPELINE</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">threshold<small>exact_match early stop</small></div>
+              <div class="params__v"><input type="number" value="0.93" step="0.01" min="0" max="1"></div>
+              <div class="params__src">PIPELINE</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">plateau_K<small>stagnant iter limit</small></div>
+              <div class="params__v"><input type="number" value="3" min="1" max="10"></div>
+              <div class="params__src">PIPELINE</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">window_W<small>per-stage timeout (sec)</small></div>
+              <div class="params__v"><input type="number" value="900"></div>
+              <div class="params__src">PIPELINE</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">ε (plateau epsilon)<small>min Δem to count</small></div>
+              <div class="params__v"><input type="number" value="0.005" step="0.001"></div>
+              <div class="params__src">PIPELINE</div>
+            </div>
+          </div>
+
+          <div class="fp__actions">
+            <div class="meta">change-set <b>2 unsaved</b> · principle §6 lazy-eval: applies only on next start signal</div>
+            <button class="btn btn--ghost">Discard</button>
+            <button class="btn">Stage diff</button>
+            <button class="btn btn--primary">Emit factory.pipeline.start</button>
+          </div>
+        </div>
+
+        <!-- ── DATA / OUTPUT ─────────────────────────── -->
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">CURRENT ITERATION · ARTIFACTS (pass-through references; primitives own the files — §scope)</div>
+          <div class="code" data-label="LAST EVAL_SUMMARY">
+<span class="c">// emitted at 14:32:11.044 — fwd from analyzer_metrics</span>
+{
+  <span class="k">"catalog_id"</span>: <span class="s">"iot_light_5"</span>,
+  <span class="k">"version"</span>:    <span class="n">7</span>,
+  <span class="k">"iteration"</span>:  <span class="n">6</span>,
+  <span class="k">"exact_match_rate"</span>: <span class="n">0.871</span>,
+  <span class="k">"action_match_rate"</span>: <span class="n">0.901</span>,
+  <span class="k">"ast_match_rate"</span>:    <span class="n">0.847</span>,
+  <span class="k">"n_traces"</span>:    <span class="n">900</span>,
+  <span class="k">"summary_path"</span>: <span class="s">"runs/iot/iter6.json"</span>,
+  <span class="k">"pending_patches"</span>: [<span class="s">"P-014"</span>, <span class="s">"P-015"</span>, <span class="s">"P-016"</span>]
+}
+          </div>
+
+          <div class="mt-16">
+            <div class="t-eng t-dim mb-8">PASS-THROUGH ARTIFACTS</div>
+            <table class="dtable">
+              <thead><tr><th>id</th><th>owner</th><th>path</th><th class="num">size</th></tr></thead>
+              <tbody>
+                <tr><td><span class="tag">dataset_id</span></td><td class="t-amber">lm_data_synth</td><td>runs/synth/ds_2026_05_21_001.jsonl</td><td class="num">2,200 rows</td></tr>
+                <tr><td><span class="tag">adapter_id</span></td><td class="t-amber">lm_finetune</td><td>runs/adapters/ad_iter6/</td><td class="num">18.4 MB</td></tr>
+                <tr><td><span class="tag">summary_path</span></td><td class="t-teal">analyzer_metrics</td><td>runs/iot/iter6.json</td><td class="num">12.2 KB</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── EVENTS ───────────────────────────────── -->
+        <div class="fctx__sub" data-sub="events">
+          <div class="t-eng t-dim mb-8">EVENT EDGE TRACE · subscribed by composite (consume × 9 · emit × 3)</div>
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:30:12.041</div><div class="events__mod events__mod--factory">factory</div><div class="events__name">factory.pipeline.start</div><div class="events__pay">catalog=iot_light_5 iter=6 thr=0.93</div><div class="right t-mute">emit</div></div>
+            <div class="events__row"><div class="events__t">14:30:14.812</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.synth.completed</div><div class="events__pay">dataset=ds_2026_05_21_001 n=2200</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:31:48.290</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.finetune.completed</div><div class="events__pay">adapter=ad_iter6 train_loss=0.142</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:06.118</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.completed</div><div class="events__pay">n=500 em=0.871</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.471</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.bfcl.completed</div><div class="events__pay">n=400 em=0.768</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:11.044</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.metrics.summarized</div><div class="events__pay">em=0.871 am=0.901 ast=0.847 n=900</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:11.812</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-014 conf=0.94</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:12.017</div><div class="events__mod events__mod--factory">factory</div><div class="events__name">factory.pipeline.iterated</div><div class="events__pay">iter=6 pending_patches=3</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+
+      </div><!-- /fp__body -->
+      <div class="dd">
+        <span>DEEP DIVE</span>
+        <a href="./pipeline.html">Pipeline Console (sheet 03) →</a>
+      </div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · synth
+         ============================================================ -->
+    <div class="fctx" data-ctx="synth"
+         data-title="lm_data_synth"
+         data-kind="<b>ATOMIC · MODULE 01 / LM</b><br><span class='t-mute'>docs/tasks/lm_data_synth.md</span>"
+         data-sub="teacher-driven dataset synthesis anchored to a Catalog">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">catalog_id + strategies</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">dataset_id (JSONL)</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ lm.synth.completed</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">teacher unreachable · empty draw</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">n_rows ≥ min · validated against Catalog</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Strategy-anchored prompt sampling · teacher inference · DSL-validated row emission.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Training (lm_finetune) · grading (analyzer_metrics) · cross-catalog mixing.</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Row that fails Catalog.parse_json_dsl → reject (not coerce); fail loud (§7).</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters</div>
+        <div class="fp__tab" data-sub="data">Dataset preview</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row">
+              <div class="params__k">strategies<small>row-generation algorithms</small></div>
+              <div class="params__v">
+                <div class="chips">
+                  <span class="tag tag--in">tool_anchored ✓</span>
+                  <span class="tag tag--in">multi_tool ✓</span>
+                  <span class="tag tag--in">adversarial ✓</span>
+                  <span class="tag tag--ghost">abstain ○</span>
+                </div>
+              </div>
+              <div class="params__src">SYNTH</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">n_rows<small>per-iteration target</small></div>
+              <div class="params__v"><input type="number" value="2200"></div>
+              <div class="params__src">SYNTH</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">teacher<small>upstream model</small></div>
+              <div class="params__v">
+                <select><option>qwen3.6-plus · DashScope</option><option>qwen3.6-max</option><option>gpt-4.1</option></select>
+              </div>
+              <div class="params__src">CLIENT</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">seed<small>reproducibility</small></div>
+              <div class="params__v"><input type="number" value="42"></div>
+              <div class="params__src">SYNTH</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">adversarial_ratio<small>fraction with red-herring tools</small></div>
+              <div class="params__v"><input type="number" value="0.15" step="0.05" min="0" max="1"></div>
+              <div class="params__src">SYNTH</div>
+            </div>
+          </div>
+          <div class="fp__actions">
+            <div class="meta">last run ts <b>14:30:14</b> · 2,200 rows · 100% Catalog-valid</div>
+            <button class="btn btn--ghost">Resample</button>
+            <button class="btn btn--primary">Emit lm.synth.request</button>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">DATASET HEAD · ds_2026_05_21_001.jsonl (n=2200)</div>
+          <div class="code" data-label="JSONL · 3 OF 2200">
+<span class="c">// row 0001 — strategy=tool_anchored</span>
+{<span class="k">"prompt"</span>:<span class="s">"거실 불 켜줘"</span>, <span class="k">"expected"</span>:{<span class="k">"calls"</span>:[{<span class="k">"tool"</span>:<span class="s">"set_light"</span>,<span class="k">"args"</span>:{<span class="k">"room"</span>:<span class="s">"living"</span>,<span class="k">"state"</span>:<span class="s">"on"</span>}}]}}
+
+<span class="c">// row 0002 — strategy=multi_tool</span>
+{<span class="k">"prompt"</span>:<span class="s">"안방 노란빛으로 30%만"</span>, <span class="k">"expected"</span>:{<span class="k">"calls"</span>:[{<span class="k">"tool"</span>:<span class="s">"set_color"</span>,<span class="k">"args"</span>:{<span class="k">"room"</span>:<span class="s">"bedroom"</span>,<span class="k">"color"</span>:<span class="s">"yellow"</span>}},{<span class="k">"tool"</span>:<span class="s">"dim_light"</span>,<span class="k">"args"</span>:{<span class="k">"room"</span>:<span class="s">"bedroom"</span>,<span class="k">"level"</span>:<span class="n">30</span>}}]}}
+
+<span class="c">// row 0003 — strategy=adversarial (red-herring tool present)</span>
+{<span class="k">"prompt"</span>:<span class="s">"부엌에 누구있어?"</span>, <span class="k">"expected"</span>:{<span class="k">"calls"</span>:[]}, <span class="k">"distractor_tools"</span>:[<span class="s">"detect_motion"</span>]}
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:30:12.046</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.synth.request</div><div class="events__pay">catalog=iot_light_5 strategies=[tool_anchored,multi_tool,adversarial]</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:30:14.812</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.synth.completed</div><div class="events__pay">dataset=ds_2026_05_21_001 n=2200 invalid=0</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./pipeline.html#synth">lm_data_synth detail →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · finetune
+         ============================================================ -->
+    <div class="fctx" data-ctx="finetune"
+         data-title="lm_finetune"
+         data-kind="<b>ATOMIC · MODULE 01 / LM</b><br><span class='t-mute'>docs/tasks/lm_finetune.md</span>"
+         data-sub="LoRA SFT + DPO graded-reward, anchored to a Catalog">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">catalog_id · dataset_id</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">adapter_id</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ lm.finetune.completed</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">loss diverged · OOM · prompt-parity break</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">train_loss ≤ τ · prompt-parity invariant</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">LoRA SFT (TRL SFTTrainer, assistant_only_loss=True) · DPO from analyzer_verifier rewards · adapter persistence.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Full fine-tune · cross-catalog adapter sharing · inference (delegated to lm_client).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Training prompt != lm/prompts.py invariant → STOP. Mismatch breaks every downstream metric.</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters</div>
+        <div class="fp__tab" data-sub="data">Adapter</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row">
+              <div class="params__k">base_model<small>foundation</small></div>
+              <div class="params__v"><select><option>Qwen3-0.6B</option><option>Qwen3-1.5B</option><option>Qwen3-3B</option></select></div>
+              <div class="params__src">LM</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">lora_rank<small>r</small></div>
+              <div class="params__v"><input type="number" value="16"></div>
+              <div class="params__src">LM</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">lora_alpha</div>
+              <div class="params__v"><input type="number" value="32"></div>
+              <div class="params__src">LM</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">learning_rate</div>
+              <div class="params__v"><input type="text" value="2e-4"></div>
+              <div class="params__src">LM</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">epochs</div>
+              <div class="params__v"><input type="number" value="3"></div>
+              <div class="params__src">LM</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">stage<small>SFT then DPO</small></div>
+              <div class="params__v">
+                <span class="seg">
+                  <span class="seg__opt active">SFT</span>
+                  <span class="seg__opt">SFT + DPO</span>
+                  <span class="seg__opt">DPO only</span>
+                </span>
+              </div>
+              <div class="params__src">LM</div>
+            </div>
+            <div class="params__row">
+              <div class="params__k">assistant_only_loss</div>
+              <div class="params__v lock">True · invariant (locked)</div>
+              <div class="params__src">CONTRACT</div>
+            </div>
+          </div>
+          <div class="fp__actions">
+            <div class="meta">last run · adapter <b>ad_iter6</b> · train_loss <b class="t-chart">0.142</b></div>
+            <button class="btn btn--ghost">Reset</button>
+            <button class="btn btn--primary">Emit lm.finetune.request</button>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">CURRENT ADAPTER · ad_iter6</div>
+          <table class="dtable">
+            <tbody>
+              <tr><td class="t-dim">base</td><td>Qwen3-0.6B</td></tr>
+              <tr><td class="t-dim">peft</td><td>LoRA r=16 α=32 dropout=0.05 target=[q,k,v,o,up,down]</td></tr>
+              <tr><td class="t-dim">stage</td><td>SFT (TRL · assistant_only_loss=True)</td></tr>
+              <tr><td class="t-dim">epochs</td><td>3</td></tr>
+              <tr><td class="t-dim">final train_loss</td><td class="t-chart">0.142</td></tr>
+              <tr><td class="t-dim">final eval_loss</td><td>0.198</td></tr>
+              <tr><td class="t-dim">adapter size</td><td>18.4 MB</td></tr>
+              <tr><td class="t-dim">path</td><td>runs/adapters/ad_iter6/</td></tr>
+              <tr><td class="t-dim">prompt-parity</td><td class="t-chart">✓ verified against lm/prompts.py @ ef2f1fa</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:30:14.815</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.finetune.request</div><div class="events__pay">catalog=iot_light_5 dataset=ds_2026_05_21_001</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:31:48.290</div><div class="events__mod events__mod--lm">lm</div><div class="events__name">lm.finetune.completed</div><div class="events__pay">adapter=ad_iter6 train_loss=0.142</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./pipeline.html#finetune">lm_finetune detail →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · bench-iot
+         ============================================================ -->
+    <div class="fctx" data-ctx="bench-iot"
+         data-title="benchmark_iot"
+         data-kind="<b>ATOMIC · CONSUMER</b><br><span class='t-mute'>docs/tasks/benchmark_iot.md</span>"
+         data-sub="IoT-tier benchmark · iot_light_5 / home_iot_20 / smart_home_50">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">adapter_id · catalog_id · tier</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">per-case Trace · summary_path</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ benchmark.iot.completed</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">tier unknown · client refusal</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">n cases ran · all traces emitted</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Three tiers (5/20/50 tools) · graded exact_match · trace emission to analyzer_trace_store.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">BFCL (separate benchmark_bfcl) · live IoT actuation · dataset regeneration (deterministic seed=42).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Tier ↔ catalog mismatch → reject at runner.</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters</div>
+        <div class="fp__tab" data-sub="data">Last run</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row"><div class="params__k">tier</div>
+              <div class="params__v"><span class="seg"><span class="seg__opt active">iot_light_5</span><span class="seg__opt">home_iot_20</span><span class="seg__opt">smart_home_50</span></span></div>
+              <div class="params__src">BENCH</div></div>
+            <div class="params__row"><div class="params__k">repeat<small>per-case</small></div>
+              <div class="params__v"><input type="number" value="1"></div>
+              <div class="params__src">BENCH</div></div>
+            <div class="params__row"><div class="params__k">limit<small>cases (0 = all)</small></div>
+              <div class="params__v"><input type="number" value="500"></div>
+              <div class="params__src">BENCH</div></div>
+            <div class="params__row"><div class="params__k">repair<small>see analyzer_repair_policy</small></div>
+              <div class="params__v"><div class="toggle on"><div class="toggle__sw"></div><span>enabled</span></div></div>
+              <div class="params__src">ANALYZER</div></div>
+            <div class="params__row"><div class="params__k">repair_max_attempts</div>
+              <div class="params__v"><input type="number" value="1"></div>
+              <div class="params__src">ANALYZER</div></div>
+          </div>
+          <div class="fp__actions">
+            <div class="meta">last run · 500 cases · em <b class="t-chart">0.871</b></div>
+            <button class="btn btn--ghost">Dry-run</button>
+            <button class="btn btn--primary">Emit benchmark.iot.request</button>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">LAST SUMMARY · runs/iot/iter6.json</div>
+          <table class="dtable">
+            <thead><tr><th>metric</th><th class="num">value</th><th class="num">Δ prev iter</th></tr></thead>
+            <tbody>
+              <tr><td>exact_match_rate</td><td class="num t-chart">0.871</td><td class="num">+0.009</td></tr>
+              <tr><td>action_match_rate</td><td class="num">0.901</td><td class="num">+0.009</td></tr>
+              <tr><td>ast_match_rate</td><td class="num">0.847</td><td class="num">+0.012</td></tr>
+              <tr><td>repair_invocations</td><td class="num">62</td><td class="num">−8</td></tr>
+              <tr><td>latency_ms_p50</td><td class="num">412</td><td class="num">−14</td></tr>
+              <tr><td>latency_ms_p95</td><td class="num">1,138</td><td class="num">−92</td></tr>
+              <tr><td>token_input_total</td><td class="num">142,800</td><td class="num">−</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:31:48.297</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.request</div><div class="events__pay">adapter=ad_iter6 tier=iot_light_5</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:06.118</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.completed</div><div class="events__pay">n=500 em=0.871 path=runs/iot/iter6.json</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./evaluation.html">factory_evaluation (single-tuple measurement) →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · bench-bfcl
+         ============================================================ -->
+    <div class="fctx" data-ctx="bench-bfcl"
+         data-title="benchmark_bfcl"
+         data-kind="<b>ATOMIC · CONSUMER</b><br><span class='t-mute'>docs/tasks/benchmark_bfcl.md</span>"
+         data-sub="BFCL v4 single-turn · per-case Catalog">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">adapter_id · category</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">per-case Trace · AST verdict</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ benchmark.bfcl.completed</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">schema compile error · sample missing</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">n cases ran · grader returned verdict each</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">simple_python · multiple · parallel · parallel_multiple · irrelevance · callable. Per-case Catalog compiled from BFCL function field.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Multi-turn BFCL · regenerating samples (seed=42 pinned).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Hand-edit examples/bfcl/v4/sample/*.jsonl → reject (SSOT).</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters</div>
+        <div class="fp__tab" data-sub="data">Last run</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row"><div class="params__k">category</div>
+              <div class="params__v">
+                <span class="seg">
+                  <span class="seg__opt">simple_python</span>
+                  <span class="seg__opt">multiple</span>
+                  <span class="seg__opt">parallel</span>
+                  <span class="seg__opt">irrelevance</span>
+                  <span class="seg__opt active">callable</span>
+                  <span class="seg__opt">all</span>
+                </span>
+              </div>
+              <div class="params__src">BENCH</div></div>
+            <div class="params__row"><div class="params__k">bfcl_per_category</div>
+              <div class="params__v"><input type="number" value="100"></div>
+              <div class="params__src">BENCH</div></div>
+            <div class="params__row"><div class="params__k">bfcl_allow_empty_calls<small>irrelevance</small></div>
+              <div class="params__v"><div class="toggle"><div class="toggle__sw"></div><span>off</span></div></div>
+              <div class="params__src">CONTRACT</div></div>
+            <div class="params__row"><div class="params__k">bfcl_output</div>
+              <div class="params__v"><input type="text" value="runs/bfcl/iter6_cases.jsonl"></div>
+              <div class="params__src">BENCH</div></div>
+          </div>
+          <div class="fp__actions">
+            <div class="meta">last run · callable · 400 cases · em <b>0.768</b></div>
+            <button class="btn btn--ghost">Dry-run</button>
+            <button class="btn btn--primary">Emit benchmark.bfcl.request</button>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">LAST SUMMARY · runs/bfcl/iter6.json</div>
+          <table class="dtable">
+            <thead><tr><th>category</th><th class="num">n</th><th class="num">em</th><th class="num">ast</th><th class="num">abstain ok</th></tr></thead>
+            <tbody>
+              <tr><td>simple_python</td><td class="num">100</td><td class="num">0.812</td><td class="num">0.840</td><td class="num">—</td></tr>
+              <tr><td>multiple</td><td class="num">100</td><td class="num">0.766</td><td class="num">0.798</td><td class="num">—</td></tr>
+              <tr><td>parallel</td><td class="num">100</td><td class="num">0.711</td><td class="num">0.752</td><td class="num">—</td></tr>
+              <tr><td>callable</td><td class="num">100</td><td class="num t-chart">0.768</td><td class="num">0.795</td><td class="num">—</td></tr>
+              <tr><td>irrelevance</td><td class="num t-mute">0</td><td class="num t-mute">— skip</td><td class="num t-mute">—</td><td class="num t-mute">N/A</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:31:48.297</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.bfcl.request</div><div class="events__pay">adapter=ad_iter6 cat=callable n=100</div><div class="right t-mute">consume</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.471</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.bfcl.completed</div><div class="events__pay">n=400 em=0.768</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./evaluation.html">factory_evaluation →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · trace
+         ============================================================ -->
+    <div class="fctx" data-ctx="trace"
+         data-title="analyzer_trace_store"
+         data-kind="<b>ATOMIC · MODULE 02 / ANALYZER</b><br><span class='t-mute'>docs/tasks/analyzer_trace_store.md</span>"
+         data-sub="append-only JSONL substrate · every analyzer task reads from this">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">Trace records from benchmarks</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">trace_id (immutable)</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.trace.recorded</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">disk fault · schema mismatch</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">every appended row triggers 1 emit</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Append-only persistence · per-case Trace JSONL · monotonic offset cursor.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Mutation · deletion · classification (delegated to analyzer_failure_taxonomy).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Any rewrite request → reject. Append-only is invariant; corrections become new rows.</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters</div>
+        <div class="fp__tab" data-sub="data">Recent traces</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row"><div class="params__k">store_path</div>
+              <div class="params__v"><input type="text" value="runs/traces/store.jsonl"></div>
+              <div class="params__src">ANALYZER</div></div>
+            <div class="params__row"><div class="params__k">rotation_size_mb</div>
+              <div class="params__v"><input type="number" value="256"></div>
+              <div class="params__src">ANALYZER</div></div>
+            <div class="params__row"><div class="params__k">append_mode</div>
+              <div class="params__v lock">append-only · invariant</div>
+              <div class="params__src">CONTRACT</div></div>
+            <div class="params__row"><div class="params__k">retention_days</div>
+              <div class="params__v"><input type="number" value="90"></div>
+              <div class="params__src">ANALYZER</div></div>
+          </div>
+          <div class="fp__actions">
+            <div class="meta">store size <b>92.4 MB</b> · 12,401 traces total · 900 in current iter</div>
+            <button class="btn btn--ghost">Vacuum (snapshot)</button>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">RECENT TRACES · iter 6 ▸ last 7</div>
+          <table class="dtable">
+            <thead><tr><th>trace_id</th><th>case</th><th>failure</th><th>repair</th><th>t</th></tr></thead>
+            <tbody>
+              <tr><td><a href="./traces.html" class="t-bright">T-2206</a></td><td>iot_light:case_0142</td><td><span class="tag tag--warn">F04 alias_unresolved</span></td><td class="num">1</td><td class="t-mute">14:30:12.118</td></tr>
+              <tr><td><a href="./traces.html" class="t-bright">T-2207</a></td><td>iot_light:case_0143</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.241</td></tr>
+              <tr><td><a href="./traces.html" class="t-bright">T-2208</a></td><td>bfcl:simple_python:032</td><td><span class="tag tag--fail">F03 invalid_enum</span></td><td class="num">2</td><td class="t-mute">14:30:12.318</td></tr>
+              <tr><td><a href="./traces.html" class="t-bright">T-2209</a></td><td>bfcl:irrelevance:004</td><td><span class="tag tag--warn">F09 empty_calls_req</span></td><td class="num">0</td><td class="t-mute">14:30:12.402</td></tr>
+              <tr><td><a href="./traces.html" class="t-bright">T-2210</a></td><td>iot_light:case_0144</td><td><span class="tag tag--warn">F14 graded_partial</span></td><td class="num">1</td><td class="t-mute">14:30:12.488</td></tr>
+              <tr><td><a href="./traces.html" class="t-bright">T-2211</a></td><td>bfcl:parallel:017</td><td><span class="tag tag--warn">F11 parallel_count</span></td><td class="num">0</td><td class="t-mute">14:30:12.561</td></tr>
+              <tr><td><a href="./traces.html" class="t-bright">T-2212</a></td><td>iot_light:case_0145</td><td><span class="tag tag--fail">F07 malformed_dsl</span></td><td class="num">3</td><td class="t-mute">14:30:12.629</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.503</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.trace.recorded</div><div class="events__pay">trace_id=T-2206 catalog=iot_light_5</div><div class="right t-mute">emit</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.504</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.trace.recorded</div><div class="events__pay">trace_id=T-2207 catalog=iot_light_5</div><div class="right t-mute">emit</div></div>
+            <div class="events__row events__row--ghost"><div class="events__t">14:32:09.506</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.trace.recorded</div><div class="events__pay">trace_id=T-2208 (re-emit · §8 idempotent)</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./traces.html">Trace Explorer →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · taxonomy
+         ============================================================ -->
+    <div class="fctx" data-ctx="taxonomy"
+         data-title="analyzer_failure_taxonomy"
+         data-kind="<b>ATOMIC · MODULE 02 / ANALYZER</b><br><span class='t-mute'>docs/tasks/analyzer_failure_taxonomy.md</span>"
+         data-sub="deterministic priority-ordered classifier · 14 buckets">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">trace_id</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">FailureType label (one-of-14)</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.failure.classified</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">no matcher fires (un-bucketed)</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">14-bucket coverage = 100%</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Priority-ordered matchers F01..F14 · deterministic classification · one label per trace.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Patch synthesis (analyzer_rule_synthesis) · trace mutation · multi-label assignment.</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Unclassified trace → fail loud · do not invent label · escalate as bucket gap.</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Buckets</div>
+        <div class="fp__tab" data-sub="data">Histogram</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="t-eng t-dim mb-8">PRIORITY-ORDERED MATCHERS · enabled toggles affect classify()</div>
+          <div class="params">
+            <div class="params__head"><div>id · bucket</div><div>matcher</div><div>state</div></div>
+            <div class="params__row"><div class="params__k">F01 · unknown_tool</div><div class="params__v t-dim">tool ∉ Catalog.tools</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">F02 · missing_required_arg</div><div class="params__v t-dim">required arg absent</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">F03 · invalid_enum_value</div><div class="params__v t-dim">value ∉ EnumArg.values ∪ aliases</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">F04 · alias_unresolved</div><div class="params__v t-dim">value matches no alias key/value</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">F09 · empty_calls_when_required</div><div class="params__v t-dim">{calls:[]} when allow_empty_calls=False</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">F13 · repair_exhausted</div><div class="params__v t-dim">repair_attempts == max</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">F14 · graded_partial</div><div class="params__v t-dim">expected ⊂ actual partially</div><div class="params__src t-chart">ENABLED</div></div>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">14-BUCKET HISTOGRAM · iter 6 · n=900 traces</div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum_value</div><div class="hbar__track"><div class="hbar__fill" style="width:78%"></div></div><div class="hbar__count">84</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F04</span>alias_unresolved</div><div class="hbar__track"><div class="hbar__fill" style="width:58%"></div></div><div class="hbar__count">62</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F02</span>missing_required_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:38%"></div></div><div class="hbar__count">41</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F14</span>graded_partial</div><div class="hbar__track"><div class="hbar__fill" style="width:35%"></div></div><div class="hbar__count">38</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F07</span>malformed_dsl</div><div class="hbar__track"><div class="hbar__fill" style="width:30%"></div></div><div class="hbar__count">33</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F01</span>unknown_tool</div><div class="hbar__track"><div class="hbar__fill" style="width:25%"></div></div><div class="hbar__count">27</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F10</span>extra_unknown_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:21%"></div></div><div class="hbar__count">23</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F11</span>parallel_count_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:16%"></div></div><div class="hbar__count">17</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F09</span>empty_calls_when_required</div><div class="hbar__track"><div class="hbar__fill" style="width:13%"></div></div><div class="hbar__count">14</div></div>
+          <div class="hbar hbar--fail hbar--ghost"><div class="hbar__name"><span class="id">F08</span>json_parse_error</div><div class="hbar__track"><div class="hbar__fill" style="width:7%"></div></div><div class="hbar__count">8</div></div>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.514</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.failure.classified</div><div class="events__pay">trace=T-2206 label=F04</div><div class="right t-mute">emit</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.518</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.failure.classified</div><div class="events__pay">trace=T-2208 label=F03</div><div class="right t-mute">emit</div></div>
+            <div class="events__row"><div class="events__t">14:32:09.521</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.failure.classified</div><div class="events__pay">trace=T-2209 label=F09</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./traces.html">Trace Explorer →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · metrics
+         ============================================================ -->
+    <div class="fctx" data-ctx="metrics"
+         data-title="analyzer_metrics"
+         data-kind="<b>ATOMIC · MODULE 02 / ANALYZER</b><br><span class='t-mute'>docs/tasks/analyzer_metrics.md</span>"
+         data-sub="unified summary surface · exact / action / ast / graded">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">trace stream + Catalog</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">summary.json · report.md</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.metrics.summarized</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">trace stream incomplete</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">summary contains all 4 headline rates</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Aggregate exact_match · action_match · ast_match · graded_score · latency · token totals.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Reward function (analyzer_verifier) · classification (analyzer_failure_taxonomy) · cross-iteration comparison (runs/aggregate.py).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Invented metric not in spec → fail loud · do not surface to dashboard.</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Parameters</div>
+        <div class="fp__tab" data-sub="data">Summary</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row"><div class="params__k">graded_partial_credit</div><div class="params__v"><input type="number" value="0.5" step="0.1" min="0" max="1"></div><div class="params__src">ANALYZER</div></div>
+            <div class="params__row"><div class="params__k">latency_percentiles</div><div class="params__v"><input type="text" value="p50,p95,p99"></div><div class="params__src">ANALYZER</div></div>
+            <div class="params__row"><div class="params__k">emit_markdown_report</div><div class="params__v"><div class="toggle on"><div class="toggle__sw"></div><span>on</span></div></div><div class="params__src">ANALYZER</div></div>
+            <div class="params__row"><div class="params__k">report_path_pattern</div><div class="params__v"><input type="text" value="runs/{bench}/iter{n}.md"></div><div class="params__src">ANALYZER</div></div>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="code" data-label="summary · iter 6">
+{
+  <span class="k">"exact_match_rate"</span>: <span class="n">0.871</span>,
+  <span class="k">"action_match_rate"</span>: <span class="n">0.901</span>,
+  <span class="k">"ast_match_rate"</span>:    <span class="n">0.847</span>,
+  <span class="k">"graded_score"</span>:      <span class="n">0.892</span>,
+  <span class="k">"n_traces"</span>: <span class="n">900</span>,
+  <span class="k">"latency_ms"</span>: {
+    <span class="k">"p50"</span>: <span class="n">412</span>,
+    <span class="k">"p95"</span>: <span class="n">1138</span>,
+    <span class="k">"p99"</span>: <span class="n">2204</span>
+  },
+  <span class="k">"token_input_total"</span>: <span class="n">142800</span>,
+  <span class="k">"token_output_total"</span>: <span class="n">28760</span>,
+  <span class="k">"failure_histogram"</span>: { <span class="k">"F03"</span>: <span class="n">84</span>, <span class="k">"F04"</span>: <span class="n">62</span>, ... }
+}
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:32:11.044</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.metrics.summarized</div><div class="events__pay">em=0.871 am=0.901 ast=0.847 n=900</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./observability.html">Observability Dashboard →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · rules (feedback edge)
+         ============================================================ -->
+    <div class="fctx" data-ctx="rules"
+         data-title="analyzer_rule_synthesis <em>· goal §2 feedback edge</em>"
+         data-kind="<b style='color:var(--amber)'>ATOMIC · FEEDBACK EDGE</b><br><span class='t-mute'>docs/tasks/analyzer_rule_synthesis.md</span>"
+         data-sub="propose ToolSpec patches from failure histograms · R1–R11 patterns">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">failure histogram · trace samples</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">rule_patch + evidence</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.rule.proposed</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">evidence below τ · no pattern</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">patch carries evidence ≥ τ</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Propose alias additions · enum extensions · null-action allowance · R1–R11 promoted patterns.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Applying patches (contract_catalog owns version bump) · auto-merging without human approval (factory_pipeline gate).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Patch without evidence link → reject. Every proposal must carry traceable histogram.</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Patch rules</div>
+        <div class="fp__tab" data-sub="data">Proposed (3)</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>pattern</div><div>description</div><div>state</div></div>
+            <div class="params__row"><div class="params__k">R3 · alias_extension</div><div class="params__v t-dim">F04 + F03 same arg → add aliases</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">R7 · enum_extension</div><div class="params__v t-dim">F03 with frequent oov value → extend</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">R9 · null_action_allow</div><div class="params__v t-dim">F09 > 5% → allow_empty_calls = True</div><div class="params__src t-chart">ENABLED</div></div>
+            <div class="params__row"><div class="params__k">R11 · arg_optional_relax</div><div class="params__v t-dim">F02 on rarely-used arg → required=False</div><div class="params__src t-amber">CAUTIOUS</div></div>
+            <div class="params__row"><div class="params__k">τ confidence threshold</div><div class="params__v"><input type="number" value="0.70" step="0.05" min="0" max="1"></div><div class="params__src">ANALYZER</div></div>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="t-eng t-dim mb-8">PROPOSED PATCHES · iter 6 · awaiting approval (pipeline gate)</div>
+          <div class="stack-12">
+            <div style="border:1px solid var(--rule);padding:14px">
+              <div class="flex-bw"><span><b class="t-bright">P-014</b> · <span class="tag tag--warn">R3 alias_extension</span></span><span class="t-eng t-mute">conf 0.94</span></div>
+              <div class="t-dim fs-12 mt-8">Target: <span class="t-bright">iot_light_5 / set_light / room</span><br>Evidence: <span class="t-verm">F04×62</span> + <span class="t-verm">F03×12</span></div>
+            </div>
+            <div style="border:1px solid var(--rule);padding:14px">
+              <div class="flex-bw"><span><b class="t-bright">P-015</b> · <span class="tag tag--warn">R7 enum_extension</span></span><span class="t-eng t-mute">conf 0.82</span></div>
+              <div class="t-dim fs-12 mt-8">Target: <span class="t-bright">bfcl_per_case / get_weather / units</span><br>Evidence: <span class="t-verm">F03×18</span></div>
+            </div>
+            <div style="border:1px solid var(--rule);padding:14px">
+              <div class="flex-bw"><span><b class="t-bright">P-016</b> · <span class="tag tag--warn">R9 null_action_allow</span></span><span class="t-eng t-mute">conf 0.71</span></div>
+              <div class="t-dim fs-12 mt-8">Target: <span class="t-bright">iot_light_5 / Catalog.allow_empty_calls</span><br>Evidence: <span class="t-verm">F09×14</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">14:32:11.812</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-014 rule=R3 conf=0.94</div><div class="right t-mute">emit</div></div>
+            <div class="events__row"><div class="events__t">14:32:11.844</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-015 rule=R7 conf=0.82</div><div class="right t-mute">emit</div></div>
+            <div class="events__row"><div class="events__t">14:32:11.901</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.rule.proposed</div><div class="events__pay">patch=P-016 rule=R9 conf=0.71</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./rules.html">Rule Synthesis Review →</a></div>
+    </div>
+
+    <!-- ============================================================
+         FOCUS CONTEXT · catalog (contract)
+         ============================================================ -->
+    <div class="fctx" data-ctx="catalog"
+         data-title="contract_catalog"
+         data-kind="<b style='color:var(--chartreuse)'>ATOMIC · MODULE 03 / CONTRACT (LEAF)</b><br><span class='t-mute'>docs/tasks/contract_catalog.md</span>"
+         data-sub="Catalog · ToolSpec · ArgSpec · DSL/OpenAI dual render">
+      <div class="contract">
+        <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">rule_patch · catalog spec</div></div>
+        <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">catalog_id · version+1 · rendered artifacts</div></div>
+        <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ contract.catalog.published</div></div>
+        <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">patch rejected · render diverged</div></div>
+        <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">DSL == OpenAI tools (arity)</div></div>
+      </div>
+      <div class="scope">
+        <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Bundle ToolSpec/ArgSpec · dual render (DSL string + OpenAI tools JSON) · accept/reject ToolSpec patch · version bump.</div></div>
+        <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Patch authorship (analyzer_rule_synthesis) · approval (factory_pipeline gate) · per-case BFCL Catalog compile (contract_schema_compiler).</div></div>
+        <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">DSL render ↛ OpenAI tools arity match → reject the patch · do not silently coerce (§7).</div></div>
+      </div>
+
+      <div class="fp__tabs">
+        <div class="fp__tab active" data-sub="params">Catalog</div>
+        <div class="fp__tab" data-sub="data">Dual render</div>
+        <div class="fp__tab" data-sub="events">Events</div>
+      </div>
+
+      <div class="fp__body">
+        <div class="fctx__sub is-active" data-sub="params">
+          <div class="params">
+            <div class="params__head"><div>parameter</div><div>value</div><div>source</div></div>
+            <div class="params__row"><div class="params__k">catalog_id</div><div class="params__v lock">iot_light_5</div><div class="params__src">CONTRACT</div></div>
+            <div class="params__row"><div class="params__k">version</div><div class="params__v lock">v07 · next → v08 on apply</div><div class="params__src">CONTRACT</div></div>
+            <div class="params__row"><div class="params__k">n_tools</div><div class="params__v">5</div><div class="params__src">CONTRACT</div></div>
+            <div class="params__row"><div class="params__k">allow_empty_calls</div><div class="params__v"><div class="toggle"><div class="toggle__sw"></div><span>off</span></div></div><div class="params__src">CONTRACT</div></div>
+            <div class="params__row"><div class="params__k">published_at</div><div class="params__v lock">2026-05-19T08:14:02Z</div><div class="params__src">CONTRACT</div></div>
+          </div>
+
+          <div class="locked-strip mt-16">READ-ONLY HERE · MUTATION HAPPENS ONLY VIA APPROVED PATCH (§3 ON-VIOL)</div>
+        </div>
+
+        <div class="fctx__sub" data-sub="data">
+          <div class="grid-2">
+            <div class="code" data-label="render_json_dsl()">
+TOOLS:
+- set_light(room, state, brightness?)
+- set_color(room, color)
+- dim_light(room, level)
+- set_scene(scene)
+- schedule_light(room, at, state)
+
+ALIASES (excerpt):
+  거실→living  안방→bedroom
+  켜→on        꺼→off
+            </div>
+            <div class="code" data-label="render_openai_tools()">
+[
+  {<span class="k">"type"</span>:<span class="s">"function"</span>,
+   <span class="k">"function"</span>:{
+     <span class="k">"name"</span>:<span class="s">"set_light"</span>,
+     <span class="k">"parameters"</span>:{
+       <span class="k">"type"</span>:<span class="s">"object"</span>,
+       <span class="k">"required"</span>:[<span class="s">"room"</span>,<span class="s">"state"</span>],
+       <span class="k">"properties"</span>:{
+         <span class="k">"room"</span>:{<span class="k">"enum"</span>:[<span class="s">"living"</span>,...]},
+         <span class="k">"state"</span>:{<span class="k">"enum"</span>:[<span class="s">"on"</span>,<span class="s">"off"</span>]},
+         <span class="k">"brightness"</span>:{<span class="k">"type"</span>:<span class="s">"integer"</span>,<span class="k">"minimum"</span>:<span class="n">0</span>,<span class="k">"maximum"</span>:<span class="n">100</span>}
+       }}}}
+  ...
+]
+            </div>
+          </div>
+          <div class="callout mt-16"><a href="./catalog.html">open full Catalog Inspector</a></div>
+        </div>
+
+        <div class="fctx__sub" data-sub="events">
+          <div class="events">
+            <div class="events__head"><div>t (utc)</div><div>module</div><div>name</div><div>payload</div><div class="right">edge</div></div>
+            <div class="events__row"><div class="events__t">2026-05-19 08:14:02</div><div class="events__mod events__mod--contract">contract</div><div class="events__name">contract.catalog.published</div><div class="events__pay">catalog=iot_light_5 version=7</div><div class="right t-mute">emit</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="dd"><span>DEEP DIVE</span><a href="./catalog.html">Catalog Inspector →</a></div>
+    </div>
+
+  </div><!-- /right pane -->
+</section>
+
+<footer class="footer">
+  <div>OPERATOR WORKBENCH · principle-driven UI · <b>docs/agent-forge/{task,workflow,agent_skill}_principle.md</b></div>
+  <div>§1 simplicity · §2 modularity · §3 scope · §4 composition · §5 contract · §6 lazy · §7 fail-loud · §8 idempotency · §9 observability</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+<script src="./assets/workbench.js"></script>
+</body>
+</html>

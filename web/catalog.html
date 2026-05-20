@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Catalog Inspector — Sheet 02</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">catalog inspector · sheet 02</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html" class="active"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Bus</div><div class="opbar__meta-v"><span class="live-dot"></span>online</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Active</div><div class="opbar__meta-v">iot_light_5 · v07</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <!-- HEAD -->
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 02 / 07 <span>◦</span> module 03 / contract <span>◦</span> read-only</div>
+      <h1 class="page__title">catalog <em>inspector</em></h1>
+      <p class="page__sub">A <b>Catalog</b> is the compiler boundary (§docs/tasks/contract_catalog.md). It renders two artifacts from one SSOT — <b>render_json_dsl()</b> for prompt-side and <b>render_openai_tools()</b> for the native baseline. Both must remain arity-equivalent; divergence is the §7 fail-loud signal. ToolSpec and EnumArg/StringArg <span class="italic">aliases</span> are the canonicalisation hook.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/FACTORY</b><br>
+      Sheet <b>02</b> of <b>07</b> · rev 1.3<br>
+      Spec <b>docs/tasks/contract_catalog.md</b><br>
+      Source <b>ganglion/contract/catalog.py</b>
+    </div>
+  </section>
+
+  <!-- TIER SELECTOR -->
+  <section class="panel">
+    <div class="panel__head">
+      <div class="panel__head-title">catalogs <small>4 registered · click to inspect</small></div>
+      <div class="panel__head-tools"><span class="tag tag--lock">READ-ONLY</span></div>
+    </div>
+    <div class="contract">
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">catalog_id</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">DSL render · OpenAI tools render</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">contract.catalog.published</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">arity divergence between renders</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">parse_json_dsl(render) == identity</div></div>
+    </div>
+    <div class="panel__body panel__body--flush">
+      <table class="dtable">
+        <thead><tr><th>catalog_id</th><th class="num">version</th><th class="num">tools</th><th>allow_empty_calls</th><th>published</th><th>source</th></tr></thead>
+        <tbody>
+          <tr><td><span class="t-chart">iot_light_5</span> <small class="t-mute">[active]</small></td><td class="num">v07</td><td class="num">5</td><td><span class="tag tag--ghost">false</span></td><td>2026-05-19 08:14:02</td><td class="t-dim">ganglion/contract/builtins/iot_light.py</td></tr>
+          <tr><td>home_iot_20</td><td class="num">v04</td><td class="num">20</td><td><span class="tag tag--ghost">false</span></td><td>2026-05-18 11:02:48</td><td class="t-dim">ganglion/contract/builtins/home_iot.py</td></tr>
+          <tr><td>smart_home_50</td><td class="num">v02</td><td class="num">50</td><td><span class="tag tag--ghost">false</span></td><td>2026-05-15 09:30:00</td><td class="t-dim">ganglion/contract/builtins/smart_home.py</td></tr>
+          <tr><td>bfcl_v4_simple</td><td class="num">v01</td><td class="num"><span class="t-amber">per-case</span></td><td><span class="tag tag--in">true</span></td><td>2026-05-16 18:44:11</td><td class="t-dim">compiled via schema_compiler</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TREE + DUAL RENDER -->
+  <section class="grid-asym mt-24">
+
+    <!-- LEFT: tree + alias -->
+    <div class="stack-24">
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">ToolSpec tree <small>iot_light_5 · 5 tools</small></div>
+          <div class="panel__head-tools"><span class="t-dim">click to highlight</span></div>
+        </div>
+        <div class="panel__body">
+          <ul class="tree">
+            <li class="expandable"><span class="tnode tnode--cat">Catalog · iot_light_5 <span class="t-mute fs-10">[v07]</span></span>
+              <ul>
+                <li class="expandable"><span class="tnode tnode--tool">set_light(room, state, brightness?)</span>
+                  <ul>
+                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span><span class="talias">aliases: 거실→living, 안방→bedroom, 부엌→kitchen, 화장실→bath</span></li>
+                    <li><span class="tnode tnode--arg">state <span class="tkind">EnumArg</span></span><span class="talias">aliases: 켜→on, 꺼→off, 켜줘→on, 꺼줘→off</span></li>
+                    <li><span class="tnode tnode--arg">brightness <span class="tkind">IntArg [0..100]</span></span><span class="t-mute fs-10" style="margin-left:6px">required=false</span></li>
+                  </ul></li>
+                <li class="expandable"><span class="tnode tnode--tool">set_color(room, color)</span>
+                  <ul>
+                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span></li>
+                    <li><span class="tnode tnode--arg">color <span class="tkind">StringArg</span></span><span class="talias">aliases: 주황→orange, 빨강→red, 파랑→blue</span></li>
+                  </ul></li>
+                <li class="expandable"><span class="tnode tnode--tool">dim_light(room, level)</span>
+                  <ul>
+                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span></li>
+                    <li><span class="tnode tnode--arg">level <span class="tkind">IntArg [0..100]</span></span></li>
+                  </ul></li>
+                <li class="expandable"><span class="tnode tnode--tool">set_scene(scene)</span>
+                  <ul>
+                    <li><span class="tnode tnode--arg">scene <span class="tkind">EnumArg</span></span><span class="talias">aliases: 영화→movie, 수면→sleep, 집중→focus, 파티→party</span></li>
+                  </ul></li>
+                <li class="expandable"><span class="tnode tnode--tool">schedule_light(room, at, state)</span>
+                  <ul>
+                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span></li>
+                    <li><span class="tnode tnode--arg">at <span class="tkind">TimeArg ISO-8601</span></span></li>
+                    <li><span class="tnode tnode--arg">state <span class="tkind">EnumArg</span></span></li>
+                  </ul></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">alias canonicalisation map <small>11 alias pairs</small></div>
+          <div class="panel__head-tools"><span class="t-dim">EnumArg.aliases ∪ StringArg.aliases</span></div>
+        </div>
+        <div class="panel__body panel__body--flush">
+          <table class="dtable">
+            <thead><tr><th>arg path</th><th>alias (in)</th><th>canonical (out)</th><th>source</th></tr></thead>
+            <tbody>
+              <tr><td>set_light.room</td><td class="t-amber">거실</td><td>→ living</td><td class="t-mute">EnumArg.aliases</td></tr>
+              <tr><td>set_light.room</td><td class="t-amber">안방</td><td>→ bedroom</td><td class="t-mute">EnumArg.aliases</td></tr>
+              <tr><td>set_light.state</td><td class="t-amber">켜줘</td><td>→ on</td><td class="t-mute">EnumArg.aliases</td></tr>
+              <tr><td>set_light.state</td><td class="t-amber">꺼</td><td>→ off</td><td class="t-mute">EnumArg.aliases</td></tr>
+              <tr><td>set_color.color</td><td class="t-amber">주황</td><td>→ orange</td><td class="t-mute">StringArg.aliases</td></tr>
+              <tr><td>set_color.color</td><td class="t-amber">빨강</td><td>→ red</td><td class="t-mute">StringArg.aliases</td></tr>
+              <tr><td>set_scene.scene</td><td class="t-amber">영화</td><td>→ movie</td><td class="t-mute">EnumArg.aliases</td></tr>
+              <tr><td>set_scene.scene</td><td class="t-amber">수면</td><td>→ sleep</td><td class="t-mute">EnumArg.aliases</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: dual render + invariant -->
+    <div class="stack-24">
+
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">catalog invariants</div>
+          <div class="panel__head-tools"><span class="t-chart">● all green</span></div>
+        </div>
+        <div class="panel__body">
+          <table class="dtable">
+            <tbody>
+              <tr><td class="t-dim">allow_empty_calls</td><td><div class="toggle lock"><div class="toggle__sw"></div><span>false · locked</span></div></td></tr>
+              <tr><td class="t-dim">parse_json_dsl(render_json_dsl) == identity</td><td class="t-chart">✓ verified at publish</td></tr>
+              <tr><td class="t-dim">render arity match (DSL ↔ OpenAI)</td><td class="t-chart">✓ 5 / 5 tools</td></tr>
+              <tr><td class="t-dim">duplicate alias keys</td><td class="t-chart">✓ 0</td></tr>
+              <tr><td class="t-dim">unreachable EnumArg values</td><td class="t-chart">✓ 0</td></tr>
+              <tr><td class="t-dim">tests/test_validator.py</td><td class="t-chart">✓ pass · 42 cases</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">dual render <small>same SSOT · two artifacts</small></div>
+          <div class="panel__head-tools">
+            <span class="seg"><span class="seg__opt active">side-by-side</span><span class="seg__opt">DSL only</span><span class="seg__opt">OpenAI only</span></span>
+          </div>
+        </div>
+        <div class="panel__body">
+          <div class="grid-2">
+            <div class="code" data-label="render_json_dsl()">
+<span class="c">// passed to system prompt</span>
+TOOLS:
+- set_light(room, state, brightness?)
+- set_color(room, color)
+- dim_light(room, level)
+- set_scene(scene)
+- schedule_light(room, at, state)
+
+EMIT JSON: {<span class="s">"calls"</span>: [{<span class="s">"tool"</span>:..,<span class="s">"args"</span>:{..}}]}
+
+ALIASES:
+  room: 거실→living, 안방→bedroom, 부엌→kitchen
+  state: 켜→on, 꺼→off
+  color: 주황→orange, 빨강→red
+  scene: 영화→movie, 수면→sleep
+            </div>
+            <div class="code" data-label="render_openai_tools()">
+<span class="c">// passed to native tool_calls path</span>
+[
+  {<span class="k">"type"</span>:<span class="s">"function"</span>,
+   <span class="k">"function"</span>:{
+     <span class="k">"name"</span>:<span class="s">"set_light"</span>,
+     <span class="k">"description"</span>:<span class="s">"control a single light"</span>,
+     <span class="k">"parameters"</span>:{
+       <span class="k">"type"</span>:<span class="s">"object"</span>,
+       <span class="k">"required"</span>:[<span class="s">"room"</span>,<span class="s">"state"</span>],
+       <span class="k">"properties"</span>:{
+         <span class="k">"room"</span>:{<span class="k">"type"</span>:<span class="s">"string"</span>,
+                  <span class="k">"enum"</span>:[<span class="s">"living"</span>,<span class="s">"bedroom"</span>,<span class="s">"kitchen"</span>,<span class="s">"bath"</span>]},
+         <span class="k">"state"</span>:{<span class="k">"enum"</span>:[<span class="s">"on"</span>,<span class="s">"off"</span>]},
+         <span class="k">"brightness"</span>:{<span class="k">"type"</span>:<span class="s">"integer"</span>,
+                        <span class="k">"minimum"</span>:<span class="n">0</span>,<span class="k">"maximum"</span>:<span class="n">100</span>}
+       }}}}
+  ... 4 more tools
+]
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">scaling — token cost vs catalog size</div>
+          <div class="panel__head-tools"><span class="t-dim">M2 experiment · runs/m2_run.sh</span></div>
+        </div>
+        <div class="panel__body panel__body--flush">
+          <table class="dtable">
+            <thead><tr><th>tier</th><th class="num">tools</th><th class="num">DSL tokens</th><th class="num">OpenAI tools tokens</th><th class="num">ratio</th></tr></thead>
+            <tbody>
+              <tr><td><span class="t-chart">iot_light_5</span></td><td class="num">5</td><td class="num">214</td><td class="num">1,488</td><td class="num t-chart">6.95×</td></tr>
+              <tr><td>home_iot_20</td><td class="num">20</td><td class="num">802</td><td class="num">5,612</td><td class="num t-chart">7.00×</td></tr>
+              <tr><td>smart_home_50</td><td class="num">50</td><td class="num">1,932</td><td class="num">13,488</td><td class="num t-chart">6.98×</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- LINKS -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">related deep-dives</div>
+      <div class="panel__head-tools"><span class="t-dim">cross-references</span></div>
+    </div>
+    <div class="panel__body">
+      <div class="grid-3">
+        <a href="./pipeline.html" class="callout">factory pipeline (catalog as input)</a>
+        <a href="./rules.html" class="callout">rule synthesis (catalog as output)</a>
+        <a href="./events.html" class="callout">contract.catalog.published events</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 02 · catalog inspector · <b>docs/tasks/contract_catalog.md</b></div>
+  <div>read-only · invariants checked at publish · §5 contract surface</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+<script>
+// tree expand/collapse
+document.querySelectorAll('.tree li.expandable > .tnode').forEach(n => {
+  n.addEventListener('click', () => n.parentElement.classList.toggle('collapsed'));
+});
+// seg
+document.querySelectorAll('.seg').forEach((seg) => {
+  seg.addEventListener('click', (e) => {
+    const opt = e.target.closest('.seg__opt'); if (!opt) return;
+    seg.querySelectorAll('.seg__opt').forEach((o) => o.classList.remove('active'));
+    opt.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

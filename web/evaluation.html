@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Factory Evaluation — Sheet 04</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">factory evaluation · sheet 04</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html" class="active"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Mode</div><div class="opbar__meta-v"><span class="tag tag--lock">READ-ONLY</span></div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Runs · 30d</div><div class="opbar__meta-v">312</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 04 / 07 <span>◦</span> composite <span>◦</span> factory_evaluation</div>
+      <h1 class="page__title">factory <em>evaluation</em></h1>
+      <p class="page__sub">Measurement-only composite. Picks a <b>(client × catalog × benchmark)</b> tuple, runs it once, summarises once, emits one terminal verdict. <span class="italic t-amber">No training · no rule synthesis · no catalog mutation.</span> Those live in <a href="./pipeline.html">factory_pipeline</a>. The console enforces the read-only invariant <i>visually</i>.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/FACTORY</b><br>
+      Sheet <b>04</b> of <b>07</b> · rev 1.3<br>
+      Spec <b>docs/tasks/factory_evaluation.md</b><br>
+      Source <b>ganglion/cli.py (eval subcommand)</b>
+    </div>
+  </section>
+
+  <!-- READ-ONLY INVARIANT BANNER -->
+  <section class="panel">
+    <div class="panel__head">
+      <div class="panel__head-title">measurement-only invariant</div>
+      <div class="panel__head-tools"><span class="t-chart">enforced</span></div>
+    </div>
+    <div class="contract">
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">(client_id, catalog_id, benchmark_id, opts)</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">summary.json + report.md</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ factory.evaluation.completed</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">benchmark_failed · metrics_failed · scope_violation</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">exactly 1 terminal event per invocation</div></div>
+    </div>
+    <div class="locked-strip" style="border-top:none">
+      LOCKED · NO factory.* emissions OUTSIDE evaluation.{completed,aborted} ARE PERMITTED · A SCOPE VIOLATION ABORTS THE RUN
+    </div>
+    <div class="scope">
+      <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Single (client × catalog × benchmark) tuple per invocation · forwards summary path from analyzer_metrics · counts evaluation_runs_total.</div></div>
+      <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v"><b class="t-verm">lm_finetune (training)</b> · lm_data_synth · analyzer_rule_synthesis · catalog mutation · A/B in one run · live dashboards. All deferred to factory_pipeline or report tooling.</div></div>
+      <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">If a tuple choice would apply a patch / open a sync PR → emit factory.evaluation.aborted(reason="scope_violation"). Do not silently widen.</div></div>
+    </div>
+  </section>
+
+  <!-- TUPLE BUILDER -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">tuple builder <small>exactly one of each</small></div>
+      <div class="panel__head-tools"><span class="t-dim">CLI · python -m ganglion eval --client … --catalog … --benchmark …</span></div>
+    </div>
+    <div class="panel__body">
+      <div class="grid-3">
+        <div>
+          <div class="t-eng t-dim mb-8">[ A ] CLIENT  · lm_client</div>
+          <div class="stack-12">
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cli" checked style="margin-right:8px;accent-color:#C3E88D"> qwen <small class="t-mute">JSON DSL · response_format json_object</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cli" style="margin-right:8px;accent-color:#C3E88D"> qwen-text <small class="t-mute">freeform JSON · salvage</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cli" style="margin-right:8px;accent-color:#C3E88D"> qwen-thinking <small class="t-mute">freeform · chain-of-thought</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cli" style="margin-right:8px;accent-color:#C3E88D"> qwen-native <small class="t-mute">native tool_calls · baseline</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cli" style="margin-right:8px;accent-color:#C3E88D"> rules <small class="t-mute">regex stub · offline · iot_light_5 only</small></label>
+          </div>
+        </div>
+        <div>
+          <div class="t-eng t-dim mb-8">[ B ] CATALOG · contract_catalog</div>
+          <div class="stack-12">
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cat" checked style="margin-right:8px;accent-color:#C3E88D"> iot_light_5 <small class="t-mute">v07 · 5 tools</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cat" style="margin-right:8px;accent-color:#C3E88D"> home_iot_20 <small class="t-mute">v04 · 20 tools</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cat" style="margin-right:8px;accent-color:#C3E88D"> smart_home_50 <small class="t-mute">v02 · 50 tools</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="cat" style="margin-right:8px;accent-color:#C3E88D"> bfcl_per_case <small class="t-mute">v01 · per-case catalog from schema_compiler</small></label>
+          </div>
+        </div>
+        <div>
+          <div class="t-eng t-dim mb-8">[ C ] BENCHMARK</div>
+          <div class="stack-12">
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="bench" checked style="margin-right:8px;accent-color:#C3E88D"> benchmark_iot <small class="t-mute">tier scaling: 5/20/50</small></label>
+            <label class="callout" style="display:block;cursor:pointer"><input type="radio" name="bench" style="margin-right:8px;accent-color:#C3E88D"> benchmark_bfcl <small class="t-mute">BFCL v4 single-turn</small></label>
+          </div>
+          <hr class="rule rule--dash">
+          <div class="t-eng t-dim mb-8">OPTS</div>
+          <table class="dtable">
+            <tbody>
+              <tr><td>--tier</td><td><select><option>iot_light_5</option><option>home_iot_20</option><option>smart_home_50</option></select></td></tr>
+              <tr><td>--repeat</td><td><input type="number" value="1"></td></tr>
+              <tr><td>--limit</td><td><input type="number" value="500"></td></tr>
+              <tr><td>--repair</td><td><div class="toggle on"><div class="toggle__sw"></div><span>on</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="fp__actions">
+        <div class="meta">resolved tuple → <b class="t-chart">qwen · iot_light_5 · benchmark_iot</b> · est ~18s · seed=42</div>
+        <button class="btn btn--ghost">Dry-run</button>
+        <button class="btn btn--primary">Emit factory.evaluation.start</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">evaluation runs · last 6 <small>idempotent on identical opts modulo timestamp</small></div>
+      <div class="panel__head-tools"><span class="t-dim">evaluation_runs_total · 312 lifetime</span></div>
+    </div>
+    <div class="panel__body panel__body--flush">
+      <table class="dtable">
+        <thead><tr><th>run_id</th><th>t</th><th>client</th><th>catalog</th><th>benchmark</th><th>opts</th><th class="num">em</th><th>state</th><th>summary_path</th></tr></thead>
+        <tbody>
+          <tr><td>E-088</td><td class="t-mute">14:14:02</td><td class="t-amber">qwen-native</td><td>iot_light_5</td><td>iot</td><td class="t-mute">--tier iot_light_5</td><td class="num">0.812</td><td><span class="tag tag--in">completed</span></td><td class="t-dim">runs/iot/E088.json</td></tr>
+          <tr><td>E-089</td><td class="t-mute">14:18:48</td><td class="t-amber">qwen</td><td>iot_light_5</td><td>iot</td><td class="t-mute">--repair</td><td class="num t-chart">0.871</td><td><span class="tag tag--in">completed</span></td><td class="t-dim">runs/iot/E089.json</td></tr>
+          <tr><td>E-090</td><td class="t-mute">14:22:09</td><td class="t-amber">qwen</td><td>bfcl_v4_simple</td><td>bfcl</td><td class="t-mute">--bfcl simple_python --limit 100</td><td class="num">0.768</td><td><span class="tag tag--in">completed</span></td><td class="t-dim">runs/bfcl/E090.json</td></tr>
+          <tr><td>E-091</td><td class="t-mute">14:25:22</td><td class="t-amber">rules</td><td>iot_light_5</td><td>iot</td><td class="t-mute">--limit 5</td><td class="num t-chart">1.000</td><td><span class="tag tag--in">completed</span></td><td class="t-dim">runs/iot/E091.json</td></tr>
+          <tr><td>E-092</td><td class="t-mute">14:30:01</td><td class="t-amber">qwen-text</td><td>home_iot_20</td><td>iot</td><td class="t-mute">--repeat 3</td><td class="num t-dim">—</td><td><span class="tag tag--warn">running</span><span class="live-dot" style="margin-left:6px"></span></td><td class="t-dim">runs/iot/E092.json (pending)</td></tr>
+          <tr class="row-fail"><td>E-093</td><td class="t-mute">14:31:18</td><td>qwen</td><td>bfcl_v4_simple</td><td>bfcl</td><td class="t-mute">--bfcl irrelevance --bfcl-allow-empty-calls</td><td class="num">—</td><td><span class="tag tag--fail">aborted</span></td><td>reason: metrics_failed</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- artifact map -->
+  <section class="grid-2 mt-24">
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">latest summary · E-089</div>
+        <div class="panel__head-tools"><span class="t-dim">read-only · owned by analyzer_metrics</span></div>
+      </div>
+      <div class="panel__body">
+        <div class="code" data-label="runs/iot/E089.json">
+{
+  <span class="k">"run_id"</span>: <span class="s">"E-089"</span>,
+  <span class="k">"client_id"</span>: <span class="s">"qwen"</span>,
+  <span class="k">"catalog_id"</span>: <span class="s">"iot_light_5"</span>,
+  <span class="k">"benchmark_id"</span>: <span class="s">"iot"</span>,
+  <span class="k">"n"</span>: <span class="n">500</span>,
+  <span class="k">"exact_match_rate"</span>: <span class="n">0.871</span>,
+  <span class="k">"action_match_rate"</span>: <span class="n">0.901</span>,
+  <span class="k">"ast_match_rate"</span>:    <span class="n">0.847</span>,
+  <span class="k">"latency_ms_p50"</span>:    <span class="n">412</span>,
+  <span class="k">"latency_ms_p95"</span>:    <span class="n">1138</span>,
+  <span class="k">"token_input_total"</span>: <span class="n">142800</span>,
+  <span class="k">"report_path"</span>: <span class="s">"runs/iot/E089.md"</span>
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">events emitted</div>
+        <div class="panel__head-tools"><span class="t-dim">exactly 1 terminal per invocation</span></div>
+      </div>
+      <div class="panel__body panel__body--flush">
+        <div class="events" style="grid-template-columns:80px 120px 1fr 1fr">
+          <div class="events__head"><div>t</div><div>module</div><div>name</div><div>payload</div></div>
+          <div class="events__row"><div class="events__t">14:18:48.000</div><div class="events__mod events__mod--factory">factory</div><div class="events__name">factory.evaluation.start</div><div class="events__pay">tuple = (qwen, iot_light_5, iot)</div></div>
+          <div class="events__row"><div class="events__t">14:18:48.012</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.request</div><div class="events__pay">tier=iot_light_5 repair=on</div></div>
+          <div class="events__row"><div class="events__t">14:19:06.118</div><div class="events__mod events__mod--benchmark">bench</div><div class="events__name">benchmark.iot.completed</div><div class="events__pay">n=500 em=0.871</div></div>
+          <div class="events__row"><div class="events__t">14:19:07.044</div><div class="events__mod events__mod--analyzer">analyzer</div><div class="events__name">analyzer.metrics.summarized</div><div class="events__pay">summary=runs/iot/E089.json</div></div>
+          <div class="events__row"><div class="events__t">14:19:07.061</div><div class="events__mod events__mod--factory">factory</div><div class="events__name">factory.evaluation.completed</div><div class="events__pay">summary_path=runs/iot/E089.json</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 04 · factory evaluation · <b>docs/tasks/factory_evaluation.md</b></div>
+  <div>read-only composite · never trains · never mutates catalog</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+<script>
+document.querySelectorAll('.toggle:not(.lock)').forEach((t) => t.addEventListener('click', () => t.classList.toggle('on')));
+</script>
+</body>
+</html>

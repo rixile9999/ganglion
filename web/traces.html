@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Trace Explorer — Sheet 05</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">trace explorer · sheet 05</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html" class="active"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Store</div><div class="opbar__meta-v">12,401 rows</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">This iter</div><div class="opbar__meta-v">900</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 05 / 07 <span>◦</span> module 02 / analyzer <span>◦</span> append-only</div>
+      <h1 class="page__title">trace <em>explorer</em></h1>
+      <p class="page__sub">Browse the <b>append-only JSONL trace store</b> emitted by benchmark consumers and classified by <a href="./traces.html">analyzer_failure_taxonomy</a>. Every trace carries an immutable <span class="t-bright">trace_id</span>, a <span class="t-bright">FailureType</span> from 14 buckets, the repair-loop history, and the ground-truth diff against the catalog-anchored expected ActionPlan.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/FACTORY</b><br>
+      Sheet <b>05</b> of <b>07</b> · rev 1.3<br>
+      Specs <b>analyzer_trace_store.md</b><br>
+      <b>analyzer_failure_taxonomy.md</b>
+    </div>
+  </section>
+
+  <!-- 14-BUCKET HISTOGRAM -->
+  <section class="panel">
+    <div class="panel__head">
+      <div class="panel__head-title">failure taxonomy · 14-bucket histogram <small>iter 6 · n=900 · matchers priority-ordered</small></div>
+      <div class="panel__head-tools"><span class="t-chart">▲ coverage 100%</span><span class="t-dim">no unclassified</span></div>
+    </div>
+    <div class="contract">
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">trace_id</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">FailureType label (one-of-14)</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.failure.classified</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">no matcher fires (un-bucketed)</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">14-bucket coverage = 100%</div></div>
+    </div>
+    <div class="panel__body">
+      <div class="grid-2 gap-24">
+        <div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum_value</div><div class="hbar__track"><div class="hbar__fill" style="width:78%"></div></div><div class="hbar__count">84</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F04</span>alias_unresolved</div><div class="hbar__track"><div class="hbar__fill" style="width:58%"></div></div><div class="hbar__count">62</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F02</span>missing_required_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:38%"></div></div><div class="hbar__count">41</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F14</span>graded_partial</div><div class="hbar__track"><div class="hbar__fill" style="width:35%"></div></div><div class="hbar__count">38</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F07</span>malformed_dsl</div><div class="hbar__track"><div class="hbar__fill" style="width:30%"></div></div><div class="hbar__count">33</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F01</span>unknown_tool</div><div class="hbar__track"><div class="hbar__fill" style="width:25%"></div></div><div class="hbar__count">27</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F10</span>extra_unknown_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:21%"></div></div><div class="hbar__count">23</div></div>
+        </div>
+        <div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F05</span>type_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:17%"></div></div><div class="hbar__count">19</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F11</span>parallel_count_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:16%"></div></div><div class="hbar__count">17</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F09</span>empty_calls_when_required</div><div class="hbar__track"><div class="hbar__fill" style="width:13%"></div></div><div class="hbar__count">14</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F06</span>out_of_range</div><div class="hbar__track"><div class="hbar__fill" style="width:11%"></div></div><div class="hbar__count">12</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F13</span>repair_exhausted</div><div class="hbar__track"><div class="hbar__fill" style="width:9%"></div></div><div class="hbar__count">9</div></div>
+          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F08</span>json_parse_error</div><div class="hbar__track"><div class="hbar__fill" style="width:8%"></div></div><div class="hbar__count">8</div></div>
+          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F12</span>argument_order</div><div class="hbar__track"><div class="hbar__fill" style="width:5%"></div></div><div class="hbar__count">5</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BROWSER + DETAIL -->
+  <section class="grid-asym mt-24">
+
+    <!-- LEFT: list -->
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">recent traces <small>iter 6 · click to inspect</small></div>
+        <div class="panel__head-tools">
+          <span class="seg"><span class="seg__opt active">all</span><span class="seg__opt">fails only</span><span class="seg__opt">repair&gt;0</span></span>
+        </div>
+      </div>
+      <div class="panel__body panel__body--flush">
+        <table class="dtable">
+          <thead><tr><th>trace_id</th><th>case</th><th>failure</th><th class="num">repair</th><th>t</th></tr></thead>
+          <tbody>
+            <tr class="t-bright" style="background:rgba(125,216,198,0.04)"><td>T-2206 ●</td><td>iot_light:case_0142</td><td><span class="tag tag--warn">F04</span></td><td class="num">1</td><td class="t-mute">14:30:12.118</td></tr>
+            <tr><td>T-2207</td><td>iot_light:case_0143</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.241</td></tr>
+            <tr><td>T-2208</td><td>bfcl:simple_python:032</td><td><span class="tag tag--fail">F03</span></td><td class="num">2</td><td class="t-mute">14:30:12.318</td></tr>
+            <tr><td>T-2209</td><td>bfcl:irrelevance:004</td><td><span class="tag tag--warn">F09</span></td><td class="num">0</td><td class="t-mute">14:30:12.402</td></tr>
+            <tr><td>T-2210</td><td>iot_light:case_0144</td><td><span class="tag tag--warn">F14</span></td><td class="num">1</td><td class="t-mute">14:30:12.488</td></tr>
+            <tr><td>T-2211</td><td>bfcl:parallel:017</td><td><span class="tag tag--warn">F11</span></td><td class="num">0</td><td class="t-mute">14:30:12.561</td></tr>
+            <tr><td>T-2212</td><td>iot_light:case_0145</td><td><span class="tag tag--fail">F07</span></td><td class="num">3</td><td class="t-mute">14:30:12.629</td></tr>
+            <tr><td>T-2213</td><td>bfcl:callable:028</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.711</td></tr>
+            <tr><td>T-2214</td><td>iot_light:case_0146</td><td><span class="tag tag--fail">F02</span></td><td class="num">1</td><td class="t-mute">14:30:12.802</td></tr>
+            <tr><td>T-2215</td><td>iot_light:case_0147</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.881</td></tr>
+            <tr class="row-ghost"><td>T-2216</td><td>iot_light:case_0148</td><td><span class="tag tag--ghost">duplicate · §8</span></td><td class="num">0</td><td class="t-mute">14:30:12.882</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RIGHT: detail T-2206 -->
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">trace · T-2206 <small>iot_light · case_0142 · 14:30:12.118</small></div>
+        <div class="panel__head-tools"><span class="tag tag--warn">F04 alias_unresolved</span></div>
+      </div>
+
+      <div class="panel__body">
+        <table class="dtable mb-16">
+          <tbody>
+            <tr><td class="t-dim">prompt</td><td class="t-bright">거실 불 켜줘</td></tr>
+            <tr><td class="t-dim">catalog</td><td>iot_light_5 · v07</td></tr>
+            <tr><td class="t-dim">client</td><td>qwen (JSON DSL)</td></tr>
+            <tr><td class="t-dim">repair attempts</td><td>1 of max 1</td></tr>
+            <tr><td class="t-dim">classified by</td><td class="t-teal">analyzer_failure_taxonomy → F04</td></tr>
+            <tr><td class="t-dim">reason</td><td>arg <b>set_light.room</b> value <span class="t-amber">'거실'</span> not resolved by EnumArg.aliases</td></tr>
+          </tbody>
+        </table>
+
+        <div class="t-eng t-dim mb-8">GROUND-TRUTH DIFF</div>
+        <div class="diff">
+          <div class="diff__col diff__col--expected">
+            <div class="diff__col-label">EXPECTED · ActionPlan</div>
+<pre>{
+  "calls": [{
+    "tool": "set_light",
+    "args": {
+      "room":  <span class="ins">"living"</span>,
+      "state": "on"
+    }
+  }]
+}</pre>
+          </div>
+          <div class="diff__col diff__col--actual">
+            <div class="diff__col-label">ACTUAL · model output</div>
+<pre>{
+  "calls": [{
+    "tool": "set_light",
+    "args": {
+      "room":  <span class="del">"거실"</span>,
+      "state": "on"
+    }
+  }]
+}</pre>
+          </div>
+        </div>
+
+        <hr class="rule rule--dash">
+        <div class="t-eng t-dim mb-8">REPAIR LOOP</div>
+        <table class="dtable">
+          <tbody>
+            <tr><td class="t-dim">attempt 1</td><td><span class="tag tag--fail">F04</span> · re-prompted with alias hint</td><td class="t-mute">t+87ms</td></tr>
+            <tr><td class="t-dim">final</td><td><span class="tag tag--fail">F04</span> · repair exhausted</td><td class="t-mute">t+164ms</td></tr>
+          </tbody>
+        </table>
+
+        <hr class="rule rule--dash">
+        <div class="t-eng t-dim mb-8">PROPOSAL DOWNSTREAM</div>
+        <div class="callout">contributes evidence to <a href="./rules.html" class="t-bright">P-014 · R3 alias_extension</a> · weight 0.041</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLLUP -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">store metadata · analyzer_trace_store invariants</div>
+      <div class="panel__head-tools"><span class="t-chart">append-only · locked</span></div>
+    </div>
+    <div class="panel__body panel__body--flush">
+      <table class="dtable">
+        <tbody>
+          <tr><td class="t-dim">store_path</td><td>runs/traces/store.jsonl</td><td class="t-dim">retention_days = 90</td></tr>
+          <tr><td class="t-dim">total rows</td><td>12,401</td><td class="t-dim">size 92.4 MB</td></tr>
+          <tr><td class="t-dim">append_mode</td><td><span class="tag tag--lock">locked · invariant</span></td><td class="t-dim">rewrites rejected; corrections become new rows</td></tr>
+          <tr><td class="t-dim">monotonic offset cursor</td><td>position 12,401</td><td class="t-dim">consumed by analyzer_failure_taxonomy</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 05 · trace explorer · <b>analyzer_trace_store · analyzer_failure_taxonomy</b></div>
+  <div>append-only · classify priority-ordered · 14-bucket coverage 100%</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+<script>
+document.querySelectorAll('.seg').forEach((seg) => {
+  seg.addEventListener('click', (e) => {
+    const opt = e.target.closest('.seg__opt'); if (!opt) return;
+    seg.querySelectorAll('.seg__opt').forEach((o) => o.classList.remove('active'));
+    opt.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

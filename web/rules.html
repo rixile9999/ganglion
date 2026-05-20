@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Rule Synthesis Review — Sheet 06</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">rule synthesis review · sheet 06</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html" class="active"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Pending</div><div class="opbar__meta-v t-amber">3</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Lifetime</div><div class="opbar__meta-v">17 applied</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 06 / 07 <span>◦</span> module 02 / analyzer <span>◦</span> feedback edge</div>
+      <h1 class="page__title">rule synthesis · <em>feedback edge</em></h1>
+      <p class="page__sub">The <b>goal §2 feedback edge</b>. Analyzer reads the per-iteration failure histogram and proposes <b>ToolSpec patches</b> (R1–R11 patterns promoted from <span class="t-mute">runs/factory_bfcl/post_correction.py</span>). Patches arrive with <span class="t-bright">evidence</span> traceable to specific traces. Default is <span class="t-amber">hold</span> — the operator decides what enters the next catalog version.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/FACTORY</b><br>
+      Sheet <b>06</b> of <b>07</b> · rev 1.3<br>
+      Spec <b>docs/tasks/analyzer_rule_synthesis.md</b><br>
+      Source <b>ganglion/analyzer/rules.py</b>
+    </div>
+  </section>
+
+  <!-- CONTRACT -->
+  <section class="panel">
+    <div class="panel__head">
+      <div class="panel__head-title">proposal pipeline · contract</div>
+      <div class="panel__head-tools"><span class="t-amber">3 pending approval</span></div>
+    </div>
+    <div class="contract">
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">failure histogram · trace samples</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">rule_patch + evidence</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.rule.proposed</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">evidence < τ · no pattern matched</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">patch carries evidence ≥ τ · traceable to trace_ids</div></div>
+    </div>
+    <div class="scope">
+      <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Propose alias additions · enum extensions · null-action allowance · arg-optional relaxation. Each proposal carries (rule_id, confidence, evidence: trace_id list).</div></div>
+      <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Applying patches (contract_catalog owns) · auto-merging without human approval (factory_pipeline gate) · synthesising patterns not in R1–R11.</div></div>
+      <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Patch without evidence link → reject (§7). Every proposal must be traceable to specific traces.</div></div>
+    </div>
+  </section>
+
+  <!-- PATCH CARDS -->
+  <section class="grid-2 mt-24" style="grid-template-columns: 1fr">
+
+    <!-- P-014 -->
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">P-014 · alias_extension <small>R3 pattern · confidence 0.94</small></div>
+        <div class="panel__head-tools"><span class="tag tag--warn">PENDING</span></div>
+      </div>
+      <div class="panel__body">
+        <div class="grid-asym">
+          <div>
+            <div class="t-eng t-dim mb-8">PATCH · target iot_light_5 / set_light / room</div>
+            <div class="diff">
+              <div class="diff__col diff__col--expected">
+                <div class="diff__col-label">BEFORE · v07</div>
+<pre>EnumArg(
+  values=["living","bedroom","kitchen","bath"],
+  aliases={}
+)</pre>
+              </div>
+              <div class="diff__col diff__col--actual" style="border-left-color:var(--chartreuse-dim)">
+                <div class="diff__col-label" style="color:var(--chartreuse-dim)">AFTER · v08 (proposed)</div>
+<pre>EnumArg(
+  values=["living","bedroom","kitchen","bath"],
+  aliases={
+    <span class="ins">"거실":"living",</span>
+    <span class="ins">"안방":"bedroom",</span>
+    <span class="ins">"주방":"kitchen"</span>
+  }
+)</pre>
+              </div>
+            </div>
+            <div class="fp__actions">
+              <button class="btn btn--ghost">Hold</button>
+              <button class="btn">Inspect traces</button>
+              <button class="btn btn--primary">Apply · bump v08</button>
+            </div>
+          </div>
+          <div>
+            <div class="t-eng t-dim mb-8">EVIDENCE · failure histogram excerpt</div>
+            <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F04</span>alias_unresolved</div><div class="hbar__track"><div class="hbar__fill" style="width:88%"></div></div><div class="hbar__count">62</div></div>
+            <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum</div><div class="hbar__track"><div class="hbar__fill" style="width:22%"></div></div><div class="hbar__count">12</div></div>
+            <div class="t-eng t-dim mt-16 mb-8">REPRESENTATIVE TRACES (3 of 74)</div>
+            <table class="dtable">
+              <tbody>
+                <tr><td><a href="./traces.html" class="t-bright">T-2206</a></td><td class="t-dim">"거실 불 켜줘"</td></tr>
+                <tr><td><a href="./traces.html" class="t-bright">T-2189</a></td><td class="t-dim">"안방 환하게"</td></tr>
+                <tr><td><a href="./traces.html" class="t-bright">T-2174</a></td><td class="t-dim">"주방 등 꺼"</td></tr>
+              </tbody>
+            </table>
+            <div class="t-eng t-dim mt-16">EXPECTED LIFT · +0.041 em (modelled from histogram)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P-015 -->
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">P-015 · enum_extension <small>R7 pattern · confidence 0.82</small></div>
+        <div class="panel__head-tools"><span class="tag tag--warn">PENDING</span></div>
+      </div>
+      <div class="panel__body">
+        <div class="grid-asym">
+          <div>
+            <div class="t-eng t-dim mb-8">PATCH · target bfcl_per_case / get_weather / units</div>
+            <div class="diff">
+              <div class="diff__col diff__col--expected">
+                <div class="diff__col-label">BEFORE · v01</div>
+<pre>EnumArg(values=["metric","imperial"])</pre>
+              </div>
+              <div class="diff__col diff__col--actual" style="border-left-color:var(--chartreuse-dim)">
+                <div class="diff__col-label" style="color:var(--chartreuse-dim)">AFTER · v02 (proposed)</div>
+<pre>EnumArg(
+  values=["metric","imperial",
+          <span class="ins">"celsius","fahrenheit"</span>],
+  aliases={
+    <span class="ins">"celsius":"metric",</span>
+    <span class="ins">"fahrenheit":"imperial"</span>
+  }
+)</pre>
+              </div>
+            </div>
+            <div class="fp__actions">
+              <button class="btn btn--ghost">Hold</button>
+              <button class="btn">Inspect traces</button>
+              <button class="btn btn--primary">Apply · bump v02</button>
+            </div>
+          </div>
+          <div>
+            <div class="t-eng t-dim mb-8">EVIDENCE · failure histogram excerpt</div>
+            <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum</div><div class="hbar__track"><div class="hbar__fill" style="width:78%"></div></div><div class="hbar__count">18</div></div>
+            <div class="t-eng t-dim mt-16 mb-8">REPRESENTATIVE TRACES (3 of 18)</div>
+            <table class="dtable">
+              <tbody>
+                <tr><td><a href="./traces.html" class="t-bright">T-2208</a></td><td class="t-dim">units="celsius"</td></tr>
+                <tr><td><a href="./traces.html" class="t-bright">T-2222</a></td><td class="t-dim">units="fahrenheit"</td></tr>
+                <tr><td><a href="./traces.html" class="t-bright">T-2241</a></td><td class="t-dim">units="C"</td></tr>
+              </tbody>
+            </table>
+            <div class="t-eng t-dim mt-16">EXPECTED LIFT · +0.017 em</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P-016 -->
+    <div class="panel">
+      <div class="panel__head">
+        <div class="panel__head-title">P-016 · null_action_allow <small>R9 pattern · confidence 0.71</small></div>
+        <div class="panel__head-tools"><span class="tag tag--warn">PENDING</span></div>
+      </div>
+      <div class="panel__body">
+        <div class="grid-asym">
+          <div>
+            <div class="t-eng t-dim mb-8">PATCH · target iot_light_5 / Catalog · allow_empty_calls</div>
+            <div class="diff">
+              <div class="diff__col diff__col--expected">
+                <div class="diff__col-label">BEFORE · v07</div>
+<pre>Catalog(
+  tools=[...],
+  allow_empty_calls=False
+)</pre>
+              </div>
+              <div class="diff__col diff__col--actual" style="border-left-color:var(--chartreuse-dim)">
+                <div class="diff__col-label" style="color:var(--chartreuse-dim)">AFTER · v08 (proposed)</div>
+<pre>Catalog(
+  tools=[...],
+  allow_empty_calls=<span class="ins">True</span>
+)</pre>
+              </div>
+            </div>
+            <div class="fp__actions">
+              <button class="btn btn--ghost">Hold</button>
+              <button class="btn">Inspect traces</button>
+              <button class="btn btn--primary">Apply · bump v08</button>
+            </div>
+          </div>
+          <div>
+            <div class="t-eng t-dim mb-8">EVIDENCE</div>
+            <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F09</span>empty_calls_required</div><div class="hbar__track"><div class="hbar__fill" style="width:62%"></div></div><div class="hbar__count">14</div></div>
+            <div class="t-eng t-dim mt-16 mb-8">CAUTION · breadth-of-impact</div>
+            <div class="callout">All five IoT tools become abstainable. Verify downstream abstention is desired before applying.</div>
+            <div class="t-eng t-dim mt-16">EXPECTED LIFT · +0.009 em · breadth-risk +medium</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- BULK CONTROLS -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">bulk actions · iter 6 batch</div>
+      <div class="panel__head-tools"><span class="t-dim">applies via contract_catalog · bumps version once</span></div>
+    </div>
+    <div class="panel__body">
+      <div class="flex-bw">
+        <div class="t-dim">3 patches selected · projected lift <b class="t-chart">+0.067 em</b> · projected breadth-risk <b class="t-amber">medium</b></div>
+        <div class="flex gap-8">
+          <button class="btn btn--ghost">Hold all (default)</button>
+          <button class="btn">Apply selected</button>
+          <button class="btn btn--primary">Apply all · publish v08</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- R-PATTERN REGISTRY -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">R-pattern registry <small>R1–R11 · promoted from runs/factory_bfcl/post_correction.py</small></div>
+      <div class="panel__head-tools"><span class="t-dim">τ confidence threshold = 0.70</span></div>
+    </div>
+    <div class="panel__body panel__body--flush">
+      <table class="dtable">
+        <thead><tr><th>id</th><th>name</th><th>trigger</th><th>state</th><th class="num">historical applied</th></tr></thead>
+        <tbody>
+          <tr><td>R1</td><td>missing_required_to_optional</td><td class="t-dim">F02 on rare arg</td><td><span class="t-chart">enabled</span></td><td class="num">2</td></tr>
+          <tr><td>R2</td><td>argument_rename</td><td class="t-dim">F10 frequent neighbour</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
+          <tr><td>R3</td><td>alias_extension</td><td class="t-dim">F04 + F03 same arg</td><td><span class="t-chart">enabled</span></td><td class="num">8</td></tr>
+          <tr><td>R4</td><td>enum_synonym</td><td class="t-dim">F03 with adjacent value</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
+          <tr><td>R5</td><td>type_relax_to_string</td><td class="t-dim">F05 numeric/string mix</td><td><span class="t-amber">cautious</span></td><td class="num">0</td></tr>
+          <tr><td>R6</td><td>range_relax</td><td class="t-dim">F06 out-of-range frequent</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
+          <tr><td>R7</td><td>enum_extension</td><td class="t-dim">F03 oov value frequent</td><td><span class="t-chart">enabled</span></td><td class="num">2</td></tr>
+          <tr><td>R8</td><td>parallel_fan_in_hint</td><td class="t-dim">F11 parallel undercount</td><td><span class="t-amber">cautious</span></td><td class="num">1</td></tr>
+          <tr><td>R9</td><td>null_action_allow</td><td class="t-dim">F09 abstain &gt; 5%</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
+          <tr><td>R10</td><td>argument_default</td><td class="t-dim">F02 + observed default</td><td><span class="t-amber">cautious</span></td><td class="num">0</td></tr>
+          <tr><td>R11</td><td>arg_optional_relax</td><td class="t-dim">F02 on rarely-used arg</td><td><span class="t-amber">cautious</span></td><td class="num">0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 06 · rule synthesis · <b>docs/tasks/analyzer_rule_synthesis.md</b></div>
+  <div>goal §2 feedback edge · evidence-traceable · human-gated by default</div>
+</footer>
+
+<script src="./assets/data.js"></script>
+</body>
+</html>

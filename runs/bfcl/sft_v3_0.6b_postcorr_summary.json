@@ -1,0 +1,52 @@
+{
+  "input_cases": "runs/bfcl/sft_v3_0.6b_cases.jsonl",
+  "n_total": 500,
+  "ast_valid_rate_before": 0.744,
+  "ast_valid_rate_after": 0.758,
+  "uplift_pp": 1.4,
+  "rules_applied": {
+    "R1_fill_optional": 36,
+    "R2_drop_extra": 0,
+    "R3_strip_unit": 0,
+    "R4_drop_hallucinated_optional": 14,
+    "R5_coerce_percent": 3,
+    "R6_wrap_list": 0,
+    "R7_unwrap_single_list": 0,
+    "R8_x1000": 0,
+    "R9_case_insensitive": 0,
+    "R10_sign_flip": 0,
+    "R11_round": 1
+  },
+  "per_category": {
+    "irrelevance": {
+      "n": 100,
+      "ast_valid_rate_before": 0.87,
+      "ast_valid_rate_after": 0.87,
+      "uplift_pp": 0.0
+    },
+    "multiple": {
+      "n": 100,
+      "ast_valid_rate_before": 0.83,
+      "ast_valid_rate_after": 0.86,
+      "uplift_pp": 3.0
+    },
+    "parallel": {
+      "n": 100,
+      "ast_valid_rate_before": 0.66,
+      "ast_valid_rate_after": 0.67,
+      "uplift_pp": 1.0
+    },
+    "parallel_multiple": {
+      "n": 100,
+      "ast_valid_rate_before": 0.64,
+      "ast_valid_rate_after": 0.66,
+      "uplift_pp": 2.0
+    },
+    "simple_python": {
+      "n": 100,
+      "ast_valid_rate_before": 0.72,
+      "ast_valid_rate_after": 0.73,
+      "uplift_pp": 1.0
+    }
+  }
+}

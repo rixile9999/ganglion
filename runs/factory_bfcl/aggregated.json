@@ -1,0 +1,491 @@
+{
+  "simple_python": {
+    "baseline_dsl": {
+      "ast_match": 0.76,
+      "syntax_valid": 0.93,
+      "input_tokens": 10903,
+      "output_tokens": 3050
+    },
+    "baseline_native": {
+      "ast_match": 0.81,
+      "syntax_valid": 0.95,
+      "input_tokens": 22761,
+      "output_tokens": 3434
+    },
+    "repair_dsl": {
+      "ast_match": 0.72,
+      "syntax_valid": 0.95,
+      "repair_attempts": null,
+      "repair_successes": null
+    },
+    "mask_off": {
+      "ast_match": 0.75,
+      "syntax_valid": 0.94,
+      "action_match": 0.94,
+      "latency_p50_ms": 1113.99
+    },
+    "mask_on": {
+      "ast_match": 0.75,
+      "syntax_valid": 0.96,
+      "action_match": 0.96,
+      "latency_p50_ms": 723.12
+    },
+    "sft_holdout": {
+      "ast_match": 0.65,
+      "syntax_valid": 0.9,
+      "action_match": 0.9,
+      "latency_p50_ms": 1744.98,
+      "n": 20
+    },
+    "sft_full": {
+      "ast_match": 0.8,
+      "syntax_valid": 0.92,
+      "action_match": 0.92,
+      "latency_p50_ms": 1676.42,
+      "n": 100
+    },
+    "post_corr": {
+      "ast_match": 0.85,
+      "syntax_valid": null,
+      "rules_applied": {
+        "R1_fill_optional": 2,
+        "R2_drop_extra": 0,
+        "R3_strip_unit": 0,
+        "R4_drop_hallucinated_optional": 5,
+        "R5_coerce_percent": 1,
+        "R6_wrap_list": 0,
+        "R7_unwrap_single_list": 0,
+        "R8_x1000": 0,
+        "R9_case_insensitive": 0,
+        "R10_sign_flip": 0,
+        "R11_round": 0
+      }
+    },
+    "phase3_v1_5_holdout": {
+      "ast_match": 0.7,
+      "syntax_valid": 0.85,
+      "action_match": 0.85
+    },
+    "phase3_v1_5_full": {
+      "ast_match": 0.86,
+      "syntax_valid": 0.91,
+      "action_match": 0.91
+    },
+    "phase3_v1_5_post_corr_full": {
+      "ast_match": 0.89,
+      "uplift_pp": 3.0
+    },
+    "phase3_v1_5_post_corr_holdout": {
+      "ast_match": 0.75,
+      "uplift_pp": 5.0
+    },
+    "phase3_v2_holdout": {
+      "ast_match": 0.7,
+      "syntax_valid": 0.9,
+      "action_match": 0.9
+    },
+    "phase3_v2_full": {
+      "ast_match": 0.88,
+      "syntax_valid": 0.93,
+      "action_match": 0.93
+    },
+    "phase3_v2_post_corr_full": {
+      "ast_match": 0.91,
+      "uplift_pp": 3.0
+    },
+    "phase3_v2_post_corr_holdout": {
+      "ast_match": 0.8,
+      "uplift_pp": 10.0
+    }
+  },
+  "multiple": {
+    "baseline_dsl": {
+      "ast_match": 0.7,
+      "syntax_valid": 0.96,
+      "input_tokens": 15437,
+      "output_tokens": 3048
+    },
+    "baseline_native": {
+      "ast_match": 0.76,
+      "syntax_valid": 0.96,
+      "input_tokens": 43038,
+      "output_tokens": 3470
+    },
+    "repair_dsl": {
+      "ast_match": 0.69,
+      "syntax_valid": 0.95,
+      "repair_attempts": null,
+      "repair_successes": null
+    },
+    "mask_off": {
+      "ast_match": 0.7,
+      "syntax_valid": 0.94,
+      "action_match": 0.88,
+      "latency_p50_ms": 954.33
+    },
+    "mask_on": {
+      "ast_match": 0.69,
+      "syntax_valid": 0.98,
+      "action_match": 0.9,
+      "latency_p50_ms": 690.1
+    },
+    "sft_holdout": {
+      "ast_match": 0.4,
+      "syntax_valid": 0.95,
+      "action_match": 0.9,
+      "latency_p50_ms": 1841.31,
+      "n": 20
+    },
+    "sft_full": {
+      "ast_match": 0.79,
+      "syntax_valid": 0.95,
+      "action_match": 0.94,
+      "latency_p50_ms": 1674.27,
+      "n": 100
+    },
+    "post_corr": {
+      "ast_match": 0.9,
+      "syntax_valid": null,
+      "rules_applied": {
+        "R1_fill_optional": 6,
+        "R2_drop_extra": 0,
+        "R3_strip_unit": 0,
+        "R4_drop_hallucinated_optional": 11,
+        "R5_coerce_percent": 1,
+        "R6_wrap_list": 0,
+        "R7_unwrap_single_list": 0,
+        "R8_x1000": 0,
+        "R9_case_insensitive": 1,
+        "R10_sign_flip": 0,
+        "R11_round": 0
+      }
+    },
+    "phase3_v1_5_holdout": {
+      "ast_match": 0.45,
+      "syntax_valid": 0.95,
+      "action_match": 0.9
+    },
+    "phase3_v1_5_full": {
+      "ast_match": 0.83,
+      "syntax_valid": 0.96,
+      "action_match": 0.95
+    },
+    "phase3_v1_5_post_corr_full": {
+      "ast_match": 0.92,
+      "uplift_pp": 9.0
+    },
+    "phase3_v1_5_post_corr_holdout": {
+      "ast_match": 0.85,
+      "uplift_pp": 40.0
+    },
+    "phase3_v2_holdout": {
+      "ast_match": 0.4,
+      "syntax_valid": 0.95,
+      "action_match": 0.85
+    },
+    "phase3_v2_full": {
+      "ast_match": 0.82,
+      "syntax_valid": 0.96,
+      "action_match": 0.94
+    },
+    "phase3_v2_post_corr_full": {
+      "ast_match": 0.9,
+      "uplift_pp": 8.0
+    },
+    "phase3_v2_post_corr_holdout": {
+      "ast_match": 0.75,
+      "uplift_pp": 35.0
+    }
+  },
+  "parallel": {
+    "baseline_dsl": {
+      "ast_match": 0.02,
+      "syntax_valid": 0.88,
+      "input_tokens": 14144,
+      "output_tokens": 4885
+    },
+    "baseline_native": {
+      "ast_match": 0.0,
+      "syntax_valid": 0.96,
+      "input_tokens": 27278,
+      "output_tokens": 8499
+    },
+    "repair_dsl": {
+      "ast_match": 0.05,
+      "syntax_valid": 0.93,
+      "repair_attempts": null,
+      "repair_successes": null
+    },
+    "mask_off": {
+      "ast_match": 0.5,
+      "syntax_valid": 0.93,
+      "action_match": 0.65,
+      "latency_p50_ms": 2423.64
+    },
+    "mask_on": {
+      "ast_match": 0.04,
+      "syntax_valid": 0.97,
+      "action_match": 0.09,
+      "latency_p50_ms": 873.71
+    },
+    "sft_holdout": {
+      "ast_match": 0.45,
+      "syntax_valid": 0.9,
+      "action_match": 0.75,
+      "latency_p50_ms": 4138.39,
+      "n": 20
+    },
+    "sft_full": {
+      "ast_match": 0.76,
+      "syntax_valid": 0.96,
+      "action_match": 0.9,
+      "latency_p50_ms": 3888.05,
+      "n": 100
+    },
+    "post_corr": {
+      "ast_match": 0.81,
+      "syntax_valid": null,
+      "rules_applied": {
+        "R1_fill_optional": 13,
+        "R2_drop_extra": 0,
+        "R3_strip_unit": 0,
+        "R4_drop_hallucinated_optional": 15,
+        "R5_coerce_percent": 0,
+        "R6_wrap_list": 0,
+        "R7_unwrap_single_list": 0,
+        "R8_x1000": 2,
+        "R9_case_insensitive": 0,
+        "R10_sign_flip": 0,
+        "R11_round": 0
+      }
+    },
+    "phase3_v1_5_holdout": {
+      "ast_match": 0.7,
+      "syntax_valid": 0.9,
+      "action_match": 0.85
+    },
+    "phase3_v1_5_full": {
+      "ast_match": 0.9,
+      "syntax_valid": 0.97,
+      "action_match": 0.96
+    },
+    "phase3_v1_5_post_corr_full": {
+      "ast_match": 0.91,
+      "uplift_pp": 1.0
+    },
+    "phase3_v1_5_post_corr_holdout": {
+      "ast_match": 0.75,
+      "uplift_pp": 5.0
+    },
+    "phase3_v2_holdout": {
+      "ast_match": 0.6,
+      "syntax_valid": 0.95,
+      "action_match": 0.8
+    },
+    "phase3_v2_full": {
+      "ast_match": 0.89,
+      "syntax_valid": 0.98,
+      "action_match": 0.95
+    },
+    "phase3_v2_post_corr_full": {
+      "ast_match": 0.9,
+      "uplift_pp": 1.0
+    },
+    "phase3_v2_post_corr_holdout": {
+      "ast_match": 0.65,
+      "uplift_pp": 5.0
+    }
+  },
+  "parallel_multiple": {
+    "baseline_dsl": {
+      "ast_match": 0.06,
+      "syntax_valid": 0.87,
+      "input_tokens": 19033,
+      "output_tokens": 4848
+    },
+    "baseline_native": {
+      "ast_match": 0.0,
+      "syntax_valid": 0.95,
+      "input_tokens": 45881,
+      "output_tokens": 9443
+    },
+    "repair_dsl": {
+      "ast_match": 0.07,
+      "syntax_valid": 0.91,
+      "repair_attempts": null,
+      "repair_successes": null
+    },
+    "mask_off": {
+      "ast_match": 0.46,
+      "syntax_valid": 0.98,
+      "action_match": 0.66,
+      "latency_p50_ms": 2776.76
+    },
+    "mask_on": {
+      "ast_match": 0.0,
+      "syntax_valid": 0.99,
+      "action_match": 0.01,
+      "latency_p50_ms": 829.14
+    },
+    "sft_holdout": {
+      "ast_match": 0.5,
+      "syntax_valid": 0.95,
+      "action_match": 0.6,
+      "latency_p50_ms": 4799.96,
+      "n": 20
+    },
+    "sft_full": {
+      "ast_match": 0.75,
+      "syntax_valid": 0.99,
+      "action_match": 0.87,
+      "latency_p50_ms": 4513.37,
+      "n": 100
+    },
+    "post_corr": {
+      "ast_match": 0.8,
+      "syntax_valid": null,
+      "rules_applied": {
+        "R1_fill_optional": 8,
+        "R2_drop_extra": 0,
+        "R3_strip_unit": 0,
+        "R4_drop_hallucinated_optional": 21,
+        "R5_coerce_percent": 0,
+        "R6_wrap_list": 0,
+        "R7_unwrap_single_list": 0,
+        "R8_x1000": 0,
+        "R9_case_insensitive": 1,
+        "R10_sign_flip": 0,
+        "R11_round": 0
+      }
+    },
+    "phase3_v1_5_holdout": {
+      "ast_match": 0.6,
+      "syntax_valid": 0.95,
+      "action_match": 0.8
+    },
+    "phase3_v1_5_full": {
+      "ast_match": 0.81,
+      "syntax_valid": 0.99,
+      "action_match": 0.91
+    },
+    "phase3_v1_5_post_corr_full": {
+      "ast_match": 0.84,
+      "uplift_pp": 3.0
+    },
+    "phase3_v1_5_post_corr_holdout": {
+      "ast_match": 0.7,
+      "uplift_pp": 10.0
+    },
+    "phase3_v2_holdout": {
+      "ast_match": 0.55,
+      "syntax_valid": 0.95,
+      "action_match": 0.8
+    },
+    "phase3_v2_full": {
+      "ast_match": 0.81,
+      "syntax_valid": 0.99,
+      "action_match": 0.88
+    },
+    "phase3_v2_post_corr_full": {
+      "ast_match": 0.84,
+      "uplift_pp": 3.0
+    },
+    "phase3_v2_post_corr_holdout": {
+      "ast_match": 0.7,
+      "uplift_pp": 15.0
+    }
+  },
+  "irrelevance": {
+    "baseline_dsl": {
+      "ast_match": 0.66,
+      "syntax_valid": 0.95,
+      "input_tokens": 11591,
+      "output_tokens": 1622
+    },
+    "repair_dsl": {
+      "ast_match": 0.66,
+      "syntax_valid": 0.93,
+      "repair_attempts": null,
+      "repair_successes": null
+    },
+    "mask_off": {
+      "ast_match": 0.61,
+      "syntax_valid": 0.97,
+      "action_match": 0.61,
+      "latency_p50_ms": 130.4
+    },
+    "mask_on": {
+      "ast_match": 0.61,
+      "syntax_valid": 1.0,
+      "action_match": 0.61,
+      "latency_p50_ms": 137.76
+    },
+    "sft_holdout": {
+      "ast_match": 1.0,
+      "syntax_valid": 1.0,
+      "action_match": 1.0,
+      "latency_p50_ms": 247.74,
+      "n": 20
+    },
+    "sft_full": {
+      "ast_match": 1.0,
+      "syntax_valid": 1.0,
+      "action_match": 1.0,
+      "latency_p50_ms": 249.36,
+      "n": 100
+    },
+    "post_corr": {
+      "ast_match": 1.0,
+      "syntax_valid": null,
+      "rules_applied": {
+        "R1_fill_optional": 0,
+        "R2_drop_extra": 0,
+        "R3_strip_unit": 0,
+        "R4_drop_hallucinated_optional": 0,
+        "R5_coerce_percent": 0,
+        "R6_wrap_list": 0,
+        "R7_unwrap_single_list": 0,
+        "R8_x1000": 0,
+        "R9_case_insensitive": 0,
+        "R10_sign_flip": 0,
+        "R11_round": 0
+      }
+    },
+    "phase3_v1_5_holdout": {
+      "ast_match": 1.0,
+      "syntax_valid": 1.0,
+      "action_match": 1.0
+    },
+    "phase3_v1_5_full": {
+      "ast_match": 1.0,
+      "syntax_valid": 1.0,
+      "action_match": 1.0
+    },
+    "phase3_v1_5_post_corr_full": {
+      "ast_match": 1.0,
+      "uplift_pp": 0.0
+    },
+    "phase3_v1_5_post_corr_holdout": {
+      "ast_match": 1.0,
+      "uplift_pp": 0.0
+    },
+    "phase3_v2_holdout": {
+      "ast_match": 1.0,
+      "syntax_valid": 1.0,
+      "action_match": 1.0
+    },
+    "phase3_v2_full": {
+      "ast_match": 1.0,
+      "syntax_valid": 1.0,
+      "action_match": 1.0
+    },
+    "phase3_v2_post_corr_full": {
+      "ast_match": 1.0,
+      "uplift_pp": 0.0
+    },
+    "phase3_v2_post_corr_holdout": {
+      "ast_match": 1.0,
+      "uplift_pp": 0.0
+    }
+  }
+}

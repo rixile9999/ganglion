@@ -1,0 +1,14 @@
+{
+  "category": "parallel",
+  "n": 100,
+  "split": "full",
+  "base_model": "Qwen/Qwen3-0.6B",
+  "adapter": "/home/hyoseok/workspace/ganglion/runs/factory_bfcl/phase2/sft/parallel/adapter",
+  "grammar_mask": false,
+  "syntax_valid_rate": 0.96,
+  "ast_match_rate": 0.76,
+  "action_match_rate": 0.9,
+  "latency_ms_mean": 4204.14,
+  "latency_ms_p50": 3888.05,
+  "latency_ms_p95": 6342.94
+}

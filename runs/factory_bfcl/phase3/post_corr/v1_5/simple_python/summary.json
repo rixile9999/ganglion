@@ -1,0 +1,20 @@
+{
+  "category": "simple_python",
+  "n": 100,
+  "ast_match_rate_before": 0.86,
+  "ast_match_rate": 0.89,
+  "uplift_pp": 3.0,
+  "rules_applied": {
+    "R1_fill_optional": 0,
+    "R2_drop_extra": 0,
+    "R3_strip_unit": 0,
+    "R4_drop_hallucinated_optional": 2,
+    "R5_coerce_percent": 1,
+    "R6_wrap_list": 0,
+    "R7_unwrap_single_list": 0,
+    "R8_x1000": 0,
+    "R9_case_insensitive": 0,
+    "R10_sign_flip": 0,
+    "R11_round": 0
+  }
+}

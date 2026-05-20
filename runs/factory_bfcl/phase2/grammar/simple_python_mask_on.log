@@ -1,0 +1,2 @@
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   5%|▌         | 17/311 [00:00<00:01, 169.11it/s]Loading weights:  66%|██████▌   | 204/311 [00:00<00:00, 1163.16it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1210.04it/s]
+[bfcl_eval:simple_python] ast_match=0.75 syntax=0.94 action=0.94 latency_p50=1068.59ms n=100

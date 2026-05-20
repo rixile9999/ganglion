@@ -1,0 +1,3 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   9%|▉         | 28/311 [00:00<00:01, 279.52it/s]Loading weights:  70%|███████   | 219/311 [00:00<00:00, 1236.68it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1246.90it/s]
+[bootstrap:multiple] kept=73 +sampled_pass=296 pass_rate=92.50% out=/home/hyoseok/workspace/ganglion/runs/factory_bfcl/phase3/bootstrap/multiple/augmented_train.jsonl

@@ -1,0 +1,15 @@
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:  11%|█         | 34/311 [00:00<00:00, 337.74it/s]Loading weights:  71%|███████   | 220/311 [00:00<00:00, 1230.53it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1239.67it/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+In file included from /home/hyoseok/miniforge3/envs/constraints/include/python3.11/Python.h:12,
+                 from /tmp/tmph_exlphy/cuda_utils.c:9:
+/home/hyoseok/miniforge3/envs/constraints/include/python3.11/pyconfig.h:1793:9: warning: ‘_POSIX_C_SOURCE’ redefined
+ 1793 | #define _POSIX_C_SOURCE 200809L
+      |         ^~~~~~~~~~~~~~~
+In file included from /usr/include/bits/libc-header-start.h:33,
+                 from /usr/include/stdlib.h:26,
+                 from /home/hyoseok/miniforge3/envs/constraints/lib/python3.11/site-packages/triton/backends/nvidia/include/cuda.h:56,
+                 from /tmp/tmph_exlphy/cuda_utils.c:1:
+/usr/include/features.h:319:10: note: this is the location of the previous definition
+  319 | # define _POSIX_C_SOURCE        202405L
+      |          ^~~~~~~~~~~~~~~
+[bfcl_eval:multiple] ast_match=0.69 syntax=0.98 action=0.9 latency_p50=690.1ms n=100

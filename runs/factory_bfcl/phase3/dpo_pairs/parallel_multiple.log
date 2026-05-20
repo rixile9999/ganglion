@@ -1,0 +1,3 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   9%|▉         | 28/311 [00:00<00:01, 279.50it/s]Loading weights:  69%|██████▉   | 216/311 [00:00<00:00, 1220.13it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1242.59it/s]
+[dpo_pairs:parallel_multiple] pairs=1 pass_rate=86.56%

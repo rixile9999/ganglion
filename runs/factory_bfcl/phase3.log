@@ -1,0 +1,59 @@
+[21:53:34] S3a paraphrase simple_python
+[22:01:24] S3a paraphrase multiple
+[22:08:10] S3a paraphrase parallel
+[22:17:21] S3a paraphrase parallel_multiple
+[22:29:19] S3a paraphrase irrelevance
+[22:34:44] S3b synth simple_python
+[22:44:42] S3b synth multiple
+[22:54:34] S3b synth parallel
+[23:02:20] S3b synth parallel_multiple
+[23:11:35] S3b synth irrelevance
+[23:18:58] S3c train v1.5 simple_python
+[23:21:47] S3c eval_holdout v1.5 simple_python
+[23:22:29] S3c eval_full v1.5 simple_python
+[23:25:48] S3c train v1.5 multiple
+[23:28:44] S3c eval_holdout v1.5 multiple
+[23:29:25] S3c eval_full v1.5 multiple
+[23:32:23] S3c train v1.5 parallel
+[23:35:28] S3c eval_holdout v1.5 parallel
+[23:37:03] S3c eval_full v1.5 parallel
+[23:44:28] S3c train v1.5 parallel_multiple
+[23:47:07] S3c eval_holdout v1.5 parallel_multiple
+[23:48:47] S3c eval_full v1.5 parallel_multiple
+[23:56:22] S3c train v1.5 irrelevance
+[23:59:32] S3c eval_holdout v1.5 irrelevance
+[23:59:44] S3c eval_full v1.5 irrelevance
+[00:00:17] S3d bootstrap simple_python
+[00:10:09] S3d bootstrap multiple
+[00:19:29] S3d bootstrap parallel
+[00:42:50] S3d bootstrap parallel_multiple
+[01:06:31] S3d bootstrap irrelevance
+[01:07:59] S3e train v2 simple_python
+[01:10:50] S3e eval_holdout v2 simple_python
+[01:11:32] S3e eval_full v2 simple_python
+[01:14:31] S3e train v2 multiple
+[01:17:29] S3e eval_holdout v2 multiple
+[01:18:10] S3e eval_full v2 multiple
+[01:21:08] S3e train v2 parallel
+[01:24:11] S3e eval_holdout v2 parallel
+[01:25:45] S3e eval_full v2 parallel
+[01:33:05] S3e train v2 parallel_multiple
+[01:35:45] S3e eval_holdout v2 parallel_multiple
+[01:37:23] S3e eval_full v2 parallel_multiple
+[01:45:06] S3e train v2 irrelevance
+[01:48:12] S3e eval_holdout v2 irrelevance
+[01:48:24] S3e eval_full v2 irrelevance
+[01:48:57] S3f pairs simple_python
+[01:58:33] S3f pairs multiple
+[02:08:00] S3f pairs parallel
+[02:31:33] S3f pairs parallel_multiple
+[02:55:27] S3f pairs irrelevance
+[02:56:57] S3g dpo simple_python
+[FAIL] S3g simple_python
+[skip] S3g multiple (no pairs)
+[02:57:04] S3g dpo parallel
+[FAIL] S3g parallel
+[02:57:12] S3g dpo parallel_multiple
+[FAIL] S3g parallel_multiple
+[skip] S3g irrelevance (no pairs)
+[02:57:19] phase3 complete

@@ -1,0 +1,6595 @@
+{
+  "total": 100,
+  "ast_match_rate": 0.0,
+  "syntax_valid_rate": 0.96,
+  "latency_ms_mean": 759.07,
+  "latency_ms_p50": 728.05,
+  "latency_ms_p95": 1022.49,
+  "latency_ms_stddev": 160.51,
+  "input_tokens_total": 27278,
+  "output_tokens_total": 8499,
+  "dsl_chars_mean": 244.61,
+  "native_chars_mean": 412.2,
+  "by_category": {
+    "parallel": {
+      "total": 100,
+      "ast_match_rate": 0.0,
+      "syntax_valid_rate": 0.96
+    }
+  },
+  "error_type_counts": {
+    "parallel_function_checker_no_order:wrong_count": 100
+  },
+  "failures": [
+    {
+      "id": "parallel_1",
+      "category": "parallel",
+      "user_message": "Calculate the induced electromagnetic force for a magnetic field of 5 Tesla, area of 2 square meters and change in time of 4 seconds, then repeat with a change in time of 10 seconds.",
+      "ground_truth": [
+        {
+          "calculate_em_force": {
+            "b_field": [
+              5
+            ],
+            "area": [
+              2
+            ],
+            "d_time": [
+              4
+            ]
+          }
+        },
+        {
+          "calculate_em_force": {
+            "b_field": [
+              5
+            ],
+            "area": [
+              2
+            ],
+            "d_time": [
+              10
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_em_force",
+            "args": {
+              "b_field": 5,
+              "area": 2,
+              "d_time": 4
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_107",
+      "category": "parallel",
+      "user_message": "What are the protein sequences encoded by the BRCA1 and BRCA2 genes in Homo sapiens and Pan troglodytes (chimpanzee)?",
+      "ground_truth": [
+        {
+          "get_protein_sequence": {
+            "gene": [
+              "BRCA1"
+            ],
+            "species": [
+              "Homo sapiens",
+              ""
+            ]
+          }
+        },
+        {
+          "get_protein_sequence": {
+            "gene": [
+              "BRCA2"
+            ],
+            "species": [
+              "Homo sapiens",
+              ""
+            ]
+          }
+        },
+        {
+          "get_protein_sequence": {
+            "gene": [
+              "BRCA1"
+            ],
+            "species": [
+              "Pan troglodytes"
+            ]
+          }
+        },
+        {
+          "get_protein_sequence": {
+            "gene": [
+              "BRCA2"
+            ],
+            "species": [
+              "Pan troglodytes"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_protein_sequence",
+            "args": {
+              "gene": "BRCA1",
+              "species": "Homo sapiens"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_108",
+      "category": "parallel",
+      "user_message": "Can you provide a detailed description of the structure and functioning of a neuron cell and then compare it with a less detailed description of a muscle cell in the human body?",
+      "ground_truth": [
+        {
+          "biology.get_cell_info": {
+            "cell_type": [
+              "neuron"
+            ],
+            "detailed": [
+              true
+            ]
+          }
+        },
+        {
+          "biology.get_cell_info": {
+            "cell_type": [
+              "muscle"
+            ],
+            "detailed": [
+              false,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "biology.get_cell_info",
+            "args": {
+              "cell_type": "neuron"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_11",
+      "category": "parallel",
+      "user_message": "Predict house price for a house of size 3000 sq ft. in location New York and 4000 sq ft. in Los Angeles using Machine Learning Model.",
+      "ground_truth": [
+        {
+          "ml.predict_house_price": {
+            "location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "size": [
+              3000
+            ]
+          }
+        },
+        {
+          "ml.predict_house_price": {
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "size": [
+              4000
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "ml.predict_house_price",
+            "args": {
+              "location": "Los Angeles",
+              "size": 4000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_114",
+      "category": "parallel",
+      "user_message": "Can you analyze the DNA sequence \"AGCTTAGCTA\" and \"AGCTTAGGCTA\" using the reference sequence \"AGCTTAGCTA\" to identify any potential 'insertion' mutations, then repeat the same analysis for 'deletion' and 'substitution' mutations?",
+      "ground_truth": [
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "insertion",
+              ""
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "deletion"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        },
+        {
+          "analyze_dna_sequence": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "analyze_dna_sequence",
+            "args": {
+              "sequence": "AGCTTAGCTA",
+              "reference_sequence": "AGCTTAGCTA"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_116",
+      "category": "parallel",
+      "user_message": "\"In a population of butterflies, the frequency of the dominant allele for wing color is 0.7. Can you calculate the frequency of the homozygous dominant genotype (AA), heterozygous genotype (Aa), and homozygous recessive genotype (aa) using the Hardy Weinberg Principle?\"",
+      "ground_truth": [
+        {
+          "calculate_genotype_frequency": {
+            "allele_frequency": [
+              0.7
+            ],
+            "genotype": [
+              "AA"
+            ]
+          }
+        },
+        {
+          "calculate_genotype_frequency": {
+            "allele_frequency": [
+              0.7
+            ],
+            "genotype": [
+              "Aa"
+            ]
+          }
+        },
+        {
+          "calculate_genotype_frequency": {
+            "allele_frequency": [
+              0.7
+            ],
+            "genotype": [
+              "aa"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_genotype_frequency",
+            "args": {
+              "allele_frequency": 0.7,
+              "genotype": "aa"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_117",
+      "category": "parallel",
+      "user_message": "What is the population density of China in 2000 and 2010, given that the population was 1.267 billion in 2000 and 1.341 billion in 2010, and the land area remained constant at 9.597 million square kilometers?",
+      "ground_truth": [
+        {
+          "calculate_density": {
+            "country": [
+              "China"
+            ],
+            "year": [
+              "2000"
+            ],
+            "population": [
+              1267000000.0
+            ],
+            "land_area": [
+              9597000.0
+            ]
+          }
+        },
+        {
+          "calculate_density": {
+            "country": [
+              "China"
+            ],
+            "year": [
+              "2010"
+            ],
+            "population": [
+              1341000000.0
+            ],
+            "land_area": [
+              9597000.0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_density",
+            "args": {
+              "country": "China",
+              "year": "2000",
+              "population": 1267000000,
+              "land_area": 959700000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_119",
+      "category": "parallel",
+      "user_message": "\"Can you help me identify the bird species I saw during my recent trip? The first one was a small bird with a vibrant blue color that I spotted in a forest. The second one was a large bird with a mix of black colors that I saw near a lake. The third one was a medium-sized bird with a brown color that I noticed in a desert. Lastly, the fourth one was a large bird with a green color that I observed in a tropical rainforest. What could these birds be?\"",
+      "ground_truth": [
+        {
+          "identify_bird": {
+            "color": [
+              "blue"
+            ],
+            "habitat": [
+              "forest"
+            ],
+            "size": [
+              "small",
+              ""
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "black"
+            ],
+            "habitat": [
+              "lake"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "brown"
+            ],
+            "habitat": [
+              "desert"
+            ],
+            "size": [
+              "medium"
+            ]
+          }
+        },
+        {
+          "identify_bird": {
+            "color": [
+              "green"
+            ],
+            "habitat": [
+              "tropical rainforest"
+            ],
+            "size": [
+              "large"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "identify_bird",
+            "args": {
+              "color": "vibrant blue",
+              "habitat": "forest",
+              "size": "small"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_120",
+      "category": "parallel",
+      "user_message": "What would be the predicted forest growth in the Amazon Rainforest and the Boreal Forests of Canada over the next 10 years and 20 years, respectively, if we do not include the impact of human activities?",
+      "ground_truth": [
+        {
+          "forest_growth_forecast": {
+            "location": [
+              "Amazon Rainforest"
+            ],
+            "years": [
+              10
+            ],
+            "include_human_impact": [
+              false,
+              ""
+            ]
+          }
+        },
+        {
+          "forest_growth_forecast": {
+            "location": [
+              "Boreal Forests of Canada"
+            ],
+            "years": [
+              20
+            ],
+            "include_human_impact": [
+              false,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "forest_growth_forecast",
+            "args": {
+              "location": "Amazon Rainforest",
+              "years": 10,
+              "include_human_impact": false
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_124",
+      "category": "parallel",
+      "user_message": "What would be the projected population growth of Japan and India in the next 10 and 20 years respectively, considering the current growth rate, and how would these projections change if we consider a growth rate of 1.5% for Japan and 2.1% for India instead of the current growth rate?",
+      "ground_truth": [
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "Japan"
+            ],
+            "years": [
+              10
+            ],
+            "growth_rate": [
+              0.015
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              0.021
+            ]
+          }
+        },
+        {
+          "population_projections": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "population_projections",
+            "args": {
+              "country": "Japan",
+              "years": 10,
+              "growth_rate": 1.0
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_127",
+      "category": "parallel",
+      "user_message": "Can you help me find restaurants in New York, NY that cater to my dietary preferences which include Vegan, Gluten-free and Dairy-free options, and then do the same for Los Angeles, CA and Chicago, IL?",
+      "ground_truth": [
+        {
+          "restaurant.find_nearby": {
+            "location": [
+              "New York, NY",
+              "New York City",
+              "NYC",
+              "NY"
+            ],
+            "dietary_preference": [
+              [
+                "Vegan",
+                "Gluten-free",
+                "Dairy-free"
+              ]
+            ]
+          }
+        },
+        {
+          "restaurant.find_nearby": {
+            "location": [
+              "Los Angeles, CA",
+              "LA",
+              "Los Angeles",
+              "Los Angeles, CA",
+              "CA"
+            ],
+            "dietary_preference": [
+              [
+                "Vegan",
+                "Gluten-free",
+                "Dairy-free"
+              ]
+            ]
+          }
+        },
+        {
+          "restaurant.find_nearby": {
+            "location": [
+              "Chicago, IL",
+              "Chicago",
+              "IL"
+            ],
+            "dietary_preference": [
+              [
+                "Vegan",
+                "Gluten-free",
+                "Dairy-free"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "restaurant.find_nearby",
+            "args": {
+              "location": "New York, NY",
+              "dietary_preference": [
+                "Vegan",
+                "Gluten-free",
+                "Dairy-free"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_129",
+      "category": "parallel",
+      "user_message": "You are given two sets of data, the first set is [12, 15, 11, 14, 18, 19, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26] and the second set is [32, 35, 31, 34, 38, 39, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]. Can you create two histograms using the 'create_histogram' function, one for each data set, with 5 bins each?",
+      "ground_truth": [
+        {
+          "create_histogram": {
+            "data": [
+              [
+                12,
+                15,
+                11,
+                14,
+                18,
+                19,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26
+              ]
+            ],
+            "bins": [
+              5
+            ]
+          }
+        },
+        {
+          "create_histogram": {
+            "data": [
+              [
+                32,
+                35,
+                31,
+                34,
+                38,
+                39,
+                33,
+                34,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+                41,
+                42,
+                43,
+                44,
+                45,
+                46
+              ]
+            ],
+            "bins": [
+              5
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "create_histogram",
+            "args": {
+              "data": [
+                12,
+                15,
+                11,
+                14,
+                18,
+                19,
+                13,
+                14,
+                15,
+                16,
+                17,
+                18,
+                19,
+                20,
+                21,
+                22,
+                23,
+                24,
+                25,
+                26
+              ],
+              "bins": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_131",
+      "category": "parallel",
+      "user_message": "Can you find the fastest route from my home in San Francisco to my office in Palo Alto, then from my office to my friend's house in San Jose, and finally from my friend's house back to my home, while avoiding toll roads?",
+      "ground_truth": [
+        {
+          "map_routing.fastest_route": {
+            "start_location": [
+              "San Francisco",
+              "SF"
+            ],
+            "end_location": [
+              "Palo Alto"
+            ],
+            "avoid_tolls": [
+              true
+            ]
+          }
+        },
+        {
+          "map_routing.fastest_route": {
+            "start_location": [
+              "Palo Alto"
+            ],
+            "end_location": [
+              "San Jose",
+              "SJ"
+            ],
+            "avoid_tolls": [
+              true
+            ]
+          }
+        },
+        {
+          "map_routing.fastest_route": {
+            "start_location": [
+              "San Jose",
+              "SJ"
+            ],
+            "end_location": [
+              "San Francisco",
+              "SF"
+            ],
+            "avoid_tolls": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "map_routing.fastest_route",
+            "args": {
+              "start_location": "San Francisco",
+              "end_location": "Palo Alto",
+              "avoid_tolls": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_132",
+      "category": "parallel",
+      "user_message": "You have four sets of numbers: the first set is [23, 45, 67, 89], the second set is [12, 34, 56, 78], the third set is [98, 76, 54, 32], and the fourth set is [87, 65, 43, 21]. Can you calculate the average of each set of numbers?",
+      "ground_truth": [
+        {
+          "calculate_average": {
+            "numbers": [
+              [
+                23,
+                45,
+                67,
+                89
+              ]
+            ]
+          }
+        },
+        {
+          "calculate_average": {
+            "numbers": [
+              [
+                12,
+                34,
+                56,
+                78
+              ]
+            ]
+          }
+        },
+        {
+          "calculate_average": {
+            "numbers": [
+              [
+                98,
+                76,
+                54,
+                32
+              ]
+            ]
+          }
+        },
+        {
+          "calculate_average": {
+            "numbers": [
+              [
+                87,
+                65,
+                43,
+                21
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_average",
+            "args": {
+              "numbers": [
+                23,
+                45,
+                67,
+                89
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_134",
+      "category": "parallel",
+      "user_message": "\"Could you please calculate the Body Mass Index (BMI) of four individuals for me? The first person weighs 85 kilograms and is 175 centimeters tall, the second person weighs 60 kilograms and is 160 centimeters tall, the third person weighs 75 kilograms and is 180 centimeters tall, and the fourth person weighs 90 kilograms and is 185 centimeters tall. All measurements are in the metric system.\"",
+      "ground_truth": [
+        {
+          "calculate_bmi": {
+            "weight": [
+              85
+            ],
+            "height": [
+              175
+            ],
+            "unit": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "weight": [
+              60
+            ],
+            "height": [
+              160
+            ],
+            "unit": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "weight": [
+              75
+            ],
+            "height": [
+              180
+            ],
+            "unit": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "weight": [
+              90
+            ],
+            "height": [
+              185
+            ],
+            "unit": [
+              "metric",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_bmi",
+            "args": {
+              "weight": 85,
+              "height": 175
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_137",
+      "category": "parallel",
+      "user_message": "You have four lists of numbers: [45, 12, 67, 21, 89], [34, 78, 12, 56, 90], [23, 45, 67, 89, 12], and [56, 78, 90, 12, 34]. Can you use the 'array_sort' function to sort these lists in both ascending and descending order?",
+      "ground_truth": [
+        {
+          "array_sort": {
+            "list": [
+              [
+                45,
+                12,
+                67,
+                21,
+                89
+              ]
+            ],
+            "order": [
+              "ascending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                45,
+                12,
+                67,
+                21,
+                89
+              ]
+            ],
+            "order": [
+              "descending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                34,
+                78,
+                12,
+                56,
+                90
+              ]
+            ],
+            "order": [
+              "ascending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                34,
+                78,
+                12,
+                56,
+                90
+              ]
+            ],
+            "order": [
+              "descending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                23,
+                45,
+                67,
+                89,
+                12
+              ]
+            ],
+            "order": [
+              "ascending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                23,
+                45,
+                67,
+                89,
+                12
+              ]
+            ],
+            "order": [
+              "descending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                56,
+                78,
+                90,
+                12,
+                34
+              ]
+            ],
+            "order": [
+              "ascending"
+            ]
+          }
+        },
+        {
+          "array_sort": {
+            "list": [
+              [
+                56,
+                78,
+                90,
+                12,
+                34
+              ]
+            ],
+            "order": [
+              "descending"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "array_sort",
+            "args": {
+              "list": [
+                45,
+                12,
+                67,
+                21,
+                89
+              ],
+              "order": "ascending"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_138",
+      "category": "parallel",
+      "user_message": "\"John, who weighs 85 kilograms and is 1.8 meters tall, and his friend Sarah, who weighs 60 kilograms and is 1.65 meters tall, are having a debate about their health. They decide to calculate their Body Mass Index (BMI) to settle the argument. Later, they meet their friend Mike, who weighs 75 kilograms and is 1.7 meters tall, and they decide to calculate his BMI as well. Can you help them calculate their BMIs?\"",
+      "ground_truth": [
+        {
+          "calculate_BMI": {
+            "weight_kg": [
+              85
+            ],
+            "height_m": [
+              1.8
+            ]
+          }
+        },
+        {
+          "calculate_BMI": {
+            "weight_kg": [
+              60
+            ],
+            "height_m": [
+              1.65
+            ]
+          }
+        },
+        {
+          "calculate_BMI": {
+            "weight_kg": [
+              75
+            ],
+            "height_m": [
+              1.7
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_BMI",
+            "args": {
+              "weight_kg": 85,
+              "height_m": 1.8
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_139",
+      "category": "parallel",
+      "user_message": "Can you use the function 'employee.fetch_data' to fetch the 'Personal Info', 'Job History', 'Payroll', and 'Attendance' data fields for an employee with the unique ID of 12345 from the company named 'Tech Solutions'? And then, can you repeat the same process for another employee with the unique ID of 67890 from the same company?",
+      "ground_truth": [
+        {
+          "employee.fetch_data": {
+            "company_name": [
+              "Tech Solutions"
+            ],
+            "employee_id": [
+              12345
+            ],
+            "data_field": [
+              [
+                "Personal Info",
+                "Job History",
+                "Payroll",
+                "Attendance"
+              ]
+            ]
+          }
+        },
+        {
+          "employee.fetch_data": {
+            "company_name": [
+              "Tech Solutions"
+            ],
+            "employee_id": [
+              67890
+            ],
+            "data_field": [
+              [
+                "Personal Info",
+                "Job History",
+                "Payroll",
+                "Attendance"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "employee.fetch_data",
+            "args": {
+              "company_name": "Tech Solutions",
+              "employee_id": 12345,
+              "data_field": [
+                "Personal Info"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_141",
+      "category": "parallel",
+      "user_message": "Can you provide me with the list of movie releases in the IMAX format at theaters in New York over the next 7 days, and also the list of movie releases in the 2D format at theaters in Los Angeles over the next 14 days?",
+      "ground_truth": [
+        {
+          "get_theater_movie_releases": {
+            "location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "timeframe": [
+              7
+            ],
+            "format": [
+              "IMAX",
+              ""
+            ]
+          }
+        },
+        {
+          "get_theater_movie_releases": {
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "timeframe": [
+              14
+            ],
+            "format": [
+              "2D"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_theater_movie_releases",
+            "args": {
+              "location": "New York",
+              "timeframe": 7
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_143",
+      "category": "parallel",
+      "user_message": "You are planning to build three triangular gardens in your backyard. The first garden has a base of 10 meters and a height of 5 meters, the second garden has a base of 15 meters and a height of 7 meters, and the third garden has a base of 20 meters and a height of 10 meters. What is the total area of the three gardens?",
+      "ground_truth": [
+        {
+          "calc_area_triangle": {
+            "base": [
+              10
+            ],
+            "height": [
+              5
+            ]
+          }
+        },
+        {
+          "calc_area_triangle": {
+            "base": [
+              15
+            ],
+            "height": [
+              7
+            ]
+          }
+        },
+        {
+          "calc_area_triangle": {
+            "base": [
+              20
+            ],
+            "height": [
+              10
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calc_area_triangle",
+            "args": {
+              "base": 10,
+              "height": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_147",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the time it would take for light to travel from Earth to a newly discovered exoplanet that is 4.22 light years away, then to another exoplanet that is 6.1 light years from the first one, and finally back to Earth which is 5.88 light years from the second exoplanet? Assume the speed of light in vacuum is 299792458 m/s.\"",
+      "ground_truth": [
+        {
+          "light_travel_time": {
+            "distance_in_light_years": [
+              4.22
+            ],
+            "speed_of_light": [
+              299792458,
+              ""
+            ]
+          }
+        },
+        {
+          "light_travel_time": {
+            "distance_in_light_years": [
+              6.1
+            ],
+            "speed_of_light": [
+              299792458,
+              ""
+            ]
+          }
+        },
+        {
+          "light_travel_time": {
+            "distance_in_light_years": [
+              5.88
+            ],
+            "speed_of_light": [
+              299792458,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "light_travel_time",
+            "args": {
+              "distance_in_light_years": 4.22
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_149",
+      "category": "parallel",
+      "user_message": "What is the distance in miles between the celestial bodies Mars and Venus, and then between Mars and Jupiter, given that the function 'calculate_distance' requires the names of the two celestial bodies and the unit of measurement?",
+      "ground_truth": [
+        {
+          "calculate_distance": {
+            "body1": [
+              "Mars"
+            ],
+            "body2": [
+              "Venus"
+            ],
+            "unit": [
+              "miles"
+            ]
+          }
+        },
+        {
+          "calculate_distance": {
+            "body1": [
+              "Mars"
+            ],
+            "body2": [
+              "Jupiter"
+            ],
+            "unit": [
+              "miles"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_distance",
+            "args": {
+              "body1": "Mars",
+              "body2": "Venus",
+              "unit": "miles"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_150",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the area under the curve for the polynomial function with coefficients [3, -2, 1] (meaning the function is 3x^2 - 2x + 1) within the interval [-1, 2], and then do the same for the polynomial function with coefficients [1, 0, -1] (meaning the function is x^2 - 1) within the interval [0, 3]? Please provide both results.\"",
+      "ground_truth": [
+        {
+          "mathematics.calculate_area_under_curve": {
+            "polynomial": [
+              [
+                3,
+                -2,
+                1
+              ]
+            ],
+            "limits": [
+              [
+                -1,
+                2
+              ]
+            ]
+          }
+        },
+        {
+          "mathematics.calculate_area_under_curve": {
+            "polynomial": [
+              [
+                1,
+                0,
+                -1
+              ]
+            ],
+            "limits": [
+              [
+                0,
+                3
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "mathematics.calculate_area_under_curve",
+            "args": {
+              "polynomial": [
+                3,
+                -2,
+                1
+              ],
+              "limits": [
+                -1,
+                2
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_151",
+      "category": "parallel",
+      "user_message": "\"Can you help me calculate the total area of three different triangles? The first triangle has a base of 15 meters and a height of 20 meters. The second triangle has a base of 25 feet and a height of 30 feet. And the third triangle has a base of 35 inches and a height of 40 inches. I would like the area of each triangle in their respective units.\"",
+      "ground_truth": [
+        {
+          "geometry.area_triangle": {
+            "base": [
+              15
+            ],
+            "height": [
+              20
+            ],
+            "unit": [
+              "square meters",
+              "m^2",
+              ""
+            ]
+          }
+        },
+        {
+          "geometry.area_triangle": {
+            "base": [
+              25
+            ],
+            "height": [
+              30
+            ],
+            "unit": [
+              "square feet",
+              "ft^2"
+            ]
+          }
+        },
+        {
+          "geometry.area_triangle": {
+            "base": [
+              35
+            ],
+            "height": [
+              40
+            ],
+            "unit": [
+              "square inches",
+              "in^2"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "geometry.area_triangle",
+            "args": {
+              "base": 15,
+              "height": 20,
+              "unit": "square meters"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_152",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the result of the following mathematical operation: first, raise the number 3 to the power of 5, then raise the number 2 to the power of 3.\"",
+      "ground_truth": [
+        {
+          "math.power": {
+            "base": [
+              2
+            ],
+            "exponent": [
+              3
+            ],
+            "mod": [
+              "",
+              null
+            ]
+          }
+        },
+        {
+          "math.power": {
+            "base": [
+              3
+            ],
+            "exponent": [
+              5
+            ],
+            "mod": [
+              "",
+              null
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "math.power",
+            "args": {
+              "base": 3,
+              "exponent": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_154",
+      "category": "parallel",
+      "user_message": "\"Could you calculate the Body Mass Index (BMI) for four individuals? The first person weighs 75 kilograms and is 180 centimeters tall, the second person weighs 60 kilograms and is 165 centimeters tall, the third person weighs 80 kilograms and is 175 centimeters tall, and the fourth person weighs 90 kilograms and is 185 centimeters tall. Please use the metric system for all calculations.\"",
+      "ground_truth": [
+        {
+          "calculate_bmi": {
+            "weight": [
+              75
+            ],
+            "height": [
+              180
+            ],
+            "system": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "weight": [
+              60
+            ],
+            "height": [
+              165
+            ],
+            "system": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "weight": [
+              80
+            ],
+            "height": [
+              175
+            ],
+            "system": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "weight": [
+              90
+            ],
+            "height": [
+              185
+            ],
+            "system": [
+              "metric",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_bmi",
+            "args": {
+              "weight": 75,
+              "height": 180
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_157",
+      "category": "parallel",
+      "user_message": "\"Could you use the 'predict_house_price' function to compare the estimated prices of four different houses? The first house is located in New York, has 3 bedrooms, 2 bathrooms, and an area of 1500 square feet. The second house is in Los Angeles, with 4 bedrooms, 3 bathrooms, and an area of 2000 square feet. The third house is in Chicago, with 2 bedrooms, 1 bathroom, and an area of 1200 square feet. The fourth house is in Miami, with 3 bedrooms, 2 bathrooms, and an area of 1800 square feet.\"",
+      "ground_truth": [
+        {
+          "predict_house_price": {
+            "bedrooms": [
+              3
+            ],
+            "bathrooms": [
+              2
+            ],
+            "area": [
+              1500
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "New York City",
+              "NYC"
+            ]
+          }
+        },
+        {
+          "predict_house_price": {
+            "bedrooms": [
+              4
+            ],
+            "bathrooms": [
+              3
+            ],
+            "area": [
+              2000
+            ],
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ]
+          }
+        },
+        {
+          "predict_house_price": {
+            "bedrooms": [
+              2
+            ],
+            "bathrooms": [
+              1
+            ],
+            "area": [
+              1200
+            ],
+            "location": [
+              "Chicago"
+            ]
+          }
+        },
+        {
+          "predict_house_price": {
+            "bedrooms": [
+              3
+            ],
+            "bathrooms": [
+              2
+            ],
+            "area": [
+              1800
+            ],
+            "location": [
+              "Miami"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "predict_house_price",
+            "args": {
+              "bedrooms": 3,
+              "bathrooms": 2,
+              "area": 1500,
+              "location": "New York"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_163",
+      "category": "parallel",
+      "user_message": "\"In a game of basketball, a player has a 60% chance of making a successful shot. In a particular match, the player attempts 10 shots. What is the probability that the player makes exactly 6 successful shots? Now, consider a different scenario where the player's success rate drops to 50% but the number of attempts remains the same. What is the probability of making exactly 6 successful shots in this scenario? Finally, consider a third scenario where the player's success rate remains at 50% but the number of attempts increases to 15. What is the probability of making exactly 6 successful shots in this third scenario?\"",
+      "ground_truth": [
+        {
+          "calc_binomial_prob": {
+            "num_trials": [
+              10
+            ],
+            "num_success": [
+              6
+            ],
+            "prob_success": [
+              0.6
+            ]
+          }
+        },
+        {
+          "calc_binomial_prob": {
+            "num_trials": [
+              10
+            ],
+            "num_success": [
+              6
+            ],
+            "prob_success": [
+              0.5
+            ]
+          }
+        },
+        {
+          "calc_binomial_prob": {
+            "num_trials": [
+              15
+            ],
+            "num_success": [
+              6
+            ],
+            "prob_success": [
+              0.5
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calc_binomial_prob",
+            "args": {
+              "num_trials": 10,
+              "num_success": 6,
+              "prob_success": 0.6
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_164",
+      "category": "parallel",
+      "user_message": "You are a data analyst and you have been given two 2x2 contingency tables representing the results of a survey conducted in two different cities. The first table is [45, 55, 35, 65] and the second table is [30, 70, 50, 50]. You are asked to perform a Chi-Squared test for independence on both tables to determine if there is a significant relationship between the variables in each city. Use a significance level of 0.05 for both tests. Can you tell if there is a significant relationship in each city based on the Chi-Squared test results?",
+      "ground_truth": [
+        {
+          "chi_squared_test": {
+            "table": [
+              [
+                45,
+                55,
+                35,
+                65
+              ]
+            ],
+            "alpha": [
+              0.05
+            ]
+          }
+        },
+        {
+          "chi_squared_test": {
+            "table": [
+              [
+                30,
+                70,
+                50,
+                50
+              ]
+            ],
+            "alpha": [
+              0.05
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: table[0] must be integer",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_166",
+      "category": "parallel",
+      "user_message": "Can you predict the price of a house with an area of 2500 square feet, 3 rooms, constructed in the year 2000, and located in New York, and then compare it with the price of a similar house but with an area of 3000 square feet, constructed in the year 2005, and located in Los Angeles? Finally, predict the price of a third house with an area of 2000 square feet, 2 rooms, constructed in the year 1995, and located in Chicago.",
+      "ground_truth": [
+        {
+          "predict_house_price": {
+            "area": [
+              2500
+            ],
+            "rooms": [
+              3
+            ],
+            "year": [
+              2000
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "New York City",
+              "NYC",
+              "NY"
+            ]
+          }
+        },
+        {
+          "predict_house_price": {
+            "area": [
+              3000
+            ],
+            "rooms": [
+              3
+            ],
+            "year": [
+              2005
+            ],
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA",
+              "Los Angeles, CA",
+              "CA"
+            ]
+          }
+        },
+        {
+          "predict_house_price": {
+            "area": [
+              2000
+            ],
+            "rooms": [
+              2
+            ],
+            "year": [
+              1995
+            ],
+            "location": [
+              "Chicago"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "predict_house_price",
+            "args": {
+              "area": 2500,
+              "rooms": 3,
+              "year": 2000,
+              "location": "New York"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_168",
+      "category": "parallel",
+      "user_message": "\"Can you help me calculate the quarterly dividend per share for my company? We have just paid out a total of $5,000,000 in dividends and currently have 2,000,000 outstanding shares. Also, I am considering a scenario where we might increase our total payout to $6,000,000 while keeping the same number of outstanding shares. What would be the quarterly dividend per share in that case? And what if we also increase our outstanding shares to 2,500,000 while keeping the total payout at $6,000,000?\"",
+      "ground_truth": [
+        {
+          "finance.calculate_quarterly_dividend_per_share": {
+            "total_payout": [
+              5000000
+            ],
+            "outstanding_shares": [
+              2000000
+            ]
+          }
+        },
+        {
+          "finance.calculate_quarterly_dividend_per_share": {
+            "total_payout": [
+              6000000
+            ],
+            "outstanding_shares": [
+              2500000
+            ]
+          }
+        },
+        {
+          "finance.calculate_quarterly_dividend_per_share": {
+            "total_payout": [
+              6000000
+            ],
+            "outstanding_shares": [
+              2000000
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "finance.calculate_quarterly_dividend_per_share",
+            "args": {
+              "total_payout": 5000000,
+              "outstanding_shares": 2000000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_169",
+      "category": "parallel",
+      "user_message": "\"Can you help me calculate the discounted cash flow of a bond? I have a bond with an annual coupon payment of $50, a time frame of 5 years, and a discount rate of 5%. Also, the face value of the bond is $1000. I would like to know the discounted cash flow for this bond. After that, I want to compare it with another bond that has an annual coupon payment of $60, a time frame of 7 years, and a discount rate of 4%, with the same face value of $1000. Can you calculate the discounted cash flow for this second bond as well?\"",
+      "ground_truth": [
+        {
+          "calculate_discounted_cash_flow": {
+            "coupon_payment": [
+              50
+            ],
+            "period": [
+              5
+            ],
+            "discount_rate": [
+              0.05
+            ],
+            "face_value": [
+              1000,
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_discounted_cash_flow": {
+            "coupon_payment": [
+              60
+            ],
+            "period": [
+              7
+            ],
+            "discount_rate": [
+              0.04
+            ],
+            "face_value": [
+              1000,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_discounted_cash_flow",
+            "args": {
+              "coupon_payment": 50,
+              "period": 5,
+              "discount_rate": 5,
+              "face_value": 1000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_17",
+      "category": "parallel",
+      "user_message": "Get the latest closing prices and volumes for Apple Inc., Google LLC., and Microsoft Corporation in the New York Stock Exchange",
+      "ground_truth": [
+        {
+          "get_stock_data": {
+            "symbol": [
+              "AAPL"
+            ],
+            "data_points": [
+              [
+                "price",
+                "volume"
+              ],
+              [
+                "volume",
+                "price"
+              ]
+            ]
+          }
+        },
+        {
+          "get_stock_data": {
+            "symbol": [
+              "GOOG",
+              "GOOGL"
+            ],
+            "data_points": [
+              [
+                "price",
+                "volume"
+              ],
+              [
+                "volume",
+                "price"
+              ]
+            ]
+          }
+        },
+        {
+          "get_stock_data": {
+            "symbol": [
+              "MSFT"
+            ],
+            "data_points": [
+              [
+                "price",
+                "volume"
+              ],
+              [
+                "volume",
+                "price"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_stock_data",
+            "args": {
+              "symbol": "AAPL",
+              "data_points": [
+                "price"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_173",
+      "category": "parallel",
+      "user_message": "\"John has decided to invest in two different funds. He invested $5000 in Fund A which has an annual return rate of 7% and he plans to keep his money there for 5 years. On the other hand, he invested $8000 in Fund B with an annual return rate of 5% for a period of 7 years. Can you predict the profit John will make from both Fund A and Fund B?\"",
+      "ground_truth": [
+        {
+          "investment.predictProfit": {
+            "investment_amount": [
+              5000
+            ],
+            "annual_return": [
+              0.07
+            ],
+            "years": [
+              5
+            ]
+          }
+        },
+        {
+          "investment.predictProfit": {
+            "investment_amount": [
+              8000
+            ],
+            "annual_return": [
+              0.05
+            ],
+            "years": [
+              7
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "investment.predictProfit",
+            "args": {
+              "investment_amount": 5000,
+              "annual_return": 7,
+              "years": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_174",
+      "category": "parallel",
+      "user_message": "You are an investor who recently sold some stocks. You bought one stock at $150, another at $200, and another at $250. You sold them at $180, $210, and $300 respectively. You also received dividends of $20, $30, and $40 for each stock. Can you calculate the return on investment for each of these stocks using the 'calculate_return_on_investment' function?",
+      "ground_truth": [
+        {
+          "calculate_return_on_investment": {
+            "purchase_price": [
+              150
+            ],
+            "sale_price": [
+              180
+            ],
+            "dividend": [
+              20
+            ]
+          }
+        },
+        {
+          "calculate_return_on_investment": {
+            "purchase_price": [
+              200
+            ],
+            "sale_price": [
+              210
+            ],
+            "dividend": [
+              30
+            ]
+          }
+        },
+        {
+          "calculate_return_on_investment": {
+            "purchase_price": [
+              250
+            ],
+            "sale_price": [
+              300
+            ],
+            "dividend": [
+              40
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_return_on_investment",
+            "args": {
+              "purchase_price": 150,
+              "sale_price": 180,
+              "dividend": 20
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_178",
+      "category": "parallel",
+      "user_message": "What were the closing stock prices for Microsoft and Apple on NASDAQ on the dates 2022-01-01 and 2022-02-01?",
+      "ground_truth": [
+        {
+          "get_stock_price": {
+            "company_name": [
+              "Microsoft",
+              "Apple"
+            ],
+            "date": [
+              "2022-01-01",
+              "01/01/2022",
+              "Jan.1,2022"
+            ],
+            "exchange": [
+              "NASDAQ",
+              ""
+            ]
+          }
+        },
+        {
+          "get_stock_price": {
+            "company_name": [
+              "Microsoft"
+            ],
+            "date": [
+              "2022-02-01",
+              "02/01/2022",
+              "Feb.1,2022"
+            ],
+            "exchange": [
+              "NASDAQ",
+              ""
+            ]
+          }
+        },
+        {
+          "get_stock_price": {
+            "company_name": [
+              "Apple"
+            ],
+            "date": [
+              "2022-01-01",
+              "01/01/2022",
+              "Jan.1,2022"
+            ],
+            "exchange": [
+              "NASDAQ",
+              ""
+            ]
+          }
+        },
+        {
+          "get_stock_price": {
+            "company_name": [
+              "Apple"
+            ],
+            "date": [
+              "2022-02-01",
+              "02/01/2022",
+              "Feb.1,2022"
+            ],
+            "exchange": [
+              "NASDAQ",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_stock_price",
+            "args": {
+              "company_name": "Microsoft",
+              "date": "2022-01-01",
+              "exchange": "NASDAQ"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_180",
+      "category": "parallel",
+      "user_message": "What were the 'Open', 'Close', 'High', and 'Low' stock prices for Microsoft and Apple over the past 30 days?",
+      "ground_truth": [
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Open",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Close",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "High",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Microsoft"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Low",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Open",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Close",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "High",
+              ""
+            ]
+          }
+        },
+        {
+          "stock_price": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Low",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "stock_price",
+            "args": {
+              "company": "Microsoft",
+              "days": 30,
+              "data_type": "Open"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_181",
+      "category": "parallel",
+      "user_message": "Can you use the get_stock_prices function to retrieve the stock prices for Apple, Microsoft, Amazon, and Tesla over the duration of 1 week, 2 weeks, 3 weeks, and 1 month respectively?",
+      "ground_truth": [
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Apple"
+              ]
+            ],
+            "duration": [
+              "1 week"
+            ]
+          }
+        },
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Microsoft"
+              ]
+            ],
+            "duration": [
+              "2 weeks"
+            ]
+          }
+        },
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Amazon"
+              ]
+            ],
+            "duration": [
+              "3 weeks"
+            ]
+          }
+        },
+        {
+          "get_stock_prices": {
+            "companies": [
+              [
+                "Tesla"
+              ]
+            ],
+            "duration": [
+              "1 month"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_stock_prices",
+            "args": {
+              "companies": [
+                "Apple",
+                "Microsoft",
+                "Amazon",
+                "Tesla"
+              ],
+              "duration": "1 week"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_182",
+      "category": "parallel",
+      "user_message": "\"John is planning to invest in a mutual fund. He is considering two scenarios. In the first scenario, he will make an initial investment of $5000 with an annual rate of return of 7% and he will not make any additional contributions. In the second scenario, he will make an initial investment of $3000 with an annual rate of return of 6% and he will make additional regular contributions of $200 every year. He wants to compare the future value of his investment after 10 years in both scenarios. Can you help him calculate the future value of his investment in both scenarios?\"",
+      "ground_truth": [
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              5000
+            ],
+            "rate_of_return": [
+              0.07
+            ],
+            "years": [
+              10
+            ],
+            "contribution": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "finance.calculate_future_value": {
+            "initial_investment": [
+              3000
+            ],
+            "rate_of_return": [
+              0.06
+            ],
+            "years": [
+              10
+            ],
+            "contribution": [
+              200
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "finance.calculate_future_value",
+            "args": {
+              "initial_investment": 5000,
+              "rate_of_return": 0.07,
+              "years": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_183",
+      "category": "parallel",
+      "user_message": "\"Imagine you are a drone operator. You are currently operating a drone that is at a point (5, 7) in the sky. You are asked to move the drone to a new point (10, 15). After reaching the new point, you are again asked to move the drone to another point (20, 25). Can you calculate the total distance the drone has traveled using the Euclidean norm method?\"",
+      "ground_truth": [
+        {
+          "math.hypot": {
+            "x": [
+              5
+            ],
+            "y": [
+              7
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "math.hypot": {
+            "x": [
+              10
+            ],
+            "y": [
+              15
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "math.hypot": {
+            "x": [
+              20
+            ],
+            "y": [
+              25
+            ],
+            "z": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "math.hypot",
+            "args": {
+              "x": 5,
+              "y": 7
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_185",
+      "category": "parallel",
+      "user_message": "Can you estimate the population of Bengal Tigers in India for the year 2021, compare it with the estimated population of African Elephants in Kenya for the same year, and then estimate the population of both these species in their respective countries for year 2023?",
+      "ground_truth": [
+        {
+          "estimate_population": {
+            "species": [
+              "Bengal Tigers",
+              "Bengal Tiger"
+            ],
+            "country": [
+              "India"
+            ],
+            "year": [
+              2021
+            ]
+          }
+        },
+        {
+          "estimate_population": {
+            "species": [
+              "African Elephants"
+            ],
+            "country": [
+              "Kenya"
+            ],
+            "year": [
+              2021
+            ]
+          }
+        },
+        {
+          "estimate_population": {
+            "species": [
+              "Bengal Tigers",
+              "Bengal Tiger"
+            ],
+            "country": [
+              "India"
+            ],
+            "year": [
+              ""
+            ]
+          }
+        },
+        {
+          "estimate_population": {
+            "species": [
+              "African Elephants"
+            ],
+            "country": [
+              "Kenya"
+            ],
+            "year": [
+              2023
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "estimate_population",
+            "args": {
+              "species": "Bengal Tigers",
+              "country": "India",
+              "year": 2021
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_188",
+      "category": "parallel",
+      "user_message": "What are the current traffic conditions for a route from New York to Los Angeles using driving as the preferred method of transportation, then from Los Angeles to San Francisco using bicycling as the preferred method of transportation, and finally from San Francisco back to New York using transit as the preferred method of transportation?",
+      "ground_truth": [
+        {
+          "get_traffic_info": {
+            "start_location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "end_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "mode": [
+              "driving",
+              ""
+            ]
+          }
+        },
+        {
+          "get_traffic_info": {
+            "start_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "end_location": [
+              "San Francisco",
+              "SF"
+            ],
+            "mode": [
+              "bicycling"
+            ]
+          }
+        },
+        {
+          "get_traffic_info": {
+            "start_location": [
+              "San Francisco",
+              "SF"
+            ],
+            "end_location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "mode": [
+              "transit"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_traffic_info",
+            "args": {
+              "start_location": "New York",
+              "end_location": "Los Angeles",
+              "mode": "driving"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_189",
+      "category": "parallel",
+      "user_message": "Can you find me parks in New York, USA that have a Tennis Court and a Picnic Area, then find parks in Los Angeles, USA that have a Playground and Running Track, and finally find parks in Chicago, USA that have a Tennis Court and a Playground?",
+      "ground_truth": [
+        {
+          "parks.find_nearby": {
+            "location": [
+              "New York, USA",
+              "NY, USA",
+              "New York City, USA",
+              "NYC, USA"
+            ],
+            "amenities": [
+              [
+                "Tennis Court",
+                "Picnic Area"
+              ]
+            ]
+          }
+        },
+        {
+          "parks.find_nearby": {
+            "location": [
+              "Los Angeles, USA",
+              "LA, USA"
+            ],
+            "amenities": [
+              [
+                "Playground",
+                "Running Track"
+              ]
+            ]
+          }
+        },
+        {
+          "parks.find_nearby": {
+            "location": [
+              "Chicago, USA"
+            ],
+            "amenities": [
+              [
+                "Tennis Court",
+                "Playground"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "parks.find_nearby",
+            "args": {
+              "location": "New York, USA",
+              "amenities": [
+                "Tennis Court",
+                "Picnic Area"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_190",
+      "category": "parallel",
+      "user_message": "What is the shortest driving distance from New York City to Los Angeles, and then from Los Angeles to Miami, considering both the shortest and scenic route preferences?",
+      "ground_truth": [
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "New York City",
+              "NYC"
+            ],
+            "end_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "route_preference": [
+              "Shortest"
+            ]
+          }
+        },
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "route_preference": [
+              "Shortest"
+            ]
+          }
+        },
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "New York City",
+              "NYC"
+            ],
+            "end_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "route_preference": [
+              "Scenic"
+            ]
+          }
+        },
+        {
+          "calculate_shortest_distance": {
+            "start_location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "route_preference": [
+              "Scenic"
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported route_preference: Shortest",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_191",
+      "category": "parallel",
+      "user_message": "Can you help me find public libraries in New York, NY that have a Reading Room and Fiction section, and then in Los Angeles, CA that offer Wi-Fi and have a Children Section, and finally in Chicago, IL that have a Cafe and a Reading Room?",
+      "ground_truth": [
+        {
+          "public_library.find_nearby": {
+            "location": [
+              "New York, NY",
+              "NY"
+            ],
+            "facilities": [
+              [
+                "Reading Room",
+                "Fiction"
+              ]
+            ]
+          }
+        },
+        {
+          "public_library.find_nearby": {
+            "location": [
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "facilities": [
+              [
+                "Wi-Fi",
+                "Children Section"
+              ]
+            ]
+          }
+        },
+        {
+          "public_library.find_nearby": {
+            "location": [
+              "Chicago, IL",
+              "Chi"
+            ],
+            "facilities": [
+              [
+                "Cafe",
+                "Reading Room"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "public_library.find_nearby",
+            "args": {
+              "location": "New York, NY",
+              "facilities": [
+                "Reading Room",
+                "Fiction"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_197",
+      "category": "parallel",
+      "user_message": "\"Can you provide me with the details of the lawsuit case with the case number '12345ABC', which was initiated in the year 2018 and filed in the New York court jurisdiction? Also, can you retrieve the same information for another lawsuit case with the case number '67890XYZ', initiated in the year 2019 and filed in the California court jurisdiction?\"",
+      "ground_truth": [
+        {
+          "lawsuit_info": {
+            "case_number": [
+              "12345ABC"
+            ],
+            "year": [
+              2018
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "NY",
+              ""
+            ]
+          }
+        },
+        {
+          "lawsuit_info": {
+            "case_number": [
+              "67890XYZ"
+            ],
+            "year": [
+              2019
+            ],
+            "location": [
+              "California",
+              "CA"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "lawsuit_info",
+            "args": {
+              "case_number": "12345ABC",
+              "year": 2018,
+              "location": "New York"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_198",
+      "category": "parallel",
+      "user_message": "Can you use the lawsuit_search function to retrieve all lawsuits involving the entity \"Google\" from the county of \"Santa Clara\" and then do the same for the entity \"Facebook\" in the county of \"San Mateo\", both in the state of California?",
+      "ground_truth": [
+        {
+          "lawsuit_search": {
+            "entity": [
+              "Google"
+            ],
+            "county": [
+              "Santa Clara"
+            ],
+            "state": [
+              "California",
+              "CA",
+              ""
+            ]
+          }
+        },
+        {
+          "lawsuit_search": {
+            "entity": [
+              "Facebook"
+            ],
+            "county": [
+              "San Mateo"
+            ],
+            "state": [
+              "California",
+              "CA",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "lawsuit_search",
+            "args": {
+              "entity": "Google",
+              "county": "Santa Clara",
+              "state": "California"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_199",
+      "category": "parallel",
+      "user_message": "What is the current temperature and humidity in New York, Los Angeles, London and Tokyo, if I want to include both temperature and humidity in the results?",
+      "ground_truth": [
+        {
+          "get_current_weather": {
+            "location": [
+              "New York",
+              "New York, NY",
+              "New York City",
+              "NYC"
+            ],
+            "include_temperature": [
+              true,
+              ""
+            ],
+            "include_humidity": [
+              true,
+              ""
+            ]
+          }
+        },
+        {
+          "get_current_weather": {
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "include_temperature": [
+              true,
+              ""
+            ],
+            "include_humidity": [
+              true,
+              ""
+            ]
+          }
+        },
+        {
+          "get_current_weather": {
+            "location": [
+              "London"
+            ],
+            "include_temperature": [
+              true,
+              ""
+            ],
+            "include_humidity": [
+              true,
+              ""
+            ]
+          }
+        },
+        {
+          "get_current_weather": {
+            "location": [
+              "Tokyo"
+            ],
+            "include_temperature": [
+              true,
+              ""
+            ],
+            "include_humidity": [
+              true,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_current_weather",
+            "args": {
+              "location": "New York",
+              "include_temperature": true,
+              "include_humidity": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_20",
+      "category": "parallel",
+      "user_message": "Can you check my loan eligibility for a home loan of amount $500,000 from HSBC with annual income $100,000 and for Wells Fargo for a amount of $700,000 with annual income of $120,000?",
+      "ground_truth": [
+        {
+          "loan_eligibility_check": {
+            "financial_institution": [
+              "HSBC"
+            ],
+            "loan_amount": [
+              500000
+            ],
+            "annual_income": [
+              100000
+            ]
+          }
+        },
+        {
+          "loan_eligibility_check": {
+            "financial_institution": [
+              "Wells Fargo"
+            ],
+            "loan_amount": [
+              700000
+            ],
+            "annual_income": [
+              120000
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "loan_eligibility_check",
+            "args": {
+              "financial_institution": "HSBC",
+              "loan_amount": 500000,
+              "annual_income": 100000
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_21",
+      "category": "parallel",
+      "user_message": "Show me all individuals who were convicted for money laundering from San Francisco in 2019 and ones convicted for the same in Texas in 2018",
+      "ground_truth": [
+        {
+          "law_crimes.search": {
+            "crime": [
+              "money laundering"
+            ],
+            "location": [
+              "San Francisco",
+              "SF"
+            ],
+            "year": [
+              2019
+            ]
+          }
+        },
+        {
+          "law_crimes.search": {
+            "crime": [
+              "money laundering"
+            ],
+            "location": [
+              "Texas",
+              "TX"
+            ],
+            "year": [
+              2018
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "law_crimes.search",
+            "args": {
+              "crime": "money laundering",
+              "location": "San Francisco",
+              "year": 2019
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_22",
+      "category": "parallel",
+      "user_message": "What is the status and scheduled trial date for case number XY1234 in Los Angeles County Court, and case number GH5678 in Orange County Court?",
+      "ground_truth": [
+        {
+          "court_info.get_case_status": {
+            "case_number": [
+              "XY1234"
+            ],
+            "court": [
+              "Los Angeles County Court",
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "details": [
+              "status",
+              ""
+            ]
+          }
+        },
+        {
+          "court_info.get_case_status": {
+            "case_number": [
+              "GH5678"
+            ],
+            "court": [
+              "Orange County Court",
+              "Orange County",
+              "OC"
+            ],
+            "details": [
+              "status",
+              ""
+            ]
+          }
+        },
+        {
+          "court_info.get_case_status": {
+            "case_number": [
+              "XY1234"
+            ],
+            "court": [
+              "Los Angeles County Court",
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "details": [
+              "trial_date"
+            ]
+          }
+        },
+        {
+          "court_info.get_case_status": {
+            "case_number": [
+              "GH5678"
+            ],
+            "court": [
+              "Orange County Court",
+              "Orange County",
+              "OC"
+            ],
+            "details": [
+              "trial_date"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "court_info.get_case_status",
+            "args": {
+              "case_number": "XY1234",
+              "court": "Los Angeles County Court"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_23",
+      "category": "parallel",
+      "user_message": "Please calculate the amount of alimony the payor spouse would have to pay to the recipient spouse in California for the next 10 years and 20 years if the payor spouse's monthly gross income is $10,000 and the recipient spouse's monthly gross income is $3,000.",
+      "ground_truth": [
+        {
+          "alimony_calculator.ca.calculate": {
+            "payor_income": [
+              10000
+            ],
+            "recipient_income": [
+              3000
+            ],
+            "duration": [
+              10
+            ]
+          }
+        },
+        {
+          "alimony_calculator.ca.calculate": {
+            "payor_income": [
+              10000
+            ],
+            "recipient_income": [
+              3000
+            ],
+            "duration": [
+              20
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "alimony_calculator.ca.calculate",
+            "args": {
+              "payor_income": 10000,
+              "recipient_income": 3000,
+              "duration": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_24",
+      "category": "parallel",
+      "user_message": "Can you find me case law details of Case No 28473 and 64725, their history and details of litigants?",
+      "ground_truth": [
+        {
+          "law_case.get_details": {
+            "case_number": [
+              "28473"
+            ],
+            "include_history": [
+              true
+            ],
+            "include_litigants": [
+              true
+            ]
+          }
+        },
+        {
+          "law_case.get_details": {
+            "case_number": [
+              "64725"
+            ],
+            "include_history": [
+              true
+            ],
+            "include_litigants": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "law_case.get_details",
+            "args": {
+              "case_number": "28473",
+              "include_history": true,
+              "include_litigants": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_25",
+      "category": "parallel",
+      "user_message": "List all cases against a company named 'Dara Inc' filed in 2019, Also list cases filed in the year 2018 against the same company.",
+      "ground_truth": [
+        {
+          "lawsuit.lookup": {
+            "company_name": [
+              "Dara Inc"
+            ],
+            "year": [
+              2019
+            ]
+          }
+        },
+        {
+          "lawsuit.lookup": {
+            "company_name": [
+              "Dara Inc"
+            ],
+            "year": [
+              2018
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "lawsuit.lookup",
+            "args": {
+              "company_name": "Dara Inc",
+              "year": 2019
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_26",
+      "category": "parallel",
+      "user_message": "Find details of lawsuits with case numbers '67813', '71249' filed in the New York District court for type 'Civil' and 'Criminal' cases.",
+      "ground_truth": [
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "67813"
+              ]
+            ],
+            "case_type": [
+              "Civil",
+              ""
+            ]
+          }
+        },
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "71249"
+              ]
+            ],
+            "case_type": [
+              "Criminal"
+            ]
+          }
+        },
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "67813"
+              ]
+            ],
+            "case_type": [
+              "Criminal"
+            ]
+          }
+        },
+        {
+          "court_case.find": {
+            "location": [
+              "New York District",
+              "NY District",
+              "New York",
+              "New York, NY",
+              "NY"
+            ],
+            "case_number": [
+              [
+                "71249"
+              ]
+            ],
+            "case_type": [
+              "Civil",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "DSLValidationError: unsupported case_type: Civil",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_28",
+      "category": "parallel",
+      "user_message": "What is the temperature right now and for the next three hours in Seattle and Los Angeles?",
+      "ground_truth": [
+        {
+          "get_current_and_future_temperature": {
+            "location": [
+              "Seattle",
+              "Seattle, Washington",
+              "Seattle, WA"
+            ],
+            "hours": [
+              3
+            ]
+          }
+        },
+        {
+          "get_current_and_future_temperature": {
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA",
+              "Los Angeles, California",
+              "Los Angeles, CA"
+            ],
+            "hours": [
+              3
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_current_and_future_temperature",
+            "args": {
+              "location": "Seattle",
+              "hours": 0
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_29",
+      "category": "parallel",
+      "user_message": "Find out how much waste a family of four generates in Los Angeles, assuming two children and two adults. Also, calculate waste production for a bachelor in New York.",
+      "ground_truth": [
+        {
+          "waste_calculation.calculate": {
+            "population": [
+              {
+                "adults": [
+                  2
+                ],
+                "children": [
+                  2
+                ],
+                "singles": [
+                  0
+                ]
+              }
+            ],
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ]
+          }
+        },
+        {
+          "waste_calculation.calculate": {
+            "population": [
+              {
+                "adults": [
+                  0
+                ],
+                "children": [
+                  0
+                ],
+                "singles": [
+                  1
+                ]
+              }
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "NY",
+              "New York City",
+              "NYC"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "waste_calculation.calculate",
+            "args": {
+              "population": {
+                "adults": 2,
+                "children": 2,
+                "singles": 0
+              },
+              "location": "Los Angeles"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_31",
+      "category": "parallel",
+      "user_message": "What was the Treaty of Paris about? Also, what was the importance of Magna Carta in history?",
+      "ground_truth": [
+        {
+          "history_fact.fetch": {
+            "event": [
+              "Treaty of Paris"
+            ],
+            "depth": [
+              "",
+              "detailed"
+            ],
+            "year": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "history_fact.fetch": {
+            "event": [
+              "Magna Carta"
+            ],
+            "depth": [
+              "",
+              "detailed"
+            ],
+            "year": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "history_fact.fetch",
+            "args": {
+              "event": "Treaty of Paris"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_34",
+      "category": "parallel",
+      "user_message": "I want to know the rise and fall of Christianity in Egypt and Turkey from 100 A.D to 1500 A.D.",
+      "ground_truth": [
+        {
+          "religion_history.track": {
+            "region": [
+              "Egypt"
+            ],
+            "religion": [
+              "Christianity"
+            ],
+            "start_year": [
+              100
+            ],
+            "end_year": [
+              1500
+            ]
+          }
+        },
+        {
+          "religion_history.track": {
+            "region": [
+              "Turkey"
+            ],
+            "religion": [
+              "Christianity"
+            ],
+            "start_year": [
+              100
+            ],
+            "end_year": [
+              1500
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "religion_history.track",
+            "args": {
+              "region": "Egypt",
+              "religion": "Christianity",
+              "start_year": 100,
+              "end_year": 1500
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_35",
+      "category": "parallel",
+      "user_message": "Fetch the details of the ancient empires Persian Empire and Mauryan Empire with their religious history and influences.",
+      "ground_truth": [
+        {
+          "ancient_empires.get_religion_info": {
+            "empire_name": [
+              "Mauryan Empire"
+            ],
+            "include_influences": [
+              true
+            ]
+          }
+        },
+        {
+          "ancient_empires.get_religion_info": {
+            "empire_name": [
+              "Persian Empire"
+            ],
+            "include_influences": [
+              true
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "ancient_empires.get_religion_info",
+            "args": {
+              "empire_name": "Persian Empire",
+              "include_influences": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_39",
+      "category": "parallel",
+      "user_message": "Find opening hours and ticket prices for adults and children for the National Museum in Washington D.C. and the Louvre Museum in Paris.",
+      "ground_truth": [
+        {
+          "museum_info.get_info": {
+            "location": [
+              "Washington D.C.",
+              "Washington DC"
+            ],
+            "details": [
+              [
+                "Opening hours",
+                "Adult tickets",
+                "Child tickets"
+              ],
+              [
+                "Opening hours",
+                "Child tickets",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Opening hours",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Adult tickets",
+                "Opening hours"
+              ],
+              [
+                "Adult tickets",
+                "Opening hours",
+                "Child tickets"
+              ],
+              [
+                "Adult tickets",
+                "Child tickets",
+                "Opening hours"
+              ]
+            ]
+          }
+        },
+        {
+          "museum_info.get_info": {
+            "location": [
+              "Paris"
+            ],
+            "details": [
+              [
+                "Opening hours",
+                "Adult tickets",
+                "Child tickets"
+              ],
+              [
+                "Opening hours",
+                "Child tickets",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Opening hours",
+                "Adult tickets"
+              ],
+              [
+                "Child tickets",
+                "Adult tickets",
+                "Opening hours"
+              ],
+              [
+                "Adult tickets",
+                "Opening hours",
+                "Child tickets"
+              ],
+              [
+                "Adult tickets",
+                "Child tickets",
+                "Opening hours"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "museum_info.get_info",
+            "args": {
+              "location": "Washington D.C.",
+              "details": [
+                "Opening hours",
+                "Adult tickets"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_4",
+      "category": "parallel",
+      "user_message": "Calculate the body mass index for a person who is 6 feet tall and weighs 80 kg, also for a person who is 5.6 feet and weighs 60 kg.",
+      "ground_truth": [
+        {
+          "calculate_bmi": {
+            "height": [
+              6.0
+            ],
+            "weight": [
+              80
+            ]
+          }
+        },
+        {
+          "calculate_bmi": {
+            "height": [
+              5.6
+            ],
+            "weight": [
+              60
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_bmi",
+            "args": {
+              "height": 180,
+              "weight": 80
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_40",
+      "category": "parallel",
+      "user_message": "Give me the detail of the exhibition named 'Wonder of Nature' in the Louvre museum, and 'Age of Reptiles' in the British Museum. Plus their cost per visit for children and adult.",
+      "ground_truth": [
+        {
+          "museum.exhibition_detail": {
+            "exhibition_name": [
+              "Wonder of Nature"
+            ],
+            "museum_name": [
+              "Louvre",
+              "Louvre Museum"
+            ],
+            "visitor_type": [
+              [
+                "child",
+                "adult"
+              ],
+              [
+                "adult",
+                "child"
+              ]
+            ]
+          }
+        },
+        {
+          "museum.exhibition_detail": {
+            "exhibition_name": [
+              "Age of Reptiles"
+            ],
+            "museum_name": [
+              "British Museum"
+            ],
+            "visitor_type": [
+              [
+                "child",
+                "adult"
+              ],
+              [
+                "adult",
+                "child"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "museum.exhibition_detail",
+            "args": {
+              "exhibition_name": "Wonder of Nature",
+              "museum_name": "Louvre"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_41",
+      "category": "parallel",
+      "user_message": "Show me the closest music shop where I can purchase a Yamaha acoustic guitar and a Kawai piano in San Francisco, California, and Chicago, Illinois.",
+      "ground_truth": [
+        {
+          "find_music_instrument_store": {
+            "location": [
+              "San Francisco, CA",
+              "San Francisco, CA",
+              "San Francisco, California"
+            ],
+            "instruments": [
+              [
+                "Yamaha Acoustic Guitar",
+                "Kawai Piano"
+              ],
+              [
+                "Kawai Piano",
+                "Yamaha Acoustic Guitar"
+              ],
+              [
+                "Yamaha acoustic guitar",
+                "Kawai piano"
+              ],
+              [
+                "Kawai piano",
+                "Yamaha acoustic guitar"
+              ]
+            ]
+          }
+        },
+        {
+          "find_music_instrument_store": {
+            "location": [
+              "Chicago, IL",
+              "Chicago, Illinois",
+              "Chicago, IL."
+            ],
+            "instruments": [
+              [
+                "Yamaha Acoustic Guitar",
+                "Kawai Piano"
+              ],
+              [
+                "Kawai Piano",
+                "Yamaha Acoustic Guitar"
+              ],
+              [
+                "Yamaha acoustic guitar",
+                "Kawai piano"
+              ],
+              [
+                "Kawai piano",
+                "Yamaha acoustic guitar"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "find_music_instrument_store",
+            "args": {
+              "location": "San Francisco, California",
+              "instruments": [
+                "Yamaha acoustic guitar",
+                "Kawai piano"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_48",
+      "category": "parallel",
+      "user_message": "In a game of Pokemon GO, what moves can a Pikachu learn? Also, check if Bulbasaur can learn a specific move named 'Solar Beam'.",
+      "ground_truth": [
+        {
+          "PokemonGO.get_moves": {
+            "pokemon": [
+              "Pikachu"
+            ],
+            "move": [
+              "",
+              "Run"
+            ]
+          }
+        },
+        {
+          "PokemonGO.get_moves": {
+            "pokemon": [
+              "Bulbasaur"
+            ],
+            "move": [
+              "Solar Beam"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "PokemonGO.get_moves",
+            "args": {
+              "pokemon": "pikachu"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_49",
+      "category": "parallel",
+      "user_message": "Check if the player with id 3142 in team RocketLeague has achieved top scorer status in seasons 2017, 2018 and 2019.",
+      "ground_truth": [
+        {
+          "player_status.check": {
+            "team": [
+              "RocketLeague"
+            ],
+            "player_id": [
+              3142
+            ],
+            "season": [
+              2017
+            ]
+          }
+        },
+        {
+          "player_status.check": {
+            "team": [
+              "RocketLeague"
+            ],
+            "player_id": [
+              3142
+            ],
+            "season": [
+              2018
+            ]
+          }
+        },
+        {
+          "player_status.check": {
+            "team": [
+              "RocketLeague"
+            ],
+            "player_id": [
+              3142
+            ],
+            "season": [
+              2019
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "player_status.check",
+            "args": {
+              "team": "RocketLeague",
+              "player_id": 3142,
+              "season": 2017
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_50",
+      "category": "parallel",
+      "user_message": "How to save game progress at stage 7 in easy mode and stage 3 in hard mode?",
+      "ground_truth": [
+        {
+          "game.save_progress": {
+            "stage": [
+              7
+            ],
+            "mode": [
+              "easy"
+            ],
+            "level": [
+              "user",
+              ""
+            ]
+          }
+        },
+        {
+          "game.save_progress": {
+            "stage": [
+              3
+            ],
+            "mode": [
+              "hard"
+            ],
+            "level": [
+              "user",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "game.save_progress",
+            "args": {
+              "stage": 7,
+              "mode": "easy",
+              "level": "3"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_53",
+      "category": "parallel",
+      "user_message": "Tell me a cooking recipe for 'Lasagne Bolognese' for serving 4 people and another one for 'Caesar Salad' for serving 2 people",
+      "ground_truth": [
+        {
+          "get_cooking_recipe": {
+            "dish_name": [
+              "Lasagne Bolognese"
+            ],
+            "serving_size": [
+              4
+            ]
+          }
+        },
+        {
+          "get_cooking_recipe": {
+            "dish_name": [
+              "Caesar Salad"
+            ],
+            "serving_size": [
+              2
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_cooking_recipe",
+            "args": {
+              "dish_name": "Lasagne Bolognese",
+              "serving_size": 4
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_55",
+      "category": "parallel",
+      "user_message": "Find a supermarket in New York City that opens 24 hours and another one in San Diego that offers home delivery.",
+      "ground_truth": [
+        {
+          "grocery_store.find_by_criteria": {
+            "location": [
+              "New York City",
+              "NYC"
+            ],
+            "criteria": [
+              [
+                "24 hours"
+              ]
+            ]
+          }
+        },
+        {
+          "grocery_store.find_by_criteria": {
+            "location": [
+              "SD",
+              "San Diego"
+            ],
+            "criteria": [
+              [
+                "Home Delivery"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "grocery_store.find_by_criteria",
+            "args": {
+              "location": "New York City",
+              "criteria": [
+                "24 hours"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_56",
+      "category": "parallel",
+      "user_message": "Check the hotel room availability for 'Queens Hotel' in Berlin, Germany from March 10, 2022 to March 20, 2022 and for 'Royal Hotel' in Paris, France from April 5, 2022 to April 15, 2022.",
+      "ground_truth": [
+        {
+          "hotel_booking.check_availability": {
+            "hotel_name": [
+              "Queens Hotel"
+            ],
+            "location": [
+              "Berlin, Germany"
+            ],
+            "check_in_date": [
+              "2022-03-10",
+              "03/10/2022",
+              "Mar.10,2022"
+            ],
+            "check_out_date": [
+              "2022-03-20",
+              "03/20/2022",
+              "Mar.20,2022"
+            ]
+          }
+        },
+        {
+          "hotel_booking.check_availability": {
+            "hotel_name": [
+              "Royal Hotel"
+            ],
+            "location": [
+              "Paris, France"
+            ],
+            "check_in_date": [
+              "2022-04-05",
+              "04/05/2022",
+              "Apr.5,2022"
+            ],
+            "check_out_date": [
+              "2022-04-15",
+              "04/15/2022",
+              "Apr.15,2022"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "hotel_booking.check_availability",
+            "args": {
+              "hotel_name": "Queens Hotel",
+              "location": "Berlin",
+              "check_in_date": "March 10, 2022",
+              "check_out_date": "March 20, 2022"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_57",
+      "category": "parallel",
+      "user_message": "Book a room for 2 adults and a child at the Sheraton Hotel in New York with check-in on May 1, 2022 and check-out on May 5, 2022. Also, Book a room for 1 adult and 2 children at the Marriott in Los Angeles with check-in on June 1, 2022 and check-out on June 10, 2022.",
+      "ground_truth": [
+        {
+          "hotel_booking.book": {
+            "hotel_name": [
+              "Sheraton Hotel",
+              "Sheraton"
+            ],
+            "location": [
+              "New York",
+              "New York, NY",
+              "New York City",
+              "NYC"
+            ],
+            "check_in": [
+              "2022-05-01",
+              "05/01/2022",
+              "May 1, 2022"
+            ],
+            "check_out": [
+              "2022-05-05",
+              "05/05/2022",
+              "May 5, 2022"
+            ],
+            "adults": [
+              2
+            ],
+            "children": [
+              1
+            ]
+          }
+        },
+        {
+          "hotel_booking.book": {
+            "hotel_name": [
+              "Marriott"
+            ],
+            "location": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "check_in": [
+              "2022-06-01",
+              "06/01/2022",
+              "June 1, 2022"
+            ],
+            "check_out": [
+              "2022-06-10",
+              "06/10/2022",
+              "June 10, 2022"
+            ],
+            "adults": [
+              1
+            ],
+            "children": [
+              2
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "hotel_booking.book",
+            "args": {
+              "hotel_name": "Sheraton Hotel",
+              "location": "New York",
+              "check_in": "May 1, 2022",
+              "check_out": "May 5, 2022",
+              "adults": 2,
+              "children": 1
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_58",
+      "category": "parallel",
+      "user_message": "Get me the currency exchange rates of the following pairs: USD to AUD and USD to CAD?",
+      "ground_truth": [
+        {
+          "get_exchange_rate": {
+            "base_currency": [
+              "USD"
+            ],
+            "target_currency": [
+              "AUD"
+            ]
+          }
+        },
+        {
+          "get_exchange_rate": {
+            "base_currency": [
+              "USD"
+            ],
+            "target_currency": [
+              "CAD"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_exchange_rate",
+            "args": {
+              "base_currency": "USD",
+              "target_currency": "AUD"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_59",
+      "category": "parallel",
+      "user_message": "How much will it cost in dollars if I transfer 15000 Euro to dollars? and how much if I convert 200 pounds to dollars?",
+      "ground_truth": [
+        {
+          "get_conversion_cost": {
+            "amount": [
+              15000
+            ],
+            "from_currency": [
+              "Euro",
+              "EUR"
+            ],
+            "to_currency": [
+              "dollars",
+              "USD",
+              "Dollar"
+            ]
+          }
+        },
+        {
+          "get_conversion_cost": {
+            "amount": [
+              200
+            ],
+            "from_currency": [
+              "pounds",
+              "GBP"
+            ],
+            "to_currency": [
+              "dollars",
+              "USD"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_conversion_cost",
+            "args": {
+              "amount": 15000,
+              "from_currency": "Euro",
+              "to_currency": "USD"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_6",
+      "category": "parallel",
+      "user_message": "Calculate the amount of sales tax to be added on a purchase amount of $30.45 in Chicago, Illinois, $52.33 in Sacramento, California and $11.23 in Portland, Oregon.",
+      "ground_truth": [
+        {
+          "calculate_sales_tax": {
+            "purchase_amount": [
+              30.45
+            ],
+            "city": [
+              "Chicago",
+              "CHI"
+            ],
+            "state": [
+              "IL",
+              "Illinois"
+            ]
+          }
+        },
+        {
+          "calculate_sales_tax": {
+            "purchase_amount": [
+              52.33
+            ],
+            "city": [
+              "Sacramento"
+            ],
+            "state": [
+              "CA",
+              "California"
+            ]
+          }
+        },
+        {
+          "calculate_sales_tax": {
+            "purchase_amount": [
+              11.23
+            ],
+            "city": [
+              "Portland"
+            ],
+            "state": [
+              "OR",
+              "Oregon"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_sales_tax",
+            "args": {
+              "purchase_amount": 30.45,
+              "city": "Chicago",
+              "state": "Illinois"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_62",
+      "category": "parallel",
+      "user_message": "\"Can you help me find the roots of two quadratic equations? The first equation is 3x^2 + 4x + 2 = 0, where 'a' is the coefficient of x^2, 'b' is the coefficient of x, and 'c' is the constant term. The second equation is 5x^2 - 7x + 3 = 0, where 'a' is the coefficient of x^2, 'b' is the coefficient of x, and 'c' is the constant term.\"",
+      "ground_truth": [
+        {
+          "algebra.quadratic_roots": {
+            "a": [
+              3
+            ],
+            "b": [
+              4
+            ],
+            "c": [
+              2
+            ]
+          }
+        },
+        {
+          "algebra.quadratic_roots": {
+            "a": [
+              5
+            ],
+            "b": [
+              -7
+            ],
+            "c": [
+              3
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "algebra.quadratic_roots",
+            "args": {
+              "a": 3,
+              "b": 4,
+              "c": 2
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_67",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the area of two circles, one with a radius of 5 meters and the other with a radius of 10 meters, and then compare the two areas to determine which circle is larger and by how much?\"",
+      "ground_truth": [
+        {
+          "geometry.calculate_area_circle": {
+            "radius": [
+              5
+            ],
+            "unit": [
+              "meters",
+              "m"
+            ]
+          }
+        },
+        {
+          "geometry.calculate_area_circle": {
+            "radius": [
+              10
+            ],
+            "unit": [
+              "meters",
+              "m"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "geometry.calculate_area_circle",
+            "args": {
+              "radius": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_68",
+      "category": "parallel",
+      "user_message": "\"John is working on a project where he needs to calculate the area of two right-angled triangles. The first triangle has a base of 12 meters and a height of 15 meters. The second triangle has a base of 18 meters and a height of 24 meters. He wants to know the total area of these two triangles in square meters. Can you help him calculate this?\"",
+      "ground_truth": [
+        {
+          "calculate_area": {
+            "base": [
+              12
+            ],
+            "height": [
+              15
+            ],
+            "unit": [
+              "m",
+              "meters",
+              "meter"
+            ]
+          }
+        },
+        {
+          "calculate_area": {
+            "base": [
+              18
+            ],
+            "height": [
+              24
+            ],
+            "unit": [
+              "m",
+              "meters",
+              "meter"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_area",
+            "args": {
+              "base": 12,
+              "height": 15
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_7",
+      "category": "parallel",
+      "user_message": "Find the factorial of 5,10 and 15.",
+      "ground_truth": [
+        {
+          "math.factorial": {
+            "number": [
+              5
+            ]
+          }
+        },
+        {
+          "math.factorial": {
+            "number": [
+              10
+            ]
+          }
+        },
+        {
+          "math.factorial": {
+            "number": [
+              15
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "math.factorial",
+            "args": {
+              "number": 5
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_70",
+      "category": "parallel",
+      "user_message": "What is the combined circumference of four circles, where the first circle has a radius of 5m, the second circle has a radius of 10m, the third circle has a radius of 15m, and the fourth circle has a radius of 20m, and I want the output in meters?",
+      "ground_truth": [
+        {
+          "geometry.circumference": {
+            "radius": [
+              5
+            ],
+            "units": [
+              "m",
+              "meters"
+            ]
+          }
+        },
+        {
+          "geometry.circumference": {
+            "radius": [
+              10
+            ],
+            "units": [
+              "m",
+              "meters",
+              ""
+            ]
+          }
+        },
+        {
+          "geometry.circumference": {
+            "radius": [
+              15
+            ],
+            "units": [
+              "m",
+              "meters",
+              ""
+            ]
+          }
+        },
+        {
+          "geometry.circumference": {
+            "radius": [
+              20
+            ],
+            "units": [
+              "m",
+              "meters",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "geometry.circumference",
+            "args": {
+              "radius": 5,
+              "units": "meters"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_71",
+      "category": "parallel",
+      "user_message": "\"Could you calculate the derivative of the polynomial function '3x^3 - 2x^2 + 5x - 7' and then evaluate this derivative at x=4? After that, could you also calculate the derivative of the resulting function and evaluate it at x=2?\"",
+      "ground_truth": [
+        {
+          "calculate_derivative": {
+            "function": [
+              "3x**3 - 2x**2 + 5x - 7",
+              "lambda x: 3x**3 - 2x**2 + 5x - 7"
+            ],
+            "x_value": [
+              4
+            ]
+          }
+        },
+        {
+          "calculate_derivative": {
+            "function": [
+              "9x**2 - 4x + 5",
+              "lambda x: 9x**2 - 4x + 5"
+            ],
+            "x_value": [
+              2
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_derivative",
+            "args": {
+              "function": "3x^3 - 2x^2 + 5x - 7",
+              "x_value": 4
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_74",
+      "category": "parallel",
+      "user_message": "What are the prime factors of the number 4567 and 7890, and can you provide these in a formatted string as well as an array?",
+      "ground_truth": [
+        {
+          "get_prime_factors": {
+            "number": [
+              4567
+            ],
+            "formatted": [
+              true
+            ]
+          }
+        },
+        {
+          "get_prime_factors": {
+            "number": [
+              4567
+            ],
+            "formatted": [
+              false
+            ]
+          }
+        },
+        {
+          "get_prime_factors": {
+            "number": [
+              7890
+            ],
+            "formatted": [
+              true
+            ]
+          }
+        },
+        {
+          "get_prime_factors": {
+            "number": [
+              7890
+            ],
+            "formatted": [
+              false
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_prime_factors",
+            "args": {
+              "number": 4567,
+              "formatted": true
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_75",
+      "category": "parallel",
+      "user_message": "What are the prime factors of the numbers 45, 100, and 150?",
+      "ground_truth": [
+        {
+          "number_analysis.prime_factors": {
+            "number": [
+              45
+            ]
+          }
+        },
+        {
+          "number_analysis.prime_factors": {
+            "number": [
+              100
+            ]
+          }
+        },
+        {
+          "number_analysis.prime_factors": {
+            "number": [
+              150
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "number_analysis.prime_factors",
+            "args": {
+              "number": 45
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_77",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the highest common factor of the pair of numbers (45, 60) and then use that result to find the highest common factor with another pair of numbers (90, 120)? Please also find the highest common factor of the pair (36, 48) and then find the highest common factor of that result with the pair (72, 96).\"",
+      "ground_truth": [
+        {
+          "math.hcf": {
+            "number1": [
+              45
+            ],
+            "number2": [
+              60
+            ]
+          }
+        },
+        {
+          "math.hcf": {
+            "number1": [
+              90
+            ],
+            "number2": [
+              120
+            ]
+          }
+        },
+        {
+          "math.hcf": {
+            "number1": [
+              36
+            ],
+            "number2": [
+              48
+            ]
+          }
+        },
+        {
+          "math.hcf": {
+            "number1": [
+              72
+            ],
+            "number2": [
+              96
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "math.hcf",
+            "args": {
+              "number1": 45,
+              "number2": 60
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_8",
+      "category": "parallel",
+      "user_message": "Fetch the population of New York City, NY,  and Los Angeles, CA from US Census Database, and also get the population data for Alaska state and USA",
+      "ground_truth": [
+        {
+          "database_us_census.get_population": {
+            "area": [
+              "New York City",
+              "NY",
+              "New York City, NY",
+              "NYC"
+            ],
+            "type": [
+              "city"
+            ],
+            "year": [
+              "",
+              2000
+            ]
+          }
+        },
+        {
+          "database_us_census.get_population": {
+            "area": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "CA",
+              "Los Angeles, CA"
+            ],
+            "type": [
+              "city"
+            ],
+            "year": [
+              "",
+              2000
+            ]
+          }
+        },
+        {
+          "database_us_census.get_population": {
+            "area": [
+              "Alaska"
+            ],
+            "type": [
+              "state"
+            ],
+            "year": [
+              "",
+              2000
+            ]
+          }
+        },
+        {
+          "database_us_census.get_population": {
+            "area": [
+              "USA",
+              "United States",
+              "United States of America"
+            ],
+            "type": [
+              "country"
+            ],
+            "year": [
+              "",
+              2000
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "database_us_census.get_population",
+            "args": {
+              "area": "New York City, NY",
+              "type": "city"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_81",
+      "category": "parallel",
+      "user_message": "\"Imagine you are conducting a physics experiment where you are dropping objects from different heights and observing their final velocities. You drop a tennis ball from a height of 10 meters with an initial velocity of 0 m/s and then from a height of 20 meters with the same initial velocity. You also drop a baseball from a height of 15 meters with an initial velocity of 0 m/s and then from a height of 25 meters with the same initial velocity. Assuming the acceleration due to gravity is approximately 9.81 m/s^2, can you calculate the final velocities of the tennis ball and the baseball for each drop?\"",
+      "ground_truth": [
+        {
+          "calculate_final_velocity": {
+            "height": [
+              10
+            ],
+            "initial_velocity": [
+              0
+            ],
+            "gravity": [
+              9.81,
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_final_velocity": {
+            "height": [
+              20
+            ],
+            "initial_velocity": [
+              0
+            ],
+            "gravity": [
+              9.81,
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_final_velocity": {
+            "height": [
+              15
+            ],
+            "initial_velocity": [
+              0
+            ],
+            "gravity": [
+              9.81,
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_final_velocity": {
+            "height": [
+              25
+            ],
+            "initial_velocity": [
+              0
+            ],
+            "gravity": [
+              9.81,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_final_velocity",
+            "args": {
+              "height": 10,
+              "initial_velocity": 0,
+              "gravity": 9.81
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_82",
+      "category": "parallel",
+      "user_message": "A group of cyclists are planning a two-day cycling trip. On the first day, they plan to cover a distance of 120 kilometers in 5 hours. On the second day, they plan to cover a distance of 150 kilometers in 6 hours. They want to know their average velocity for each day in km/h. Could you calculate their velocity for each day using the 'calculate_velocity' function?",
+      "ground_truth": [
+        {
+          "calculate_velocity": {
+            "distance": [
+              120
+            ],
+            "duration": [
+              5
+            ],
+            "unit": [
+              "km/h",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_velocity": {
+            "distance": [
+              150
+            ],
+            "duration": [
+              6
+            ],
+            "unit": [
+              "km/h",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_velocity",
+            "args": {
+              "distance": 120,
+              "duration": 5,
+              "unit": "km/h"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_86",
+      "category": "parallel",
+      "user_message": "\"Imagine you are conducting an experiment with two different objects. The first object is accelerated at a rate of 5 m/s^2 and travels a distance of 100 meters. The second object is accelerated at a rate of 10 m/s^2 and travels a distance of 200 meters. Both objects start from rest. Can you calculate the final velocity of each object using the kinematics.final_velocity_from_distance function?\"",
+      "ground_truth": [
+        {
+          "kinematics.final_velocity_from_distance": {
+            "acceleration": [
+              5
+            ],
+            "distance": [
+              100
+            ],
+            "initial_velocity": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "kinematics.final_velocity_from_distance": {
+            "acceleration": [
+              10
+            ],
+            "distance": [
+              200
+            ],
+            "initial_velocity": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "kinematics.final_velocity_from_distance",
+            "args": {
+              "acceleration": 5,
+              "distance": 100
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_87",
+      "category": "parallel",
+      "user_message": "\"Imagine you are observing two racing cars on a straight track. The first car, Car A, starts from rest and accelerates at a rate of 6 m/s² for 10 seconds. The second car, Car B, starts with an initial velocity of 20 m/s and accelerates at a rate of 4 m/s² for 15 seconds. Using the function 'calculate_final_velocity', can you determine the final velocities of both Car A and Car B?\"",
+      "ground_truth": [
+        {
+          "calculate_final_velocity": {
+            "initial_velocity": [
+              0
+            ],
+            "acceleration": [
+              6
+            ],
+            "time": [
+              10
+            ]
+          }
+        },
+        {
+          "calculate_final_velocity": {
+            "initial_velocity": [
+              20
+            ],
+            "acceleration": [
+              4
+            ],
+            "time": [
+              15
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_final_velocity",
+            "args": {
+              "initial_velocity": 0,
+              "acceleration": 6,
+              "time": 10
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_88",
+      "category": "parallel",
+      "user_message": "\"An experiment was conducted where two objects were dropped from different heights without air resistance. The first object had an initial velocity of 0 m/s and was dropped from a height of 10 meters. The second object had an initial velocity of 5 m/s and was dropped from a height of 20 meters. Assuming the gravitational acceleration to be 9.8 m/s^2, can you calculate the final speed of both objects?\"",
+      "ground_truth": [
+        {
+          "calculate_final_speed": {
+            "initial_velocity": [
+              0,
+              ""
+            ],
+            "height": [
+              10
+            ],
+            "gravity": [
+              9.8,
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_final_speed": {
+            "initial_velocity": [
+              5
+            ],
+            "height": [
+              20
+            ],
+            "gravity": [
+              9.8,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_final_speed",
+            "args": {
+              "initial_velocity": 0,
+              "height": 10,
+              "gravity": 9.8
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_89",
+      "category": "parallel",
+      "user_message": "Can you provide me with the fastest route from my home in San Francisco to my office in Palo Alto and then a scenic route from Palo Alto to the Golden Gate Bridge in San Francisco, and finally the fastest route back to my home from the Golden Gate Bridge?",
+      "ground_truth": [
+        {
+          "get_directions": {
+            "start_location": [
+              "San Francisco",
+              "SF"
+            ],
+            "end_location": [
+              "Palo Alto"
+            ],
+            "route_type": [
+              "fastest"
+            ]
+          }
+        },
+        {
+          "get_directions": {
+            "start_location": [
+              "Palo Alto"
+            ],
+            "end_location": [
+              "Golden Gate Bridge in San Francisco",
+              "Golden Gate Bridge, San Francisco",
+              "Golden Gate Bridge"
+            ],
+            "route_type": [
+              "scenic"
+            ]
+          }
+        },
+        {
+          "get_directions": {
+            "start_location": [
+              "Golden Gate Bridge in San Francisco",
+              "Golden Gate Bridge, San Francisco",
+              "Golden Gate Bridge"
+            ],
+            "end_location": [
+              "San Francisco",
+              "SF"
+            ],
+            "route_type": [
+              "fastest"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_directions",
+            "args": {
+              "start_location": "San Francisco",
+              "end_location": "Palo Alto",
+              "route_type": "fastest"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_9",
+      "category": "parallel",
+      "user_message": "Find two movie theatres near San Diego with availability for Tenet at 5 pm and No Time To Die at 7:30 pm.",
+      "ground_truth": [
+        {
+          "find_movie_showing": {
+            "location": [
+              "San Diego",
+              "San Diego, CA",
+              "CA"
+            ],
+            "movie": [
+              [
+                "Tenet"
+              ]
+            ],
+            "time": [
+              [
+                "5 pm"
+              ],
+              [
+                "17:00"
+              ]
+            ]
+          }
+        },
+        {
+          "find_movie_showing": {
+            "location": [
+              "San Diego",
+              "San Diego, CA",
+              "CA"
+            ],
+            "movie": [
+              [
+                "No Time To Die"
+              ]
+            ],
+            "time": [
+              [
+                "7:30 pm"
+              ],
+              [
+                "19:30"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "find_movie_showing",
+            "args": {
+              "location": "San Diego",
+              "movie": [
+                "Tenet",
+                "No Time To Die"
+              ],
+              "time": [
+                "5:00 PM",
+                "7:30 PM"
+              ]
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_90",
+      "category": "parallel",
+      "user_message": "Can you generate a travel itinerary for a 7-day trip to Tokyo with a daily budget of $200 focusing on urban exploration, then do the same for a 10-day trip to Paris with a daily budget of $150 focusing on history, followed by a 5-day trip to Sydney with a daily budget of $100 focusing on nature, and finally a 12-day trip to Rome with a daily budget of $180 focusing on culture?",
+      "ground_truth": [
+        {
+          "travel_itinerary_generator": {
+            "destination": [
+              "Tokyo"
+            ],
+            "days": [
+              7
+            ],
+            "daily_budget": [
+              200
+            ],
+            "exploration_type": [
+              "urban",
+              ""
+            ]
+          }
+        },
+        {
+          "travel_itinerary_generator": {
+            "destination": [
+              "Paris"
+            ],
+            "days": [
+              10
+            ],
+            "daily_budget": [
+              150
+            ],
+            "exploration_type": [
+              "history"
+            ]
+          }
+        },
+        {
+          "travel_itinerary_generator": {
+            "destination": [
+              "Sydney"
+            ],
+            "days": [
+              5
+            ],
+            "daily_budget": [
+              100
+            ],
+            "exploration_type": [
+              "nature"
+            ]
+          }
+        },
+        {
+          "travel_itinerary_generator": {
+            "destination": [
+              "Rome"
+            ],
+            "days": [
+              12
+            ],
+            "daily_budget": [
+              180
+            ],
+            "exploration_type": [
+              "culture"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "travel_itinerary_generator",
+            "args": {
+              "destination": "Tokyo",
+              "days": 7,
+              "daily_budget": 200,
+              "exploration_type": "urban"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_91",
+      "category": "parallel",
+      "user_message": "Can you help me find vegan restaurants in Los Angeles, CA that are open until at least 22:00, and then do the same for San Francisco, CA and Seattle, WA?",
+      "ground_truth": [
+        {
+          "vegan_restaurant.find_nearby": {
+            "location": [
+              "Los Angeles, CA",
+              "Los Angeles",
+              "LA, CA"
+            ],
+            "operating_hours": [
+              22
+            ]
+          }
+        },
+        {
+          "vegan_restaurant.find_nearby": {
+            "location": [
+              "San Francisco, CA",
+              "San Francisco",
+              "SF, CA"
+            ],
+            "operating_hours": [
+              22
+            ]
+          }
+        },
+        {
+          "vegan_restaurant.find_nearby": {
+            "location": [
+              "Seattle, WA",
+              "Seattle",
+              "WA"
+            ],
+            "operating_hours": [
+              22
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "vegan_restaurant.find_nearby",
+            "args": {
+              "location": "Los Angeles, CA",
+              "operating_hours": 2200
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_92",
+      "category": "parallel",
+      "user_message": "What is the shortest driving distance in miles from New York City to Los Angeles and then from Los Angeles to Miami, considering that you have to return to New York City from Miami?",
+      "ground_truth": [
+        {
+          "get_shortest_driving_distance": {
+            "origin": [
+              "New York City",
+              "NYC"
+            ],
+            "destination": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "unit": [
+              "miles",
+              "mile"
+            ]
+          }
+        },
+        {
+          "get_shortest_driving_distance": {
+            "origin": [
+              "Los Angeles",
+              "Los Angeles, CA",
+              "LA"
+            ],
+            "destination": [
+              "Miami"
+            ],
+            "unit": [
+              "miles",
+              "mile"
+            ]
+          }
+        },
+        {
+          "get_shortest_driving_distance": {
+            "origin": [
+              "Miami"
+            ],
+            "destination": [
+              "New York City",
+              "NYC"
+            ],
+            "unit": [
+              "miles",
+              "mile"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "get_shortest_driving_distance",
+            "args": {
+              "origin": "New York City",
+              "destination": "Los Angeles",
+              "unit": "miles"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_93",
+      "category": "parallel",
+      "user_message": "What would be the estimated travel time if I start my journey from New York, make stops at Philadelphia, Washington D.C., and Atlanta, and finally reach Miami? Also, what if I skip the stop at Atlanta and directly go to Miami from Washington D.C.? And lastly, what if I start from Philadelphia instead of New York, stop at Washington D.C., and then reach Miami?",
+      "ground_truth": [
+        {
+          "route.estimate_time": {
+            "start_location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "Atlanta"
+              ],
+              [
+                "Atlanta",
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Atlanta",
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Atlanta",
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "Atlanta"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "Atlanta"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "Atlanta"
+              ]
+            ]
+          }
+        },
+        {
+          "route.estimate_time": {
+            "start_location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Washington D.C."
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C."
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "New York"
+              ],
+              [
+                "Philadelphia",
+                "Washington D.C.",
+                "NYC"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "New York"
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia",
+                "NYC"
+              ]
+            ]
+          }
+        },
+        {
+          "route.estimate_time": {
+            "start_location": [
+              "Philadelphia"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Washington D.C."
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia"
+              ]
+            ]
+          }
+        }
+      ],
+      "predicted": null,
+      "error": "JSONDecodeError: Expecting ',' delimiter: line 1 column 112 (char 111)",
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_94",
+      "category": "parallel",
+      "user_message": "\"In a physics experiment, you are given two charges. The first charge is 5 coulombs and is placed at a distance of 2 meters from the point where the electric field is being measured. The second charge is 3 coulombs and is placed at a distance of 4 meters from the same point. The experiment is conducted in a vacuum. Can you calculate the electric field produced by each charge at the point of measurement by invoking the 'calculate_electric_field' function?\"",
+      "ground_truth": [
+        {
+          "calculate_electric_field": {
+            "charge": [
+              5
+            ],
+            "distance": [
+              2
+            ],
+            "permitivity": [
+              "",
+              0
+            ]
+          }
+        },
+        {
+          "calculate_electric_field": {
+            "charge": [
+              3
+            ],
+            "distance": [
+              4
+            ],
+            "permitivity": [
+              "",
+              0
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_electric_field",
+            "args": {
+              "charge": 5,
+              "distance": 2
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_96",
+      "category": "parallel",
+      "user_message": "\"In a physics experiment, you are given two charges. The first charge has a magnitude of 5 coulombs and the second charge has a magnitude of 10 coulombs. These charges are placed at a distance of 2 meters from each other. You are asked to calculate the electromagnetic force between these charges. You perform the experiment twice. The first time, the charges are placed in a vacuum, which has a permittivity of 8.854 x 10^-12 F/m. The second time, the charges are placed in a medium with a relative permittivity of 5 x 10^-12 F/m. Can you calculate the electromagnetic force between the charges in both scenarios?\"",
+      "ground_truth": [
+        {
+          "electromagnetic_force": {
+            "charge1": [
+              5
+            ],
+            "charge2": [
+              10
+            ],
+            "distance": [
+              2
+            ],
+            "medium_permittivity": [
+              8.854e-12,
+              ""
+            ]
+          }
+        },
+        {
+          "electromagnetic_force": {
+            "charge1": [
+              5
+            ],
+            "charge2": [
+              10
+            ],
+            "distance": [
+              2
+            ],
+            "medium_permittivity": [
+              5e-12,
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "electromagnetic_force",
+            "args": {
+              "charge1": 5,
+              "charge2": 10,
+              "distance": 2,
+              "medium_permittivity": 8.854
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_97",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the resonant frequency of an LC circuit with an inductance of 0.005 henries and a capacitance of 0.0000001 farads, and then round off the result to 3 decimal places? After that, can you calculate it again with an inductance of 0.007 henries and a capacitance of 0.0000002 farads, rounding off the result to 4 decimal places?\"",
+      "ground_truth": [
+        {
+          "calculate_resonant_frequency": {
+            "inductance": [
+              0.005
+            ],
+            "capacitance": [
+              1e-07
+            ],
+            "round_off": [
+              3
+            ]
+          }
+        },
+        {
+          "calculate_resonant_frequency": {
+            "inductance": [
+              0.007
+            ],
+            "capacitance": [
+              2e-07
+            ],
+            "round_off": [
+              4
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_resonant_frequency",
+            "args": {
+              "inductance": 0.005,
+              "capacitance": 1e-07
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_98",
+      "category": "parallel",
+      "user_message": "\"Can you calculate the electric field strength at a distance of 0.5 meters from a point charge of 2 Coulombs located in a vacuum? Then, can you also calculate the electric field strength at a distance of 1 meter and 2 meters from the same point charge? Lastly, can you calculate the electric field strength at a distance of 1 meter from the same point charge but this time located in air?\"",
+      "ground_truth": [
+        {
+          "calculate_electric_field_strength": {
+            "charge": [
+              2
+            ],
+            "distance": [
+              0.5
+            ],
+            "medium": [
+              "vacuum",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_electric_field_strength": {
+            "charge": [
+              2
+            ],
+            "distance": [
+              1.0
+            ],
+            "medium": [
+              "vacuum",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_electric_field_strength": {
+            "charge": [
+              2
+            ],
+            "distance": [
+              2.0
+            ],
+            "medium": [
+              "vacuum",
+              ""
+            ]
+          }
+        },
+        {
+          "calculate_electric_field_strength": {
+            "charge": [
+              2
+            ],
+            "distance": [
+              1.0
+            ],
+            "medium": [
+              "air"
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "calculate_electric_field_strength",
+            "args": {
+              "charge": 2,
+              "distance": 0.5,
+              "medium": "vacuum"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    },
+    {
+      "id": "parallel_99",
+      "category": "parallel",
+      "user_message": "\"Can you help me calculate the energy required for a phase change? I have a science experiment where I am first melting 500 grams of ice at 0 degrees Celsius, then I am freezing it back. After that, I am vaporizing the same mass of water at 100 degrees Celsius and then condensing it back to liquid state. The substance I am using for this experiment is water. Can you tell me how much energy is required or released during each of these phase changes?\"",
+      "ground_truth": [
+        {
+          "thermo.calculate_energy": {
+            "mass": [
+              500
+            ],
+            "phase_transition": [
+              "melting"
+            ],
+            "substance": [
+              "water",
+              ""
+            ]
+          }
+        },
+        {
+          "thermo.calculate_energy": {
+            "mass": [
+              500
+            ],
+            "phase_transition": [
+              "freezing"
+            ],
+            "substance": [
+              "water",
+              ""
+            ]
+          }
+        },
+        {
+          "thermo.calculate_energy": {
+            "mass": [
+              500
+            ],
+            "phase_transition": [
+              "vaporization"
+            ],
+            "substance": [
+              "water",
+              ""
+            ]
+          }
+        },
+        {
+          "thermo.calculate_energy": {
+            "mass": [
+              500
+            ],
+            "phase_transition": [
+              "condensation"
+            ],
+            "substance": [
+              "water",
+              ""
+            ]
+          }
+        }
+      ],
+      "predicted": {
+        "calls": [
+          {
+            "action": "thermo.calculate_energy",
+            "args": {
+              "mass": 500,
+              "phase_transition": "melting",
+              "substance": "water"
+            }
+          }
+        ]
+      },
+      "error": null,
+      "grade_error_type": "parallel_function_checker_no_order:wrong_count",
+      "grade_errors": [
+        "Wrong number of functions."
+      ]
+    }
+  ],
+  "llm": "qwen-native",
+  "bfcl_categories": [
+    "parallel"
+  ],
+  "bfcl_per_category": 100,
+  "bfcl_skip_per_category": 0,
+  "bfcl_allow_empty_calls": false
+}

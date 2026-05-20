@@ -1,0 +1,1366 @@
+{
+  "simple_python": {
+    "category": "simple_python",
+    "n_total": 100,
+    "n_failed": 12,
+    "tags": {
+      "W7": 5,
+      "W6": 3,
+      "W4": 3,
+      "W8": 2,
+      "WOK": 1
+    },
+    "examples": {
+      "W6": [
+        {
+          "id": "simple_python_116",
+          "action": "probabilities.calculate_single",
+          "pred_args": {
+            "total_outcomes": 52,
+            "event_outcomes": 4,
+            "round": 1
+          },
+          "gt_spec": {
+            "total_outcomes": [
+              52
+            ],
+            "event_outcomes": [
+              4
+            ],
+            "round": [
+              2,
+              ""
+            ]
+          }
+        },
+        {
+          "id": "simple_python_136",
+          "action": "compound_interest",
+          "pred_args": {
+            "principal": 10000,
+            "annual_rate": 0.05,
+            "compounding_freq": "monthly",
+            "time_in_years": 5
+          },
+          "gt_spec": {
+            "principal": [
+              10000
+            ],
+            "annual_rate": [
+              5.0
+            ],
+            "compounding_freq": [
+              "monthly"
+            ],
+            "time_in_years": [
+              5
+            ]
+          }
+        },
+        {
+          "id": "simple_python_214",
+          "action": "event_finder.find_upcoming",
+          "pred_args": {
+            "location": "New York",
+            "genre": "Rock",
+            "days_ahead": 1
+          },
+          "gt_spec": {
+            "location": [
+              "New York",
+              "New York, NY",
+              "NYC"
+            ],
+            "genre": [
+              "Rock",
+              "rock"
+            ],
+            "days_ahead": [
+              30
+            ]
+          }
+        }
+      ],
+      "W7": [
+        {
+          "id": "simple_python_13",
+          "action": "calculate_area_under_curve",
+          "pred_args": {
+            "function": "area_under_curve",
+            "interval": [
+              1,
+              3
+            ],
+            "method": "integral"
+          },
+          "gt_spec": {
+            "function": [
+              "x**2",
+              "lambda x: x**2",
+              "y=x**2"
+            ],
+            "interval": [
+              [
+                1.0,
+                3.0
+              ]
+            ],
+            "method": [
+              "",
+              "trapezoidal"
+            ]
+          }
+        },
+        {
+          "id": "simple_python_13",
+          "action": "calculate_area_under_curve",
+          "pred_args": {
+            "function": "area_under_curve",
+            "interval": [
+              1,
+              3
+            ],
+            "method": "integral"
+          },
+          "gt_spec": {
+            "function": [
+              "x**2",
+              "lambda x: x**2",
+              "y=x**2"
+            ],
+            "interval": [
+              [
+                1.0,
+                3.0
+              ]
+            ],
+            "method": [
+              "",
+              "trapezoidal"
+            ]
+          }
+        },
+        {
+          "id": "simple_python_142",
+          "action": "get_stock_price",
+          "pred_args": {
+            "company_name": "Amazon",
+            "date": "March 11, 2022",
+            "exchange": "NASDAQ"
+          },
+          "gt_spec": {
+            "company_name": [
+              "Amazon",
+              "AMZN"
+            ],
+            "date": [
+              "2022-03-11"
+            ],
+            "exchange": [
+              "NASDAQ",
+              ""
+            ]
+          }
+        }
+      ],
+      "W4": [
+        {
+          "id": "simple_python_327",
+          "action": "sports_team.get_schedule",
+          "pred_args": {
+            "team_name": "Manchester United",
+            "num_of_games": 6,
+            "league": "Premier League",
+            "location": "Manchester United"
+          },
+          "gt_spec": {
+            "team_name": [
+              "Manchester United",
+              "Man United",
+              "Man U",
+              "MUFC"
+            ],
+            "num_of_games": [
+              6
+            ],
+            "league": [
+              "Premier League"
+            ],
+            "location": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "simple_python_353",
+          "action": "find_recipes",
+          "pred_args": {
+            "diet": "gluten-free",
+            "meal_type": "dinner",
+            "ingredients": []
+          },
+          "gt_spec": {
+            "diet": [
+              "gluten-free"
+            ],
+            "meal_type": [
+              "dinner"
+            ],
+            "ingredients": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "simple_python_379",
+          "action": "get_current_time",
+          "pred_args": {
+            "location": "Sydney",
+            "country": "Australia",
+            "timezone": "Australia/Sydney"
+          },
+          "gt_spec": {
+            "location": [
+              "Sydney"
+            ],
+            "country": [
+              "Australia",
+              "Australia/Sydney"
+            ],
+            "timezone": [
+              ""
+            ]
+          }
+        }
+      ],
+      "W8": [
+        {
+          "id": "simple_python_83",
+          "action": "calculate_distance",
+          "pred_args": {
+            "coord1": [
+              33.4484,
+              112.074
+            ],
+            "coord2": [
+              34.0522,
+              118.2437
+            ],
+            "unit": "miles"
+          },
+          "gt_spec": {
+            "coord1": [
+              [
+                33.4484,
+                -112.074
+              ]
+            ],
+            "coord2": [
+              [
+                34.0522,
+                -118.2437
+              ]
+            ],
+            "unit": [
+              "miles"
+            ]
+          }
+        },
+        {
+          "id": "simple_python_83",
+          "action": "calculate_distance",
+          "pred_args": {
+            "coord1": [
+              33.4484,
+              112.074
+            ],
+            "coord2": [
+              34.0522,
+              118.2437
+            ],
+            "unit": "miles"
+          },
+          "gt_spec": {
+            "coord1": [
+              [
+                33.4484,
+                -112.074
+              ]
+            ],
+            "coord2": [
+              [
+                34.0522,
+                -118.2437
+              ]
+            ],
+            "unit": [
+              "miles"
+            ]
+          }
+        }
+      ],
+      "WOK": [
+        {
+          "id": "simple_python_87",
+          "action": "array_sort",
+          "pred_args": {
+            "list": [
+              5,
+              3,
+              4,
+              1,
+              2
+            ],
+            "order": "ascending"
+          },
+          "gt_spec": {
+            "list": [
+              [
+                5.0,
+                3.0,
+                4.0,
+                1.0,
+                2.0
+              ]
+            ],
+            "order": [
+              "ascending"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "multiple": {
+    "category": "multiple",
+    "n_total": 100,
+    "n_failed": 16,
+    "tags": {
+      "W7": 8,
+      "W4": 5,
+      "W6": 2,
+      "W1": 1,
+      "W5": 1,
+      "W8": 1
+    },
+    "examples": {
+      "W6": [
+        {
+          "id": "multiple_124",
+          "action": "probabilities.calculate_single",
+          "pred_args": {
+            "total_outcomes": 52,
+            "event_outcomes": 4,
+            "round": 1
+          },
+          "gt_spec": {
+            "total_outcomes": [
+              52
+            ],
+            "event_outcomes": [
+              4
+            ],
+            "round": [
+              "",
+              2
+            ]
+          }
+        },
+        {
+          "id": "multiple_129",
+          "action": "compound_interest",
+          "pred_args": {
+            "principal": 10000,
+            "annual_rate": 0.05,
+            "compounding_freq": "monthly",
+            "time_in_years": 5
+          },
+          "gt_spec": {
+            "principal": [
+              10000
+            ],
+            "annual_rate": [
+              5.0
+            ],
+            "compounding_freq": [
+              "monthly"
+            ],
+            "time_in_years": [
+              5
+            ]
+          }
+        }
+      ],
+      "W1": [
+        {
+          "id": "multiple_164",
+          "pred_actions": [
+            "get_stock_price"
+          ],
+          "gt_actions": [
+            "instrument_price.get"
+          ]
+        }
+      ],
+      "W7": [
+        {
+          "id": "multiple_166",
+          "action": "concert.search",
+          "pred_args": {
+            "genre": "classical",
+            "location": "Los Angeles",
+            "date": "2024-05-20",
+            "price_range": "cheap"
+          },
+          "gt_spec": {
+            "genre": [
+              "classical"
+            ],
+            "location": [
+              "Los Angeles",
+              "LA"
+            ],
+            "date": [
+              "this weekend",
+              "weekend"
+            ],
+            "price_range": [
+              "cheap"
+            ]
+          }
+        },
+        {
+          "id": "multiple_169",
+          "action": "musical_scale",
+          "pred_args": {
+            "key": "C sharp major",
+            "scale_type": "major"
+          },
+          "gt_spec": {
+            "key": [
+              "C#",
+              "C sharp"
+            ],
+            "scale_type": [
+              "major",
+              ""
+            ]
+          }
+        },
+        {
+          "id": "multiple_189",
+          "action": "timezone.convert",
+          "pred_args": {
+            "time": "15:00",
+            "from_timezone": "America/New_York",
+            "to_timezone": "Europe/London"
+          },
+          "gt_spec": {
+            "time": [
+              "3pm"
+            ],
+            "from_timezone": [
+              "America/New_York",
+              "New York",
+              "New York, NY",
+              "NY",
+              "NYC",
+              "Eastern Standard Time",
+              "EST"
+            ],
+            "to_timezone": [
+              "Europe/London",
+              "London",
+              "British Summer Time",
+              "BST",
+              "Greenwich Mean Time",
+              "GMT"
+            ]
+          }
+        }
+      ],
+      "W4": [
+        {
+          "id": "multiple_178",
+          "action": "find_card_in_deck",
+          "pred_args": {
+            "rank": "Queen",
+            "suit": "Hearts",
+            "deck": [
+              {
+                "rank": "Queen",
+                "suit": "Hearts"
+              }
+            ]
+          },
+          "gt_spec": {
+            "rank": [
+              "Queen"
+            ],
+            "suit": [
+              "Hearts"
+            ],
+            "deck": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "multiple_183",
+          "action": "recipe_info.get_calories",
+          "pred_args": {
+            "website": "Foodnetwork.com",
+            "recipe": "Beef Lasagna",
+            "optional_meal_time": "1 hour"
+          },
+          "gt_spec": {
+            "website": [
+              "Foodnetwork.com"
+            ],
+            "recipe": [
+              "Beef Lasagna",
+              "Beef Lasagna Recipe"
+            ],
+            "optional_meal_time": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "multiple_26",
+          "action": "game_rewards.get",
+          "pred_args": {
+            "game": "Fortnite",
+            "platform": "PlayStation",
+            "mission": "Mission 1",
+            "trophy": "Trophy 1"
+          },
+          "gt_spec": {
+            "game": [
+              "Fortnite"
+            ],
+            "platform": [
+              "Playstation",
+              "PS"
+            ],
+            "mission": [
+              ""
+            ],
+            "trophy": [
+              ""
+            ]
+          }
+        }
+      ],
+      "W5": [
+        {
+          "id": "multiple_26",
+          "action": "game_rewards.get",
+          "pred_args": {
+            "game": "Fortnite",
+            "platform": "PlayStation",
+            "mission": "Mission 1",
+            "trophy": "Trophy 1"
+          },
+          "gt_spec": {
+            "game": [
+              "Fortnite"
+            ],
+            "platform": [
+              "Playstation",
+              "PS"
+            ],
+            "mission": [
+              ""
+            ],
+            "trophy": [
+              ""
+            ]
+          }
+        }
+      ],
+      "W8": [
+        {
+          "id": "multiple_48",
+          "action": "library.find_nearby",
+          "pred_args": {
+            "location": "New York City",
+            "preferences": [
+              "Pet-friendly",
+              "Disabled Access",
+              "24 hours",
+              "Cafe Inside"
+            ]
+          },
+          "gt_spec": {
+            "location": [
+              "New York City",
+              "NYC",
+              "New York City, NY"
+            ],
+            "preferences": [
+              [
+                "Pet-friendly",
+                "Disabled Access"
+              ],
+              [
+                "Disabled Access",
+                "Pet-friendly"
+              ]
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "parallel": {
+    "category": "parallel",
+    "n_total": 100,
+    "n_failed": 20,
+    "tags": {
+      "W7": 8,
+      "WOK": 6,
+      "W6": 5,
+      "W8": 3,
+      "W4": 1
+    },
+    "examples": {
+      "WOK": [
+        {
+          "id": "parallel_114",
+          "action": "analyze_dna_sequence",
+          "pred_args": {
+            "sequence": "AGCTTAGGCTA",
+            "reference_sequence": "AGCTTAGCTA",
+            "mutation_type": "substitution"
+          },
+          "gt_spec": {
+            "sequence": [
+              "AGCTTAGGCTA"
+            ],
+            "reference_sequence": [
+              "AGCTTAGCTA"
+            ],
+            "mutation_type": [
+              "substitution"
+            ]
+          }
+        },
+        {
+          "id": "parallel_163",
+          "action": "calc_binomial_prob",
+          "pred_args": {
+            "num_trials": 15,
+            "num_success": 6,
+            "prob_success": 0.5
+          },
+          "gt_spec": {
+            "num_trials": [
+              15
+            ],
+            "num_success": [
+              6
+            ],
+            "prob_success": [
+              0.5
+            ]
+          }
+        },
+        {
+          "id": "parallel_166",
+          "action": "predict_house_price",
+          "pred_args": {
+            "area": 2000,
+            "rooms": 2,
+            "year": 1995,
+            "location": "Chicago"
+          },
+          "gt_spec": {
+            "area": [
+              2000
+            ],
+            "rooms": [
+              2
+            ],
+            "year": [
+              1995
+            ],
+            "location": [
+              "Chicago"
+            ]
+          }
+        }
+      ],
+      "W6": [
+        {
+          "id": "parallel_117",
+          "action": "calculate_density",
+          "pred_args": {
+            "country": "China",
+            "year": "2010",
+            "population": 1341000000.0,
+            "land_area": 9597.0
+          },
+          "gt_spec": {
+            "country": [
+              "China"
+            ],
+            "year": [
+              "2010"
+            ],
+            "population": [
+              1341000000.0
+            ],
+            "land_area": [
+              9597000.0
+            ]
+          }
+        },
+        {
+          "id": "parallel_124",
+          "action": "population_projections",
+          "pred_args": {
+            "country": "India",
+            "years": 20,
+            "growth_rate": 0.02
+          },
+          "gt_spec": {
+            "country": [
+              "India"
+            ],
+            "years": [
+              20
+            ],
+            "growth_rate": [
+              "",
+              0.01
+            ]
+          }
+        },
+        {
+          "id": "parallel_152",
+          "action": "math.power",
+          "pred_args": {
+            "base": 2,
+            "exponent": 3,
+            "mod": 1
+          },
+          "gt_spec": {
+            "base": [
+              3
+            ],
+            "exponent": [
+              5
+            ],
+            "mod": [
+              "",
+              null
+            ]
+          }
+        }
+      ],
+      "W7": [
+        {
+          "id": "parallel_134",
+          "action": "calculate_bmi",
+          "pred_args": {
+            "weight": 90,
+            "height": 185,
+            "unit": "m"
+          },
+          "gt_spec": {
+            "weight": [
+              90
+            ],
+            "height": [
+              185
+            ],
+            "unit": [
+              "metric",
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_180",
+          "action": "stock_price",
+          "pred_args": {
+            "company": "Microsoft",
+            "days": 30,
+            "data_type": "Low"
+          },
+          "gt_spec": {
+            "company": [
+              "Apple"
+            ],
+            "days": [
+              30
+            ],
+            "data_type": [
+              "Low",
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_22",
+          "action": "court_info.get_case_status",
+          "pred_args": {
+            "case_number": "GH5678",
+            "court": "Orange County Court",
+            "details": "status"
+          },
+          "gt_spec": {
+            "case_number": [
+              "GH5678"
+            ],
+            "court": [
+              "Orange County Court",
+              "Orange County",
+              "OC"
+            ],
+            "details": [
+              "trial_date"
+            ]
+          }
+        }
+      ],
+      "W8": [
+        {
+          "id": "parallel_139",
+          "action": "employee.fetch_data",
+          "pred_args": {
+            "company_name": "Tech Solutions",
+            "employee_id": 67890,
+            "data_field": [
+              "Job History"
+            ]
+          },
+          "gt_spec": {
+            "company_name": [
+              "Tech Solutions"
+            ],
+            "employee_id": [
+              67890
+            ],
+            "data_field": [
+              [
+                "Personal Info",
+                "Job History",
+                "Payroll",
+                "Attendance"
+              ]
+            ]
+          }
+        },
+        {
+          "id": "parallel_181",
+          "action": "get_stock_prices",
+          "pred_args": {
+            "companies": [
+              "Apple",
+              "Microsoft",
+              "Amazon",
+              "Tesla"
+            ],
+            "duration": "1 month"
+          },
+          "gt_spec": {
+            "companies": [
+              [
+                "Tesla"
+              ]
+            ],
+            "duration": [
+              "1 month"
+            ]
+          }
+        },
+        {
+          "id": "parallel_93",
+          "action": "route.estimate_time",
+          "pred_args": {
+            "start_location": "New York",
+            "end_location": "Miami",
+            "stops": [
+              "Philadelphia",
+              "Washington D.C.",
+              "Atlanta"
+            ]
+          },
+          "gt_spec": {
+            "start_location": [
+              "Philadelphia"
+            ],
+            "end_location": [
+              "Miami"
+            ],
+            "stops": [
+              [
+                "Washington D.C."
+              ],
+              [
+                "Washington D.C.",
+                "Philadelphia"
+              ]
+            ]
+          }
+        }
+      ],
+      "W4": [
+        {
+          "id": "parallel_152",
+          "action": "math.power",
+          "pred_args": {
+            "base": 2,
+            "exponent": 3,
+            "mod": 1
+          },
+          "gt_spec": {
+            "base": [
+              3
+            ],
+            "exponent": [
+              5
+            ],
+            "mod": [
+              "",
+              null
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "parallel_multiple": {
+    "category": "parallel_multiple",
+    "n_total": 100,
+    "n_failed": 24,
+    "tags": {
+      "WOK": 15,
+      "W4": 12,
+      "W1": 11,
+      "W6": 11,
+      "W7": 6,
+      "W3": 1
+    },
+    "examples": {
+      "W4": [
+        {
+          "id": "parallel_multiple_107",
+          "action": "library.search_books",
+          "pred_args": {
+            "location": "New York City",
+            "genre": "mystery",
+            "title": "Book Title"
+          },
+          "gt_spec": {
+            "location": [
+              "New York City",
+              "NYC"
+            ],
+            "genre": [
+              "mystery"
+            ],
+            "title": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_107",
+          "action": "google.books_search",
+          "pred_args": {
+            "genre": "mystery",
+            "title": "Book Title"
+          },
+          "gt_spec": {
+            "genre": [
+              "mystery"
+            ],
+            "title": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_107",
+          "action": "openlibrary.books_search",
+          "pred_args": {
+            "genre": "mystery",
+            "title": "Book Title"
+          },
+          "gt_spec": {
+            "genre": [
+              "mystery"
+            ],
+            "title": [
+              ""
+            ]
+          }
+        }
+      ],
+      "W1": [
+        {
+          "id": "parallel_multiple_116",
+          "pred_actions": [
+            "exhibition_info"
+          ],
+          "gt_actions": [
+            "exhibition_info",
+            "restaurant_info"
+          ]
+        },
+        {
+          "id": "parallel_multiple_129",
+          "pred_actions": [
+            "unit_conversion.convert"
+          ],
+          "gt_actions": [
+            "currency_exchange.convert",
+            "unit_conversion.convert"
+          ]
+        },
+        {
+          "id": "parallel_multiple_150",
+          "pred_actions": [
+            "imdb.find_movies_by_actor"
+          ],
+          "gt_actions": [
+            "flight.book",
+            "imdb.find_movies_by_actor",
+            "lawsuits_search"
+          ]
+        },
+        {
+          "id": "parallel_multiple_164",
+          "pred_actions": [
+            "get_case_info"
+          ],
+          "gt_actions": [
+            "calculate_triangle_area",
+            "get_case_info"
+          ]
+        },
+        {
+          "id": "parallel_multiple_166",
+          "pred_actions": [
+            "legal_case.fetch",
+            "park_information"
+          ],
+          "gt_actions": [
+            "calculate_stock_return",
+            "legal_case.fetch",
+            "park_information"
+          ]
+        },
+        {
+          "id": "parallel_multiple_168",
+          "pred_actions": [
+            "lawsuits_search"
+          ],
+          "gt_actions": [
+            "hilton_hotel.check_availability",
+            "lawsuits_search"
+          ]
+        },
+        {
+          "id": "parallel_multiple_199",
+          "pred_actions": [
+            "calculate_emission_savings"
+          ],
+          "gt_actions": [
+            "calculate_emission_savings",
+            "timezone.convert"
+          ]
+        },
+        {
+          "id": "parallel_multiple_26",
+          "pred_actions": [
+            "bank.get_transaction_history"
+          ],
+          "gt_actions": [
+            "bank.calculate_balance",
+            "bank.get_transaction_history"
+          ]
+        },
+        {
+          "id": "parallel_multiple_55",
+          "pred_actions": [
+            "recipe_prep_time"
+          ],
+          "gt_actions": [
+            "recipe_nutrition_info",
+            "recipe_prep_time",
+            "recipe_search"
+          ]
+        },
+        {
+          "id": "parallel_multiple_67",
+          "pred_actions": [
+            "math_roots.quadratic"
+          ],
+          "gt_actions": [
+            "math.roots.cubic",
+            "math.roots.polynomial",
+            "math_roots.quadratic"
+          ]
+        },
+        {
+          "id": "parallel_multiple_93",
+          "pred_actions": [
+            "geology.get_era"
+          ],
+          "gt_actions": [
+            "geology.get_era",
+            "history.get_event_date"
+          ]
+        }
+      ],
+      "WOK": [
+        {
+          "id": "parallel_multiple_138",
+          "action": "concert_booking.book_ticket",
+          "pred_args": {
+            "artist": "Taylor Swift",
+            "city": "New York",
+            "num_tickets": 3
+          },
+          "gt_spec": {
+            "artist": [
+              "Taylor Swift"
+            ],
+            "city": [
+              "New York",
+              "NY"
+            ],
+            "num_tickets": [
+              3
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_138",
+          "action": "lawsuit_details.find",
+          "pred_args": {
+            "company_name": "Apple Inc.",
+            "year": 2010,
+            "case_type": "Patent"
+          },
+          "gt_spec": {
+            "company_name": [
+              "Apple Inc.",
+              "Apple"
+            ],
+            "year": [
+              2010
+            ],
+            "case_type": [
+              "Patent"
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_189",
+          "action": "hotel_booking",
+          "pred_args": {
+            "location": "San Francisco, CA",
+            "room_type": "deluxe",
+            "duration": 3,
+            "start_date": "July 1st",
+            "preferences": [
+              "pet_friendly",
+              "gym"
+            ]
+          },
+          "gt_spec": {
+            "location": [
+              "San Francisco, CA",
+              "San Francisco"
+            ],
+            "room_type": [
+              "deluxe"
+            ],
+            "duration": [
+              3
+            ],
+            "start_date": [
+              "July 1st",
+              "2023-07-01",
+              "07/01/2023"
+            ],
+            "preferences": [
+              [
+                "pet_friendly",
+                "gym"
+              ]
+            ]
+          }
+        }
+      ],
+      "W7": [
+        {
+          "id": "parallel_multiple_191",
+          "action": "find_card_in_deck",
+          "pred_args": {
+            "rank": "King of Hearts",
+            "suit": "Hearts",
+            "deck": [
+              {
+                "rank": "King of Hearts",
+                "suit": "Hearts"
+              }
+            ]
+          },
+          "gt_spec": {
+            "rank": [
+              "King"
+            ],
+            "suit": [
+              "Hearts",
+              "hearts"
+            ],
+            "deck": [
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_198",
+          "action": "science_history.get_discovery_details",
+          "pred_args": {
+            "discovery": "Higgs Boson",
+            "method_used": "most accepted"
+          },
+          "gt_spec": {
+            "discovery": [
+              "Higgs Boson",
+              "Higgs Boson particle"
+            ],
+            "method_used": [
+              "default",
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_75",
+          "action": "route_planner.calculate_route",
+          "pred_args": {
+            "start": "chess club name",
+            "destination": "home",
+            "method": "shortest"
+          },
+          "gt_spec": {
+            "start": [
+              "Philadelphia"
+            ],
+            "destination": [
+              "New York"
+            ],
+            "method": [
+              "shortest"
+            ]
+          }
+        }
+      ],
+      "W6": [
+        {
+          "id": "parallel_multiple_191",
+          "action": "recipe.unit_conversion",
+          "pred_args": {
+            "value": 2,
+            "from_unit": "cups",
+            "to_unit": "tablespoons",
+            "precision": 2
+          },
+          "gt_spec": {
+            "value": [
+              2
+            ],
+            "from_unit": [
+              "cups",
+              "cup"
+            ],
+            "to_unit": [
+              "tablespoons",
+              "tablespoon"
+            ],
+            "precision": [
+              0,
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_31",
+          "action": "lawsuit.judge",
+          "pred_args": {
+            "company_name": "Tesla Inc.",
+            "lawsuit_id": 2
+          },
+          "gt_spec": {
+            "company_name": [
+              "Tesla Inc.",
+              "Tesla"
+            ],
+            "lawsuit_id": [
+              123,
+              ""
+            ]
+          }
+        },
+        {
+          "id": "parallel_multiple_86",
+          "action": "kinematics.calculate_acceleration",
+          "pred_args": {
+            "initial_speed": 12.0,
+            "final_speed": 24.0,
+            "time": 15.0,
+            "distance": 120.0
+          },
+          "gt_spec": {
+            "initial_speed": [
+              12.0
+            ],
+            "final_speed": [
+              24.0
+            ],
+            "time": [
+              5.0
+            ],
+            "distance": [
+              ""
+            ]
+          }
+        }
+      ],
+      "W3": [
+        {
+          "id": "parallel_multiple_75",
+          "action": "chess_club_details.find",
+          "pred_args": {
+            "name": "Rook Corner",
+            "city": "Philadelphia",
+            "event": "chess club name"
+          },
+          "gt_spec": {
+            "name": [
+              "Rook Corner"
+            ],
+            "city": [
+              "Philadelphia"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "irrelevance": {
+    "category": "irrelevance",
+    "n_total": 100,
+    "n_failed": 0,
+    "tags": {},
+    "examples": {}
+  }
+}

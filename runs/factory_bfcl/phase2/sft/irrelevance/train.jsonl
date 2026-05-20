@@ -1,0 +1,80 @@
+{"id": "irrelevance_1", "user": "Solve the quadratic equation with coefficients a = 1, b = 2, and c = 3.", "ground_truth": null}
+{"id": "irrelevance_102", "user": "What is the time now in New York City?", "ground_truth": null}
+{"id": "irrelevance_107", "user": "What's the composition of species in my backyard garden in Boston?", "ground_truth": null}
+{"id": "irrelevance_114", "user": "What is the fastest route from Los Angeles to New York?", "ground_truth": null}
+{"id": "irrelevance_116", "user": "Can you recommend a good movie to watch?", "ground_truth": null}
+{"id": "irrelevance_117", "user": "Tell me some of the major airports in the United States.", "ground_truth": null}
+{"id": "irrelevance_118", "user": "Who won the 1996 NBA championships?", "ground_truth": null}
+{"id": "irrelevance_129", "user": "Give me the MTBI of my friend.", "ground_truth": null}
+{"id": "irrelevance_136", "user": "Who is the Vice President of United States?", "ground_truth": null}
+{"id": "irrelevance_139", "user": "What is the largest planet in the universe?", "ground_truth": null}
+{"id": "irrelevance_142", "user": "Who was the scientist that proposed the special theory of relativity?", "ground_truth": null}
+{"id": "irrelevance_143", "user": "What defines scientist", "ground_truth": null}
+{"id": "irrelevance_150", "user": "Which colors should I mix to get a specific color shade?", "ground_truth": null}
+{"id": "irrelevance_151", "user": "Find the year of a Picasso's painting.", "ground_truth": null}
+{"id": "irrelevance_154", "user": "What is the seating capacity of Camp Nou Stadium?", "ground_truth": null}
+{"id": "irrelevance_158", "user": "What's the cost of renting an apartment in New York?", "ground_truth": null}
+{"id": "irrelevance_160", "user": "How frequent do members at the Museum of Modern Art visi last year?", "ground_truth": null}
+{"id": "irrelevance_163", "user": "How can I sell my acoustic guitar?", "ground_truth": null}
+{"id": "irrelevance_164", "user": "Who is the best singer in Jazz", "ground_truth": null}
+{"id": "irrelevance_166", "user": "What are some tips to maintain a piano?", "ground_truth": null}
+{"id": "irrelevance_169", "user": "Who is playing basketball game  at Madison Square Garden tonight?", "ground_truth": null}
+{"id": "irrelevance_177", "user": "Who won the Grammy Award for Best Album in 2017?", "ground_truth": null}
+{"id": "irrelevance_179", "user": "Who played for Clippers in NBA", "ground_truth": null}
+{"id": "irrelevance_18", "user": "How do I find the angle of the force for a given momentum?", "ground_truth": null}
+{"id": "irrelevance_180", "user": "Who are in the cricket matches scheduled for today?", "ground_truth": null}
+{"id": "irrelevance_185", "user": "What is the assist average of basketball player LeBron James?", "ground_truth": null}
+{"id": "irrelevance_188", "user": "Who won the championship of the World Series in 2020?", "ground_truth": null}
+{"id": "irrelevance_189", "user": "Who is Lebron James?", "ground_truth": null}
+{"id": "irrelevance_191", "user": "Who won the last world cup in football?", "ground_truth": null}
+{"id": "irrelevance_194", "user": "What is the best chess move for white player in this position?", "ground_truth": null}
+{"id": "irrelevance_195", "user": "Who won the chess tournament in 2015?", "ground_truth": null}
+{"id": "irrelevance_198", "user": "What are the rules of the game 'Uno'?", "ground_truth": null}
+{"id": "irrelevance_20", "user": "Find the duration of flight between Los Angeles and Miami.", "ground_truth": null}
+{"id": "irrelevance_205", "user": "Who is the author of the book 'Pride and Prejudice'?", "ground_truth": null}
+{"id": "irrelevance_208", "user": "Find the shortest path in a game from 'Point A' to 'Point B'", "ground_truth": null}
+{"id": "irrelevance_217", "user": "Can you write a book?", "ground_truth": null}
+{"id": "irrelevance_219", "user": "What's the recipe for lasagna?", "ground_truth": null}
+{"id": "irrelevance_22", "user": "What is the magnetic field at a point located at distance 'r' from a wire carrying current 'I'?", "ground_truth": null}
+{"id": "irrelevance_220", "user": "What should be the ingredient  for baking chocolate cake?", "ground_truth": null}
+{"id": "irrelevance_221", "user": "What are some recommended exercises for legs?", "ground_truth": null}
+{"id": "irrelevance_223", "user": "Find a bakery that sells sourdough bread in Chicago.", "ground_truth": null}
+{"id": "irrelevance_224", "user": "Find a pet store near Los Angeles, CA", "ground_truth": null}
+{"id": "irrelevance_227", "user": "When will be sunset in Beijing today?", "ground_truth": null}
+{"id": "irrelevance_230", "user": "Find a pet-friendly train station in Miami", "ground_truth": null}
+{"id": "irrelevance_234", "user": "What's 10inch in meter", "ground_truth": null}
+{"id": "irrelevance_236", "user": "What is the quickest way to get to Tokyo from London by plane?", "ground_truth": null}
+{"id": "irrelevance_237", "user": "Where is the nearest pharmacy in Los Angeles?", "ground_truth": null}
+{"id": "irrelevance_24", "user": "What's the mass of an electron?", "ground_truth": null}
+{"id": "irrelevance_25", "user": "What is the freezing point point of water at a pressure of 10 kPa?", "ground_truth": null}
+{"id": "irrelevance_26", "user": "How much gas is generated from heating a 2 m\u00b3 closed chamber with air at a temperature of 25\u00b0C to 100\u00b0C?", "ground_truth": null}
+{"id": "irrelevance_28", "user": "How many sides does a hexagon have?", "ground_truth": null}
+{"id": "irrelevance_31", "user": "Find the favorite restaurant in London.", "ground_truth": null}
+{"id": "irrelevance_39", "user": "How to increase the population of deer in a forest?", "ground_truth": null}
+{"id": "irrelevance_40", "user": "How is the air quality in Los Angeles right now?", "ground_truth": null}
+{"id": "irrelevance_41", "user": "What is the common ancestor of lion and zebra?", "ground_truth": null}
+{"id": "irrelevance_43", "user": "How can I apply Evolutionary Algorithm in game Artificial Intelligence?", "ground_truth": null}
+{"id": "irrelevance_50", "user": "Give me a selection of horror movies to watch on a Friday night.", "ground_truth": null}
+{"id": "irrelevance_53", "user": "Who won the world series in 2018?", "ground_truth": null}
+{"id": "irrelevance_55", "user": "Which online bookstore sells 'To Kill a Mockingbird'?", "ground_truth": null}
+{"id": "irrelevance_56", "user": "What is the current bitcoin price?", "ground_truth": null}
+{"id": "irrelevance_57", "user": "How to solve the quadratic equation with coefficients 2, 3 and 4?", "ground_truth": null}
+{"id": "irrelevance_59", "user": "Calculate the power of 2 raise to 5.", "ground_truth": null}
+{"id": "irrelevance_6", "user": "What's the area of a rectangle that has width of 5m and length of 7m?", "ground_truth": null}
+{"id": "irrelevance_62", "user": "How to build a frontend interface for my e-commerce website?", "ground_truth": null}
+{"id": "irrelevance_67", "user": "What is the mean of an experiment with 50 successful outcomes out of 500 trials, under the null hypothesis that the probability of success is 0.1?", "ground_truth": null}
+{"id": "irrelevance_68", "user": "Calculate the standard deviation of the null hypothesis test with a sample mean of 98.2, standard deviation of 1.4, and sample size of 40 for a population mean of 98.6.", "ground_truth": null}
+{"id": "irrelevance_7", "user": "What is the area under the curve of the function f(x) = 3x^2 from x = 1 to x = 5?", "ground_truth": null}
+{"id": "irrelevance_70", "user": "Calculate the compounded interest for a principal amount of $10000, with a annual interest rate of 5% for a period of 3 years.", "ground_truth": null}
+{"id": "irrelevance_71", "user": "Calculate the profit margin of a company with revenue of $200,000 and expenses of $150,000.", "ground_truth": null}
+{"id": "irrelevance_74", "user": "What is the rate of return for a business with $15000 total revenue and $22000 total cost.", "ground_truth": null}
+{"id": "irrelevance_8", "user": "Find the integral of x^3 from 1 to 5", "ground_truth": null}
+{"id": "irrelevance_83", "user": "What's the current interest rate", "ground_truth": null}
+{"id": "irrelevance_86", "user": "What's the penalty for burglary in California?", "ground_truth": null}
+{"id": "irrelevance_87", "user": "Who is the Governor of California?", "ground_truth": null}
+{"id": "irrelevance_88", "user": "What are the best Crime-Thriller movies of 2020?", "ground_truth": null}
+{"id": "irrelevance_90", "user": "What are the components of Civil Law?", "ground_truth": null}
+{"id": "irrelevance_92", "user": "I need a security guard, where can I find the most popular one in New York?", "ground_truth": null}
+{"id": "irrelevance_93", "user": "What's the judgement in case XYZ?", "ground_truth": null}
+{"id": "irrelevance_96", "user": "how long will it take to paint the Eiffel Tower?", "ground_truth": null}
+{"id": "irrelevance_97", "user": "Can you recommend a good Chinese restaurant in New York?", "ground_truth": null}

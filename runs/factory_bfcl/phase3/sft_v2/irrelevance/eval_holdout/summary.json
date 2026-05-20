@@ -1,0 +1,14 @@
+{
+  "category": "irrelevance",
+  "n": 20,
+  "split": "holdout",
+  "base_model": "Qwen/Qwen3-0.6B",
+  "adapter": "/home/hyoseok/workspace/ganglion/runs/factory_bfcl/phase3/sft_v2/irrelevance/adapter",
+  "grammar_mask": false,
+  "syntax_valid_rate": 1.0,
+  "ast_match_rate": 1.0,
+  "action_match_rate": 1.0,
+  "latency_ms_mean": 269.04,
+  "latency_ms_p50": 252.44,
+  "latency_ms_p95": 576.12
+}

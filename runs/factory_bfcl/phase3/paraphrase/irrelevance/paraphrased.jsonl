@@ -1,0 +1,320 @@
+{"case_id": "irrelevance_116", "category": "irrelevance", "user_message": "Could you suggest a good film for me to watch?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_116", "category": "irrelevance", "user_message": "What are some great movies you'd recommend?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_116", "category": "irrelevance", "user_message": "Do you have any top movie picks right now?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_116", "category": "irrelevance", "user_message": "I need a solid movie recommendation, what should I watch?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_117", "category": "irrelevance", "user_message": "What are some of the largest airports located in the US?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_117", "category": "irrelevance", "user_message": "Can you list a few primary airports in the United States?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_117", "category": "irrelevance", "user_message": "I'd like to know about some significant airports in America.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_117", "category": "irrelevance", "user_message": "Could you share information on key airports across the United States?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_114", "category": "irrelevance", "user_message": "Which path takes the least time to travel from Los Angeles to New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_114", "category": "irrelevance", "user_message": "What's the quickest way to get from Los Angeles to New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_114", "category": "irrelevance", "user_message": "Can you provide the most time-efficient route between Los Angeles and New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_114", "category": "irrelevance", "user_message": "I'm looking for the fastest driving directions from Los Angeles to New York.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_129", "category": "irrelevance", "user_message": "What is my friend's MTBI?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_129", "category": "irrelevance", "user_message": "Could you share the MTBI for my friend?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_129", "category": "irrelevance", "user_message": "I'd like to know the MTBI type of my friend.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_129", "category": "irrelevance", "user_message": "Please tell me the MTBI associated with my friend.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_136", "category": "irrelevance", "user_message": "What is the name of the current Vice President of the United States?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_136", "category": "irrelevance", "user_message": "Who currently holds the position of Vice President in the USA?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_136", "category": "irrelevance", "user_message": "Can you tell me who the US Vice President is right now?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_136", "category": "irrelevance", "user_message": "Who is serving as the Vice President for the United States?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_107", "category": "irrelevance", "user_message": "What is the species breakdown for the garden located in my Boston backyard?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_107", "category": "irrelevance", "user_message": "Can you tell me which types of species inhabit my backyard garden in Boston?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_107", "category": "irrelevance", "user_message": "I'd like to know the variety of species present in my Boston backyard garden.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_107", "category": "irrelevance", "user_message": "How is the species composition distributed across my backyard garden in Boston?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_102", "category": "irrelevance", "user_message": "What is the current time in New York City?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_102", "category": "irrelevance", "user_message": "Could you tell me what time it is right now in New York City?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_102", "category": "irrelevance", "user_message": "What's the local time at this moment in New York City?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_102", "category": "irrelevance", "user_message": "Can you check the present time for New York City?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_1", "category": "irrelevance", "user_message": "Find the roots of the quadratic equation defined by the coefficients a = 1, b = 2, and c = 3.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_1", "category": "irrelevance", "user_message": "Calculate the solutions for the quadratic equation where a = 1, b = 2, and c = 3.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_1", "category": "irrelevance", "user_message": "Determine the answer to the quadratic equation using the values a = 1, b = 2, and c = 3.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_1", "category": "irrelevance", "user_message": "Please solve the quadratic equation given that a = 1, b = 2, and c = 3.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_142", "category": "irrelevance", "user_message": "Which researcher introduced the special theory of relativity?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_142", "category": "irrelevance", "user_message": "Can you tell me the name of the scientist who came up with the special theory of relativity?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_142", "category": "irrelevance", "user_message": "Who formulated the special theory of relativity?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_142", "category": "irrelevance", "user_message": "Identify the physicist responsible for proposing the special theory of relativity.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_143", "category": "irrelevance", "user_message": "How would you define a scientist?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_143", "category": "irrelevance", "user_message": "What are the key characteristics of a scientist?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_143", "category": "irrelevance", "user_message": "What makes someone qualify as a scientist?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_143", "category": "irrelevance", "user_message": "Can you explain the definition of a scientist?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_139", "category": "irrelevance", "user_message": "Which planet is the biggest in the entire universe?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_139", "category": "irrelevance", "user_message": "Can you identify the largest planet within the universe?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_139", "category": "irrelevance", "user_message": "What is the name of the planet with the greatest size in the universe?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_139", "category": "irrelevance", "user_message": "Tell me which planet ranks as the largest in the universe.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_118", "category": "irrelevance", "user_message": "Which team claimed victory in the 1996 NBA championships?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_118", "category": "irrelevance", "user_message": "Who was the winner of the 1996 NBA championships?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_118", "category": "irrelevance", "user_message": "Can you identify the champion of the 1996 NBA championships?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_118", "category": "irrelevance", "user_message": "Which franchise took home the 1996 NBA championships title?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_154", "category": "irrelevance", "user_message": "How many seats does Camp Nou Stadium have?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_154", "category": "irrelevance", "user_message": "What is the official spectator capacity of Camp Nou Stadium?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_154", "category": "irrelevance", "user_message": "Can you tell me the total number of seats at Camp Nou Stadium?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_154", "category": "irrelevance", "user_message": "How many people can Camp Nou Stadium accommodate?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_150", "category": "irrelevance", "user_message": "What combination of colors do I need to blend to achieve a particular hue?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_150", "category": "irrelevance", "user_message": "How can I mix different colors together to create a certain shade?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_150", "category": "irrelevance", "user_message": "Which pigments should I combine to produce a specific color tone?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_150", "category": "irrelevance", "user_message": "What colors must be blended to obtain a desired shade?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_151", "category": "irrelevance", "user_message": "Determine the creation year of a painting by Picasso.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_151", "category": "irrelevance", "user_message": "Look up when a specific Picasso artwork was painted.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_151", "category": "irrelevance", "user_message": "Retrieve the year a painting by Picasso was made.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_151", "category": "irrelevance", "user_message": "Find out the date a Picasso painting was completed.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_158", "category": "irrelevance", "user_message": "How much does it cost to rent an apartment in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_158", "category": "irrelevance", "user_message": "What are the rental prices for apartments in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_158", "category": "irrelevance", "user_message": "Could you tell me the cost of renting an apartment in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_158", "category": "irrelevance", "user_message": "What is the typical price to rent an apartment in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_166", "category": "irrelevance", "user_message": "Can you give me advice on how to take care of a piano?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_166", "category": "irrelevance", "user_message": "I'm looking for recommendations on keeping a piano in good condition.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_166", "category": "irrelevance", "user_message": "How should I properly look after my piano?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_166", "category": "irrelevance", "user_message": "What are the best practices for piano upkeep?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_163", "category": "irrelevance", "user_message": "What is the best way to sell my acoustic guitar?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_163", "category": "irrelevance", "user_message": "Where can I list my acoustic guitar for sale?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_163", "category": "irrelevance", "user_message": "I want to sell my acoustic guitar, what are my options?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_163", "category": "irrelevance", "user_message": "How do I go about putting my acoustic guitar up for sale?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_160", "category": "irrelevance", "user_message": "How often did members visit the Museum of Modern Art last year?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_160", "category": "irrelevance", "user_message": "What was the visit frequency for Museum of Modern Art members during the previous year?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_160", "category": "irrelevance", "user_message": "How frequently did members at the Museum of Modern Art go to the museum last year?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_160", "category": "irrelevance", "user_message": "Could you tell me how many times Museum of Modern Art members visited last year?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_164", "category": "irrelevance", "user_message": "Which vocalist is widely considered the greatest in the jazz genre?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_164", "category": "irrelevance", "user_message": "Who is regarded as the top singer in jazz music?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_164", "category": "irrelevance", "user_message": "Can you tell me who the most acclaimed jazz singer is?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_164", "category": "irrelevance", "user_message": "Among jazz performers, who stands out as the best vocalist?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_180", "category": "irrelevance", "user_message": "Which teams are participating in today's cricket fixtures?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_180", "category": "irrelevance", "user_message": "Who is playing in the cricket matches scheduled for today?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_180", "category": "irrelevance", "user_message": "Can you list the participants for the cricket games happening today?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_180", "category": "irrelevance", "user_message": "Tell me the players involved in the cricket matches taking place today.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_169", "category": "irrelevance", "user_message": "Which teams are playing a basketball game at Madison Square Garden tonight?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_169", "category": "irrelevance", "user_message": "Who is competing in the basketball match at Madison Square Garden tonight?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_169", "category": "irrelevance", "user_message": "Can you tell me the participants for tonight's basketball game at Madison Square Garden?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_169", "category": "irrelevance", "user_message": "Who is scheduled to play basketball at Madison Square Garden tonight?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_179", "category": "irrelevance", "user_message": "Which players have been on the Clippers roster in the NBA?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_179", "category": "irrelevance", "user_message": "List the athletes who played for the NBA's Clippers.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_179", "category": "irrelevance", "user_message": "Who has suited up for the Clippers in the NBA?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_179", "category": "irrelevance", "user_message": "Can you tell me everyone who has played for the Clippers in the NBA?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_18", "category": "irrelevance", "user_message": "What is the method to calculate the force's angle when the momentum is known?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_18", "category": "irrelevance", "user_message": "How can I determine the angle at which a force acts based on a given momentum?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_18", "category": "irrelevance", "user_message": "Given a specific momentum, what steps should I follow to compute the corresponding force angle?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_18", "category": "irrelevance", "user_message": "In what way can I derive the angle of a force from a provided momentum value?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_194", "category": "irrelevance", "user_message": "What should white play next in this chess position?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_194", "category": "irrelevance", "user_message": "Which is the optimal move for white in the current board state?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_194", "category": "irrelevance", "user_message": "Can you suggest the strongest chess move for white here?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_194", "category": "irrelevance", "user_message": "What's the top recommended move for the white pieces in this setup?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_177", "category": "irrelevance", "user_message": "Which artist took home the Grammy Award for Best Album in 2017?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_177", "category": "irrelevance", "user_message": "In 2017, who was awarded the Grammy Award for Best Album?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_177", "category": "irrelevance", "user_message": "Who received the Grammy Award for Best Album for the year 2017?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_177", "category": "irrelevance", "user_message": "Could you tell me the winner of the 2017 Grammy Award for Best Album?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_188", "category": "irrelevance", "user_message": "Which team claimed the 2020 World Series championship?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_188", "category": "irrelevance", "user_message": "Who was the winner of the World Series in the year 2020?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_188", "category": "irrelevance", "user_message": "Can you tell me which team took home the 2020 World Series title?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_188", "category": "irrelevance", "user_message": "Who emerged victorious in the 2020 World Series?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_189", "category": "irrelevance", "user_message": "Can you tell me about Lebron James?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_189", "category": "irrelevance", "user_message": "I'm looking for information on who Lebron James is.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_189", "category": "irrelevance", "user_message": "What background details do you have on Lebron James?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_189", "category": "irrelevance", "user_message": "Could you provide a brief overview of Lebron James?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_195", "category": "irrelevance", "user_message": "Which player secured victory at the chess tournament during 2015?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_195", "category": "irrelevance", "user_message": "Can you identify the champion of the 2015 chess tournament?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_195", "category": "irrelevance", "user_message": "I'm looking for the winner of the chess tournament that occurred in 2015.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_195", "category": "irrelevance", "user_message": "Who took home the prize at the chess tournament in 2015?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_191", "category": "irrelevance", "user_message": "Which team won the most recent football World Cup?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_191", "category": "irrelevance", "user_message": "Who claimed the championship title at the latest World Cup in football?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_191", "category": "irrelevance", "user_message": "Can you tell me the winner of the previous football World Cup?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_191", "category": "irrelevance", "user_message": "Which country emerged as the victor in the last World Cup for football?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_185", "category": "irrelevance", "user_message": "What is the average number of assists for basketball player LeBron James?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_185", "category": "irrelevance", "user_message": "How many assists per game does basketball player LeBron James average?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_185", "category": "irrelevance", "user_message": "Could you tell me the assist average for basketball player LeBron James?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_185", "category": "irrelevance", "user_message": "What's the typical assist average statistic for basketball player LeBron James?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_198", "category": "irrelevance", "user_message": "Could you explain how to play the card game Uno?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_198", "category": "irrelevance", "user_message": "Please outline the official regulations for playing Uno.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_198", "category": "irrelevance", "user_message": "What are the gameplay instructions for a standard match of Uno?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_198", "category": "irrelevance", "user_message": "Can you tell me how a game of Uno is played?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_217", "category": "irrelevance", "user_message": "Are you capable of authoring a full-length book?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_217", "category": "irrelevance", "user_message": "Could you compose a book for me?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_217", "category": "irrelevance", "user_message": "Is it within your abilities to draft a book?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_217", "category": "irrelevance", "user_message": "Would you be able to write an entire book?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_20", "category": "irrelevance", "user_message": "How long does it take to fly from Los Angeles to Miami?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_20", "category": "irrelevance", "user_message": "What is the flight time between Los Angeles and Miami?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_20", "category": "irrelevance", "user_message": "Please provide the duration for a flight traveling from Los Angeles to Miami.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_20", "category": "irrelevance", "user_message": "I need to know the length of the flight from Los Angeles to Miami.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_205", "category": "irrelevance", "user_message": "Which writer penned the novel 'Pride and Prejudice'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_205", "category": "irrelevance", "user_message": "Can you tell me who wrote the book 'Pride and Prejudice'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_205", "category": "irrelevance", "user_message": "What is the name of the author behind 'Pride and Prejudice'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_205", "category": "irrelevance", "user_message": "Who created the literary work titled 'Pride and Prejudice'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_219", "category": "irrelevance", "user_message": "How do I prepare lasagna?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_219", "category": "irrelevance", "user_message": "Could you share the ingredients and steps for making lasagna?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_219", "category": "irrelevance", "user_message": "I'm looking for instructions on how to cook lasagna.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_219", "category": "irrelevance", "user_message": "Can you provide a recipe to make lasagna?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_223", "category": "irrelevance", "user_message": "I need to find a bakery in Chicago that carries sourdough bread.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_223", "category": "irrelevance", "user_message": "Locate a Chicago bakery where I can purchase sourdough bread.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_223", "category": "irrelevance", "user_message": "Are there any bakeries in Chicago that offer sourdough bread for sale?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_223", "category": "irrelevance", "user_message": "Search for a bakery in Chicago that has sourdough bread available.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_22", "category": "irrelevance", "user_message": "Calculate the magnetic field strength at a distance 'r' from a wire carrying an electric current 'I'.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_22", "category": "irrelevance", "user_message": "How can I determine the magnetic field at a radial distance 'r' away from a wire with current 'I'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_22", "category": "irrelevance", "user_message": "What is the magnetic field magnitude at a point 'r' away from a wire conducting current 'I'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_22", "category": "irrelevance", "user_message": "Find the magnetic field produced at a distance 'r' by a wire that carries a current 'I'.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_208", "category": "irrelevance", "user_message": "Determine the shortest route in the game between 'Point A' and 'Point B'.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_208", "category": "irrelevance", "user_message": "Compute the minimal distance path from 'Point A' to 'Point B' within the game.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_208", "category": "irrelevance", "user_message": "Identify the quickest navigational path in the game starting at 'Point A' and ending at 'Point B'.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_208", "category": "irrelevance", "user_message": "Find the most efficient way to travel from 'Point A' to 'Point B' in the game.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_220", "category": "irrelevance", "user_message": "What ingredients are needed to bake a chocolate cake?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_220", "category": "irrelevance", "user_message": "Could you list what is required to make a chocolate cake?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_220", "category": "irrelevance", "user_message": "What items should I use for baking a chocolate cake?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_220", "category": "irrelevance", "user_message": "Please provide the components necessary to prepare a chocolate cake.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_221", "category": "irrelevance", "user_message": "Could you suggest some effective workouts for the legs?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_221", "category": "irrelevance", "user_message": "What exercises would you recommend for leg training?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_221", "category": "irrelevance", "user_message": "Can you provide a list of good exercises to target the legs?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_221", "category": "irrelevance", "user_message": "Which workouts are best for strengthening the leg muscles?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_237", "category": "irrelevance", "user_message": "Where can I find the closest pharmacy in Los Angeles?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_237", "category": "irrelevance", "user_message": "What is the location of the nearest pharmacy in Los Angeles?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_237", "category": "irrelevance", "user_message": "Can you locate the closest pharmacy for me in Los Angeles?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_237", "category": "irrelevance", "user_message": "I need directions to the nearest pharmacy in Los Angeles.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_236", "category": "irrelevance", "user_message": "What is the fastest flight option from London to Tokyo?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_236", "category": "irrelevance", "user_message": "Which air route between London and Tokyo has the shortest travel time?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_236", "category": "irrelevance", "user_message": "How quickly can I travel by plane from London to Tokyo?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_236", "category": "irrelevance", "user_message": "What's the most time-efficient flight path to reach Tokyo from London?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_224", "category": "irrelevance", "user_message": "Locate a pet store close to Los Angeles, CA.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_224", "category": "irrelevance", "user_message": "I am looking for a pet store in the vicinity of Los Angeles, CA.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_224", "category": "irrelevance", "user_message": "Search for a pet store around Los Angeles, CA.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_224", "category": "irrelevance", "user_message": "Please help me locate a pet store in the Los Angeles, CA area.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_230", "category": "irrelevance", "user_message": "Locate a pet-friendly train station in Miami.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_230", "category": "irrelevance", "user_message": "I am looking for a train station in Miami that is pet-friendly.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_230", "category": "irrelevance", "user_message": "Search for a pet-friendly railway station located in Miami.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_230", "category": "irrelevance", "user_message": "Can you show me a train station in Miami that welcomes pets?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_234", "category": "irrelevance", "user_message": "Convert 10 inch to meter", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_234", "category": "irrelevance", "user_message": "How many meter is 10 inch equal to?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_234", "category": "irrelevance", "user_message": "What is the meter equivalent of 10 inch?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_234", "category": "irrelevance", "user_message": "Please change 10 inch into meter", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_227", "category": "irrelevance", "user_message": "What time does sunset occur in Beijing today?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_227", "category": "irrelevance", "user_message": "Could you tell me the sunset time for Beijing today?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_227", "category": "irrelevance", "user_message": "At what hour will the sun set in Beijing today?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_227", "category": "irrelevance", "user_message": "Please let me know when sunset is in Beijing today.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_24", "category": "irrelevance", "user_message": "How much does an electron weigh?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_24", "category": "irrelevance", "user_message": "Could you tell me the mass of an electron?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_24", "category": "irrelevance", "user_message": "What is the mass value for an electron?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_24", "category": "irrelevance", "user_message": "I need to know the mass of an electron.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_39", "category": "irrelevance", "user_message": "What methods can be used to boost the number of deer living in a woodland area?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_39", "category": "irrelevance", "user_message": "How can we raise the deer population within a forest ecosystem?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_39", "category": "irrelevance", "user_message": "What steps should be taken to grow the deer count in a wooded region?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_39", "category": "irrelevance", "user_message": "In what ways can the deer numbers in a forest be expanded?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_28", "category": "irrelevance", "user_message": "What is the number of sides in a hexagon?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_28", "category": "irrelevance", "user_message": "How many sides make up a hexagon?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_28", "category": "irrelevance", "user_message": "What is the side count of a hexagon?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_28", "category": "irrelevance", "user_message": "Can you tell me how many sides a hexagon has?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_25", "category": "irrelevance", "user_message": "At a pressure of 10 kPa, what temperature does water freeze?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_25", "category": "irrelevance", "user_message": "Could you provide the freezing temperature of water when the pressure is 10 kPa?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_25", "category": "irrelevance", "user_message": "What is the temperature at which water freezes under a pressure of 10 kPa?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_25", "category": "irrelevance", "user_message": "Under 10 kPa of pressure, at what temperature does water reach its freezing point?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_50", "category": "irrelevance", "user_message": "Could you recommend some horror films for me to watch this Friday evening?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_50", "category": "irrelevance", "user_message": "I'm looking for a list of scary movies to enjoy on a Friday night.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_50", "category": "irrelevance", "user_message": "Please suggest a few horror titles to check out on a Friday night.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_50", "category": "irrelevance", "user_message": "What horror movies would you recommend watching on a Friday night?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_31", "category": "irrelevance", "user_message": "Locate the favorite restaurant in London.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_31", "category": "irrelevance", "user_message": "Could you find the favorite restaurant located in London?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_31", "category": "irrelevance", "user_message": "I need to search for the favorite restaurant within London.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_31", "category": "irrelevance", "user_message": "Please identify the favorite restaurant in London.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_26", "category": "irrelevance", "user_message": "What quantity of gas is produced when heating air in a closed 2 m³ chamber from 25°C to 100°C?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_26", "category": "irrelevance", "user_message": "If air inside a closed 2 m³ chamber is warmed from 25°C up to 100°C, how much gas will be generated?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_26", "category": "irrelevance", "user_message": "Determine the amount of gas created by increasing the temperature of air within a closed 2 m³ chamber from 25°C to 100°C.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_26", "category": "irrelevance", "user_message": "How much gas is yielded when the air in a closed 2 m³ chamber is heated from 25°C to a final temperature of 100°C?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_40", "category": "irrelevance", "user_message": "What is the current air quality in Los Angeles?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_40", "category": "irrelevance", "user_message": "Can you check the air quality in Los Angeles at this moment?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_40", "category": "irrelevance", "user_message": "What's the latest air quality index for Los Angeles?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_40", "category": "irrelevance", "user_message": "How clean is the air in Los Angeles right now?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_43", "category": "irrelevance", "user_message": "How do I implement Evolutionary Algorithms within game Artificial Intelligence?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_43", "category": "irrelevance", "user_message": "What are the methods for applying Evolutionary Algorithms to Artificial Intelligence in games?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_43", "category": "irrelevance", "user_message": "In what ways can I use Evolutionary Algorithms for game Artificial Intelligence development?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_43", "category": "irrelevance", "user_message": "How can Evolutionary Algorithms be integrated into the Artificial Intelligence of video games?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_41", "category": "irrelevance", "user_message": "Which evolutionary predecessor do lions and zebras share?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_41", "category": "irrelevance", "user_message": "Can you identify the shared ancestor between a lion and a zebra?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_41", "category": "irrelevance", "user_message": "What ancestral species do both lions and zebras descend from?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_41", "category": "irrelevance", "user_message": "What is the most recent common ancestor for the lion and the zebra?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_56", "category": "irrelevance", "user_message": "How much is bitcoin trading for right now?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_56", "category": "irrelevance", "user_message": "What is the latest market value of bitcoin?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_56", "category": "irrelevance", "user_message": "Could you tell me bitcoin's current price?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_56", "category": "irrelevance", "user_message": "What does bitcoin cost at the moment?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_59", "category": "irrelevance", "user_message": "Compute 2 to the power of 5.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_59", "category": "irrelevance", "user_message": "Find the result of 2 raised to the 5th power.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_59", "category": "irrelevance", "user_message": "Evaluate 2 exponent 5.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_59", "category": "irrelevance", "user_message": "What is the value of 2 to the fifth power?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_53", "category": "irrelevance", "user_message": "Which team claimed the World Series championship in 2018?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_53", "category": "irrelevance", "user_message": "Who was the champion of the 2018 World Series?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_53", "category": "irrelevance", "user_message": "Can you tell me the winner of the World Series for the 2018 season?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_53", "category": "irrelevance", "user_message": "Which baseball team took home the title in the 2018 World Series?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_55", "category": "irrelevance", "user_message": "Which internet bookshop offers 'To Kill a Mockingbird' for sale?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_55", "category": "irrelevance", "user_message": "Where online can I purchase a copy of 'To Kill a Mockingbird'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_55", "category": "irrelevance", "user_message": "Can you name a web-based bookstore that stocks 'To Kill a Mockingbird'?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_55", "category": "irrelevance", "user_message": "Which digital book retailer has 'To Kill a Mockingbird' available?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_57", "category": "irrelevance", "user_message": "What steps should I follow to find the roots of a quadratic equation with coefficients 2, 3, and 4?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_57", "category": "irrelevance", "user_message": "Can you explain how to solve the quadratic equation defined by the coefficients 2, 3, and 4?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_57", "category": "irrelevance", "user_message": "I need to calculate the solutions for a quadratic equation using the values 2, 3, and 4 as coefficients. How is it done?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_57", "category": "irrelevance", "user_message": "Please demonstrate the process for solving a quadratic equation that has 2, 3, and 4 as its coefficients.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_67", "category": "irrelevance", "user_message": "Calculate the expected mean for an experiment that recorded 50 successes in 500 trials, assuming the null hypothesis holds that the success probability is 0.1.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_67", "category": "irrelevance", "user_message": "Assuming a null hypothesis where the probability of success equals 0.1, what is the average value for an experiment involving 500 trials and 50 successful outcomes?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_67", "category": "irrelevance", "user_message": "Determine the mean of an experiment with 500 total trials and 50 successes, given the null hypothesis specifies a success rate of 0.1.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_67", "category": "irrelevance", "user_message": "Under a null hypothesis of 0.1 success probability, what is the expected mean for a dataset containing 50 successful results out of 500 trials?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_62", "category": "irrelevance", "user_message": "What steps should I follow to develop the client-side UI for an online store?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_62", "category": "irrelevance", "user_message": "Can you guide me through creating the frontend for my e-commerce platform?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_62", "category": "irrelevance", "user_message": "I need instructions on constructing the user-facing interface for my web shop.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_62", "category": "irrelevance", "user_message": "How should I approach designing the front-end of an online retail website?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_7", "category": "irrelevance", "user_message": "Calculate the definite integral of f(x) = 3x^2 between the limits x = 1 and x = 5.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_7", "category": "irrelevance", "user_message": "Determine the area bounded by the curve y = 3x^2 and the x-axis over the interval [1, 5].", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_7", "category": "irrelevance", "user_message": "Evaluate the integral of 3x^2 with respect to x from 1 to 5.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_7", "category": "irrelevance", "user_message": "Find the exact area under the graph of f(x) = 3x^2 starting at x = 1 and ending at x = 5.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_6", "category": "irrelevance", "user_message": "Calculate the area of a rectangle with a width of 5m and a length of 7m.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_6", "category": "irrelevance", "user_message": "If a rectangle measures 7m in length and 5m in width, what is its total area?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_6", "category": "irrelevance", "user_message": "Find the area of a rectangular shape that is 5m wide and 7m long.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_6", "category": "irrelevance", "user_message": "How much space does a rectangle cover if it has a width of 5m and a length of 7m?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_70", "category": "irrelevance", "user_message": "Determine the compound interest earned on a $10000 investment at a 5% yearly rate over 3 years.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_70", "category": "irrelevance", "user_message": "Find out how much compounded interest accumulates on a principal of $10000 given a 5% annual rate for a 3-year duration.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_70", "category": "irrelevance", "user_message": "Compute the total compounded interest for an initial sum of $10000, applying a 5% interest rate per year across 3 years.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_70", "category": "irrelevance", "user_message": "What is the compound interest on $10000 when the annual rate is 5% and the time frame is 3 years?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_8", "category": "irrelevance", "user_message": "Compute the definite integral of x^3 between 1 and 5", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_8", "category": "irrelevance", "user_message": "Evaluate the integral of the function x cubed over the interval [1, 5]", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_8", "category": "irrelevance", "user_message": "Calculate the integral of x to the power of 3 with limits from 1 to 5", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_8", "category": "irrelevance", "user_message": "Determine the value of the integral of x^3 from a lower bound of 1 to an upper bound of 5", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_68", "category": "irrelevance", "user_message": "Compute the standard deviation of the null hypothesis test given a sample mean of 98.2, a standard deviation of 1.4, a sample size of 40, and a population mean of 98.6.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_68", "category": "irrelevance", "user_message": "Find the standard deviation of the null hypothesis test using a sample size of 40, a sample mean of 98.2, a standard deviation of 1.4, and a population mean of 98.6.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_68", "category": "irrelevance", "user_message": "Determine the standard deviation of the null hypothesis test where the population mean is 98.6, the sample mean is 98.2, the standard deviation is 1.4, and the sample size is 40.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_68", "category": "irrelevance", "user_message": "Please calculate the standard deviation of the null hypothesis test assuming a population mean of 98.6, with a sample mean of 98.2, a standard deviation of 1.4, and a sample size of 40.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_71", "category": "irrelevance", "user_message": "Determine the profit margin for a business that generated $200,000 in revenue and incurred $150,000 in expenses.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_71", "category": "irrelevance", "user_message": "What is the profit margin if a firm's total revenue is $200,000 and its operating expenses amount to $150,000?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_71", "category": "irrelevance", "user_message": "Compute the profit margin based on a company's $200,000 revenue and $150,000 in costs.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_71", "category": "irrelevance", "user_message": "Find the profit margin percentage for an organization with $200,000 in sales revenue and $150,000 in expenditures.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_83", "category": "irrelevance", "user_message": "What is the present interest rate?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_83", "category": "irrelevance", "user_message": "Can you tell me today's interest rate?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_83", "category": "irrelevance", "user_message": "What's the latest interest rate available?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_83", "category": "irrelevance", "user_message": "How much is the interest rate right now?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_74", "category": "irrelevance", "user_message": "Calculate the rate of return for a company that generated $15000 in total revenue and $22000 in total costs.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_74", "category": "irrelevance", "user_message": "If a business has total revenue of $15000 and total costs of $22000, what is its rate of return?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_74", "category": "irrelevance", "user_message": "Determine the business rate of return given $22000 in total costs and $15000 in total revenue.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_74", "category": "irrelevance", "user_message": "What would be the rate of return for an operation with $15000 total revenue against $22000 total cost?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_87", "category": "irrelevance", "user_message": "Who currently holds the office of Governor in California?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_87", "category": "irrelevance", "user_message": "What is the name of the Governor of California?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_87", "category": "irrelevance", "user_message": "Can you tell me who the Governor of California is?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_87", "category": "irrelevance", "user_message": "Which person serves as the Governor for the state of California?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_86", "category": "irrelevance", "user_message": "What punishment does California law impose for burglary?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_86", "category": "irrelevance", "user_message": "Can you tell me the sentencing guidelines for burglary offenses in California?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_86", "category": "irrelevance", "user_message": "What are the legal consequences for committing burglary in California?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_86", "category": "irrelevance", "user_message": "How is burglary penalized under California law?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_90", "category": "irrelevance", "user_message": "What are the primary elements that constitute Civil Law?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_90", "category": "irrelevance", "user_message": "Can you list the different parts that make up Civil Law?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_90", "category": "irrelevance", "user_message": "What does the structure of Civil Law consist of?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_90", "category": "irrelevance", "user_message": "Could you break down the main divisions within Civil Law?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_88", "category": "irrelevance", "user_message": "Could you recommend the top Crime-Thriller films released in 2020?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_88", "category": "irrelevance", "user_message": "Which movies in the Crime-Thriller category from 2020 are rated the highest?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_88", "category": "irrelevance", "user_message": "I'm looking for the greatest Crime-Thriller movies that came out in 2020.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_88", "category": "irrelevance", "user_message": "Please provide a list of the most acclaimed 2020 Crime-Thriller films.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_92", "category": "irrelevance", "user_message": "Where can I locate the most popular security guard in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_92", "category": "irrelevance", "user_message": "I need to hire a security guard; can you tell me where the most popular one in New York is located?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_92", "category": "irrelevance", "user_message": "Please let me know where I can find the most popular security guard in New York.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_92", "category": "irrelevance", "user_message": "I am looking for a security guard and want to know where to find the most popular one in New York.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_93", "category": "irrelevance", "user_message": "What was the court's ruling in case XYZ?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_93", "category": "irrelevance", "user_message": "Could you tell me the verdict for case XYZ?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_93", "category": "irrelevance", "user_message": "What decision was handed down regarding case XYZ?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_93", "category": "irrelevance", "user_message": "Please provide the final judgment for case XYZ.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_97", "category": "irrelevance", "user_message": "Could you suggest a highly-rated Chinese eatery in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_97", "category": "irrelevance", "user_message": "I'm looking for a nice spot to enjoy Chinese cuisine in New York, do you have any recommendations?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_97", "category": "irrelevance", "user_message": "What's a top-rated Chinese dining establishment you'd recommend in New York?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_97", "category": "irrelevance", "user_message": "Please give me a suggestion for a great Chinese restaurant located in New York.", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_96", "category": "irrelevance", "user_message": "What is the estimated duration required to paint the Eiffel Tower?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_96", "category": "irrelevance", "user_message": "How much time does it usually take to paint the Eiffel Tower?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_96", "category": "irrelevance", "user_message": "Can you tell me how long the painting of the Eiffel Tower takes?", "ground_truth": null, "origin": "paraphrase"}
+{"case_id": "irrelevance_96", "category": "irrelevance", "user_message": "What is the expected timeframe for painting the Eiffel Tower?", "ground_truth": null, "origin": "paraphrase"}

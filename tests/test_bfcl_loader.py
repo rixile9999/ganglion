@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from ganglion.bfcl import BFCLCase, load_category
-from ganglion.bfcl.loader import CATEGORIES
+from ganglion.benchmarks.bfcl import BFCLCase, load_category
+from ganglion.benchmarks.bfcl.loader import CATEGORIES
 
 
 @pytest.mark.parametrize("category", CATEGORIES)

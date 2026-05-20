@@ -1,7 +1,7 @@
 import pytest
 
-from ganglion.dsl.emitter import emit_tool_calls
-from ganglion.dsl.validator import DSLValidationError, parse_json_dsl
+from ganglion.contract.emitter import emit_tool_calls
+from ganglion.contract.parse import DSLValidationError, parse_json_dsl
 
 
 def test_parse_and_normalize_korean_room_alias() -> None:
@@ -176,7 +176,7 @@ def test_strip_unknown_args_list_devices_drops_spurious_id() -> None:
     """``조명 장치 목록 보여줘 #8`` causes the model to echo ``id="8"``
     into ``list_devices`` args. With ``strip_unknown_args=True`` the call
     succeeds with empty args."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "list_devices", "args": {"id": "8"}}]}
@@ -188,7 +188,7 @@ def test_strip_unknown_args_list_devices_drops_spurious_id() -> None:
 def test_strip_unknown_args_get_light_state_drops_spurious_at() -> None:
     """``복도 조명 상태 다시 확인해줘 #28`` produces ``at="28:00"`` echoed
     into get_light_state args. Stripped to keep only ``room``."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [
@@ -202,7 +202,7 @@ def test_strip_unknown_args_does_not_mask_missing_required() -> None:
     """Stripping must NOT manufacture a missing required arg. If room is
     absent and we strip a spurious unknown, the validator must still
     surface ``room is required``."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     with pytest.raises(DSLValidationError, match="room"):
         CATALOG.parse_json_dsl(
@@ -219,7 +219,7 @@ def test_korean_time_correction_am_morning() -> None:
     """``오전 1시에 거실 불 켜지게 예약해줘`` — model emits at="08:00"
     (the most common training-time slot). Prompt-aware correction
     overrides at="01:00"."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -232,7 +232,7 @@ def test_korean_time_correction_am_morning() -> None:
 
 def test_korean_time_correction_pm_afternoon() -> None:
     """오후 1시 → 13:00 (not 23:00 as the model emits)."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -245,7 +245,7 @@ def test_korean_time_correction_pm_afternoon() -> None:
 
 def test_korean_time_correction_noon_and_midnight_edges() -> None:
     """12 hour edges: 오전 12시 = 00:00 (midnight), 오후 12시 = 12:00 (noon)."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     midnight = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -266,7 +266,7 @@ def test_korean_time_correction_noon_and_midnight_edges() -> None:
 
 def test_korean_time_correction_with_minutes() -> None:
     """오후 3시 30분 → 15:30."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -280,7 +280,7 @@ def test_korean_time_correction_with_minutes() -> None:
 def test_korean_time_correction_no_match_leaves_at_intact() -> None:
     """Without an 오전/오후 N시 expression the model's emitted at is
     trusted and not rewritten."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -294,7 +294,7 @@ def test_korean_time_correction_no_match_leaves_at_intact() -> None:
 def test_korean_time_correction_ambiguous_multiple_matches() -> None:
     """Two 오전/오후 expressions in one prompt → don't correct (we can't
     pick which one is the real schedule target)."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -308,7 +308,7 @@ def test_korean_time_correction_ambiguous_multiple_matches() -> None:
 def test_korean_time_correction_skipped_without_prompt() -> None:
     """Backwards compatibility: when no prompt is supplied, prompt-aware
     rules don't fire and the model's at is preserved."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "schedule_light", "args": {
@@ -323,7 +323,7 @@ def test_korean_time_correction_does_not_apply_to_set_light() -> None:
     a schedule semantic should not have args.at materialized from the
     prompt — and set_light declares no ``at`` arg, so the strip-unknown
     path keeps it absent."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "set_light", "args": {
@@ -342,7 +342,7 @@ def test_korean_time_correction_does_not_apply_to_set_light() -> None:
 def test_scene_name_correction_recovers_hash_suffix_leak() -> None:
     """``영화 모드 #0`` causes the model to emit ``name="#0"``. The prompt
     contains a SCENE_ALIAS so the corrector recovers ``name="movie"``."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "create_scene", "args": {
@@ -358,7 +358,7 @@ def test_scene_name_correction_recovers_hash_suffix_leak() -> None:
 
 def test_scene_name_correction_canonical_name_preserved() -> None:
     """Already-canonical name short-circuits — no prompt scan, no rewrite."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "create_scene", "args": {
@@ -380,7 +380,7 @@ def test_scene_name_correction_canonical_name_preserved() -> None:
 def test_state_color_temp_swap_neutral() -> None:
     """``중립으로 켜줘`` makes the model emit ``state="neutral"`` (a
     color-temp value in the wrong slot). Swap puts it back."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "set_light", "args": {
@@ -395,7 +395,7 @@ def test_state_color_temp_swap_neutral() -> None:
 
 def test_state_color_temp_swap_skipped_when_color_temp_present() -> None:
     """If color_temp is already populated, swap must NOT clobber it."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     # state="on" stays, color_temp="warm" stays.
     plan = CATALOG.parse_json_dsl(
@@ -416,7 +416,7 @@ def test_state_color_temp_swap_skipped_when_color_temp_present() -> None:
 
 def test_color_temp_fill_from_prompt_set_light_warm() -> None:
     """``따뜻하게 켜줘`` with no color_temp in args → fill ``warm`` from prompt."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "set_light", "args": {
@@ -432,7 +432,7 @@ def test_color_temp_fill_propagates_into_create_scene_actions() -> None:
     """Nested set_light inside create_scene.actions also benefits — a
     create_scene rooted in a 따뜻하게 prompt rescues the missing
     color_temp on the inner set_light."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "create_scene", "args": {
@@ -449,7 +449,7 @@ def test_color_temp_fill_propagates_into_create_scene_actions() -> None:
 
 def test_color_temp_fill_skipped_on_ambiguous_prompt() -> None:
     """Multiple distinct color_temp aliases in one prompt → don't fill."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "set_light", "args": {
@@ -468,7 +468,7 @@ def test_color_temp_fill_skipped_on_ambiguous_prompt() -> None:
 def test_room_override_from_prompt_korean_alias() -> None:
     """The model sends ``room="office"`` for ``복도 조명 켜줘`` (alias
     miss). Prompt scan unambiguously points to ``hallway``."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "set_light", "args": {
@@ -481,7 +481,7 @@ def test_room_override_from_prompt_korean_alias() -> None:
 
 def test_room_override_skipped_on_multi_room_prompt() -> None:
     """Two distinct rooms in prompt → ambiguous → leave args.room alone."""
-    from ganglion.schema.iot_light import CATALOG
+    from ganglion.contract.builtins.iot_light import CATALOG
 
     plan = CATALOG.parse_json_dsl(
         {"calls": [{"action": "set_light", "args": {

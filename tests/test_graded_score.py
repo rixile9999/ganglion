@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from ganglion.dsl.types import ActionPlan, ToolCall
-from ganglion.eval.metrics import graded_score
+from ganglion.contract.types import ActionPlan, ToolCall
+from ganglion.analyzer.metrics import graded_score
 
 
 def _plan(*calls: tuple[str, dict]) -> ActionPlan:

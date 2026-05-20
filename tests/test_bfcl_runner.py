@@ -3,16 +3,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from ganglion.bfcl.loader import BFCLCase
-from ganglion.dsl.catalog import Catalog
-from ganglion.dsl.types import ActionPlan, ToolCall
-from ganglion.eval.bfcl_runner import (
+from ganglion.benchmarks.bfcl.loader import BFCLCase
+from ganglion.contract.catalog import Catalog
+from ganglion.contract.types import ActionPlan, ToolCall
+from ganglion.benchmarks.bfcl.runner import (
     BFCLCaseResult,
     build_case_catalog,
     run_bfcl,
     summarize_bfcl,
 )
-from ganglion.runtime.types import ModelResult
+from ganglion.lm.client import ModelResult
 
 
 _TOOL = {

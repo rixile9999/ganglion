@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from collections import Counter
 
-from ganglion.factory.customer.eval import split_train_eval
-from ganglion.factory.customer.synth import SynthExample
+from ganglion.lm.local_hf import split_train_eval
+from ganglion.lm.synth.pipeline import SynthExample
 
 
 def _make(intent: str, strategy: str) -> SynthExample:

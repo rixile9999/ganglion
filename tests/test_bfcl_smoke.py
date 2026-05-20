@@ -13,10 +13,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from ganglion.bfcl.loader import CATEGORIES, BFCLCase, load_category
-from ganglion.dsl.types import ActionPlan, ToolCall
-from ganglion.eval.bfcl_runner import run_bfcl, summarize_bfcl
-from ganglion.runtime.types import ModelResult
+from ganglion.benchmarks.bfcl.loader import CATEGORIES, BFCLCase, load_category
+from ganglion.contract.types import ActionPlan, ToolCall
+from ganglion.benchmarks.bfcl.runner import run_bfcl, summarize_bfcl
+from ganglion.lm.client import ModelResult
 
 
 def _replay_plan(case: BFCLCase) -> ActionPlan:

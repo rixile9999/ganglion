@@ -1,11 +1,11 @@
-"""Smoke tests for `ganglion.factory_pipeline` (M4-B composite stub)."""
+"""Smoke tests for `ganglion.factory` (M4-B composite stub)."""
 from __future__ import annotations
 
 from pathlib import Path
 
 import pytest
 
-from ganglion.factory_pipeline import (
+from ganglion.factory import (
     IterationResult,
     PipelineConfig,
     PipelineOutcome,

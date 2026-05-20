@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-from ganglion.factory.grammar import (
+from ganglion.lm.grammar import (
     catalog_to_json_schema,
     compile_catalog_grammar,
     make_logits_processor,
 )
-from ganglion.schema import get_catalog
+from ganglion.contract.builtins import get_catalog
 
 
 xgr = pytest.importorskip("xgrammar")
@@ -48,8 +48,8 @@ def _build_qwen_like_tokenizer():
 
 
 def test_module_exports() -> None:
-    """Public re-exports come through ``ganglion.factory.grammar``."""
-    from ganglion.factory import grammar
+    """Public re-exports come through ``ganglion.lm.grammar``."""
+    from ganglion.lm import grammar
 
     assert hasattr(grammar, "compile_catalog_grammar")
     assert hasattr(grammar, "make_logits_processor")

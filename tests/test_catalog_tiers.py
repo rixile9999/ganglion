@@ -1,5 +1,5 @@
-from ganglion.dsl.tool_spec import DSLValidationError
-from ganglion.schema import TIERS, get_catalog
+from ganglion.contract.tool_spec import DSLValidationError
+from ganglion.contract.builtins import TIERS, get_catalog
 
 
 def test_tier_tool_counts() -> None:

@@ -1,12 +1,12 @@
 import pytest
 
-from ganglion.dsl.tool_spec import DSLValidationError
-from ganglion.runtime.qwen import (
+from ganglion.contract.tool_spec import DSLValidationError
+from ganglion.lm.dashscope import (
     CompletionResponse,
     RepairConfig,
     run_dsl_with_repair,
 )
-from ganglion.schema import get_catalog
+from ganglion.contract.builtins import get_catalog
 
 
 class ScriptedCompleter:

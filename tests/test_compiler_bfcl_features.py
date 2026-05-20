@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-from ganglion.dsl.compiler import compile_tool_calling_schema
-from ganglion.dsl.tool_spec import (
+from ganglion.contract.schema_compiler import compile_tool_calling_schema
+from ganglion.contract.tool_spec import (
     BoolArg,
     DSLValidationError,
     IntArg,

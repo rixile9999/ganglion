@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from ganglion.factory.customer.synth import (
+from ganglion.lm.synth.pipeline import (
     DashScopeTeacher,
     SynthConfig,
     SynthExample,
@@ -18,7 +18,7 @@ from ganglion.factory.customer.synth import (
     synthesize,
     write_jsonl,
 )
-from ganglion.schema import get_catalog
+from ganglion.contract.builtins import get_catalog
 
 
 # ----------------------------------------------------------------------

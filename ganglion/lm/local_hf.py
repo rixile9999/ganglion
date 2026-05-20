@@ -28,10 +28,7 @@ from ganglion.contract.catalog import Catalog
 from ganglion.contract.tool_spec import DSLValidationError
 from ganglion.eval.metrics import CaseResult, RunResult, summarize
 from ganglion.lm.finetune.sft import generate_dsl
-
-# TODO(batch-6 cleanup): switch to canonical ganglion.lm.synth.pipeline.SynthExample
-# (M1-C's target; using legacy shim path here for parallel-worker safety).
-from ganglion.factory.customer.synth import SynthExample
+from ganglion.lm.synth.pipeline import SynthExample
 
 
 @dataclass(frozen=True)
@@ -296,9 +293,7 @@ def write_split_jsonls(
     out_dir: Path,
 ) -> None:
     """Persist the train/holdout split as separate JSONL files."""
-    # TODO(batch-6 cleanup): switch to canonical ganglion.lm.synth.* path
-    # once M1-C migration lands.
-    from ganglion.factory.customer.synth import write_jsonl
+    from ganglion.lm.synth.pipeline import write_jsonl
 
     out_dir = Path(out_dir)
     write_jsonl(train, out_dir / "train.jsonl")

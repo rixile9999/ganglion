@@ -5,12 +5,7 @@ import time
 from typing import Any
 
 from ganglion.contract.builtins.iot_light import CATALOG as IOT_LIGHT_CATALOG, ROOM_ALIASES
-
-# NOTE: M1-A migrates ModelResult to `ganglion.lm.client`. While that PR is in
-# flight we import via the still-valid `ganglion.runtime.types` path (which
-# M1-A leaves as a shim). A follow-up cleanup batch will switch this to the
-# canonical `ganglion.lm.client` import.
-from ganglion.runtime.types import ModelResult
+from ganglion.lm.client import ModelResult
 
 
 class RuleBasedJSONDSLClient:

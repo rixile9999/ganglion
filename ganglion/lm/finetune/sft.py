@@ -20,16 +20,8 @@ from pathlib import Path
 from typing import Iterable
 
 from ganglion.contract.catalog import Catalog
-
-# TODO(batch-6 cleanup): switch to canonical ganglion.lm.synth.pipeline.SynthExample
-# (M1-C's target; using legacy shim path here for parallel-worker safety).
-from ganglion.factory.customer.synth import SynthExample
-
-
-SYSTEM_PROMPT_TEMPLATE = (
-    "You convert user requests into the JSON DSL below. "
-    "The response must be valid JSON.\n\n{catalog_dsl}"
-)
+from ganglion.lm.prompts import SYSTEM_PROMPT_TEMPLATE
+from ganglion.lm.synth.pipeline import SynthExample
 
 
 @dataclass(frozen=True)
@@ -58,7 +50,7 @@ class TrainConfig:
 
 def build_messages(catalog: Catalog, example: SynthExample) -> list[dict]:
     """Build the (system, user, assistant) message triplet for one example."""
-    system_content = SYSTEM_PROMPT_TEMPLATE.format(catalog_dsl=catalog.render_json_dsl())
+    system_content = SYSTEM_PROMPT_TEMPLATE.format(dsl=catalog.render_json_dsl())
     return [
         {"role": "system", "content": system_content},
         {"role": "user", "content": example.intent},
@@ -243,7 +235,7 @@ def generate_dsl(
     """
     import torch
 
-    system_content = SYSTEM_PROMPT_TEMPLATE.format(catalog_dsl=catalog.render_json_dsl())
+    system_content = SYSTEM_PROMPT_TEMPLATE.format(dsl=catalog.render_json_dsl())
     messages = [
         {"role": "system", "content": system_content},
         {"role": "user", "content": user_intent},
@@ -271,9 +263,7 @@ def generate_dsl(
         gen_kwargs["do_sample"] = False
 
     if compiled_grammar is not None:
-        # TODO(batch-6 cleanup): switch to canonical ganglion.lm.grammar path
-        # once M1-E migration lands.
-        from ganglion.factory.grammar import make_logits_processor
+        from ganglion.lm.grammar import make_logits_processor
 
         gen_kwargs["logits_processor"] = [make_logits_processor(compiled_grammar)]
 

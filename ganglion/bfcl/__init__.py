@@ -1,7 +1,16 @@
+"""Deprecated. Moved to `ganglion.benchmarks.bfcl`."""
 from __future__ import annotations
 
-from ganglion.bfcl.grader import GraderResult, ast_match
-from ganglion.bfcl.loader import (
+import warnings
+
+warnings.warn(
+    "ganglion.bfcl is deprecated; use ganglion.benchmarks.bfcl instead",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from ganglion.benchmarks.bfcl.grader import GraderResult, ast_match  # noqa: E402
+from ganglion.benchmarks.bfcl.loader import (  # noqa: E402
     BFCLCase,
     SAMPLE_ROOT,
     load_cases,

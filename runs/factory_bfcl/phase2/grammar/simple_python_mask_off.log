@@ -1,0 +1,3 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   9%|▊         | 27/311 [00:00<00:01, 269.77it/s]Loading weights:  68%|██████▊   | 210/311 [00:00<00:00, 1186.19it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1239.01it/s]
+[bfcl_eval:simple_python] ast_match=0.75 syntax=0.94 action=0.94 latency_p50=1113.99ms n=100

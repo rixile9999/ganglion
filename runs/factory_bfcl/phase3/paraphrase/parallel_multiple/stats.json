@@ -1,0 +1,7 @@
+{
+  "category": "parallel_multiple",
+  "k_per_case": 4,
+  "valid_rows": 244,
+  "filtered_rows": 32,
+  "cases_attempted": 80
+}

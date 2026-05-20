@@ -1,0 +1,9 @@
+{
+  "train_runtime": 174.8182,
+  "train_samples_per_second": 7.671,
+  "train_steps_per_second": 0.961,
+  "total_flos": 535652305993728.0,
+  "train_loss": 0.0635066822630636,
+  "category": "irrelevance",
+  "row_count": 447
+}

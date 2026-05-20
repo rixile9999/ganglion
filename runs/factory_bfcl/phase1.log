@@ -1,0 +1,29 @@
+[20:11:14] start baseline/simple_python 
+[20:12:48] done  baseline/simple_python dsl
+[20:12:48] start baseline/multiple 
+[20:14:26] done  baseline/multiple dsl
+[20:14:26] start baseline/parallel 
+[20:16:46] done  baseline/parallel dsl
+[20:16:46] start baseline/parallel_multiple 
+[20:20:49] done  baseline/parallel_multiple dsl
+[20:20:49] start baseline/irrelevance --bfcl-allow-empty-calls
+[20:22:14] done  baseline/irrelevance dsl
+[20:22:14] start native/simple_python
+[20:23:09] done  native/simple_python
+[20:23:09] start native/multiple
+[20:24:04] done  native/multiple
+[20:24:04] start native/parallel
+[20:25:21] done  native/parallel
+[20:25:21] start native/parallel_multiple
+[20:26:43] done  native/parallel_multiple
+[20:26:43] start repair/simple_python --repair --repair-max-attempts 1
+[20:28:21] done  repair/simple_python dsl
+[20:28:21] start repair/multiple --repair --repair-max-attempts 1
+[20:29:57] done  repair/multiple dsl
+[20:29:57] start repair/parallel --repair --repair-max-attempts 1
+[20:33:07] done  repair/parallel dsl
+[20:33:07] start repair/parallel_multiple --repair --repair-max-attempts 1
+[20:36:25] done  repair/parallel_multiple dsl
+[20:36:25] start repair/irrelevance --repair --repair-max-attempts 1 --bfcl-allow-empty-calls
+[20:37:56] done  repair/irrelevance dsl
+[20:37:56] phase1 complete

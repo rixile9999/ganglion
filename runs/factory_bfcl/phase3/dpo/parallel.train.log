@@ -1,0 +1,13 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights:   8%|▊         | 24/311 [00:00<00:01, 239.90it/s]Loading weights:  68%|██████▊   | 211/311 [00:00<00:00, 1196.47it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 1222.71it/s]
+Traceback (most recent call last):
+  File "/home/hyoseok/workspace/ganglion/runs/factory_bfcl/bfcl_dpo.py", line 239, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/hyoseok/workspace/ganglion/runs/factory_bfcl/bfcl_dpo.py", line 235, in main
+    return args.func(args)
+           ^^^^^^^^^^^^^^^
+  File "/home/hyoseok/workspace/ganglion/runs/factory_bfcl/bfcl_dpo.py", line 173, in cmd_train
+    dpo_cfg = DPOConfig(
+              ^^^^^^^^^^
+TypeError: DPOConfig.__init__() got an unexpected keyword argument 'max_prompt_length'

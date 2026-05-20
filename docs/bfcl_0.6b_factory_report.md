@@ -12,10 +12,11 @@
 | --- | ---: | --- |
 | qwen3.6-plus (M5 full) | 86.2% | DashScope API, cloud-scale model |
 | qwen3.6-flash (M5 full) | 80.8% | DashScope API, the arc objective |
-| **bfcl-0.6b-lora V3 (this work)** | **74.4%** | Local sub-1B + 81MB LoRA |
+| **bfcl-0.6b-lora V3 + post-correction (this work)** | **75.8%** | Local sub-1B + 81 MB LoRA + 11-rule post-corr ported from RTX 4080 track |
+| bfcl-0.6b-lora V3 (this work, no post-corr) | 74.4% | Local sub-1B + 81 MB LoRA |
 | Qwen3-0.6B untuned | 46.0% | Local base, no LoRA |
 
-V3 closes **80%** of the gap between the untuned 0.6B baseline (46.0%) and the `qwen3.6-flash` benchmark (80.8%). The remaining 6.4pp gap is dominated by argument-value selection failures on `parallel*` cases — DPO was the planned remedy but yielded no usable training signal at this scale.
+V3 + post-correction closes **86%** of the gap between the untuned 0.6B baseline (46.0%) and the `qwen3.6-flash` benchmark (80.8%). The remaining 5pp gap is dominated by argument-value selection failures on `parallel*` cases — DPO was the planned remedy but yielded no usable training signal at this scale.
 
 ## Stage-by-stage progression
 
@@ -23,9 +24,10 @@ V3 closes **80%** of the gap between the untuned 0.6B baseline (46.0%) and the `
 | --- | ---: | ---: | ---: | --- |
 | Untuned Qwen3-0.6B | 46.0% | — | — | #1 ✅ (≥10%) |
 | V2 — SFT on 2,960 augmented (S2a') | 73.4% | +27.4pp | 10 min train + 10 min eval | #2 ✅ (≥+20pp) |
-| V2 + retroactive post-correction (S2a+) | 73.4% | +0.0pp | 10 sec replay | #3 ✗ (lift 0pp) |
+| V2 + retroactive post-correction, catalog-agnostic only (S2a+) | 73.4% | +0.0pp | 10 sec replay | #3 ✗ (lift 0pp with naive rules) |
 | V3 — SFT on 5,794 (V2 ∪ bootstrap, S2c') | 74.4% | +1.0pp | 88 min bootstrap + 20 min train + 10 min eval | #4 ✅ (95.7% kept) |
 | V4 — DPO on V3 (S3') | n/a | n/a | 5.2 h sample | #5 ✗ (5 pairs, no signal) |
+| **V3 + 11-rule post-correction (S2a+ retry, ported from RTX 4080 track)** | **75.8%** | **+1.4pp** | 2 sec replay | **#3 retry ✓** (rules R1/R4 are load-bearing) |
 
 Total wall clock (incl. failed paths): **~9 hours GPU + ~$0.30 DashScope** (paraphrase synth only).
 
@@ -52,9 +54,29 @@ Surprise: BFCL untuned-0.6B beats IoT untuned-0.6B (46.0% vs 38.6%). Inline tool
 
 V1 mode collapse (488/500 empty plans, irrelevance 100%, callable 0–5%) caused by a train/inference distribution mismatch: V1 only set `allow_empty_calls=True` on irrelevance training rows, but the eval runner sets the flag globally, so every inference prompt carries the no-call clause. The model learned `clause-present → emit []`. The V2 fix: uniform `allow_empty_calls=True` across the training pool. Detailed analysis: [`docs/bfcl_0.6b_sft_v1_v2_note.md`](bfcl_0.6b_sft_v1_v2_note.md).
 
-### Gate #3 (post-correction) — failed at 0pp
+### Gate #3 (post-correction) — initially failed at 0pp, retried at +1.4pp after porting RTX 4080 rules
 
-The IoT factory's +6pp lift from `defaults_when_missing` and `strip_unknown_args` does not transfer to BFCL. IoT rules know the catalog's domain (locale, scene names, KR time formats); BFCL hands a different schema to every case, so catalog-specific rules have no target. Catalog-agnostic transforms (strip, optional-blank fill, int↔float) produced 0pp / −8.8pp / 0pp respectively. The arc skipped further post-correction work per the spec rule. Detail: [`docs/bfcl_0.6b_post_correction_note.md`](bfcl_0.6b_post_correction_note.md).
+**Initial attempt (this branch, before merge):** the IoT factory's `defaults_when_missing` + `strip_unknown_args` do not transfer to BFCL. IoT rules know the catalog's domain (locale, scene names, KR time formats); BFCL hands a different schema to every case, so catalog-specific rules have no target. Catalog-agnostic transforms (strip, optional-blank fill, int↔float) produced 0pp / −8.8pp / 0pp respectively. Detail: [`docs/bfcl_0.6b_post_correction_note.md`](bfcl_0.6b_post_correction_note.md).
+
+**Retry after merging the RTX 4080 track:** the per-category arc on `main` (commit `4b79e79`) developed an 11-rule data-driven post-correction stack via `analyze_failures.py` (see [`docs/factory_bfcl_report.md`](factory_bfcl_report.md) §3.5 and [`docs/factory_bfcl_phase3_report.md`](factory_bfcl_phase3_report.md) §2.5). Those rules were ported into `runs/factory_phase2/apply_post_correction_v3.py` and replayed on V3's `runs/bfcl/sft_v3_0.6b_cases.jsonl`. Result: **74.4% → 75.8% AST (+1.4pp)** on the clean 500-case eval, with `R1 fill_optional` (36 fires) and `R4 drop_hallucinated_optional` (14 fires) doing essentially all the work.
+
+The lift is real but ~4× smaller than the RTX 4080 track measured (+5.2pp full / +12pp holdout). Two reasons:
+
+1. **Train pool effect.** RTX 4080 trained per-category adapters on 80 rows/cat, leaving large headroom that R1/R4 could fix. This branch's V3 was trained on 5,794 paraphrased + bootstrapped rows; the model already learned to omit hallucinated optionals in most cases, so R4 only fires 14 times.
+2. **Test-set effect.** RTX 4080's "full 100" eval included 80/cat that the adapter trained on (the eval is the train split's superset). On those memorized cases the rules find more low-hanging fruit. This branch's V3 was evaluated on 500 cases none of which it trained on.
+
+Net: **R1 + R4 are confirmed load-bearing across both arcs**; the magnitude tracks how much SFT capacity was left on the table. V3 + post-corr is adopted as the new headline (**75.8% AST**).
+
+Per-category detail (V3 vs V3 + post-corr):
+
+| Category | V3 | V3 + pc | Δ |
+| --- | ---: | ---: | ---: |
+| simple_python      | 72.0% | 73.0% | +1.0 |
+| multiple           | 83.0% | **86.0%** | **+3.0** |
+| parallel           | 66.0% | 67.0% | +1.0 |
+| parallel_multiple  | 64.0% | 66.0% | +2.0 |
+| irrelevance        | 87.0% | 87.0% | 0.0 |
+| **aggregate**      | **74.4%** | **75.8%** | **+1.4** |
 
 ### Gate #4 (bootstrap kept ratio) — passed at 95.7%
 
@@ -94,10 +116,29 @@ Single-turn AST accuracy on the same 500-case BFCL subsample:
 | --- | --- | ---: | --- |
 | Cloud LLM (large) | qwen3.6-plus + Ganglion DSL | 86.2% | Pay-per-token API |
 | Cloud LLM (small) | qwen3.6-flash + Ganglion DSL | 80.8% | Pay-per-token API |
-| **Local sub-1B + Ganglion factory** | **Qwen3-0.6B + LoRA V3** | **74.4%** | **One-time training; runs on a single 4090, 81 MB adapter** |
+| **Local sub-1B + factory + post-corr** | **Qwen3-0.6B + LoRA V3 + 11-rule post-corr** | **75.8%** | **One-time training; runs on a single 4090, 81 MB adapter + deterministic correction pass** |
+| Local sub-1B + factory | Qwen3-0.6B + LoRA V3 | 74.4% | Same |
 | Local sub-1B, no factory | Qwen3-0.6B untuned + Ganglion DSL | 46.0% | Same hardware |
 
-The factory pipeline converts a 0.6B base from "unusable on BFCL" (46%) to "within striking distance of a flagship-class API" (74.4%) in a single overnight run. The remaining ~6pp gap to `qwen3.6-flash` is a known direction (argument-value selection); closing it requires evidence outside the train pool.
+The factory pipeline converts a 0.6B base from "unusable on BFCL" (46%) to "within striking distance of a flagship-class API" (75.8%) in a single overnight run. The remaining ~5pp gap to `qwen3.6-flash` is a known direction (argument-value selection); closing it requires evidence outside the train pool.
+
+### Companion track: per-category adapters (RTX 4080, commit 4b79e79)
+
+A parallel arc trained five per-category adapters (cat × 88 MB = 440 MB total) on a smaller 80-row train split drawn from the eval sample. Reported numbers — [`docs/factory_bfcl_report.md`](factory_bfcl_report.md), [`docs/factory_bfcl_phase3_report.md`](factory_bfcl_phase3_report.md):
+
+| Configuration | "Full 100" macro AST | Holdout 20×5 macro AST | Note |
+| --- | ---: | ---: | --- |
+| SFT v1 | 0.820 | 0.600 | 80/cat train |
+| + 11-rule post-correction | 0.872 | n/a | rules developed via `analyze_failures.py` |
+| + paraphrase K=4 + synth N=50 (v1.5) | 0.880 | **0.690** | data augmentation stage |
+| **v1.5 + post-correction (best)** | **0.912** | **0.810** | matches deployment scenario |
+
+`full` numbers are not directly comparable to this branch's 75.8% — the RTX 4080 adapters trained on 80 of the 100 cases per category, so 80% of the "full" eval is the train set. Only the 20×5 holdout is a clean generalization metric. The headline numbers worth comparing:
+
+- **This branch (single adapter, clean 500-case test)**: 75.8% AST
+- **RTX 4080 track (5 adapters, 20×5 holdout)**: 81.0% macro AST
+
+The 5.2pp difference buys higher per-category accuracy at the cost of 5× the adapter binary size and a routing layer. The per-category track's post-correction recipe (R1, R4 dominant) is the piece that *did* transfer back across — see Gate #3 retry above.
 
 ## Thesis interpretation
 
@@ -152,4 +193,10 @@ python -m ganglion.eval.runner --bfcl all --bfcl-per-category 100 \
     --bfcl-allow-empty-calls \
     --bfcl-output runs/bfcl/sft_v3_0.6b_cases.jsonl \
     > runs/bfcl/sft_v3_0.6b_summary.json
+
+# S2a+ retry — 11-rule post-correction ported from RTX 4080 track (~2 sec)
+python runs/factory_phase2/apply_post_correction_v3.py \
+    --cases   runs/bfcl/sft_v3_0.6b_cases.jsonl \
+    --out-dir runs/bfcl
+# -> 75.8% AST (vs 74.4% pre-correction, +1.4pp)
 ```

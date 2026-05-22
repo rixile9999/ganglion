@@ -1,0 +1,27 @@
+{
+  "base_model": "Qwen/Qwen3-0.6B",
+  "torch_version": "2.11.0",
+  "backend": "mps",
+  "cuda_device_name": null,
+  "param_device_dtype_histogram": {
+    "mps:0|torch.bfloat16": 310,
+    "mps:0|torch.float32": 392
+  },
+  "attn_implementation": "eager",
+  "autocast_enabled": false,
+  "lora_a_sha256_first": [
+    [
+      "base_model.model.model.layers.0.self_attn.q_proj.lora_A.default.weight",
+      "06498c784288fafc"
+    ],
+    [
+      "base_model.model.model.layers.0.self_attn.k_proj.lora_A.default.weight",
+      "b6044d4b271fcb33"
+    ],
+    [
+      "base_model.model.model.layers.0.self_attn.v_proj.lora_A.default.weight",
+      "cfad18d05038218a"
+    ]
+  ],
+  "env_PYTORCH_ENABLE_MPS_FALLBACK": "1"
+}

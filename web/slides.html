@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>GANGLION ◦ ACADEMIC PRESENTATION</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ganglion: Spec-Driven Model Factory for Edge AI Tool Calling - 지도교수 미팅 및 학회 제출용 학술 발표 자료 슬라이드">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Condensed:wght@300;400;500;600;700&display=swap">
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & RESET
+       ========================================================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --ink:           #0E0E0C;
+      --ink-card:      #181814;
+      --ink-raised:    #13130F;
+      --ink-overlay:   #1F1F1A;
+      --rule:          #2A2A26;
+      --rule-strong:   #3D3D36;
+      --bone:          #E8E4D4;
+      --bone-bright:   #FFFCF0;
+      --bone-dim:      #9A9485;
+      --bone-mute:     #5C564B;
+      --teal:          #7DD8C6;
+      --teal-dim:      #4B8079;
+      --chartreuse:    #C3E88D;
+      --chartreuse-dim:#6E8050;
+      --amber:         #F4B860;
+      --amber-dim:     #8A6736;
+      --vermillion:    #E55E5E;
+      --vermillion-dim:#8A3A3A;
+      
+      --mono:          'IBM Plex Mono', ui-monospace, monospace;
+      --sans:          'IBM Plex Sans Condensed', sans-serif;
+      --header-h:      56px;
+    }
+
+    body {
+      background-color: var(--ink);
+      color: var(--bone);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.5;
+      min-height: 100vh;
+      overflow: hidden;
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(125, 216, 198, 0.03), transparent 60%),
+        repeating-linear-gradient(0deg, transparent 0 23px, rgba(255,252,240,0.01) 23px 24px);
+    }
+
+    h1, h2, h3, h4 {
+      font-family: var(--mono);
+      font-weight: 600;
+      color: var(--bone-bright);
+    }
+
+    /* ==========================================================================
+       VIEW TRANSITIONS (Directional Navigation)
+       ========================================================================== */
+    @keyframes slide-to-left { to { transform: translateX(-100%); opacity: 0; } }
+    @keyframes slide-from-right { from { transform: translateX(100%); opacity: 0; } }
+    @keyframes slide-to-right { to { transform: translateX(100%); opacity: 0; } }
+    @keyframes slide-from-left { from { transform: translateX(-100%); opacity: 0; } }
+
+    ::view-transition-group(root) {
+      animation: 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    html.forward::view-transition-old(root) { animation-name: slide-to-left; }
+    html.forward::view-transition-new(root) { animation-name: slide-from-right; }
+    html.backward::view-transition-old(root) { animation-name: slide-to-right; }
+    html.backward::view-transition-new(root) { animation-name: slide-from-left; }
+
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-group(root) { animation: none !important; }
+    }
+
+    /* ==========================================================================
+       PRESENTATION CONTAINER LAYOUT
+       ========================================================================== */
+    .app-container {
+      display: grid;
+      grid-template-rows: var(--header-h) 1fr;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Header Bar */
+    .header {
+      background: var(--ink-raised);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 10;
+    }
+    .header__brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header__sigil {
+      width: 16px; height: 16px;
+      border: 1px solid var(--bone-dim);
+      position: relative;
+    }
+    .header__sigil::before {
+      content: ''; position: absolute;
+      top: 50%; left: -2px; right: -2px; height: 1px; background: var(--bone-dim);
+    }
+    .header__brand-name {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.2em;
+    }
+    .header__meta {
+      display: flex;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--bone-dim);
+      font-family: var(--mono);
+    }
+    .header__meta span b { color: var(--teal); }
+
+    /* Deck Split Layout */
+    .deck-split {
+      display: grid;
+      grid-template-columns: 1fr 0px; /* Notes slide out on N key */
+      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow: hidden;
+    }
+    .deck-split.with-notes {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+
+    /* Slide Stage */
+    .stage {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      overflow-y: auto;
+      position: relative;
+    }
+    .slide {
+      background: var(--ink-card);
+      border: 1px solid var(--rule);
+      width: 100%;
+      max-width: 1000px;
+      aspect-ratio: 16 / 9;
+      padding: 48px;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    .slide.active {
+      display: flex;
+    }
+    .slide::before, .slide::after {
+      content: ''; position: absolute; width: 12px; height: 12px;
+      border: 1px solid var(--bone-mute); pointer-events: none;
+    }
+    .slide::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .slide::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    /* Presenter Notes Pane */
+    .notes-pane {
+      background: var(--ink-raised);
+      border-left: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .notes-pane__header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--rule);
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .notes-pane__content {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+      font-family: var(--mono);
+      font-size: 14.5px;
+      line-height: 1.7;
+      color: var(--bone);
+      background-image: linear-gradient(rgba(24,24,20,0.3) 1px, transparent 1px);
+      background-size: 100% 28px;
+    }
+    .notes-pane__content blockquote {
+      border-left: 3px solid var(--amber-dim);
+      padding-left: 14px;
+      color: var(--bone-bright);
+      margin: 16px 0;
+      background: rgba(244,184,96,0.03);
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+
+    /* ==========================================================================
+       SLIDE STYLING & COMPONENTS
+       ========================================================================== */
+    .slide__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px dashed var(--rule-strong);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+    }
+    .slide__header h2 {
+      font-size: 26px;
+      letter-spacing: -0.01em;
+      text-shadow: 0 0 10px rgba(255,252,240,0.15);
+    }
+    .slide__header h2 b {
+      color: var(--teal);
+      font-weight: 500;
+    }
+    .slide__num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--bone-mute);
+    }
+    
+    .slide__body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .slide__footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--bone-mute);
+      font-family: var(--mono);
+      border-top: 1px solid var(--rule);
+      padding-top: 14px;
+      margin-top: 24px;
+    }
+    .slide__footer-brand {
+      letter-spacing: 0.1em;
+    }
+
+    /* List items */
+    .list-item {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 14px;
+      font-size: 17px;
+      color: var(--bone);
+      transition: transform 0.15s ease;
+    }
+    .list-item:hover {
+      transform: translateX(4px);
+    }
+    .list-item::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--chartreuse);
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .list-item b {
+      color: var(--bone-bright);
+    }
+    .list-item small {
+      display: block;
+      font-size: 13.5px;
+      color: var(--bone-dim);
+      margin-top: 4px;
+    }
+
+    /* Accent wrappers & tags */
+    .tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border: 1px solid var(--rule-strong);
+      background: var(--ink-raised);
+      color: var(--bone-dim);
+      vertical-align: middle;
+      display: inline-block;
+    }
+    .tag--teal { color: var(--teal); border-color: var(--teal-dim); }
+    .tag--chart { color: var(--chartreuse); border-color: var(--chartreuse-dim); }
+    .tag--amber { color: var(--amber); border-color: var(--amber-dim); }
+
+    /* SVG schematic */
+    .slide-svg {
+      width: 100%;
+      max-height: 250px;
+      background: var(--ink);
+      border: 1px solid var(--rule);
+      padding: 10px;
+    }
+
+    /* Metric Grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .metric-card {
+      background: var(--ink-raised);
+      border: 1px solid var(--rule);
+      padding: 16px;
+      position: relative;
+    }
+    .metric-card::before {
+      content: ''; position: absolute; top: -1px; left: -1px; width: 6px; height: 6px;
+      border: 1px solid var(--bone-mute); border-right: none; border-bottom: none;
+    }
+    .metric-card__val {
+      font-family: var(--mono);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--chartreuse);
+      margin-bottom: 4px;
+      line-height: 1.1;
+    }
+    .metric-card__val.amber { color: var(--amber); }
+    .metric-card__val.teal { color: var(--teal); }
+    .metric-card__label {
+      font-family: var(--sans);
+      font-size: 11px;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .metric-card__desc {
+      font-size: 12px;
+      color: var(--bone-dim);
+      margin-top: 6px;
+    }
+
+    /* Table styling */
+    .slide-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      margin-top: 10px;
+    }
+    .slide-table th, .slide-table td {
+      border-bottom: 1px solid var(--rule-strong);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .slide-table th {
+      color: var(--bone-mute);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: var(--ink-raised);
+    }
+    .slide-table td.hilite {
+      color: var(--chartreuse);
+    }
+    .slide-table td.bold {
+      color: var(--bone-bright);
+      font-weight: 500;
+    }
+
+    /* Navigation toolbar bottom center */
+    .controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(19, 19, 15, 0.95);
+      border: 1px solid var(--rule-strong);
+      padding: 6px 16px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .controls::before {
+      content: ''; position: absolute; top: -1px; left: -1px; width: 6px; height: 6px;
+      border: 1px solid var(--bone-dim); border-right: none; border-bottom: none;
+    }
+    .controls button {
+      background: none;
+      border: none;
+      color: var(--bone-dim);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: color 0.15s ease;
+    }
+    .controls button:hover {
+      color: var(--bone-bright);
+    }
+    .controls__info {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--bone-mute);
+    }
+
+    /* Helper utility classes */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .stack-16 > * + * { margin-top: 16px; }
+    .text-center { text-align: center; }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header__brand">
+      <div class="header__sigil"></div>
+      <div class="header__brand-name">GANGLION</div>
+    </div>
+    <div class="header__meta">
+      <span>Project: <b>Reflex</b></span>
+      <span>Stage: <b>Advisor Meeting</b></span>
+      <span>Shortcut: <b>N (Notes) | F (Fullscreen)</b></span>
+    </div>
+  </header>
+
+  <!-- DECK STAGE -->
+  <main class="deck-split" id="deck-layout">
+    
+    <!-- LEFT: Presentation View -->
+    <div class="stage">
+      
+      <!-- ==========================================
+           SLIDE 1: TITLE SLIDE
+           ========================================== -->
+      <div class="slide active" id="slide-1" data-index="1">
+        <div class="slide__header">
+          <div class="tag tag--teal">MLSYS / NEURIPS RESEARCH OUTLINE</div>
+          <span class="slide__num">[ 01 / 08 ]</span>
+        </div>
+        <div class="slide__body text-center" style="justify-content: center; gap: 24px;">
+          <h1 style="font-size: 38px; line-height: 1.1; letter-spacing: -0.02em;">
+            Ganglion: <span style="color: var(--chartreuse); text-shadow: 0 0 15px rgba(195,232,141,0.25);">Spec-Driven Model Factory</span><br>for Edge AI Tool Calling
+          </h1>
+          <p style="font-size: 18px; color: var(--bone-dim); max-width: 720px; margin: 0 auto; line-height: 1.6;">
+            중간 표현인 <b>Action IR</b>과 검증기인 <b>Myelin Compiler</b>의 공동 설계를 통한<br>
+            경량 언어 모델(<b>Reflex-LM</b>)의 툴 호출 가속화 및 강건성 확보 프레임워크
+          </p>
+          <div style="font-family: var(--mono); font-size: 13.5px; color: var(--bone-mute); margin-top: 18px; line-height: 1.8;">
+            발표자: [이름]<br>
+            지도교수: [교수명] 교수님
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // SYSTEMS CO-DESIGN</span>
+          <span>MAY 2026</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 2: CORE CONCEPT
+           ========================================== -->
+      <div class="slide" id="slide-2" data-index="2">
+        <div class="slide__header">
+          <h2>연구 핵심 <b>컨셉</b> 및 가설</h2>
+          <span class="slide__num">[ 02 / 08 ]</span>
+        </div>
+        <div class="slide__body grid-2">
+          <div class="stack-16" style="justify-content: center;">
+            <div class="list-item">
+              <b>Action IR 중심의 발화</b>
+              <small>모델이 장황한 API Schema를 읽고 출력하는 대신, 극도로 규격화되고 압축된 중간 표현(Action IR)만을 출력하게 제약.</small>
+            </div>
+            <div class="list-item">
+              <b>Tuning & Compilation 하이브리드</b>
+              <small>소형 모델 가중치 학습(Reflex-LM)과 호스트 컴파일 패스(Myelin Compiler)를 융합하여 상호 단점 보완.</small>
+            </div>
+          </div>
+          <div class="stack-16" style="justify-content: center;">
+            <div class="list-item">
+              <b>Spec-Driven Model Factory</b>
+              <small>도구 Catalog 명세 하나로 학습데이터 합성 $\rightarrow$ 모델 학습 $\rightarrow$ 디코딩 규칙 생성을 자동 수립하는 플랫폼 비전.</small>
+            </div>
+            <div class="list-item">
+              <b>핵심 가치 증명</b>
+              <small>추론 토큰 소모 대폭 절감, 추론 속도(Latency) 단축, 검증 강제화를 통한 의미 정확도(AST Match) 극대화.</small>
+            </div>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // CORE CONCEPT</span>
+          <span>EDGE AI SYSTEM</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 3: SYSTEM PIPELINE
+           ========================================== -->
+      <div class="slide" id="slide-3" data-index="3">
+        <div class="slide__header">
+          <h2>9-Stage <b>Closed-Loop</b> Pipeline</h2>
+          <span class="slide__num">[ 03 / 08 ]</span>
+        </div>
+        <div class="slide__body" style="gap: 12px;">
+          <!-- SVG element embedded directly -->
+          <svg viewBox="0 0 660 260" class="slide-svg" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="dg2_slides" width="18" height="18" patternUnits="userSpaceOnUse">
+                <circle cx="0.5" cy="0.5" r="0.5" fill="#2A2A26"/>
+              </pattern>
+              <marker id="arr-t-s" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 z" fill="#7DD8C6"/>
+              </marker>
+              <marker id="arr-a-s" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 z" fill="#F4B860"/>
+              </marker>
+            </defs>
+            <rect width="660" height="260" fill="url(#dg2_slides)"/>
+            
+            <!-- Nodes Row 1 -->
+            <g font-family="IBM Plex Mono" font-weight="500" font-size="10" fill="#E8E4D4">
+              <!-- Synth -->
+              <rect x="20" y="30" width="100" height="42" fill="#181814" stroke="#3D3D36"/>
+              <text x="28" y="46" font-size="8" fill="#9A9485">01 · LM</text>
+              <text x="28" y="60" fill="#C3E88D">SYNTH</text>
+
+              <!-- Finetune -->
+              <rect x="160" y="30" width="100" height="42" fill="#181814" stroke="#3D3D36"/>
+              <text x="168" y="46" font-size="8" fill="#9A9485">02 · LM</text>
+              <text x="168" y="60" fill="#C3E88D">FINETUNE</text>
+
+              <!-- Bench -->
+              <rect x="300" y="10" width="100" height="32" fill="#181814" stroke="#3D3D36"/>
+              <text x="306" y="22" font-size="7" fill="#9A9485">03 · CONSUMER</text>
+              <text x="306" y="34" font-size="9">BENCH · IOT</text>
+
+              <rect x="300" y="52" width="100" height="32" fill="#181814" stroke="#3D3D36"/>
+              <text x="306" y="64" font-size="7" fill="#9A9485">04 · CONSUMER</text>
+              <text x="306" y="76" font-size="9">BENCH · BFCL</text>
+
+              <!-- Trace -->
+              <rect x="440" y="30" width="100" height="42" fill="#181814" stroke="#7DD8C6"/>
+              <text x="448" y="46" font-size="8" fill="#7DD8C6">05 · ANALYZER</text>
+              <text x="448" y="60">TRACE</text>
+            </g>
+
+            <!-- Nodes Row 2 -->
+            <g font-family="IBM Plex Mono" font-weight="500" font-size="10" fill="#E8E4D4">
+              <!-- Taxonomy -->
+              <rect x="440" y="120" width="100" height="42" fill="#181814" stroke="#7DD8C6"/>
+              <text x="448" y="136" font-size="8" fill="#7DD8C6">06 · ANALYZER</text>
+              <text x="448" y="150">TAXONOMY</text>
+
+              <!-- Metrics -->
+              <rect x="300" y="120" width="100" height="42" fill="#181814" stroke="#7DD8C6"/>
+              <text x="308" y="136" font-size="8" fill="#7DD8C6">07 · ANALYZER</text>
+              <text x="308" y="150">METRICS</text>
+
+              <!-- Rules -->
+              <rect x="160" y="120" width="100" height="42" fill="#181814" stroke="#F4B860" stroke-dasharray="3,2"/>
+              <text x="168" y="136" font-size="8" fill="#F4B860">08 · FEEDBACK</text>
+              <text x="168" y="150">RULES</text>
+
+              <!-- Patch -->
+              <rect x="20" y="120" width="100" height="42" fill="#181814" stroke="#C3E88D"/>
+              <text x="28" y="136" font-size="8" fill="#C3E88D">09 · CONTRACT</text>
+              <text x="28" y="150">PATCH</text>
+            </g>
+
+            <!-- Links -->
+            <g fill="none" stroke-dasharray="3,2">
+              <path d="M 120,51 L 160,51" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 260,51 C 275,51 285,26 300,26" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 260,51 C 275,51 285,68 300,68" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 400,26 C 415,26 425,51 440,51" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 400,68 C 415,68 425,51 440,51" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 490,72 L 490,120" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 440,141 L 400,141" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 300,141 L 260,141" stroke="#7DD8C6" stroke-width="1" marker-end="url(#arr-t-s)"/>
+              <path d="M 160,141 L 120,141" stroke="#F4B860" stroke-width="1" marker-end="url(#arr-a-s)"/>
+              <path d="M 70,120 L 70,72" stroke="#C3E88D" stroke-width="1" marker-end="url(#arr-t-s)"/>
+            </g>
+          </svg>
+          <div class="grid-2" style="font-size: 13.5px; color: var(--bone-dim); margin-top: 10px;">
+            <div>
+              <b style="color: var(--teal);">Forward Pass:</b> 데이터 합성(01) $\rightarrow$ 파인튜닝(02) $\rightarrow$ 벤치마크(03,04) $\rightarrow$ Traces 수집(05) 단계로 순차 하향 전송.
+            </div>
+            <div>
+              <b style="color: var(--amber);">Feedback Loop:</b> 에러 분류(06) $\rightarrow$ 통계 평가(07) $\rightarrow$ 룰 패치 도출(08) $\rightarrow$ 계약 catalog 업데이트(09)의 순환 복구 구조.
+            </div>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // PIPELINE</span>
+          <span>9-STAGE CLOSED LOOP</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 4: LEARNING PHASE
+           ========================================== -->
+      <div class="slide" id="slide-4" data-index="4">
+        <div class="slide__header">
+          <h2>Module 1. <b>Learning Phase</b> (Reflex-LM 학습)</h2>
+          <span class="slide__num">[ 04 / 08 ]</span>
+        </div>
+        <div class="slide__body stack-16">
+          <div class="list-item">
+            <b>Spec-Driven Data Synthesis (명세 기반 데이터 합성)</b>
+            <small>주어진 스키마 명세([ToolSpec](file:///Users/janghyoseog/workspace/reflex-language-model/ganglion/contract/tool_spec.py))를 파싱하여, 학습용 시나리오 질의와 이에 매칭되는 정답 Action IR 문자열을 템플릿 기반으로 자동 매핑·합성.</small>
+          </div>
+          <div class="list-item">
+            <b>Supervised Fine-Tuning (SFT)</b>
+            <small>경량 에이전트 전용 초소형 파라미터 모델(0.6B) 학습. 툴당 약 80~100건 수준의 학습 세트만으로도 Action IR에 최적화된 토큰 예측 및 고유 구조 포맷 학습 가능.</small>
+          </div>
+          <div class="list-item">
+            <b>Direct Preference Optimization (DPO) 연동 지원</b>
+            <small>단일 툴 지정을 넘어, 다수 툴 간의 혼동이나 애매모호한 문맥(Irrelevance 등)을 제어하기 위해 Preference Alignment 튜닝 레이어 통합.</small>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // LEARNING PHASE</span>
+          <span>SFT & DPO TUNING</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 5: COMPILER PASSES
+           ========================================== -->
+      <div class="slide" id="slide-5" data-index="5">
+        <div class="slide__header">
+          <h2>Module 2. <b>Compiler Passes</b> (Myelin Compiler)</h2>
+          <span class="slide__num">[ 05 / 08 ]</span>
+        </div>
+        <div class="slide__body grid-2">
+          <div class="stack-16" style="justify-content: center;">
+            <h3 style="font-size: 18px; color: var(--teal); margin-bottom: 8px;">1. Constrained Decoding (Grammar)</h3>
+            <div class="list-item">
+              <b>EBNF 구문 강제 Masking</b>
+              <small>[Catalog](file:///Users/janghyoseog/workspace/reflex-language-model/ganglion/contract/catalog.py) 정보로부터 BNF/EBNF 제약 규칙을 동적 빌드.</small>
+            </div>
+            <div class="list-item">
+              <b>출력 안정성 100% 보장</b>
+              <small>추론 시점에 유효하지 않은 JSON/DSL 토큰 후보군을 엔진단에서 마스킹 차단하여 포맷 붕괴 원천 차단.</small>
+            </div>
+          </div>
+          <div class="stack-16" style="justify-content: center; border-left: 1px dashed var(--rule-strong); padding-left: 20px;">
+            <h3 style="font-size: 18px; color: var(--amber); margin-bottom: 8px;">2. Dynamic Post-Correction</h3>
+            <div class="list-item">
+              <b>Default Value Injection</b>
+              <small>모델이 누락한 필수 인자를 컴파일 파서 레벨에서 사전 디폴트값 보완 후 툴 실행.</small>
+            </div>
+            <div class="list-item">
+              <b>샌드박스 Repair Loop</b>
+              <small>실행 에러 감지 시 격리된 환경 내에서 오류 로그 피드백을 프롬프트로 재전송하는 [Repair Loop](file:///Users/janghyoseog/workspace/reflex-language-model/ganglion/analyzer/repair.py) 구동.</small>
+            </div>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // COMPILER PASSES</span>
+          <span>GRAMMAR & ERROR CORRECTION</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 6: BOOTSTRAPPING
+           ========================================== -->
+      <div class="slide" id="slide-6" data-index="6">
+        <div class="slide__header">
+          <h2>Module 3. <b>Self-Bootstrapping</b> Data Loop</h2>
+          <span class="slide__num">[ 06 / 08 ]</span>
+        </div>
+        <div class="slide__body grid-2">
+          <div class="stack-16" style="justify-content: center;">
+            <div class="list-item">
+              <b>통일된 Telemetry (Trace) 수집</b>
+              <small>입력값, 출력 토큰, Latency, 디코딩 전략 및 복구 횟수를 단일 [Trace](file:///Users/janghyoseog/workspace/reflex-language-model/ganglion/analyzer/trace.py) 데이터로 저장.</small>
+            </div>
+            <div class="list-item">
+              <b>14개 범주의 Error Taxonomy</b>
+              <small>실패 건에 대해 [Taxonomy](file:///Users/janghyoseog/workspace/reflex-language-model/ganglion/analyzer/taxonomy.py) 분류기가 구문/의미 수준 오류 유형을 정밀 스캔.</small>
+            </div>
+          </div>
+          <div class="stack-16" style="justify-content: center; background: rgba(195,232,141,0.02); padding: 18px; border: 1px dashed var(--rule-strong);">
+            <h3 style="font-size: 16px; color: var(--chartreuse); margin-bottom: 8px;">🔄 Self-Data Augmentation Loop</h3>
+            <p style="font-size: 14.5px; color: var(--bone-dim); line-height: 1.6;">
+              초기에 실패했으나 **Myelin Compiler의 Repair Loop**를 통해 복구 및 실행 성공한 로그들을 수집합니다. <br><br>
+              이 '성공 복원'된 트레이스 데이터를 필터링 및 복원하여 **다음 학습 세대의 SFT/DPO 골드 타깃(Gold Target) 데이터로 순환 환원**함으로써 학습 자원을 스스로 획득합니다.
+            </p>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // SELF-BOOTSTRAPPING</span>
+          <span>EXECUTION-GUIDED FEEDBACK</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 7: EVALUATION
+           ========================================== -->
+      <div class="slide" id="slide-7" data-index="7">
+        <div class="slide__header">
+          <h2>정량적 실험 평가 및 성과</h2>
+          <span class="slide__num">[ 07 / 08 ]</span>
+        </div>
+        <div class="slide__body stack-16">
+          <div class="grid-2" style="gap: 16px;">
+            <!-- Metrics Table -->
+            <div>
+              <table class="slide-table">
+                <thead>
+                  <tr>
+                    <th>벤치마크</th>
+                    <th>비교 항목</th>
+                    <th>Native 대비 성과</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="bold">IoT (50 tools)</td>
+                    <td>입력 토큰 절감률</td>
+                    <td class="hilite">68.5% 절감</td>
+                  </tr>
+                  <tr>
+                    <td class="bold">IoT (n=250)</td>
+                    <td>추론 지연(Latency)</td>
+                    <td class="hilite">19.0% (339ms) 단축</td>
+                  </tr>
+                  <tr>
+                    <td class="bold">BFCL v4 (0.6B)</td>
+                    <td>종합 정확도 (AST)</td>
+                    <td class="hilite">91.2% vs 31.4% (+59.8%pp)</td>
+                  </tr>
+                  <tr>
+                    <td class="bold">BFCL (Irrel)</td>
+                    <td>No-Call 정확도</td>
+                    <td class="hilite">100.0% vs 0.0%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Tuning Cliff Recovery -->
+            <div style="background: rgba(125,216,198,0.02); border: 1px solid var(--rule-strong); padding: 16px;">
+              <h3 style="font-size: 15px; color: var(--teal); margin-bottom: 10px;">📉 Reflex-LM (0.6B) Capacity Cliff 극복</h3>
+              <div class="metric-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="metric-card" style="padding: 10px; min-height: auto;">
+                  <div class="metric-card__val amber" style="font-size: 26px;">31.4%</div>
+                  <div class="metric-card__label" style="font-size: 9px;">Untuned Native Baseline</div>
+                </div>
+                <div class="metric-card" style="padding: 10px; min-height: auto;">
+                  <div class="metric-card__val" style="font-size: 26px;">91.2%</div>
+                  <div class="metric-card__label" style="font-size: 9px;">SFT + Post-Correction</div>
+                </div>
+              </div>
+              <p style="font-size: 12.5px; color: var(--bone-dim); margin-top: 10px; line-height: 1.5;">
+                학습 전 병렬 툴 호출 기능이 붕괴 상태였던 0.6B 모델이 **SFT + Myelin Compiler 사후 규칙 보정** 결합으로 Macro Avg 91.2% 수준의 성능을 획득함.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // EVALUATION</span>
+          <span>BENCHMARK RESULTS</span>
+        </div>
+      </div>
+
+      <!-- ==========================================
+           SLIDE 8: FUTURE WORK & DISCUSSION
+           ========================================== -->
+      <div class="slide" id="slide-8" data-index="8">
+        <div class="slide__header">
+          <h2>TBD & 향후 연구 계획 (Discussion)</h2>
+          <span class="slide__num">[ 08 / 08 ]</span>
+        </div>
+        <div class="slide__body grid-2">
+          <div class="stack-16">
+            <h3 style="font-size: 16px; color: var(--teal); margin-bottom: 6px;">🛠️ Engineering TBDs</h3>
+            <div class="list-item" style="font-size: 15px;">
+              <b>네임스페이스 Refactoring 완료</b>
+              <small>레거시 코드 제거 및 `dendrite`, `soma`, `glia` 테마 마이그레이션 적용.</small>
+            </div>
+            <div class="list-item" style="font-size: 15px;">
+              <b>MCP (Model Context Protocol) 테스트</b>
+              <small>범용 API 결합을 위한 확장 스펙 검증 및 로컬 인프라 연동 시도.</small>
+            </div>
+          </div>
+          <div class="stack-16" style="border-left: 1px dashed var(--rule-strong); padding-left: 20px;">
+            <h3 style="font-size: 16px; color: var(--amber); margin-bottom: 6px;">🎓 Academic Discussions</h3>
+            <div class="list-item" style="font-size: 15px;">
+              <b>Holdout 일반화 오버피팅 극복</b>
+              <small>합성 데이터셋의 Context Variation 및 Entity Swap 강도 튜닝.</small>
+            </div>
+            <div class="list-item" style="font-size: 15px;">
+              <b>Verifier 기반 GRPO (RL) 적용</b>
+              <small>규칙 Verifier의 무비용 보상 함수를 활용하여 0.6B 모델 강화학습 실행.</small>
+            </div>
+            <div class="list-item" style="font-size: 15px;">
+              <b>타깃 학회 컨택 및 작성 일정</b>
+              <small>MLSys 2026 혹은 NeurIPS 시스템 파트 투고 포지셔닝 의견 자문.</small>
+            </div>
+          </div>
+        </div>
+        <div class="slide__footer">
+          <span class="slide__footer-brand">GANGLION // FUTURE WORK</span>
+          <span>ROADMAP & TARGETS</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Presenter Notes Panel -->
+    <div class="notes-pane">
+      <div class="notes-pane__header">
+        <span>Presenter View (Speech Notes)</span>
+        <button id="close-notes-btn" style="color: var(--vermillion); text-transform: lowercase;">[hide]</button>
+      </div>
+      <div class="notes-pane__content" id="notes-content">
+        <!-- Will be dynamically populated via Javascript -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CONTROLS BAR (Bottom Center) -->
+  <div class="controls">
+    <button id="prev-btn">◀ PREV</button>
+    <div class="controls__info"><span id="curr-num">1</span> / <span id="total-num">8</span></div>
+    <button id="next-btn">NEXT ▶</button>
+    <span style="color: var(--rule-strong)">|</span>
+    <button id="toggle-notes-btn" style="color: var(--amber)">NOTES (N)</button>
+  </div>
+</div>
+
+<script>
+  // ==========================================================================
+  // SPEECH NOTES DATA MAP
+  // ==========================================================================
+  const speechNotes = {
+    1: `<blockquote>교수님, 안녕하십니까. 오늘 발표할 연구 주제는 <b>Ganglion</b> 프로젝트로, 에지 디바이스 환경에서 경량 언어 모델이 어떻게 하면 고비용·고지연의 툴 스키마 오버헤드를 극복하고 대형 모델급의 정확도로 툴 호출(Tool Calling)을 수행할 수 있을지에 대한 시스템-모델 공동 설계 연구입니다.<br><br>저희 프레임워크는 소형 모델의 학습 파이프라인인 <b>Reflex-LM</b>과 호스트 단의 검증/보정을 맡는 <b>Myelin Compiler</b>의 협력을 핵심 메커니즘으로 취합니다.</blockquote>`,
+    2: `<blockquote>본 연구의 핵심 가설은 두 가지입니다. 첫째, 도구 명세 전체를 매번 프롬프트에 실어 나르는 대신, 압축된 중간 언어인 <b>Action IR</b>을 사용해 토큰을 극적으로 줄이면서도 정확도를 유지할 수 있는가?<br><br>둘째, 소형 모델의 추론 한계를 모델 가중치 튜닝과 호스트 컴파일러 최적화의 하이브리드 결합으로 메울 수 있는가 하는 점입니다. 개발자가 기능 명세(Spec)만 던지면 학습 데이터 생성부터 최종 서빙 아티팩트까지 자동 생성하는 <b>Spec-Driven Model Factory</b>의 비전을 담고 있습니다.</blockquote>`,
+    3: `<blockquote>저희 시스템 아키텍처는 보시는 바와 같이 <b>9단계의 순환 루프(9-Stage Closed Loop)</b>로 구현되어 있으며, 이를 생물학적 신경절 조직에 빗대어 세 가지 모듈로 분리했습니다.<br><br>자극을 수용하고 변환하는 <b>Dendrite(Contract)</b>, 실질적 추론 발화를 수행하는 <b>Soma(LM)</b>, 그리고 실행 로그를 분석하고 오류를 정적/동적으로 교정하는 <b>Glia(Analyzer)</b> 레이어로 구성되어 모듈 간 결합도를 최소화했습니다.</blockquote>`,
+    4: `<blockquote>첫 번째 모듈인 학습 페이즈(Learning Phase)입니다. 도구 명세가 들어오면 자동으로 다양한 학습 템플릿과 합성 데이터를 생성합니다.<br><br>이후 극소량의 골드 데이터셋을 통해 초소형 모델(<b>Reflex-LM</b>)에 SFT를 적용하여 포맷 학습을 끝내고, 툴 간의 정확한 선택 선호도를 높이기 위해 DPO 정렬 파이프라인까지 연동 가능한 구조를 완비했습니다.</blockquote>`,
+    5: `<blockquote>두 번째 핵심 모듈인 컴파일러 패스(Compiler Passes)입니다. 저희는 모델의 생성을 그냥 방치하지 않고 컴파일 타임 최적화를 적용했습니다.<br><br>첫째로, 도구 명세로부터 EBNF 문법을 실시간 생성하여 디코딩 시점에서 유효한 Action IR만 출력되도록 토큰 마스킹을 수행합니다. 둘째로, 그럼에도 발생하는 인자 누락이나 논리 에러는 호스트 단의 <b>Myelin Compiler</b>가 감지하여 디폴트 값을 동적으로 주입하거나, 에러 로그 피드백을 통해 런타임 재시도를 유도하는 이중 방어 체계를 갖췄습니다.</blockquote>`,
+    6: `<blockquote>세 번째 모듈인 셀프 부트스트랩 데이터 루프입니다. 에이전트의 수행 기록은 모두 <b>Trace</b> 데이터 모델로 수집됩니다. 이후 결정론적 분류기인 <b>Taxonomy</b>를 통해 오류가 파싱 에러인지, 인자 누락인지를 체계적으로 라벨링합니다.<br><br>최종적으로 보정이나 재시도를 거쳐 '성공으로 복구된 Action IR' 로그를 정제하여 다음 세대 모델의 SFT 데이터로 재피딩(Re-feeding)함으로써 모델을 점점 강건하게 진화시키는 자가 증강 루프를 지원합니다.</blockquote>`,
+    7: `<blockquote>저희가 수행한 정량적 평가 결과입니다. 자체 IoT 도메인 평가에서는 50개 도구 확장 시 입력 토큰을 <b>68.5%</b> 절감하여 스케일링 효율을 증명했고, 평균 Latency를 <b>19% 단축</b>함과 동시에 속도의 편차도 줄였습니다.<br><br>특히 Qwen 0.6B 초소형 모델 기준 Berkeley Function Calling Benchmark(BFCL v4) 평가에서, 기존 Native tool-calling baseline의 <b>31.4%</b> 대비 압도적인 <b>91.2%의 AST Match 종합 정확도(+59.8%pp)</b>를 기록하였습니다.<br><br>또한 호출 거부 문맥(Irrelevance)에서도 No-Call 정확도 <b>100%</b>를 달성하였으며, 이는 명세 기반 SFT와 Myelin Compiler의 사후 규칙 보정(Post-Correction) 조합이 초소형 모델의 한계를 완전히 극복할 수 있음을 증명합니다.</blockquote>`,
+    8: `<blockquote>마지막으로 향후 개발 및 연구 계획(TBD)입니다. 엔지니어링 측면에서는 모듈 리네이밍 마이그레이션과 함께 범용 도구 표준 프로토콜인 MCP 연동 테스트를 준비 중입니다.<br><br>학술적으로는 Holdout 세트에서 보이는 오버피팅을 방지하기 위한 데이터 다양성 증강 기법을 연구하고, 저희가 확보한 강력한 Verifier 환경을 활용해 <b>GRPO 기반의 강화학습</b>을 Reflex-LM에 적용하여 추론 성능을 추가로 극대화할 생각입니다.<br><br>이번 학기에 논문 초안 작성을 목표로 하고 있으며, 시스템적인 기여도를 부각해 <b>MLSys 2026</b> 투고를 생각하고 있는데, 교수님의 의견을 여쭙고 싶습니다. 감사합니다.</blockquote>`
+  };
+
+  // ==========================================================================
+  // SLIDE NAVIGATION CONTROLLER (View Transitions Integrated)
+  // ==========================================================================
+  let currentSlide = 1;
+  const totalSlides = 8;
+  const slideLayout = document.getElementById('deck-layout');
+  const currNumSpan = document.getElementById('curr-num');
+  const notesContent = document.getElementById('notes-content');
+
+  function updateNotes() {
+    notesContent.innerHTML = speechNotes[currentSlide] || "Speech notes not available.";
+  }
+
+  function changeSlide(targetIndex, direction) {
+    if (targetIndex < 1 || targetIndex > totalSlides) return;
+    
+    const updateDOM = () => {
+      // Deactivate old active slide
+      const currentActive = document.querySelector('.slide.active');
+      if (currentActive) currentActive.classList.remove('active');
+      
+      // Activate target slide
+      const targetActive = document.getElementById(`slide-${targetIndex}`);
+      if (targetActive) targetActive.classList.add('active');
+      
+      currentSlide = targetIndex;
+      currNumSpan.textContent = currentSlide;
+      updateNotes();
+    };
+
+    // Use view transition if supported
+    if (!document.startViewTransition) {
+      updateDOM();
+      return;
+    }
+
+    document.documentElement.classList.add(direction);
+    const transition = document.startViewTransition(updateDOM);
+    transition.finished.finally(() => {
+      document.documentElement.classList.remove(direction);
+    });
+  }
+
+  // Next / Prev actions
+  function nextSlide() {
+    if (currentSlide < totalSlides) {
+      changeSlide(currentSlide + 1, 'forward');
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) {
+      changeSlide(currentSlide - 1, 'backward');
+    }
+  }
+
+  // Bind Buttons
+  document.getElementById('next-btn').addEventListener('click', nextSlide);
+  document.getElementById('prev-btn').addEventListener('click', prevSlide);
+
+  // Toggle Notes
+  const toggleNotesBtn = document.getElementById('toggle-notes-btn');
+  const closeNotesBtn = document.getElementById('close-notes-btn');
+  
+  function toggleNotes() {
+    slideLayout.classList.toggle('with-notes');
+  }
+  toggleNotesBtn.addEventListener('click', toggleNotes);
+  closeNotesBtn.addEventListener('click', toggleNotes);
+
+  // Keyboard navigation
+  window.addEventListener('keydown', (e) => {
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'Enter':
+        e.preventDefault();
+        nextSlide();
+        break;
+      case ' ':
+      case 'Space':
+        e.preventDefault();
+        nextSlide();
+        break;
+      case 'ArrowLeft':
+      case 'Backspace':
+        e.preventDefault();
+        prevSlide();
+        break;
+      case 'n':
+      case 'N':
+        e.preventDefault();
+        toggleNotes();
+        break;
+      case 'f':
+      case 'F':
+        e.preventDefault();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+        break;
+    }
+  });
+
+  // Init notes on start
+  updateNotes();
+</script>
+
+</body>
+</html>

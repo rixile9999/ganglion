@@ -26,12 +26,16 @@ htmlcov/
 examples/bfcl/v4/full/
 runs/bfcl/*.log
 
-# factory_bfcl LoRA binaries (adapters + trainer checkpoints + tokenizers)
+# LoRA binaries (adapters + trainer checkpoints + tokenizers) across all runs
 # Track *.json/jsonl/md/py/sh/log; ignore safetensors/bin/ckpt + adapter dirs
-runs/factory_bfcl/**/adapter/
-runs/factory_bfcl/**/trainer/
-runs/factory_bfcl/**/*.safetensors
-runs/factory_bfcl/**/*.bin
-runs/factory_bfcl/**/*.ckpt
-runs/factory_bfcl/**/*.pt
-runs/factory_bfcl/**/*.pth
+runs/**/adapter/
+runs/**/trainer/
+runs/**/*.safetensors
+runs/**/*.bin
+runs/**/*.ckpt
+runs/**/*.pt
+runs/**/*.pth
+
+# Temporary PowerPoint files
+~$*.pptx
+

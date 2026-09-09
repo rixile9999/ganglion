@@ -13,6 +13,7 @@ Common schema/DSL surface. Built first because it's a leaf in the DAG; both `lm/
 | [contract_catalog](./contract_catalog.md) | `Catalog` / `ToolSpec` / `ArgSpec` contract surface. Dual rendering (DSL + OpenAI tools) from one SSOT. |
 | [contract_schema_compiler](./contract_schema_compiler.md) | Compile OpenAI / MCP / bare / BFCL schemas into a `Catalog`. Live; supersedes [`legacy/tool_schema_compiler`](./legacy/tool_schema_compiler.md). |
 | [contract_null_action](./contract_null_action.md) | `{"calls": []}` valid iff `Catalog.allow_empty_calls=True`. Live; supersedes [`legacy/null_action_contract`](./legacy/null_action_contract.md). |
+| [contract_tier_home_assistant](./contract_tier_home_assistant.md) | `home_assistant_4` tier: `iot_light_5` projected onto Home Assistant's Assist API tools (`HassTurnOn/Off`, `HassLightSet`, `GetLiveContext`) + derived dataset. Not on the 5/20/50 curve. |
 
 ## Module 1 — `ganglion/lm/`
 
@@ -46,6 +47,7 @@ Benchmark adapters. Not a peer module; they consume `Catalog` + `ModelClient` an
 |---|---|
 | [benchmark_iot](./benchmark_iot.md) | `iot_light_5` / `home_iot_20` / `smart_home_50` datasets + grader + runner. |
 | [benchmark_bfcl](./benchmark_bfcl.md) | BFCL v4 single-turn loader + AST grader + per-case `Catalog` compile. Supersedes [`legacy/external_benchmark_bfcl`](./legacy/external_benchmark_bfcl.md). |
+| [benchmark_selection](./benchmark_selection.md) | Decision record (2026-09-09): which external benchmarks the local-model path runs. BFCL v4 retained as controlled baseline; MCPMark and home-assistant-datasets adopted; MCP-Atlas deferred; LiveMCPBench rejected. |
 
 ## Composites — orchestrators
 

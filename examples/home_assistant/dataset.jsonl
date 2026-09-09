@@ -1,0 +1,320 @@
+{"id":"ha-001","source_id":"iot-001","prompt":"거실 불 70%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":70}}]}}
+{"id":"ha-002","source_id":"iot-003","prompt":"현재 주방 조명 상태 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-003","source_id":"iot-004","prompt":"조명 장치 목록 보여줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-004","source_id":"iot-005","prompt":"서재 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","temperature":2700}}]}}
+{"id":"ha-005","source_id":"iot-006","prompt":"복도 불 꺼줘","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"hallway","domain":"light"}}]}}
+{"id":"ha-006","source_id":"iot-009","prompt":"침실 불 밝기 35로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":35}}]}}
+{"id":"ha-007","source_id":"iot-011","prompt":"office light off","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-008","source_id":"iot-012","prompt":"Check living room light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-009","source_id":"iot-013","prompt":"거실 불 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-010","source_id":"iot-015","prompt":"현재 거실 조명 상태 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-011","source_id":"iot-016","prompt":"사용 가능한 조명 장치 목록 알려줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-012","source_id":"iot-018","prompt":"거실 조명 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-013","source_id":"iot-020","prompt":"거실 불 상태 알려줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-014","source_id":"iot-021","prompt":"등록된 조명 디바이스 목록 보여줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-015","source_id":"iot-023","prompt":"거실 불 꺼줘","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-016","source_id":"iot-025","prompt":"거실 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-017","source_id":"iot-026","prompt":"집 안 조명 장치 목록 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-018","source_id":"iot-028","prompt":"turn living room light on","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-019","source_id":"iot-030","prompt":"what is the living room light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-020","source_id":"iot-031","prompt":"list devices","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-021","source_id":"iot-033","prompt":"turn living room light off","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-022","source_id":"iot-035","prompt":"get living room light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-023","source_id":"iot-036","prompt":"list light devices","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-024","source_id":"iot-038","prompt":"거실 불 10%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":10}}]}}
+{"id":"ha-025","source_id":"iot-040","prompt":"현재 침실 조명 상태 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-026","source_id":"iot-041","prompt":"show available devices","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-027","source_id":"iot-043","prompt":"거실 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":10}}]}}
+{"id":"ha-028","source_id":"iot-045","prompt":"침실 불 상태 알려줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-029","source_id":"iot-046","prompt":"what light devices are available","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-030","source_id":"iot-048","prompt":"set living room light to 10%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":10}}]}}
+{"id":"ha-031","source_id":"iot-050","prompt":"침실 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-032","source_id":"iot-051","prompt":"조명 장치 목록 보여줘 #8","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-033","source_id":"iot-053","prompt":"거실 불 20%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":20}}]}}
+{"id":"ha-034","source_id":"iot-055","prompt":"Check bedroom light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-035","source_id":"iot-056","prompt":"사용 가능한 조명 장치 목록 알려줘 #9","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-036","source_id":"iot-058","prompt":"거실 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":20}}]}}
+{"id":"ha-037","source_id":"iot-060","prompt":"what is the bedroom light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-038","source_id":"iot-061","prompt":"등록된 조명 디바이스 목록 보여줘 #10","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-039","source_id":"iot-063","prompt":"set living room light to 20%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":20}}]}}
+{"id":"ha-040","source_id":"iot-065","prompt":"get bedroom light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-041","source_id":"iot-066","prompt":"집 안 조명 장치 목록 확인해줘 #11","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-042","source_id":"iot-068","prompt":"거실 불 35%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":35}}]}}
+{"id":"ha-043","source_id":"iot-070","prompt":"주방 불 상태 알려줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-044","source_id":"iot-071","prompt":"list devices #12","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-045","source_id":"iot-073","prompt":"거실 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":35}}]}}
+{"id":"ha-046","source_id":"iot-075","prompt":"주방 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-047","source_id":"iot-076","prompt":"list light devices #13","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-048","source_id":"iot-078","prompt":"set living room light to 35%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":35}}]}}
+{"id":"ha-049","source_id":"iot-080","prompt":"Check kitchen light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-050","source_id":"iot-081","prompt":"show available devices #14","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-051","source_id":"iot-083","prompt":"거실 불 50%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":50}}]}}
+{"id":"ha-052","source_id":"iot-085","prompt":"what is the kitchen light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-053","source_id":"iot-086","prompt":"what light devices are available #15","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-054","source_id":"iot-088","prompt":"거실 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":50}}]}}
+{"id":"ha-055","source_id":"iot-090","prompt":"get kitchen light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-056","source_id":"iot-091","prompt":"조명 장치 목록 보여줘 #16","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-057","source_id":"iot-093","prompt":"set living room light to 50%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":50}}]}}
+{"id":"ha-058","source_id":"iot-095","prompt":"현재 복도 조명 상태 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-059","source_id":"iot-096","prompt":"사용 가능한 조명 장치 목록 알려줘 #17","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-060","source_id":"iot-098","prompt":"거실 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":70}}]}}
+{"id":"ha-061","source_id":"iot-100","prompt":"복도 불 상태 알려줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-062","source_id":"iot-101","prompt":"등록된 조명 디바이스 목록 보여줘 #18","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-063","source_id":"iot-103","prompt":"set living room light to 70%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":70}}]}}
+{"id":"ha-064","source_id":"iot-105","prompt":"복도 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-065","source_id":"iot-106","prompt":"집 안 조명 장치 목록 확인해줘 #19","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-066","source_id":"iot-108","prompt":"거실 불 80%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":80}}]}}
+{"id":"ha-067","source_id":"iot-110","prompt":"Check hallway light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-068","source_id":"iot-111","prompt":"list devices #20","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-069","source_id":"iot-113","prompt":"거실 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":80}}]}}
+{"id":"ha-070","source_id":"iot-115","prompt":"what is the hallway light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-071","source_id":"iot-116","prompt":"list light devices #21","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-072","source_id":"iot-118","prompt":"set living room light to 80%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":80}}]}}
+{"id":"ha-073","source_id":"iot-120","prompt":"get hallway light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-074","source_id":"iot-121","prompt":"show available devices #22","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-075","source_id":"iot-123","prompt":"거실 불 100%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":100}}]}}
+{"id":"ha-076","source_id":"iot-125","prompt":"현재 서재 조명 상태 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-077","source_id":"iot-126","prompt":"what light devices are available #23","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-078","source_id":"iot-128","prompt":"거실 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":100}}]}}
+{"id":"ha-079","source_id":"iot-130","prompt":"서재 불 상태 알려줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-080","source_id":"iot-131","prompt":"조명 장치 목록 보여줘 #24","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-081","source_id":"iot-133","prompt":"set living room light to 100%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":100}}]}}
+{"id":"ha-082","source_id":"iot-135","prompt":"서재 조명 켜져 있는지 확인해줘","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-083","source_id":"iot-136","prompt":"사용 가능한 조명 장치 목록 알려줘 #25","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-084","source_id":"iot-138","prompt":"거실 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","temperature":2700}}]}}
+{"id":"ha-085","source_id":"iot-140","prompt":"Check office light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-086","source_id":"iot-141","prompt":"등록된 조명 디바이스 목록 보여줘 #26","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-087","source_id":"iot-143","prompt":"make living room light warm","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","temperature":2700}}]}}
+{"id":"ha-088","source_id":"iot-145","prompt":"what is the office light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-089","source_id":"iot-146","prompt":"집 안 조명 장치 목록 확인해줘 #27","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-090","source_id":"iot-148","prompt":"거실 조명을 중립으로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","temperature":4000}}]}}
+{"id":"ha-091","source_id":"iot-150","prompt":"get office light state","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-092","source_id":"iot-151","prompt":"list devices #28","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-093","source_id":"iot-153","prompt":"make living room light neutral","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","temperature":4000}}]}}
+{"id":"ha-094","source_id":"iot-155","prompt":"거실 조명 상태 다시 확인해줘 #0","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-095","source_id":"iot-156","prompt":"list light devices #29","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-096","source_id":"iot-158","prompt":"거실 조명을 차갑게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","temperature":6500}}]}}
+{"id":"ha-097","source_id":"iot-160","prompt":"check living room light state again #0","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-098","source_id":"iot-161","prompt":"show available devices #30","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-099","source_id":"iot-163","prompt":"make living room light cool","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","temperature":6500}}]}}
+{"id":"ha-100","source_id":"iot-165","prompt":"침실 조명 상태 다시 확인해줘 #1","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-101","source_id":"iot-166","prompt":"what light devices are available #31","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-102","source_id":"iot-168","prompt":"침실 불 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-103","source_id":"iot-170","prompt":"check bedroom light state again #1","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-104","source_id":"iot-171","prompt":"조명 장치 목록 보여줘 #32","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-105","source_id":"iot-173","prompt":"침실 조명 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-106","source_id":"iot-175","prompt":"주방 조명 상태 다시 확인해줘 #2","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-107","source_id":"iot-176","prompt":"사용 가능한 조명 장치 목록 알려줘 #33","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-108","source_id":"iot-178","prompt":"침실 불 꺼줘","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-109","source_id":"iot-180","prompt":"check kitchen light state again #2","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-110","source_id":"iot-181","prompt":"등록된 조명 디바이스 목록 보여줘 #34","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-111","source_id":"iot-183","prompt":"turn bedroom light on","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-112","source_id":"iot-185","prompt":"복도 조명 상태 다시 확인해줘 #3","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-113","source_id":"iot-186","prompt":"집 안 조명 장치 목록 확인해줘 #35","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-114","source_id":"iot-188","prompt":"turn bedroom light off","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-115","source_id":"iot-190","prompt":"check hallway light state again #3","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-116","source_id":"iot-191","prompt":"list devices #36","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-117","source_id":"iot-193","prompt":"침실 불 10%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":10}}]}}
+{"id":"ha-118","source_id":"iot-195","prompt":"서재 조명 상태 다시 확인해줘 #4","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-119","source_id":"iot-196","prompt":"list light devices #37","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-120","source_id":"iot-198","prompt":"침실 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":10}}]}}
+{"id":"ha-121","source_id":"iot-200","prompt":"check office light state again #4","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-122","source_id":"iot-201","prompt":"show available devices #38","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-123","source_id":"iot-203","prompt":"set bedroom light to 10%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":10}}]}}
+{"id":"ha-124","source_id":"iot-205","prompt":"거실 조명 상태 다시 확인해줘 #5","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-125","source_id":"iot-206","prompt":"what light devices are available #39","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-126","source_id":"iot-208","prompt":"침실 불 20%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":20}}]}}
+{"id":"ha-127","source_id":"iot-210","prompt":"check living room light state again #5","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-128","source_id":"iot-211","prompt":"침실 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":20}}]}}
+{"id":"ha-129","source_id":"iot-213","prompt":"침실 조명 상태 다시 확인해줘 #6","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-130","source_id":"iot-214","prompt":"set bedroom light to 20%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":20}}]}}
+{"id":"ha-131","source_id":"iot-216","prompt":"check bedroom light state again #6","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-132","source_id":"iot-217","prompt":"침실 불 35%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":35}}]}}
+{"id":"ha-133","source_id":"iot-219","prompt":"주방 조명 상태 다시 확인해줘 #7","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-134","source_id":"iot-220","prompt":"침실 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":35}}]}}
+{"id":"ha-135","source_id":"iot-222","prompt":"check kitchen light state again #7","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-136","source_id":"iot-223","prompt":"set bedroom light to 35%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":35}}]}}
+{"id":"ha-137","source_id":"iot-225","prompt":"복도 조명 상태 다시 확인해줘 #8","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-138","source_id":"iot-226","prompt":"침실 불 50%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":50}}]}}
+{"id":"ha-139","source_id":"iot-228","prompt":"check hallway light state again #8","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-140","source_id":"iot-229","prompt":"침실 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":50}}]}}
+{"id":"ha-141","source_id":"iot-231","prompt":"서재 조명 상태 다시 확인해줘 #9","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-142","source_id":"iot-232","prompt":"set bedroom light to 50%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":50}}]}}
+{"id":"ha-143","source_id":"iot-234","prompt":"check office light state again #9","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-144","source_id":"iot-235","prompt":"침실 불 70%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":70}}]}}
+{"id":"ha-145","source_id":"iot-237","prompt":"거실 조명 상태 다시 확인해줘 #10","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-146","source_id":"iot-238","prompt":"침실 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":70}}]}}
+{"id":"ha-147","source_id":"iot-240","prompt":"check living room light state again #10","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-148","source_id":"iot-241","prompt":"set bedroom light to 70%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":70}}]}}
+{"id":"ha-149","source_id":"iot-243","prompt":"침실 조명 상태 다시 확인해줘 #11","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-150","source_id":"iot-244","prompt":"침실 불 80%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":80}}]}}
+{"id":"ha-151","source_id":"iot-246","prompt":"check bedroom light state again #11","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-152","source_id":"iot-247","prompt":"침실 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":80}}]}}
+{"id":"ha-153","source_id":"iot-249","prompt":"주방 조명 상태 다시 확인해줘 #12","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-154","source_id":"iot-250","prompt":"set bedroom light to 80%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":80}}]}}
+{"id":"ha-155","source_id":"iot-252","prompt":"check kitchen light state again #12","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-156","source_id":"iot-253","prompt":"침실 불 100%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":100}}]}}
+{"id":"ha-157","source_id":"iot-255","prompt":"복도 조명 상태 다시 확인해줘 #13","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-158","source_id":"iot-256","prompt":"침실 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":100}}]}}
+{"id":"ha-159","source_id":"iot-258","prompt":"check hallway light state again #13","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-160","source_id":"iot-259","prompt":"set bedroom light to 100%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":100}}]}}
+{"id":"ha-161","source_id":"iot-261","prompt":"서재 조명 상태 다시 확인해줘 #14","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-162","source_id":"iot-262","prompt":"침실 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","temperature":2700}}]}}
+{"id":"ha-163","source_id":"iot-264","prompt":"check office light state again #14","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-164","source_id":"iot-265","prompt":"make bedroom light warm","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","temperature":2700}}]}}
+{"id":"ha-165","source_id":"iot-267","prompt":"거실 조명 상태 다시 확인해줘 #15","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-166","source_id":"iot-268","prompt":"침실 조명을 중립으로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","temperature":4000}}]}}
+{"id":"ha-167","source_id":"iot-270","prompt":"check living room light state again #15","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-168","source_id":"iot-271","prompt":"make bedroom light neutral","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","temperature":4000}}]}}
+{"id":"ha-169","source_id":"iot-273","prompt":"침실 조명 상태 다시 확인해줘 #16","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-170","source_id":"iot-274","prompt":"침실 조명을 차갑게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","temperature":6500}}]}}
+{"id":"ha-171","source_id":"iot-276","prompt":"check bedroom light state again #16","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-172","source_id":"iot-277","prompt":"make bedroom light cool","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","temperature":6500}}]}}
+{"id":"ha-173","source_id":"iot-279","prompt":"주방 조명 상태 다시 확인해줘 #17","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-174","source_id":"iot-280","prompt":"주방 불 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-175","source_id":"iot-282","prompt":"check kitchen light state again #17","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-176","source_id":"iot-283","prompt":"주방 조명 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-177","source_id":"iot-285","prompt":"복도 조명 상태 다시 확인해줘 #18","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-178","source_id":"iot-286","prompt":"주방 불 꺼줘","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-179","source_id":"iot-288","prompt":"check hallway light state again #18","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-180","source_id":"iot-289","prompt":"turn kitchen light on","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-181","source_id":"iot-291","prompt":"서재 조명 상태 다시 확인해줘 #19","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-182","source_id":"iot-292","prompt":"turn kitchen light off","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-183","source_id":"iot-294","prompt":"check office light state again #19","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-184","source_id":"iot-295","prompt":"주방 불 10%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":10}}]}}
+{"id":"ha-185","source_id":"iot-297","prompt":"거실 조명 상태 다시 확인해줘 #20","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-186","source_id":"iot-298","prompt":"주방 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":10}}]}}
+{"id":"ha-187","source_id":"iot-300","prompt":"check living room light state again #20","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-188","source_id":"iot-301","prompt":"set kitchen light to 10%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":10}}]}}
+{"id":"ha-189","source_id":"iot-303","prompt":"침실 조명 상태 다시 확인해줘 #21","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-190","source_id":"iot-304","prompt":"주방 불 20%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":20}}]}}
+{"id":"ha-191","source_id":"iot-306","prompt":"check bedroom light state again #21","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-192","source_id":"iot-307","prompt":"주방 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":20}}]}}
+{"id":"ha-193","source_id":"iot-309","prompt":"주방 조명 상태 다시 확인해줘 #22","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-194","source_id":"iot-310","prompt":"set kitchen light to 20%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":20}}]}}
+{"id":"ha-195","source_id":"iot-312","prompt":"check kitchen light state again #22","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-196","source_id":"iot-313","prompt":"주방 불 35%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":35}}]}}
+{"id":"ha-197","source_id":"iot-315","prompt":"복도 조명 상태 다시 확인해줘 #23","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-198","source_id":"iot-316","prompt":"주방 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":35}}]}}
+{"id":"ha-199","source_id":"iot-318","prompt":"check hallway light state again #23","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-200","source_id":"iot-319","prompt":"set kitchen light to 35%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":35}}]}}
+{"id":"ha-201","source_id":"iot-321","prompt":"서재 조명 상태 다시 확인해줘 #24","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-202","source_id":"iot-322","prompt":"주방 불 50%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":50}}]}}
+{"id":"ha-203","source_id":"iot-324","prompt":"check office light state again #24","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-204","source_id":"iot-325","prompt":"주방 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":50}}]}}
+{"id":"ha-205","source_id":"iot-327","prompt":"거실 조명 상태 다시 확인해줘 #25","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-206","source_id":"iot-328","prompt":"set kitchen light to 50%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":50}}]}}
+{"id":"ha-207","source_id":"iot-330","prompt":"check living room light state again #25","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-208","source_id":"iot-331","prompt":"주방 불 70%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":70}}]}}
+{"id":"ha-209","source_id":"iot-333","prompt":"침실 조명 상태 다시 확인해줘 #26","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-210","source_id":"iot-334","prompt":"주방 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":70}}]}}
+{"id":"ha-211","source_id":"iot-336","prompt":"check bedroom light state again #26","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-212","source_id":"iot-337","prompt":"set kitchen light to 70%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":70}}]}}
+{"id":"ha-213","source_id":"iot-339","prompt":"주방 조명 상태 다시 확인해줘 #27","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-214","source_id":"iot-340","prompt":"주방 불 80%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":80}}]}}
+{"id":"ha-215","source_id":"iot-342","prompt":"check kitchen light state again #27","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-216","source_id":"iot-343","prompt":"주방 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":80}}]}}
+{"id":"ha-217","source_id":"iot-345","prompt":"복도 조명 상태 다시 확인해줘 #28","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-218","source_id":"iot-346","prompt":"set kitchen light to 80%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":80}}]}}
+{"id":"ha-219","source_id":"iot-348","prompt":"check hallway light state again #28","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-220","source_id":"iot-349","prompt":"주방 불 100%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":100}}]}}
+{"id":"ha-221","source_id":"iot-351","prompt":"서재 조명 상태 다시 확인해줘 #29","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-222","source_id":"iot-352","prompt":"주방 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":100}}]}}
+{"id":"ha-223","source_id":"iot-354","prompt":"check office light state again #29","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-224","source_id":"iot-355","prompt":"set kitchen light to 100%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":100}}]}}
+{"id":"ha-225","source_id":"iot-357","prompt":"거실 조명 상태 다시 확인해줘 #30","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-226","source_id":"iot-358","prompt":"주방 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","temperature":2700}}]}}
+{"id":"ha-227","source_id":"iot-360","prompt":"check living room light state again #30","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-228","source_id":"iot-361","prompt":"make kitchen light warm","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","temperature":2700}}]}}
+{"id":"ha-229","source_id":"iot-363","prompt":"침실 조명 상태 다시 확인해줘 #31","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-230","source_id":"iot-364","prompt":"주방 조명을 중립으로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","temperature":4000}}]}}
+{"id":"ha-231","source_id":"iot-366","prompt":"check bedroom light state again #31","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-232","source_id":"iot-367","prompt":"make kitchen light neutral","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","temperature":4000}}]}}
+{"id":"ha-233","source_id":"iot-369","prompt":"주방 조명 상태 다시 확인해줘 #32","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-234","source_id":"iot-370","prompt":"주방 조명을 차갑게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","temperature":6500}}]}}
+{"id":"ha-235","source_id":"iot-372","prompt":"check kitchen light state again #32","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-236","source_id":"iot-373","prompt":"make kitchen light cool","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","temperature":6500}}]}}
+{"id":"ha-237","source_id":"iot-375","prompt":"복도 조명 상태 다시 확인해줘 #33","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-238","source_id":"iot-376","prompt":"복도 불 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"hallway","domain":"light"}}]}}
+{"id":"ha-239","source_id":"iot-378","prompt":"check hallway light state again #33","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-240","source_id":"iot-379","prompt":"복도 조명 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"hallway","domain":"light"}}]}}
+{"id":"ha-241","source_id":"iot-381","prompt":"서재 조명 상태 다시 확인해줘 #34","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-242","source_id":"iot-382","prompt":"turn hallway light on","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"hallway","domain":"light"}}]}}
+{"id":"ha-243","source_id":"iot-384","prompt":"check office light state again #34","expected":{"calls":[{"action":"GetLiveContext","args":{}}]}}
+{"id":"ha-244","source_id":"iot-385","prompt":"turn hallway light off","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"hallway","domain":"light"}}]}}
+{"id":"ha-245","source_id":"iot-387","prompt":"복도 불 10%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":10}}]}}
+{"id":"ha-246","source_id":"iot-389","prompt":"복도 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":10}}]}}
+{"id":"ha-247","source_id":"iot-391","prompt":"set hallway light to 10%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":10}}]}}
+{"id":"ha-248","source_id":"iot-393","prompt":"복도 불 20%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":20}}]}}
+{"id":"ha-249","source_id":"iot-395","prompt":"복도 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":20}}]}}
+{"id":"ha-250","source_id":"iot-397","prompt":"set hallway light to 20%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":20}}]}}
+{"id":"ha-251","source_id":"iot-399","prompt":"복도 불 35%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":35}}]}}
+{"id":"ha-252","source_id":"iot-401","prompt":"복도 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":35}}]}}
+{"id":"ha-253","source_id":"iot-403","prompt":"set hallway light to 35%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":35}}]}}
+{"id":"ha-254","source_id":"iot-405","prompt":"복도 불 50%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":50}}]}}
+{"id":"ha-255","source_id":"iot-407","prompt":"복도 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":50}}]}}
+{"id":"ha-256","source_id":"iot-409","prompt":"set hallway light to 50%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":50}}]}}
+{"id":"ha-257","source_id":"iot-411","prompt":"복도 불 70%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":70}}]}}
+{"id":"ha-258","source_id":"iot-413","prompt":"복도 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":70}}]}}
+{"id":"ha-259","source_id":"iot-415","prompt":"set hallway light to 70%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":70}}]}}
+{"id":"ha-260","source_id":"iot-417","prompt":"복도 불 80%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":80}}]}}
+{"id":"ha-261","source_id":"iot-419","prompt":"복도 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":80}}]}}
+{"id":"ha-262","source_id":"iot-421","prompt":"set hallway light to 80%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":80}}]}}
+{"id":"ha-263","source_id":"iot-423","prompt":"복도 불 100%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":100}}]}}
+{"id":"ha-264","source_id":"iot-425","prompt":"복도 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":100}}]}}
+{"id":"ha-265","source_id":"iot-427","prompt":"set hallway light to 100%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":100}}]}}
+{"id":"ha-266","source_id":"iot-429","prompt":"복도 조명을 따뜻하게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","temperature":2700}}]}}
+{"id":"ha-267","source_id":"iot-431","prompt":"make hallway light warm","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","temperature":2700}}]}}
+{"id":"ha-268","source_id":"iot-433","prompt":"복도 조명을 중립으로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","temperature":4000}}]}}
+{"id":"ha-269","source_id":"iot-435","prompt":"make hallway light neutral","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","temperature":4000}}]}}
+{"id":"ha-270","source_id":"iot-437","prompt":"복도 조명을 차갑게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","temperature":6500}}]}}
+{"id":"ha-271","source_id":"iot-439","prompt":"make hallway light cool","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","temperature":6500}}]}}
+{"id":"ha-272","source_id":"iot-441","prompt":"서재 불 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-273","source_id":"iot-443","prompt":"서재 조명 켜줘","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-274","source_id":"iot-445","prompt":"서재 불 꺼줘","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-275","source_id":"iot-447","prompt":"turn office light on","expected":{"calls":[{"action":"HassTurnOn","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-276","source_id":"iot-449","prompt":"turn office light off","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-277","source_id":"iot-451","prompt":"서재 불 10%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":10}}]}}
+{"id":"ha-278","source_id":"iot-453","prompt":"서재 조명 밝기 10로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":10}}]}}
+{"id":"ha-279","source_id":"iot-455","prompt":"set office light to 10%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":10}}]}}
+{"id":"ha-280","source_id":"iot-457","prompt":"서재 불 20%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":20}}]}}
+{"id":"ha-281","source_id":"iot-459","prompt":"서재 조명 밝기 20로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":20}}]}}
+{"id":"ha-282","source_id":"iot-461","prompt":"set office light to 20%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":20}}]}}
+{"id":"ha-283","source_id":"iot-463","prompt":"서재 불 35%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":35}}]}}
+{"id":"ha-284","source_id":"iot-464","prompt":"서재 조명 밝기 35로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":35}}]}}
+{"id":"ha-285","source_id":"iot-465","prompt":"set office light to 35%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":35}}]}}
+{"id":"ha-286","source_id":"iot-466","prompt":"서재 불 50%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":50}}]}}
+{"id":"ha-287","source_id":"iot-467","prompt":"서재 조명 밝기 50로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":50}}]}}
+{"id":"ha-288","source_id":"iot-468","prompt":"set office light to 50%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":50}}]}}
+{"id":"ha-289","source_id":"iot-469","prompt":"서재 불 70%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":70}}]}}
+{"id":"ha-290","source_id":"iot-470","prompt":"서재 조명 밝기 70로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":70}}]}}
+{"id":"ha-291","source_id":"iot-471","prompt":"set office light to 70%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":70}}]}}
+{"id":"ha-292","source_id":"iot-472","prompt":"서재 불 80%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":80}}]}}
+{"id":"ha-293","source_id":"iot-473","prompt":"서재 조명 밝기 80로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":80}}]}}
+{"id":"ha-294","source_id":"iot-474","prompt":"set office light to 80%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":80}}]}}
+{"id":"ha-295","source_id":"iot-475","prompt":"서재 불 100%로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":100}}]}}
+{"id":"ha-296","source_id":"iot-476","prompt":"서재 조명 밝기 100로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":100}}]}}
+{"id":"ha-297","source_id":"iot-477","prompt":"set office light to 100%","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":100}}]}}
+{"id":"ha-298","source_id":"iot-478","prompt":"make office light warm","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","temperature":2700}}]}}
+{"id":"ha-299","source_id":"iot-479","prompt":"서재 조명을 중립으로 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","temperature":4000}}]}}
+{"id":"ha-300","source_id":"iot-480","prompt":"make office light neutral","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","temperature":4000}}]}}
+{"id":"ha-301","source_id":"iot-481","prompt":"서재 조명을 차갑게 켜줘","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","temperature":6500}}]}}
+{"id":"ha-302","source_id":"iot-482","prompt":"make office light cool","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","temperature":6500}}]}}
+{"id":"ha-303","source_id":"iot-483","prompt":"거실 불 10%로 다시 켜줘 #0","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":10}}]}}
+{"id":"ha-304","source_id":"iot-484","prompt":"거실 불 다시 꺼줘 #0","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-305","source_id":"iot-485","prompt":"침실 불 20%로 다시 켜줘 #1","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":20}}]}}
+{"id":"ha-306","source_id":"iot-486","prompt":"침실 불 다시 꺼줘 #1","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-307","source_id":"iot-487","prompt":"주방 불 35%로 다시 켜줘 #2","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":35}}]}}
+{"id":"ha-308","source_id":"iot-488","prompt":"주방 불 다시 꺼줘 #2","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-309","source_id":"iot-489","prompt":"복도 불 50%로 다시 켜줘 #3","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":50}}]}}
+{"id":"ha-310","source_id":"iot-490","prompt":"복도 불 다시 꺼줘 #3","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"hallway","domain":"light"}}]}}
+{"id":"ha-311","source_id":"iot-491","prompt":"서재 불 70%로 다시 켜줘 #4","expected":{"calls":[{"action":"HassLightSet","args":{"area":"office","domain":"light","brightness":70}}]}}
+{"id":"ha-312","source_id":"iot-492","prompt":"서재 불 다시 꺼줘 #4","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"office","domain":"light"}}]}}
+{"id":"ha-313","source_id":"iot-493","prompt":"거실 불 80%로 다시 켜줘 #5","expected":{"calls":[{"action":"HassLightSet","args":{"area":"living","domain":"light","brightness":80}}]}}
+{"id":"ha-314","source_id":"iot-494","prompt":"거실 불 다시 꺼줘 #5","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"living","domain":"light"}}]}}
+{"id":"ha-315","source_id":"iot-495","prompt":"침실 불 100%로 다시 켜줘 #6","expected":{"calls":[{"action":"HassLightSet","args":{"area":"bedroom","domain":"light","brightness":100}}]}}
+{"id":"ha-316","source_id":"iot-496","prompt":"침실 불 다시 꺼줘 #6","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"bedroom","domain":"light"}}]}}
+{"id":"ha-317","source_id":"iot-497","prompt":"주방 불 10%로 다시 켜줘 #7","expected":{"calls":[{"action":"HassLightSet","args":{"area":"kitchen","domain":"light","brightness":10}}]}}
+{"id":"ha-318","source_id":"iot-498","prompt":"주방 불 다시 꺼줘 #7","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"kitchen","domain":"light"}}]}}
+{"id":"ha-319","source_id":"iot-499","prompt":"복도 불 20%로 다시 켜줘 #8","expected":{"calls":[{"action":"HassLightSet","args":{"area":"hallway","domain":"light","brightness":20}}]}}
+{"id":"ha-320","source_id":"iot-500","prompt":"복도 불 다시 꺼줘 #8","expected":{"calls":[{"action":"HassTurnOff","args":{"area":"hallway","domain":"light"}}]}}

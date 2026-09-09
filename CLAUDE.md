@@ -50,7 +50,7 @@ python -m ganglion.cli --llm qwen        --bfcl all --bfcl-output runs/bfcl/<nam
 python runs/bfcl/aggregate.py                                    # cross-phase BFCL tables
 ```
 
-`--llm` choices: `rules` | `qwen` | `qwen-text` | `qwen-thinking` | `qwen-native`. `--tier` choices: `iot_light_5` | `home_iot_20` | `smart_home_50`. `--bfcl` choices: `simple_python` | `multiple` | `parallel` | `parallel_multiple` | `irrelevance` | `callable` (the four non-irrelevance categories) | `all` (all five). `rules` has no BFCL adapter — use one of the `qwen*` clients. The runner prints a JSON summary to stdout; redirect to capture.
+`--llm` choices: `rules` | `qwen` | `qwen-text` | `qwen-thinking` | `qwen-native`. `--tier` choices: `iot_light_5` | `home_iot_20` | `smart_home_50` | `home_assistant_4` (Home Assistant Assist projection of `iot_light_5`; auto-selects `examples/home_assistant/dataset.jsonl`, no `rules` client support). `--bfcl` choices: `simple_python` | `multiple` | `parallel` | `parallel_multiple` | `irrelevance` | `callable` (the four non-irrelevance categories) | `all` (all five). `rules` has no BFCL adapter — use one of the `qwen*` clients. The runner prints a JSON summary to stdout; redirect to capture.
 
 ## Required Environment
 
@@ -84,7 +84,7 @@ Data flow per case: `user prompt → ModelClient.invoke() → JSON DSL string �
 
 `Catalog.parse_json_dsl()` accepts either a string or mapping and returns an `ActionPlan` of immutable `ToolCall`s. `ActionPlan` equality is value equality, so `result.plan == expected` is the exact-match metric.
 
-**Tiers.** `ganglion/contract/builtins/{iot_light,home_iot,smart_home}.py` each export a module-level `CATALOG`. `ganglion/contract/builtins/__init__.py:get_catalog(tier)` is the registry. The three tiers exist specifically for the M2 scaling experiment (5 / 20 / 50 tools); the same dataset prompts are reused across tiers because the IoT-light intents are a subset of the larger catalogs. BFCL runs bypass this registry entirely — they construct catalogs per case from BFCL's `function` field via the schema compiler.
+**Tiers.** `ganglion/contract/builtins/{iot_light,home_iot,smart_home,home_assistant}.py` each export a module-level `CATALOG`. `ganglion/contract/builtins/__init__.py:get_catalog(tier)` is the registry; `SCALING_TIERS` names the three M2 scaling tiers (5 / 20 / 50 tools), which share the same dataset prompts because the IoT-light intents are a subset of the larger catalogs. `home_assistant_4` is a projection of `iot_light_5` onto Home Assistant's Assist API tool shape with its own derived dataset (`examples/home_assistant/dataset.jsonl`, regenerate via `examples/home_assistant/generate_dataset.py`); it is not on the scaling curve. See `docs/tasks/contract_tier_home_assistant.md`. BFCL runs bypass this registry entirely — they construct catalogs per case from BFCL's `function` field via the schema compiler.
 
 **Module 1 (`ganglion/lm/`) — language-model production.** Three OpenAI-SDK-against-DashScope clients in `ganglion/lm/dashscope.py`:
 - `QwenJSONDSLClient` — uses `response_format={"type": "json_object"}`; goes through `run_dsl_with_repair()` so it supports the M4 repair loop.
@@ -136,10 +136,10 @@ Editor-side rules when adding new behaviour:
 
 The task-doc set is grouped by module:
 
-- **Module 3 — contract**: [contract_catalog](docs/tasks/contract_catalog.md), [contract_schema_compiler](docs/tasks/contract_schema_compiler.md), [contract_null_action](docs/tasks/contract_null_action.md).
+- **Module 3 — contract**: [contract_catalog](docs/tasks/contract_catalog.md), [contract_schema_compiler](docs/tasks/contract_schema_compiler.md), [contract_null_action](docs/tasks/contract_null_action.md), [contract_tier_home_assistant](docs/tasks/contract_tier_home_assistant.md).
 - **Module 1 — lm**: [lm_client](docs/tasks/lm_client.md), [lm_grammar_mask](docs/tasks/lm_grammar_mask.md), [lm_finetune](docs/tasks/lm_finetune.md), [lm_data_synth](docs/tasks/lm_data_synth.md).
 - **Module 2 — analyzer**: [analyzer_trace_store](docs/tasks/analyzer_trace_store.md), [analyzer_failure_taxonomy](docs/tasks/analyzer_failure_taxonomy.md), [analyzer_metrics](docs/tasks/analyzer_metrics.md), [analyzer_rule_synthesis](docs/tasks/analyzer_rule_synthesis.md), [analyzer_repair_policy](docs/tasks/analyzer_repair_policy.md), [analyzer_verifier](docs/tasks/analyzer_verifier.md).
-- **Consumers — benchmarks**: [benchmark_iot](docs/tasks/benchmark_iot.md), [benchmark_bfcl](docs/tasks/benchmark_bfcl.md).
+- **Consumers — benchmarks**: [benchmark_iot](docs/tasks/benchmark_iot.md), [benchmark_bfcl](docs/tasks/benchmark_bfcl.md), [benchmark_selection](docs/tasks/benchmark_selection.md) (decision record for external benchmarks on the local-model path).
 - **Composites**: [factory_pipeline](docs/tasks/factory_pipeline.md), [factory_evaluation](docs/tasks/factory_evaluation.md).
 
 Pre-redesign task docs (M0-M5 / Phase 1-3 reports) live under [`docs/tasks/legacy/`](docs/tasks/legacy/) for historical reference. See [`docs/redesign_plan.md`](docs/redesign_plan.md) for the migration map.

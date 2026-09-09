@@ -22,6 +22,7 @@ from ganglion.benchmarks.bfcl.runner import run_bfcl, summarize_bfcl
 from ganglion.benchmarks.iot.dataset import (
     ADVERSARIAL_DATASET,
     DEFAULT_DATASET,
+    default_dataset_for,
     load_dataset,
 )
 from ganglion.benchmarks.iot.runner import run_iot
@@ -90,7 +91,11 @@ def main() -> None:
     parser.add_argument(
         "--tier",
         default="iot_light_5",
-        help="Catalog tier: iot_light_5 | home_iot_20 | smart_home_50.",
+        help=(
+            "Catalog tier: iot_light_5 | home_iot_20 | smart_home_50 | "
+            "home_assistant_4 (Home Assistant Assist projection; uses its own "
+            "derived dataset unless --dataset is given)."
+        ),
     )
     parser.add_argument(
         "--bfcl",
@@ -176,6 +181,8 @@ def _run_iot_path(args: argparse.Namespace, repair: RepairConfig) -> None:
     client = build_client(args.llm, catalog, repair=repair)
 
     dataset_path = args.dataset
+    if dataset_path == DEFAULT_DATASET:
+        dataset_path = default_dataset_for(args.tier)
     if args.adversarial:
         main_cases = load_dataset(args.dataset, limit=None)
         adv_cases = load_dataset(ADVERSARIAL_DATASET, limit=None)
@@ -199,7 +206,7 @@ def _run_iot_path(args: argparse.Namespace, repair: RepairConfig) -> None:
             f"({len(main_cases)} + {len(adv_cases)} cases)"
         )
 
-    cases = load_dataset(dataset_path, limit=args.limit)
+    cases = load_dataset(dataset_path, limit=args.limit, catalog=catalog)
     results = run_iot(client, cases, repeat=args.repeat)
     summary = summarize(results)
     summary["tier"] = args.tier

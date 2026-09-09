@@ -189,7 +189,7 @@ export GANGLION_ENABLE_THINKING=false   # Set to true to enable thinking mode
 1. **Catalog-driven design:** All tool definitions derive from `ToolSpec` in `ganglion/contract/tool_spec.py`
 2. **Validator first:** JSON DSL is validated before emission to tool executor
 3. **Repair loop:** Optional retry mechanism for validation failures
-4. **Tier system:** Three tool tiers (5, 20, 50 tools) for scaling experiments
+4. **Tier system:** Three tool tiers (5, 20, 50 tools) for scaling experiments, plus `home_assistant_4` — a projection of `iot_light_5` onto Home Assistant's Assist API tools with its own derived dataset (`examples/home_assistant/`)
 
 ### Key Design Decisions
 

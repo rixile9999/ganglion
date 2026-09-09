@@ -1,5 +1,5 @@
 from ganglion.contract.tool_spec import DSLValidationError
-from ganglion.contract.builtins import TIERS, get_catalog
+from ganglion.contract.builtins import SCALING_TIERS, TIERS, get_catalog
 
 
 def test_tier_tool_counts() -> None:
@@ -10,10 +10,16 @@ def test_tier_tool_counts() -> None:
 
 def test_tier_dsl_renders_grow_with_size() -> None:
     sizes = [
-        len(get_catalog(name).render_json_dsl()) for name in TIERS
+        len(get_catalog(name).render_json_dsl()) for name in SCALING_TIERS
     ]
-    # Each subsequent tier strictly larger.
+    # Each subsequent scaling tier strictly larger. home_assistant_4 is a
+    # projection tier, not a point on this curve, so it is excluded.
     assert sizes[0] < sizes[1] < sizes[2]
+
+
+def test_registry_lists_every_tier() -> None:
+    assert set(SCALING_TIERS) <= set(TIERS)
+    assert "home_assistant_4" in TIERS
 
 
 def test_tier_native_schema_grows_faster_than_dsl() -> None:

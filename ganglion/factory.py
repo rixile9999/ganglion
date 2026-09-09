@@ -44,7 +44,7 @@ from ganglion.benchmarks.bfcl.loader import (
     load_category as load_bfcl_category,
 )
 from ganglion.benchmarks.bfcl.runner import run_bfcl, summarize_bfcl
-from ganglion.benchmarks.iot.dataset import DEFAULT_DATASET, load_dataset
+from ganglion.benchmarks.iot.dataset import default_dataset_for, load_dataset
 from ganglion.contract.builtins import get_catalog
 from ganglion.contract.catalog import Catalog
 from ganglion.lm.client import ModelClient, ModelResult
@@ -253,8 +253,8 @@ def _run_iot_iteration(
     run_id: str,
 ) -> dict[str, Any]:
     """Run one IoT-tier evaluation pass and return its `summarize` payload."""
-    dataset_path = config.dataset_path or DEFAULT_DATASET
-    cases = load_dataset(dataset_path, limit=config.limit)
+    dataset_path = config.dataset_path or default_dataset_for(catalog.name)
+    cases = load_dataset(dataset_path, limit=config.limit, catalog=catalog)
     if not cases:
         raise ValueError(f"IoT dataset is empty: {dataset_path}")
     client = _build_client(config.client_id, catalog)

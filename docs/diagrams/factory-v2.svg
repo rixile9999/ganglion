@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 660" role="img" aria-labelledby="diagram-title diagram-description">
+  <title id="diagram-title">Ganglion 지속적 특화 모델 팩토리</title>
+  <desc id="diagram-description">스펙을 컴파일하고 제어기가 규칙, 학습, 압축 후보를 선택한다. 후보 평가와 독립 릴리스 판정을 거쳐 번들을 배포한다. 운영 분석은 제어기에 다음 개선을 제안한다.</desc>
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#253329"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#93a69b"/></marker>
+    <marker id="feedback-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#daba78"/></marker>
+    <style>
+      text{font-family:system-ui,-apple-system,'Noto Sans CJK KR',sans-serif}
+      .node rect{fill:#18241e;stroke:#425a4d;stroke-width:1.5;rx:12}
+      .node .kicker{fill:#91a89a;font-size:11px;letter-spacing:1.2px}
+      .node .name{fill:#edf3ea;font-size:21px;font-weight:650}
+      .node .sub{fill:#afbeb2;font-size:13px}
+      .node:focus{outline:none}.node:focus rect,.node:hover rect{stroke:#daba78;stroke-width:2.5}
+      .node.selected rect{fill:#25392b;stroke:#c8ed9c;stroke-width:2.5}
+      .node.path-active rect{stroke:#daba78;stroke-width:2.5}
+      .edge{fill:none;stroke:#93a69b;stroke-width:1.7;marker-end:url(#arrow)}
+      .feedback{fill:none;stroke:#daba78;stroke-width:1.5;stroke-dasharray:5 5;marker-end:url(#feedback-arrow)}
+      .label{fill:#b6c4b9;font-size:11px}.accent{fill:#e0c58f}
+    </style>
+  </defs>
+  <rect width="1120" height="660" rx="16" fill="#101a15"/>
+  <rect width="1120" height="660" rx="16" fill="url(#grid)"/>
+  <text x="48" y="37" fill="#adc2af" font-size="12" letter-spacing="2">SPEC → BUILD → MEASURE → RUN → ADAPT</text>
+  <path class="edge" d="M330 126H406"/>
+  <path class="edge" d="M680 126H756"/>
+  <path class="edge" d="M900 181V277"/>
+  <text class="label" x="914" y="213">예산에 맞는 후보</text>
+  <path class="edge" d="M900 387V469"/>
+  <text class="label" x="914" y="423">동결된 구성</text>
+  <path class="edge" d="M760 524H684"/>
+  <path class="edge" d="M410 524H334"/>
+  <path class="edge" d="M190 470V390"/>
+  <text class="label" x="58" y="434">운영 결과 · 비용</text>
+  <path class="feedback" d="M330 326H365V234H810V183"/>
+  <text class="label accent" x="398" y="220">변화 · 오류 → 다음 개선 후보</text>
+  <path class="feedback" d="M1040 525H1080V125H1043"/>
+  <text class="label accent" transform="translate(1099 444) rotate(-90)">개발 평가 피드백</text>
+  <g class="node" data-node="spec" tabindex="0" role="button" aria-label="도메인 스펙 상세">
+    <rect x="50" y="72" width="280" height="108"/>
+    <text class="kicker" x="70" y="97">01 / INPUT</text><text class="name" x="70" y="127">도메인 스펙 · 배포 목표</text><text class="sub" x="70" y="154">해야 할 일 · 품질 · 장치 · 예산</text>
+  </g>
+  <g class="node" data-node="contract" tabindex="0" role="button" aria-label="계약 컴파일러 상세">
+    <rect x="410" y="72" width="270" height="108"/>
+    <text class="kicker" x="430" y="97">02 / CONTRACT</text><text class="name" x="430" y="127">계약 컴파일러</text><text class="sub" x="430" y="154">버전 차이 · 영향 범위 · IR 생성</text>
+  </g>
+  <g class="node" data-node="controller" tabindex="0" role="button" aria-label="팩토리 제어기 상세">
+    <rect x="760" y="72" width="280" height="108"/>
+    <text class="kicker" x="780" y="97">03 / FACTORY CONTROLLER</text><text class="name" x="780" y="127">다음에 무엇을 바꿀까?</text><text class="sub" x="780" y="154">재사용 · 규칙 · 학습 · 압축 선택</text>
+  </g>
+  <g class="node" data-node="analyzer" tabindex="0" role="button" aria-label="운영 분석 상세">
+    <rect x="50" y="278" width="280" height="108"/>
+    <text class="kicker" x="70" y="303">08 / ANALYZER</text><text class="name" x="70" y="333">실패와 변화를 해석</text><text class="sub" x="70" y="360">원출력 · 보정 효과 · 분포 · 비용</text>
+  </g>
+  <g class="node" data-node="registry" tabindex="0" role="button" aria-label="공유 버전 저장소 상세">
+    <rect x="410" y="278" width="270" height="108" style="fill:#1d231d;stroke:#69724c;stroke-dasharray:4 4"/>
+    <text class="kicker" x="430" y="303">SHARED / REGISTRY</text><text class="name" x="430" y="333">모든 실험의 계보</text><text class="sub" x="430" y="360">스펙 · 데이터 · 작업 · 번들 · 근거</text>
+  </g>
+  <g class="node" data-node="builder" tabindex="0" role="button" aria-label="후보 제작 상세">
+    <rect x="760" y="278" width="280" height="108"/>
+    <text class="kicker" x="780" y="303">04 / CANDIDATE BUILDER</text><text class="name" x="780" y="333">필요한 부분만 제작</text><text class="sub" x="780" y="360">데이터 · SFT · RL · 증류 · 양자화</text>
+  </g>
+  <g class="node" data-node="runtime" tabindex="0" role="button" aria-label="배포 런타임 상세">
+    <rect x="50" y="470" width="280" height="108"/>
+    <text class="kicker" x="70" y="495">07 / RUNTIME</text><text class="name" x="70" y="525">작은 모델로 실행</text><text class="sub" x="70" y="552">추론 → 보정 → 검증 → 도구 실행</text>
+  </g>
+  <g class="node" data-node="release" tabindex="0" role="button" aria-label="배포 번들 상세">
+    <rect x="410" y="470" width="270" height="108"/>
+    <text class="kicker" x="430" y="495">06 / RELEASE BUNDLE</text><text class="name" x="430" y="525">하나의 버전으로 배포</text><text class="sub" x="430" y="552">모델 + 계약 + 규칙 + 실행 설정</text>
+  </g>
+  <g class="node" data-node="evaluation" tabindex="0" role="button" aria-label="독립 평가 상세">
+    <rect x="760" y="470" width="280" height="108"/>
+    <text class="kicker" x="780" y="495">05 / EVALUATION</text><text class="name" x="780" y="525">품질을 지키며 비용↓</text><text class="sub" x="780" y="552">개발 후보 비교 · 독립 릴리스 판정</text>
+  </g>
+  <text x="50" y="619" fill="#91a89a" font-size="12">실선: 생산·운영 흐름</text>
+  <text x="255" y="619" fill="#daba78" font-size="12">점선: 개선 피드백</text>
+  <text x="475" y="619" fill="#91a89a" font-size="12">중앙 저장소는 모든 모듈의 불변 산출물을 보관</text>
+  <text x="50" y="644" fill="#73867a" font-size="11">ARCHITECTURE PROPOSAL · 2026-09-08 · 논리적 모듈 구조 — 각각 별도 서버를 의미하지 않음</text>
+</svg>

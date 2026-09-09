@@ -1,5 +1,11 @@
 # Ganglion
 
+The proposed architecture for a continuously updated domain-specialized model
+factory is documented in [Architecture v2](docs/architecture_v2.md), with an
+[interactive diagram](web/architecture.html) and a
+[standalone SVG](docs/diagrams/factory-v2.svg). This is a design proposal;
+the POC implementation described below predates it.
+
 > *compiler-guided optimization for LLM tool calling*
 
 Ganglion compiles verbose tool schemas into compact Action IRs that language

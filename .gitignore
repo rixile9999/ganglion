@@ -39,3 +39,6 @@ runs/**/*.pth
 # Temporary PowerPoint files
 ~$*.pptx
 
+
+# Jupyter
+.ipynb_checkpoints/

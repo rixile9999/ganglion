@@ -1,0 +1,27 @@
+// Figure 1 — Ganglion factory loop (paper figure). Render with:
+//   neato -n2 -Tpdf fig1.dot -o fig1.pdf   (also -Tsvg / -Tpng -Gdpi=300)
+digraph ganglion {
+  graph [splines=ortho, pad=0.04, fontname="Noto Sans CJK KR"];
+  node  [shape=box, style="rounded", fontname="Noto Sans CJK KR", fontsize=9,
+         width=1.35, height=0.58, fixedsize=true, penwidth=0.8];
+  edge  [penwidth=0.8, arrowsize=0.65];
+
+  spec       [label="도메인 스펙\n배포 목표",                  pos="0,90!"];
+  contract   [label="계약 컴파일러\n(contract)\nIR · 검증기 생성", pos="135,90!"];
+  controller [label="팩토리 제어기\n다음 후보 선택",             pos="270,90!"];
+  builder    [label="후보 제작 (lm)\n합성 · SFT · 압축",         pos="405,90!"];
+  evaluation [label="독립 평가\n품질 · 비용 · 회귀",             pos="540,90!"];
+  release    [label="릴리스 번들\n모델+계약+규칙",               pos="540,0!"];
+  runtime    [label="런타임\n추론·보정·검증·실행",              pos="405,0!"];
+  analyzer   [label="분석기 (analyzer)\n실패 분류\n규칙 합성",    pos="270,0!"];
+
+  // free-standing edge labels (pinned so they never sit on a line)
+  node [shape=plaintext, fontsize=7.5, width=0.1, height=0.1, fixedsize=false];
+  l_fb    [label="개선 후보\n(규칙 패치 · 학습 데이터)", pos="322,45!"];
+  l_trace [label="운영 trace",                          pos="337,14!"];
+
+  spec -> contract -> controller -> builder -> evaluation;
+  evaluation -> release;
+  release -> runtime -> analyzer;
+  analyzer -> controller [style=dashed];
+}

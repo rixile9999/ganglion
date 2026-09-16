@@ -1,0 +1,441 @@
+---
+title: "계약 기반 도구 호출의 학습·추론 파이프라인: 일반화된 정식화"
+date: "2026-09-15"
+lang: ko-KR
+---
+
+## 0. 요약
+
+이 문서는 언어 모델이 자연어 요청을 도구 호출로 바꾸는 파이프라인을 특정 구현과 독립적인 수학적 대상으로 정의한다. 중심 개념은 **계약(contract)** 과 **컴파일러(compiler)** 다. 계약은 허용되는 행위의 공간을 정의하고, 컴파일러는 모델이 생성한 짧은 중간 표현(intermediate representation, IR)을 그 공간의 원소로 결정적으로 변환한다. 이 분해 아래에서 세 가설을 형식화한다.
+
+- **H1 (정확도 보존).** 전체 스키마 대신 압축된 IR 표현으로 조건화해도 작업 정확도가 같은 수준으로 유지된다.
+- **H2 (표현 비용).** IR 표현의 요청당 입력 비용이 더 낮고, 도구 수가 늘수록 격차가 커진다.
+- **H3 (구성적 유효성).** 컴파일러를 통과한 출력은 정의상 계약을 만족한다.
+
+H3은 정의에서 따르는 성질이고(명제 1), H2는 가법적 크기 모형 아래의 정리다(명제 3). H1은 경험적 가설이며, 이 문서는 H1을 검증할 때 무엇을 통제해야 하는지(명제 2, 5, 6, 11)를 정한다.
+
+문서의 구성은 다음과 같다. §1 계약·계획·컴파일러, §2 표현 비용, §3 추론(제약 생성, 보정, 재시도), §4 학습(합성, 지도 미세조정, 보상, 선호), §5 평가, §6 시스템 수준 최적화, §7 명제 요약과 한계. 부록 A는 이 기호 체계가 Ganglion 구현의 어느 구성요소에 대응하는지를 적고, 부록 B는 문서 빌드를 설명한다. 특정 커밋의 기본값, 파일 경로, 측정치는 별도의 구현 대조 노트 [pipeline_formalization_impl.md](pipeline_formalization_impl.md)에 둔다.
+
+## 1. 계약, 계획, 컴파일러
+
+### 1.1 계약과 계획 공간
+
+**정의 1 (도구 계약).** 도구 계약은 튜플
+
+$$
+C=\bigl(\mathcal T,\ \{\mathcal B_t\}_{t\in\mathcal T},\ \{\kappa_t\}_{t\in\mathcal T},\ e_C\bigr)
+$$
+
+이다. $\mathcal T$는 유한한 도구 집합, $\mathcal B_t$는 도구 $t$의 유효한 인자 바인딩 집합, $\kappa_t:\mathcal B^{\mathrm{raw}}_t\rightharpoonup\mathcal B_t$는 원시 바인딩을 정규형으로 보내는 부분함수(별칭, 단위, 타입 변환), $e_C\in\{0,1\}$은 빈 계획의 허용 여부다.
+
+**정의 2 (계획 공간).**
+
+$$
+\mathcal A_C=\Bigl\{a=\bigl((t_j,b_j)\bigr)_{j=1}^{m}:\ m\ge 1-e_C,\ t_j\in\mathcal T,\ b_j\in\mathcal B_{t_j}\Bigr\}.
+$$
+
+길이 0의 계획을 $\epsilon$이라 쓰고, 계획의 도구 이름열을 $\operatorname{act}(a)=(t_1,\ldots,t_m)$이라 쓴다. 계획의 동등성 $a=a'$는 정규형에서의 순서 있는 동등성이다. 병렬 호출처럼 순서를 무시하는 채점이 필요하면 순열 동치 $a\approx a'$를 별도로 정의한다. 이는 평가자의 선택이지 계약의 일부가 아니다.
+
+**정의 3 (의도 함수).** 요청 공간 $\mathcal X$ 위에서 정답 계획을 주는 부분함수 $\pi^*:\mathcal X\rightharpoonup\mathcal A_C$를 의도 함수라 한다. $\pi^*(x)=\epsilon$은 "호출하지 않음"이 정답인 요청이다. $\pi^*$는 주석, 시뮬레이터, 실행 결과 같은 외부 오라클로 주어지며 계약만으로는 결정되지 않는다.
+
+### 1.2 렌더링과 충분성
+
+**정의 4 (렌더링).** 렌더링은 계약을 모델에게 전달 가능한 표현으로 보내는 결정적 사상 $r:C\mapsto r(C)$다. 두 종류를 구분한다. 전체 스키마 렌더링 $\sigma(C)$는 각 도구의 타입 스키마를 그대로 나열한다. 압축 IR 렌더링 $\rho(C)$는 IR 문법, 도구별 한 줄 서명, 규칙, 예시를 담는다.
+
+**정의 5 (충분성).** 렌더링 $r$이 충분하다는 것은 $r(C)$로부터 $\mathcal A_C$를 복원할 수 있다는 뜻이다. $\rho$와 $\sigma$는 같은 계약에서 유도되므로 모두 충분하다. 충분성은 정보의 하한만을 제약한다. 두 렌더링은 길이와 부가 정보(설명문, 예시, 규칙)에서 다르며, 이 차이가 §2의 비용 차이와 H1의 정확도 차이를 동시에 낳는다.
+
+### 1.3 IR 언어와 컴파일러
+
+**정의 6 (컴파일러).** 어휘 $\mathcal V$ 위의 문자열 공간에서 계획 공간으로 가는 부분함수
+
+$$
+F_C:\mathcal V^*\times(\mathcal X\cup\{\varnothing\})\rightharpoonup\mathcal A_C
+$$
+
+를 컴파일러라 하고 실패를 $\bot$로 쓴다. 요청 $x$는 보정 단계에만 쓰이는 선택적 문맥이다. 컴파일러가 받아들이는 문자열 집합 $\mathcal L_C(x)=\{y:F_C(y;x)\ne\bot\}$을 IR 언어라 한다. 컴파일러는 네 단계의 합성이다.
+
+$$
+F_C=\operatorname{Validate}_C\circ\operatorname{Normalize}_C\circ\operatorname{Correct}_{C,x}\circ\operatorname{Parse}.
+$$
+
+Parse는 문자열을 원시 구조로 바꾸고, Correct는 누락·오형 항목을 결정적으로 추론해 채우며, Normalize는 $\kappa_t$를 적용하고, Validate는 $\mathcal A_C$ 소속을 확인한다. Correct를 항등으로 둔 컴파일러를 $F^{(0)}_C$, 보정 정책 $K$를 포함한 컴파일러를 $F^{(K)}_C$라 쓴다.
+
+**정의 7 (방출).** 방출 $E:\mathcal A_C\to\mathcal U$는 계획을 실행 가능한 호출 레코드열로 보내는 단사 결정적 사상이며 $E(\epsilon)=[\,]$이다. 실행 자체와 그 성공 여부는 $E$의 정의 밖이다.
+
+**명제 1 (구성적 유효성, H3).** 임의의 $y\in\mathcal V^*$에 대해 $F_C(y;x)=\bot$이거나, $E(F_C(y;x))$의 모든 호출이 해당 도구의 인자 제약을 만족한다.
+
+*증명.* $F_C$의 치역이 $\mathcal A_C$이고 $\mathcal A_C$의 정의가 $b_j\in\mathcal B_{t_j}$를 요구한다. $\square$
+
+유효성은 의미적 정확성 $F_C(y;x)=\pi^*(x)$의 필요조건일 뿐이다. $F_C(y;x)\ne\bot$은 요청 충족, 실행 전 상태 적합성, 실행 성공 중 어느 것도 함의하지 않는다.
+
+### 1.4 파이프라인과 경로
+
+**정의 8 (파이프라인).** 프롬프트 구성 $h_C(x)=\operatorname{Template}(\rho(C),x)$, 모델 분포 $p_\theta(y\mid h)$, 디코딩 연산자 $D_{\theta,d}$에 대해 IR 경로의 종단 사상은
+
+$$
+\Pi_\xi=E\circ F_C(\,\cdot\,;x)\circ D_{\theta,d}\circ h_C
+$$
+
+이다. $\xi$는 모델, 계약, 렌더링, 디코딩, 보정, 재시도 정책을 묶은 시스템 구성이다. 전체 스키마 경로는 $(\sigma(C),x)$로 조건화하고 모델이 낸 원시 호출 구조 $o$를 어댑터 $\Gamma$로 IR 영역에 옮긴 뒤 같은 $F_C$를 적용한다. 자유 형식 출력을 구제하는 경로는 후보 부분 문자열을 차례로 시도하는 어댑터 $\Lambda$를 쓴다. 어떤 경로든 결과는 $\hat a=F_C(\Phi(o);x)$의 꼴이며 어댑터 $\Phi\in\{\mathrm{id},\Lambda,\Gamma\}$만 다르다.
+
+**명제 2 (경로 불변성).** 모든 경로의 결과는 $\mathcal A_C\cup\{\bot\}$의 원소다. 따라서 §5의 지표는 경로와 무관하게 정의되며, 경로 사이의 비교는 같은 계약·같은 정답·같은 채점 관계 아래에서 성립한다. 경로가 바꾸는 것은 $\hat a$의 분포와 §2의 비용이다. $\square$
+
+전체 스키마 경로의 결과도 $F_C$를 통과하므로 보정 $K$를 받는다. 즉 전체 스키마 경로는 "보정 없는 기준선"이 아니며, 모델 단독 성능은 §5의 정의 25에 따라 $F^{(0)}_C$로 따로 측정한다.
+
+## 2. 표현 비용
+
+**정의 9 (요청당 입력 비용).** 토크나이저 $\operatorname{tok}:\mathcal V^*\to\mathbb N$과 렌더링 $r$에 대해
+
+$$
+n_{\mathrm{in}}(x;r)=\operatorname{tok}(r(C))+\operatorname{tok}(x)+c_r
+$$
+
+이다. $c_r$은 템플릿 오버헤드다. 요청 분포 $\mathcal P_X$ 아래의 기대 비용을 $\bar n_{\mathrm{in}}(r)$, 두 렌더링 사이의 절감률을
+
+$$
+S(\rho,\sigma)=1-\frac{\bar n_{\mathrm{in}}(\rho)}{\bar n_{\mathrm{in}}(\sigma)}
+$$
+
+라 한다. 제공자가 스키마를 프롬프트로 직렬화하는 방식은 관측되지 않을 수 있으므로 $\operatorname{tok}(\sigma(C))$는 보고된 사용량에서 역산한 값일 수 있다.
+
+**가정 A1 (가법적 크기 모형).** 렌더링 크기는 고정 부분과 도구별 부분의 합이다. 템플릿 오버헤드는 고정 부분에 포함한다.
+
+$$
+\operatorname{tok}(r(C))+c_r=c^{(0)}_r+\sum_{t\in\mathcal T}\ell_r(t),\qquad
+\bar\ell_r=\frac{1}{\lvert\mathcal T\rvert}\sum_{t\in\mathcal T}\ell_r(t).
+$$
+
+**명제 3 (비용 격차의 단조 증가, H2).** A1 아래에서 도구별 평균 길이가 $\bar\ell_\rho<\bar\ell_\sigma$이고 고정 부분이 $c^{(0)}_\rho\ge c^{(0)}_\sigma$이면, 도구 수 $N=\lvert\mathcal T\rvert$의 함수로 본 절감률 $S(N)$은 $N$에 대해 단조 증가하고
+
+$$
+\lim_{N\to\infty}S(N)=1-\frac{\bar\ell_\rho}{\bar\ell_\sigma}
+$$
+
+이다. 또한 $\operatorname{tok}(\rho(C))\le\operatorname{tok}(\sigma(C))$인 모든 $N$에서 $S(N)\le 1-\operatorname{tok}(\rho(C))/\operatorname{tok}(\sigma(C))$이고, 절감률이 양수인 영역에서 $S$는 요청 길이 $X=\mathbb E[\operatorname{tok}(x)]$에 대해 감소한다.
+
+*증명.* $X=\mathbb E[\operatorname{tok}(x)]$라 하고 $A(N)=c^{(0)}_\rho+N\bar\ell_\rho+X$, $B(N)=c^{(0)}_\sigma+N\bar\ell_\sigma+X$라 두면 $S=1-A/B$이다.
+
+$$
+\frac{d}{dN}\frac{A}{B}=\frac{\bar\ell_\rho B-\bar\ell_\sigma A}{B^2},\qquad
+\bar\ell_\rho B-\bar\ell_\sigma A=\bar\ell_\rho\bigl(c^{(0)}_\sigma+X\bigr)-\bar\ell_\sigma\bigl(c^{(0)}_\rho+X\bigr).
+$$
+
+우변은 $N$과 무관하며, $\bar\ell_\rho<\bar\ell_\sigma$와 $c^{(0)}_\sigma+X\le c^{(0)}_\rho+X$에 의해 음수다. 따라서 $A/B$는 감소하고 $S$는 증가한다. 극한은 $A/B\to\bar\ell_\rho/\bar\ell_\sigma$에서 따른다. 부등식은 $a=\operatorname{tok}(\rho(C))\le b=\operatorname{tok}(\sigma(C))$일 때 $A/B=(a+u)/(b+w)$에서 $u=c_\rho+X\ge w=c_\sigma+X\ge0$이므로 $(a+u)/(b+w)\ge(a+w)/(b+w)\ge a/b$라는 사실에서 따른다. $X$에 대한 단조성은 $\partial(A/B)/\partial X=(B-A)/B^2$가 $A<B$일 때 양수라는 데서 따른다. $\square$
+
+**비고.** 고정 부분 조건 $c^{(0)}_\rho\ge c^{(0)}_\sigma$는 압축 IR이 문법 안내·규칙·예시를 담는 반면 스키마 목록에는 그런 고정 비용이 거의 없다는 관찰을 반영한다. 조건이 성립하지 않아도 $X>\bigl(\bar\ell_\rho c^{(0)}_\sigma-\bar\ell_\sigma c^{(0)}_\rho\bigr)/(\bar\ell_\sigma-\bar\ell_\rho)$이면 단조성이 유지된다. 도구별 길이의 격차 $\bar\ell_\sigma/\bar\ell_\rho$는 인자 제약의 밀도에 따라 달라진다. 선택적 문자열 slot이 대부분인 계약에서는 두 렌더링의 길이가 비슷해 이득이 작다. 절감률은 상수가 아니라 계약의 성질이다.
+
+**정의 10 (스키마 전달 방식).** 계약을 모델에 전달하는 방식은 세 가지다. 전체 주입은 매 요청에 $r(C)$를 넣고, 검색형 전달은 관련 도구 부분집합 $C_k\subseteq C$만 넣으며, 내재화는 계약을 학습으로 $\phi$에 넣고 프롬프트에서는 제거한다. 요청당 렌더링 비용은 각각 $\operatorname{tok}(r(C))$, $\operatorname{tok}(r(C_k))$, $0$이고, 계약이 바뀔 때의 갱신 비용은 반대 순서로 커진다. 이 축은 §6의 구성 $\xi$의 한 성분이며 요청 수 $N_H$와 계약 변경 빈도에 따라 선택된다.
+
+**정의 11 (출력 비용과 지연).** 생성 토큰 수를 $n_{\mathrm{out}}$이라 하면 선형 지연 모형 $\lambda\approx\alpha\,n_{\mathrm{in}}+\beta\,n_{\mathrm{out}}+\gamma$에서 입력 절감은 prefill 항을 줄이고, 출력 형식(IR 대 원시 호출 구조, 추론 토큰 유무)은 decode 항을 좌우한다. 추론(thinking) 토큰은 $n_{\mathrm{out}}$에 곱셈적 오버헤드를 더하므로, 출력이 짧은 폐쇄적 변환 문제에서는 비용 대비 이득이 없을 수 있다.
+
+## 3. 추론: 제약 생성, 보정, 재시도
+
+### 3.1 디코딩과 문법 제약
+
+**정의 12 (제약 디코딩).** 문법 $G$의 언어를 $\mathcal L(G)$, 접두사 $u$ 다음에 허용되는 토큰 집합을
+
+$$
+\mathcal M_G(u)=\{v\in\mathcal V:\ uv\text{ is a prefix of some }w\in\mathcal L(G)\}
+$$
+
+라 한다. 제약 분포는 각 단계에서 $p_\theta$를 $\mathcal M_G(u)$ 위로 재정규화한 것이다.
+
+$$
+\tilde p_{\theta,G}(v\mid h,u)=
+\frac{\mathbf 1[v\in\mathcal M_G(u)]\,p_\theta(v\mid h,u)}
+{\sum_{w\in\mathcal M_G(u)}p_\theta(w\mid h,u)}.
+$$
+
+탐욕 디코딩에서는 $y_k=\arg\max_{v\in\mathcal M_G(y_{<k})}p_\theta(v\mid h,y_{<k})$이다. 마스크가 없으면 $\mathcal M_G(u)=\mathcal V$다.
+
+**명제 4 (문법 보장의 범위).** (i) 제약 디코딩이 수락 상태에서 종료하면 $y\in\mathcal L(G)$이다. (ii) 문법이 컴파일러에 대해 건전하면, 즉 $\mathcal L(G)\subseteq\mathcal L_C(x)$이면, 종료된 출력은 $F_C(y;x)\ne\bot$을 만족한다. (iii) 길이 제한으로 중단된 출력에는 (i)이 적용되지 않는다. (iv) (ii)는 유효성만 보장하며 $F_C(y;x)=\pi^*(x)$를 함의하지 않는다.
+
+*증명.* (i)–(iii)은 정의에서 직접 따르고, (iv)는 $\mathcal L(G)$가 $\pi^*$와 무관하게 정의되기 때문이다. $\square$
+
+**명제 5 (탐욕 디코딩에서 마스크 효과의 분해).** 탐욕 디코딩을 가정하고, 사례 $x$의 비제약 출력을 $y^{\circ}$, 제약 출력을 $y^{G}$라 하자. 마스크가 오답을 정답으로 바꾸면 rescue, 정답을 오답으로 바꾸면 break라 한다. 그러면
+
+$$
+\mathrm{Acc}^{G}-\mathrm{Acc}^{\circ}=\Pr[\text{rescue}]-\Pr[\text{break}],\qquad
+\{\text{break}\}\subseteq\bigl\{y^{\circ}\notin\mathcal L(G)\ \wedge\ F_C(y^{\circ};x)=\pi^*(x)\bigr\}.
+$$
+
+따라서 문법이 컴파일러가 받아들이는 모든 정답 문자열을 포함하면, 즉 $\{y:F_C(y;x)=\pi^*(x)\}\subseteq\mathcal L(G)$이면 break가 없고 마스크는 정확도를 낮추지 않는다. 문법이 컴파일러보다 엄격하면 break가 가능하다.
+
+*증명.* 각 단계에서 비제약 argmax 토큰이 허용 집합에 속하면 제약 argmax는 그 토큰과 같다. 귀납적으로, $y^{\circ}$의 모든 접두사가 허용되고 종료 토큰도 허용되면 $y^{G}=y^{\circ}$이다. 그러므로 $y^{G}\ne y^{\circ}$는 $y^{\circ}\notin\mathcal L(G)$를 함의한다. break는 $y^{G}\ne y^{\circ}$와 $F_C(y^{\circ};x)=\pi^*(x)$를 요구하므로 포함 관계가 성립한다. 첫 등식은 사례별 결과를 불변·rescue·break의 세 경우로 나눈 계수에서 따른다. $\square$
+
+**비고.** 명제 5는 마스크의 이득이 비제약 무효율 $\Pr[y^{\circ}\notin\mathcal L(G)]$로 상한된다는 뜻이기도 하다. 학습으로 무효율이 작아진 모델에서는 이득이 작고, 문법이 컴파일러보다 엄격한 부분(컴파일러는 생략을 허용하지만 문법은 필수로 요구하는 필드 등)에서 손실이 생긴다. 마스크는 형식 오류가 지배적인 모델에서 유용하고 의미 오류가 지배적인 모델에서는 중립이거나 해롭다. 표집 디코딩에서는 재정규화가 모든 단계의 분포를 바꾸므로 포함 관계가 성립하지 않으며, 분해는 기대값 수준에서만 유효하다.
+
+### 3.2 보정
+
+**정의 13 (보정 정책).** 보정 정책 $K$는 파싱된 원시 구조와 요청 $x$를 받아 원시 구조를 돌려주는 결정적 사상이다. 두 종류를 구분한다. *보수적 보정*은 $F^{(0)}_C(y;x)=\bot$인 경우에만 구조를 바꾼다(유일하게 결정되는 필수 인자의 기본값 채움, 선언되지 않은 인자 제거). *재작성 보정*은 $F^{(0)}_C$가 받아들이는 구조도 바꿀 수 있다(요청 문맥으로 값을 다시 읽음).
+
+**정의 14 (rescue와 regression).** 같은 사례, 같은 출력, 같은 정답에 대해 $v^{(0)}_i=\mathbf 1[F^{(0)}_C(y_i;x_i)=a^*_i]$, $v^{(K)}_i=\mathbf 1[F^{(K)}_C(y_i;x_i)=a^*_i]$라 하면
+
+$$
+\mathrm{Rescue}=\frac1n\sum_{i=1}^{n}\mathbf 1\bigl[v^{(0)}_i=0,\ v^{(K)}_i=1\bigr],\qquad
+\mathrm{Regression}=\frac1n\sum_{i=1}^{n}\mathbf 1\bigl[v^{(0)}_i=1,\ v^{(K)}_i=0\bigr].
+$$
+
+**명제 6 (보정 기여의 항등식과 보수성).** (i) $\mathrm{EM}^{(K)}-\mathrm{EM}^{(0)}=\mathrm{Rescue}-\mathrm{Regression}$. (ii) $K$가 보수적이면 $\mathrm{Regression}=0$이고 $\mathrm{EM}^{(K)}\ge\mathrm{EM}^{(0)}$이다.
+
+*증명.* (i)은 사례별 네 경우 $(v^{(0)},v^{(K)})\in\{0,1\}^2$의 계수에서 따른다. (ii) 보수적 $K$는 $F^{(0)}_C\ne\bot$인 사례를 바꾸지 않으므로 $v^{(0)}_i=1$이면 $v^{(K)}_i=1$이다. $\square$
+
+**비고.** 보정은 정확도를 두 방향으로 움직일 수 있으므로 보정 포함 점수만으로 모델 단독 성능을 추론할 수 없다. 규칙의 채택 기준은 순증이 아니라 $(\mathrm{Rescue},\mathrm{Regression})$ 쌍이다. 재작성 보정은 정답 정의 $\pi^*$를 바꾸지 않아야 한다. 보정이 좋아졌다고 계약의 의미가 바뀌면 안 된다. 보정을 학습 데이터로 환류해 모델에 흡수하는 절차는 §6의 정의 28에서 다룬다.
+
+### 3.3 재시도
+
+**정의 15 (유효성 기반 재시도).** 최대 $r$회 재시도하는 프로토콜은 $F_C(y^{(j)};x)=\bot$일 때만 오류 설명을 문맥에 덧붙여 재생성한다.
+
+$$
+h^{(0)}=h_C(x),\qquad
+h^{(j+1)}=h^{(j)}\mathbin{\Vert}\bigl(y^{(j)},\operatorname{Err}(y^{(j)})\bigr),\qquad 0\le j<r .
+$$
+
+**명제 7 (재시도의 범위와 비용).** 재시도는 $F_C(y^{(0)};x)=\bot$인 사례의 결과만 바꿀 수 있으며, 컴파일러가 받아들인 의미적 오답은 재시도를 유발하지 않는다. 기대 호출 수는 $1+\sum_{j=1}^{r}\Pr[\text{first }j\text{ attempts invalid}]$이고, 재시도가 정확도에 기여할 수 있는 상한은 첫 시도의 무효율이다. $\square$
+
+**비고 (형식 오류 질량).** 문법 마스크, 재시도, 보수적 보정은 모두 같은 양, 즉 무효율 $\Pr[F^{(0)}_C(y;x)=\bot]$을 줄이는 장치다. 마스크는 디코딩 안에서 추가 호출 없이, 재시도는 디코딩 밖에서 추가 호출로, 보수적 보정은 컴파일러 안에서 그렇게 한다. 셋 모두 의미 오류에는 작용하지 않는다. 의미 오류를 줄이는 것은 학습(§4)과 재작성 보정뿐이며, 후자는 regression 위험을 동반한다.
+
+## 4. 학습
+
+### 4.1 데이터: 합성, 게이트, 분할
+
+**정의 16 (교사 합성과 구조 게이트).** 교사 분포 $q_\psi(x,\tilde y\mid C,t)$에서 도구 $t$에 앵커된 후보 쌍을 뽑고, 구조 게이트
+
+$$
+g_C(x,\tilde y;t)=\mathbf 1\bigl[F_C(\tilde y;x)\ne\bot,\ \operatorname{act}(F_C(\tilde y;x))=(t)\bigr]
+$$
+
+를 통과한 것만 유지한다. 학습 목표는 정규형 직렬화 $y=\operatorname{Ser}(F_C(\tilde y;x))$다.
+
+**명제 8 (구조 게이트는 의미 잡음을 제한하지 않는다).** 게이트를 통과한 쌍의 의미 오류율 $\eta=\Pr[F_C(\tilde y;x)\ne\pi^*(x)\mid g_C=1]$은 임의의 값을 가질 수 있다. $\eta$는 교사의 품질 또는 별도의 의미 검증기에 의해서만 제한된다.
+
+*증명.* $\tilde y$가 유효한 단일 호출이기만 하면 $x$의 내용과 무관하게 $g_C=1$이다. 따라서 $x$와 무관하게 $\tilde y$를 내는 교사는 게이트 통과율 1과 임의의 $\eta$를 동시에 가진다. $\square$
+
+**비고 (정규형 목표의 효과).** 목표를 $\operatorname{Ser}(\mathcal A_C)$로 제한하면 학습된 분포는 정규형 문자열 집합에 집중한다. 이 집합이 문법 언어에 포함되면 학습 후 무효율이 작아지고, 명제 5에 따라 마스크의 이득도 작아진다. 컴파일러의 보정 결과가 목표에 반영되므로 학습 데이터는 교사 출력이 아니라 컴파일러가 정규화한 교사 출력이다.
+
+**정의 17 (가족 단위 분할과 오염).** 원문과 그 paraphrase를 같은 가족으로 묶는 동치관계 $\sim_{\mathrm{fam}}$에 대해, 학습·개발·릴리스 평가 집합은 가족 단위로 분리해야 독립성을 주장할 수 있다. 임베딩 유사도 임계값 $\tau$에 의한 탐욕적 중복 제거는 이 관계의 근사다. 렌더링 $\rho(C)$에 포함된 예시 요청이 평가 집합과 겹치면 그 사례는 정답을 문맥에 담고 있으므로 오염 집합으로 분류해 제외한다.
+
+### 4.2 지도 미세조정
+
+**정의 18 (파라미터 효율적 적응).** 기저 가중치 $W_0$를 고정하고 각 대상 선형층에 저랭크 증분을 더한다.
+
+$$
+W_\ell=W_{0,\ell}+\frac{\alpha}{r}B_\ell A_\ell,\qquad
+A_\ell\in\mathbb R^{r\times d_{\mathrm{in}}},\quad B_\ell\in\mathbb R^{d_{\mathrm{out}}\times r},\qquad
+\phi=\{(A_\ell,B_\ell)\}_\ell .
+$$
+
+**정의 19 (응답 토큰 우도).** 메시지열 $M_C(x,y)=[(\mathrm{system},s_C),(\mathrm{user},x),(\mathrm{assistant},y)]$를 토큰화한 $z_i$와 응답 토큰 마스크 $m_{i,k}\in\{0,1\}$에 대해
+
+$$
+\mathcal L_{\mathrm{SFT}}(\phi)=-\frac{1}{Z}\sum_i\sum_k m_{i,k}\log p_\phi\bigl(z_{i,k}\mid z_{i,<k}\bigr),\qquad
+Z=\sum_{i,k}m_{i,k}>0 .
+$$
+
+여기서 $s_C=\operatorname{Template}(\rho(C))$는 추론에 쓰는 것과 같은 system 문자열이다. 시스템·사용자 토큰을 손실에서 제외하는 것은 고정된 계약 텍스트를 학습 용량으로 재현하지 않기 위해서다.
+
+**정의 20 (학습·추론 일치 조건).** 학습 문맥에서 첫 응답 토큰 직전까지의 접두사는 추론 문맥과 토큰 수준에서 같아야 한다.
+
+$$
+\operatorname{Prefix}_{\mathrm{resp}}\bigl(\operatorname{Tok}(M_C(x,y))\bigr)=\operatorname{Tok}_{\mathrm{gen}}\bigl(M_C(x)\bigr).
+$$
+
+이는 문자열 동일성보다 강한 조건이다. 토크나이저, 특수 토큰, 생성 접두사, 절단 정책이 모두 일치해야 하며, 위반은 적응 파라미터의 전이 실패로 나타난다.
+
+### 4.3 계약 유도 보상
+
+**정의 21 (구조 보상).** 계약 $C$와 정답 $a^*$에 대해 결정적 보상
+
+$$
+R_C(y;x,a^*)=
+\begin{cases}
+0,& F_C(y;x)=\bot,\\
+1,& F_C(y;x)=a^*,\\
+\alpha_0+\alpha_1\,q_{\mathrm{act}}+\alpha_2\,q_{\mathrm{arg}},&\text{otherwise}
+\end{cases}
+$$
+
+를 정의한다. $q_{\mathrm{act}},q_{\mathrm{arg}}\in[0,1]$은 도구열과 인자의 일치도이고 $\alpha_0+\alpha_1+\alpha_2\le1$이다. 정답이 없으면 유효성만으로 $\alpha_0$을 준다. 보상은 순수 함수이며 미분 가능한 목적이 아니다. 문자열과 이산 계획 위에 정의되므로 정책 갱신에는 §4.4의 표집 기반 방법으로 들어간다.
+
+**명제 9 (부분 보상과 정확 일치의 분리).** $q_{\mathrm{act}}$가 정답 길이 $n$으로 정규화되고 위치 정렬로 계산되면, $a^*$를 접두사로 갖는 모든 계획 $a\supsetneq a^*$에 대해 $q_{\mathrm{act}}=q_{\mathrm{arg}}=1$이므로 $R_C=\alpha_0+\alpha_1+\alpha_2$이면서 $\mathbf 1[a=a^*]=0$이다. 정규화를 $\max(m,n)$으로 바꾸면 여분 호출은 $q_{\mathrm{act}}\le n/m<1$의 벌점을 받는다.
+
+*증명.* 위치 정렬 아래 처음 $n$개 위치가 모두 일치하고 분모가 $n$이면 초과 위치는 계산에 들어가지 않는다. $\max(m,n)$ 정규화에서는 분모가 $m>n$이 된다. $\square$
+
+**비고.** 부분 보상은 선호 학습에 기울기를 주기 위한 설계이며, 기대 보상 최대화는 정확 일치 최대화와 다르다. 두 목적의 거리는 보상이 여분 호출, 순서 오류, 의미 오류에 매기는 벌점으로 결정된다. 단계형 보상(예: $\{0,0.25,0.5,\ldots,1\}$의 값을 갖는 채점)은 같은 사례에 다른 값을 주므로, 어느 보상으로 어떤 쌍을 만들었는지 명시하지 않으면 학습 신호를 잘못 설명하게 된다.
+
+### 4.4 자기 학습과 선호 최적화
+
+**정의 22 (거부 표본 자기학습).** 검증기 $V$에 대해
+
+$$
+\mathcal D_{\mathrm{boot}}=\mathcal D\ \uplus\
+\bigl[(x_i,\operatorname{Ser}(a_{ij})):\ y_{ij}\sim D_{\phi,d}(h_C(x_i)),\ a_{ij}=F_C(y_{ij};x_i)\ne\bot,\ V(a_{ij},a^*_i)=1\bigr].
+$$
+
+$\uplus$는 중복을 허용하는 연결이다. 정답은 채점에만 쓰이고 생성 입력에 들어가지 않는다. 최종 평가 집합에 이 절차를 적용하면 그 집합의 독립성이 사라진다.
+
+**정의 23 (결정적 보상 기반 선호쌍과 DPO).** 각 프롬프트에서 $N$개를 표집하고 점수 최대·최소 문자열을 $(y^+,y^-)$로 택하되 $R(y^+)-R(y^-)\ge\delta>0$인 쌍만 유지한다. 고정 참조 정책 $p_{\mathrm{ref}}$에 대해
+
+$$
+\mathcal L_{\mathrm{DPO}}(\phi)=
+-\mathbb E_{(h,y^+,y^-)}\left[\log\sigma\!\left(\beta\left(
+\log\frac{p_\phi(y^+\mid h)}{p_{\mathrm{ref}}(y^+\mid h)}
+-\log\frac{p_\phi(y^-\mid h)}{p_{\mathrm{ref}}(y^-\mid h)}\right)\right)\right].
+$$
+
+보상은 쌍을 만드는 데만 쓰이고 목적함수에는 들어가지 않는다. 채점은 정규화된 계획에 대해 하되 학습 목표는 원래 생성 문자열이다.
+
+**명제 10 (선호쌍 수율의 상한).** 프롬프트 $x$에서 $N$개 표본의 점수가 모두 같을 확률을 $\pi_{\mathrm{agree}}(x)$라 하면 쌍 수율은 $Y\le1-\mathbb E_x[\pi_{\mathrm{agree}}(x)]$이다. 점수가 이진이고 표본이 독립이며 정답 확률이 $p(x)$이면 $\pi_{\mathrm{agree}}(x)=p(x)^N+(1-p(x))^N$이다. 따라서 $p(x)\to1$인 프롬프트가 많아질수록, 그리고 낮은 온도로 표본 사이의 상관이 커질수록 수율은 0에 가까워진다.
+
+*증명.* 마진 조건은 점수가 서로 다른 두 표본의 존재를 요구하므로, 모두 같은 경우를 제외한 나머지가 상한이다. 이진·독립 경우의 식은 직접 계산이다. $\square$
+
+**비고.** 이 명제는 선호 학습이 정확도가 이미 높은 학습 분포에서는 신호를 얻지 못함을 뜻한다. 쌍 생성에는 개발 집합, 분포 밖 프롬프트, 또는 높은 온도가 필요하며, 이는 정의 17의 분할 규칙과 충돌하므로 선호쌍 전용 프롬프트 풀을 따로 두어야 한다.
+
+## 5. 평가
+
+**정의 24 (기본 지표).** 사례 $i$의 예측 $\hat a_i\in\mathcal A_C\cup\{\bot\}$과 정답 $a^*_i$에 대해
+
+$$
+\begin{aligned}
+\mathrm{Valid}&=\frac1n\sum_{i=1}^{n}\mathbf 1[\hat a_i\ne\bot],\\
+\mathrm{AM}&=\frac1n\sum_{i=1}^{n}\mathbf 1\bigl[\hat a_i\ne\bot,\ \operatorname{act}(\hat a_i)=\operatorname{act}(a^*_i)\bigr],\\
+\mathrm{EM}&=\frac1n\sum_{i=1}^{n}\mathbf 1[\hat a_i=a^*_i].
+\end{aligned}
+$$
+
+분모는 실패를 포함한 전체 사례 수다.
+
+**명제 11 (지표 사슬과 실패 질량의 분해).** $\mathrm{EM}\le\mathrm{AM}\le\mathrm{Valid}\le1$이며 세 간격은 서로 배타적인 실패 유형에 대응한다.
+
+- $1-\mathrm{Valid}$: 형식·계약 위반(문법 오류, 미지의 도구, 타입·범위·열거값 위반).
+- $\mathrm{Valid}-\mathrm{AM}$: 도구 선택 오류(다른 도구, 호출 수 오류, 호출·거부 판단 오류).
+- $\mathrm{AM}-\mathrm{EM}$: 인자 오류(누락, 값 불일치, 별칭 미해석).
+
+*증명.* 정확 일치는 도구열 일치를, 도구열 일치는 유효성을 함의한다. $\square$
+
+이 분해가 실패 분류 체계의 최상위 분할이다. 더 세분된 분류는 각 간격의 세분이며, 분류 결과의 히스토그램이 §6의 개선 후보 제안의 입력이 된다.
+
+**명제 12 (거부와 계약).** $\pi^*(x)=\epsilon$인 요청에서 $e_C=0$이면 어떤 모델도 $\mathbf 1[\hat a=a^*]=1$을 얻을 수 없다. 거부 정확도는 계약이 $\epsilon$을 허용할 때만 정의된다. $\square$
+
+**정의 25 (모델 단독 대 시스템).** 같은 출력 집합에 대해 $F^{(0)}_C$와 $F^{(K)}_C$, 마스크 유무, 재시도 유무를 바꿔 얻은 지표를 각각 보고한다. 명제 5, 6, 7의 분해가 각 장치의 기여를 분리한다. 서로 다른 모델 실행에서 얻은 결과를 섞은 비교는 기여 분리가 아니다. H1의 검증은 모델 단독 지표와 시스템 지표를 모두 두 렌더링에 대해 제시할 때 성립한다.
+
+**정의 26 (반복 실행).** 사례를 $k$회 실행해 모든 실행이 성공해야 성공으로 보는 판정의 기대값은 $\mathbb E_x[p(x)^k]$이며 $k$에 대해 단조 감소한다. 이는 단일 실행 정확도 $\mathbb E_x[p(x)]$의 하한이고, 결정적 디코딩에서는 $k$와 무관하다.
+
+**비고 (채점 관계).** 병렬 호출을 순열 동치 $\approx$로 채점하면 $\mathrm{EM}_\approx\ge\mathrm{EM}_=$이다. 정답 후보가 여럿인 벤치마크는 $\mathbf 1[\hat a\in A^*_i]$로 채점하며 이 역시 $\mathrm{EM}_=$ 이상이다. 벤치마크 사이에서 수치를 옮길 때는 채점 관계를 함께 명시한다.
+
+**비고 (표본 불확실성).** 비율 지표는 이항 추정치이며 표준오차는 $\sqrt{p(1-p)/n}$ 수준이다. 두 구성의 차이를 주장하려면 같은 사례 집합에서의 대응 비교와 신뢰구간을 함께 제시한다. 수 pp 차이를 구별하려면 수백 건 이상이 필요하다.
+
+## 6. 시스템 수준 최적화
+
+**정의 27 (구성과 수명주기 비용).** 시스템 구성
+
+$$
+\xi=\bigl(W_0,\ \phi,\ C,\ \mathrm{precision},\ r,\ \mathrm{delivery},\ K,\ d,\ \mathrm{retry}\bigr)
+$$
+
+에 대해 계획 기간 $H$, 요청 수 $N_H$의 총비용은
+
+$$
+J_H(\xi)=C_{\mathrm{data}}(\xi)+C_{\mathrm{train}}(\xi)+C_{\mathrm{eng}}(\xi)
++\mathbb E\bigl[C_{\mathrm{update}}(H;\xi)\bigr]+N_H\,\mathbb E\bigl[C_{\mathrm{req}}(\xi)\bigr]
+$$
+
+이다. $C_{\mathrm{req}}$는 §2의 토큰 비용에 재시도, 대체 호출, 컴파일 상각을 더한 것이다. 제약은 품질 하한, 오실행 상한, 미해결 상한, 지연, 메모리, 회복 시간이며 신뢰 하한·상한으로 표현한다.
+
+$$
+\min_{\xi\in\Xi}J_H(\xi)\quad\text{s.t.}\quad
+\operatorname{LCB}\bigl(Q(\xi)\bigr)\ge Q_{\min},\ \
+\operatorname{UCB}\bigl(E_{\mathrm{wrong}}(\xi)\bigr)\le E_{\max},\ \
+A_{\mathrm{unresolved}}(\xi)\le A_{\max},\ \
+L_{95}(\xi)\le L_{\max},\ \
+M_{\mathrm{peak}}(\xi)\le M_{\max},\ \
+U_{\mathrm{recover}}(\xi)\le U_{\max}.
+$$
+
+합산하는 항은 같은 단위여야 하며, 금액 환산이 정해지지 않은 사람 시간과 에너지는 별도 축으로 보고한다. 모두 거부하는 시스템이 낮은 오실행률로 통과하지 않도록 성공률과 미해결률을 함께 제약한다. 지도 미세조정과 선호 최적화는 $\xi$의 후보를 만드는 내부 연산이다. 학습 손실 최소화는 $J_H$ 최소화와 다르며, 이 두 수준의 구분이 팩토리 설계의 출발점이다.
+
+**정의 28 (반복 팩토리).** 상태 $s_k=(C_k,\mathcal D_k,\xi_k,\mathcal H_k,b_k)$는 계약, 사용 가능한 개발 데이터, 현재 후보, 이력, 남은 예산이다. 한 반복은
+
+$$
+\begin{aligned}
+\mathcal P_k&=\operatorname{Analyze}(\mathcal H_k,C_k),\\
+\xi'_k&=\operatorname{Build}\bigl(\operatorname{Select}(\mathcal P_k,b_k)\bigr),\\
+r^{\mathrm{dev}}_k&=\operatorname{Eval}_{\mathrm{dev}}(\xi'_k),\\
+s_{k+1}&=\operatorname{Update}(s_k,\xi'_k,r^{\mathrm{dev}}_k)
+\end{aligned}
+$$
+
+이다. 종료 조건은 목표 도달 $q_k\ge\eta$, 반복 상한 $k\ge K_{\max}$, 정체 $\max_{j=k-K+1}^{k}(q_j-q_{k-K})<\varepsilon$, 제안 부재 중 하나다. 예산이 유한하면 유한 종료가 보장되지만 목표 도달은 보장되지 않는다. 두 갱신 루프를 구분한다. 빠른 루프는 $K$, $r$, $d$ 같은 결정적 성분의 갱신이고, 느린 루프는 $\mathcal D$와 $\phi$의 갱신이다. 규칙 흡수는 보정 $K$로 얻은 정답을 학습 목표에 반영한 뒤 $K$를 제거하는 절차이며, 성공 조건은 $\mathrm{EM}^{(0)}_{\phi'}\ge\mathrm{EM}^{(K)}_{\phi}$이다. 흡수 전후의 $(\mathrm{Rescue},\mathrm{Regression})$과 $J_H$를 비교해 채택하며, 규칙의 무한 누적을 막는 장치다.
+
+**명제 13 (개발 평가 선택의 낙관 편향).** 후보 $\xi_1,\ldots,\xi_K$의 개발 평가 추정치 $\hat Q_k$가 참값 $Q_k$의 불편 추정이면
+
+$$
+\mathbb E\Bigl[\max_{k}\hat Q_k\Bigr]\ge\max_{k}Q_k .
+$$
+
+따라서 선택된 후보의 개발 점수는 상향 편향되며, 선택 후 독립 표본에서 수행한 릴리스 평가만이 그 후보의 불편 추정을 준다.
+
+*증명.* 임의의 $j$에 대해 $\max_k\hat Q_k\ge\hat Q_j$이므로 $\mathbb E[\max_k\hat Q_k]\ge\mathbb E[\hat Q_j]=Q_j$이고, $j$에 대해 최대를 취한다. $\square$
+
+**비고 (평가 경계).** 학습, 개발, 릴리스 평가 데이터는 정의 17의 가족 단위로 분리하고, 릴리스 평가의 정답은 런타임 입력에 들어가지 않는다. 릴리스 판정을 반복 조회하면 명제 13의 편향이 그 집합에도 생기므로 조회 예산을 정하고 소진 시 새 집합을 쓴다. 정답이 없는 운영 trace는 형식 오류와 분포 변화만 말해 주며, 의미 성능의 저하는 별도 라벨이나 시뮬레이션으로만 확인된다.
+
+## 7. 명제 요약과 한계
+
+| 명제 | 내용 | 관련 가설 |
+|---|---|---|
+| 1 | 컴파일러 통과는 계약 만족을 함의한다. 의미적 정확성은 함의하지 않는다 | H3 |
+| 2 | 모든 추론 경로는 같은 계획 공간으로 끝나므로 지표는 경로 불변이다 | H1 검증 조건 |
+| 3 | 가법적 크기 모형에서 절감률은 도구 수에 단조 증가하며 도구별 길이 비율로 수렴한다 | H2 |
+| 4 | 문법 마스크는 유효성만 보장하고, 길이 제한 중단과 의미 오류에는 무력하다 | — |
+| 5 | 탐욕 디코딩에서 마스크 효과는 rescue와 break로 분해되며, break는 문법이 컴파일러보다 엄격할 때만 생긴다 | H1 검증 조건 |
+| 6 | 보정 기여는 $\mathrm{Rescue}-\mathrm{Regression}$이고 보수적 보정은 regression이 없다 | H1 검증 조건 |
+| 7 | 재시도는 무효 출력만 바꾸며 의미 오류에는 작용하지 않는다 | — |
+| 8 | 구조 게이트는 합성 데이터의 의미 잡음을 제한하지 않는다 | — |
+| 9 | 정답 길이로 정규화한 위치 정렬 보상은 여분 호출을 벌하지 않는다 | — |
+| 10 | 선호쌍 수율은 표본 점수가 모두 같을 확률의 여집합으로 상한된다 | — |
+| 11 | $\mathrm{EM}\le\mathrm{AM}\le\mathrm{Valid}$이며 간격이 실패 유형을 분할한다 | — |
+| 12 | 빈 계획을 허용하지 않는 계약에서는 거부 정확도가 정의되지 않는다 | — |
+| 13 | 개발 평가로 고른 후보의 점수는 상향 편향된다 | — |
+
+**경험적 대응.** 명제들은 Ganglion 인스턴스의 측정과 방향이 일치한다. 절감률은 도구 5개에서 50개로 갈 때 45%에서 68%로 커졌다(명제 3). 문법 마스크는 미학습 소형 모델에서 정확도를 크게 올렸지만 같은 모델을 지도 미세조정한 뒤에는 작은 손실을 냈다(명제 5). 보수적 보정 두 층은 500건 중 64건을 구제하고 regression은 없었다(명제 6). 정확도가 높아진 모델에서 선호쌍은 카테고리당 0~2개만 생성됐다(명제 10). 수치의 출처와 조건은 구현 대조 노트에 있다.
+
+**한계.** (i) 명제 3은 가법적 크기 모형과 도구별 평균 길이의 순서를 가정하며, 토크나이저마다 상수가 다르다. (ii) 명제 5는 탐욕 디코딩에서만 포함 관계가 성립한다. (iii) 의도 함수 $\pi^*$는 외부 오라클이며, 이 문서는 실행 의미론과 환경 상태를 다루지 않는다. (iv) H1은 이 문서의 어떤 명제로도 증명되지 않는 경험적 가설이다. 두 렌더링이 모두 충분하다는 사실은 정보 이론적 장애가 없음을 말할 뿐이며, 실제 차이는 모델의 형식 사전분포와 문맥 내 예시에서 나온다. 계약에 대해 학습된 모델에서는 이 차이가 프롬프트 비용 문제로 환원되고, 렌더링 선택은 정의 10의 전달 방식 선택과 함께 §6의 비용 문제가 된다.
+
+## 부록 A. Ganglion 인스턴스 대응
+
+| 기호·정의 | 구성요소 |
+|---|---|
+| $C$, $\mathcal A_C$, $\kappa_t$ (정의 1–2) | `ganglion/contract`의 `Catalog`, `ToolSpec`, `ActionPlan` |
+| $\rho(C)$, $\sigma(C)$ (정의 4) | `Catalog.render_json_dsl`, `Catalog.render_openai_tools` |
+| $F_C$, $F^{(0)}_C$, $F^{(K)}_C$, $E$ (정의 6–7) | `Catalog.parse_json_dsl`, `ToolSpec`의 보정 훅, `emit_tool_calls` |
+| $\Gamma$, $\Lambda$ (정의 8) | `lm/dashscope.py`의 native 어댑터, `contract/parse.py`의 lenient parse |
+| $G_C$, 제약 디코딩 (정의 12) | `lm/grammar.py` (JSON Schema에서 토큰 마스크로) |
+| 재시도 (정의 15) | `analyzer/repair.py` |
+| $q_\psi$, $g_C$, 분할 (정의 16–17) | `lm/synth/pipeline.py`, `lm/local_hf.py` |
+| $\mathcal L_{\mathrm{SFT}}$, 일치 조건 (정의 18–20) | `lm/finetune/sft.py`, `lm/prompts.py` |
+| $R_C$, 단계형 채점 (정의 21) | `analyzer/verifier.py`, `analyzer/metrics.py` |
+| 자기학습, 선호쌍 (정의 22–23) | `runs/` 아래 연구용 스크립트 |
+| Valid, AM, EM, 실패 분류 (정의 24, 명제 11) | `analyzer/metrics.py`, `analyzer/taxonomy.py` |
+| 반복 팩토리 (정의 27–28) | `factory.py`(현재 단일 반복), `docs/architecture_v2.md`(제안) |
+
+대응은 개념 수준이다. 구현의 기본값, 명세와의 차이, 검증한 반례, 측정치는 [pipeline_formalization_impl.md](pipeline_formalization_impl.md)에 있다.
+
+## 부록 B. 문서 유지와 빌드
+
+원본은 `docs/pipeline_formalization.md`이고 배포용 LaTeX는 `docs/pipeline_formalization.tex`이다. 두 파일의 본문 차이를 막기 위해 Markdown에서 LaTeX를 생성한다. LaTeX는 standalone 문서이며 별도 `.bib` 파일이나 외부 그림을 요구하지 않는다.
+
+저장소 루트에서 Pandoc과 XeLaTeX, `Noto Sans CJK KR` 글꼴을 설치한 환경을 사용한다.
+
+```bash
+python tools/build_formalization.py
+xelatex -interaction=nonstopmode -halt-on-error -output-directory=docs docs/pipeline_formalization.tex
+xelatex -interaction=nonstopmode -halt-on-error -output-directory=docs docs/pipeline_formalization.tex
+```
+
+XeLaTeX 대신 Tectonic도 사용할 수 있다.
+
+```bash
+tectonic --outdir docs docs/pipeline_formalization.tex
+```
+
+Pandoc 실행 경로는 `python tools/build_formalization.py --pandoc /path/to/pandoc`으로 지정할 수 있다. 시스템에 Pandoc이 없으면 `pip install pypandoc_binary`로 받은 바이너리(`site-packages/pypandoc/files/pandoc`)를 같은 옵션으로 지정하면 된다. 생성된 TeX의 동기화 여부만 검사하려면 `--check`를 사용한다. PDF 생성 시 TeX package와 글꼴이 필요하며, 학습용 Python 의존성과는 별개다.

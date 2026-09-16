@@ -1,0 +1,20 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html",        "title": "09 · Chat",          "x": 0,    "y": 0,    "w": 1440, "h": 1460 },
+    { "file": "ModelPicker.dc.html", "title": "Model picker",       "x": 1520, "y": 0,    "w": 560,  "h": 846  },
+    { "file": "Catalog.dc.html",     "title": "02 · Catalog",       "x": 2160, "y": 0,    "w": 1440, "h": 1240 },
+    { "file": "Labels.dc.html",      "title": "05 · Label Queue",   "x": 0,    "y": 1680, "w": 1440, "h": 1415 },
+    { "file": "Rules.dc.html",       "title": "06 · Rule Lifecycle","x": 1520, "y": 1680, "w": 1440, "h": 1800 },
+    { "file": "Loops.dc.html",       "title": "10 · Loops",         "x": 3040, "y": 1680, "w": 1440, "h": 1828 }
+  ],
+  "annotations": [
+    { "id": "brief", "x": 0, "y": -340, "w": 620, "text": "Ganglion 운영 콘솔 시안 · 2026-09-15\ndocs/refine_proposal.md 기준 정적 목업 6장. 기존 web/ 콘솔의 디자인 시스템(warm phosphor, IBM Plex Mono/Sans Condensed, teal·chartreuse·amber·vermillion 의미색)을 그대로 이어받았다. 화면의 수치·ID는 예시값이며 화면 간에 서로 일치하도록 맞췄다." },
+    { "id": "n-chat", "x": 0, "y": -170, "w": 460, "text": "09 Chat — R1.0 / R1.2 / R2.1\n프롬프트 → 순서 있는 툴콜 목록(1, 2…) → F⁰/Fᴷ 나란히 보기 → 판정 바(y/n/u/o). 모든 결과는 Trace(source='lm.invoke')로 기록되고, 판정은 labels.jsonl 사이드카로 남는다." },
+    { "id": "n-picker", "x": 1520, "y": -170, "w": 460, "text": "모델 선택 팝오버 — R1.0\nconfigs/models.yaml 레지스트리 항목. 활성 카탈로그 지문과 다른 어댑터는 amber, 버전 없는 API 별칭은 'no seed · non-reproducible'." },
+    { "id": "n-catalog", "x": 2160, "y": -170, "w": 460, "text": "02 Catalog — R1.1\nORIGINAL(source_tools) ⇄ ACTION IR(모델이 보는 바이트 그대로) ⇄ CANONICALISATION(두 렌더가 감추는 별칭·기본값·hook). 지문 = sha256(describe())." },
+    { "id": "n-labels", "x": 0, "y": 1510, "w": 460, "text": "05 Label Queue — R2.1 (+ R3 필터)\nunlabelled / wrong only / changed vs previous 필터, j/k·y/n/u/o 키보드 라벨링, expected 편집기는 F⁰ plan으로 채움. LabelRecord(origin·zone·family)." },
+    { "id": "n-rules", "x": 1520, "y": 1510, "w": 460, "text": "06 Rule Lifecycle — R2.2\n왼쪽 확장: 제안 카드 → 블라인드 결정(a/h/r) → 이식은 검토된 코드 편집. 오른쪽 축소: F⁰/Fᴷ 귀속 표 → Clopper–Pearson 게이트 → retire 후보 / insufficient evidence." },
+    { "id": "n-loops", "x": 3040, "y": 1510, "w": 460, "text": "10 Loops — R3\n런 매니페스트 레일(반복 순, 배지), KPI 타일(src 스탬프), 14개 실패형 히스토그램, 이전 반복 대비 전이 행렬, 보정·결정·학습 provenance와 manifest_diff." }
+  ],
+  "launch": { "view": "canvas" }
+}

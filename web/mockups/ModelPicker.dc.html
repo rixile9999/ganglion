@@ -1,0 +1,314 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=IBM+Plex+Sans+Condensed:wght@300;500;600;700&amp;display=swap">
+  <style>
+    :root {
+      /* warm phosphor palette */
+      --ink:           #0E0E0C;
+      --ink-raised:    #13130F;
+      --ink-card:      #181814;
+      --ink-overlay:   #1F1F1A;
+      --rule:          #2A2A26;
+      --rule-soft:     #1F1F1B;
+      --rule-strong:   #3D3D36;
+
+      --bone:          #E8E4D4;
+      --bone-bright:   #FFFCF0;
+      --bone-dim:      #9A9485;
+      --bone-mute:     #5C564B;
+      --bone-faint:    #3E3A33;
+
+      --teal:          #7DD8C6;
+      --teal-dim:      #4B8079;
+      --chartreuse:    #C3E88D;
+      --chartreuse-dim:#6E8050;
+      --amber:         #F4B860;
+      --amber-dim:     #8A6736;
+      --vermillion:    #E55E5E;
+      --vermillion-dim:#8A3A3A;
+      --locked:        #28281F;
+      --locked-fg:     #5C564B;
+      --violet:        #B69BD9;   /* used sparingly for event-bus */
+
+      /* typography */
+      --mono:          'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace;
+      --sans:          'IBM Plex Sans Condensed', system-ui, sans-serif;
+
+      /* spacing */
+      --u:             8px;
+      --pad:           24px;
+      --pad-lg:        32px;
+
+      /* sizing */
+      --header-h:      52px;
+      --max-w:         1480px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin:0; background:#0E0E0C; }
+    a { color:#7DD8C6; }
+    a:hover { color:#C3E88D; }
+    button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; }
+    ::selection { background: var(--chartreuse); color: var(--ink); }
+
+    /* --- typographic helpers ------------------------------------- */
+    .t-eng-sm { font-family: var(--sans); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; font-size: 9px; }
+    .t-num    { font-variant-numeric: tabular-nums; }
+    .t-dim    { color: var(--bone-dim); }
+    .t-mute   { color: var(--bone-mute); }
+    .t-bright { color: var(--bone-bright); }
+
+    /* --- tags / chips -------------------------------------------- */
+    .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border: 1px solid var(--rule-strong);
+      color: var(--bone-dim);
+      letter-spacing: 0.04em;
+      vertical-align: middle;
+      background: var(--ink-raised);
+    }
+    .tag--event { color: var(--teal); border-color: var(--teal-dim); }
+    .tag--in    { color: var(--chartreuse); border-color: var(--chartreuse-dim); }
+    .tag--fail  { color: var(--vermillion); border-color: var(--vermillion-dim); }
+    .tag--warn  { color: var(--amber); border-color: var(--amber-dim); }
+    .tag--lock  { color: var(--locked-fg); border-color: var(--bone-faint); background: var(--locked); }
+    .tag--ghost { color: var(--bone-mute); border-color: var(--rule); opacity: 0.55; }
+
+    /* --- buttons ------------------------------------------------- */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: 1px solid var(--rule-strong);
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--bone);
+      letter-spacing: 0.06em;
+      background: var(--ink-raised);
+      transition: all 0.12s ease;
+    }
+    .btn:hover { background: var(--ink-overlay); border-color: var(--bone-dim); }
+    .btn--ghost   { background: transparent; color: var(--bone-dim); border-color: var(--rule); }
+    .btn::before {
+      content: '›';
+      color: inherit;
+      opacity: 0.6;
+    }
+
+    /* --- param table -------------------------------------------- */
+    .params {
+      display: grid;
+      grid-template-columns: 160px 1fr 80px;
+      border-top: 1px solid var(--rule);
+    }
+    .params__head, .params__row { display: contents; }
+    .params__head > * {
+      padding: 9px 12px;
+      font-family: var(--sans);
+      font-size: 8px;
+      letter-spacing: 0.22em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+      background: var(--ink-raised);
+      border-bottom: 1px solid var(--rule);
+    }
+    .params__row > * {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--rule-soft);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--bone);
+      vertical-align: middle;
+    }
+    .params__k { color: var(--bone-dim); }
+    .params__k small {
+      display: block;
+      font-family: var(--sans);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      color: var(--bone-mute);
+      margin-top: 1px;
+      text-transform: uppercase;
+    }
+
+    /* --- chip row inline ---------------------------------------- */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* --- model registry row (popover-only; layout is inline) ----- */
+    .mrow { transition: background 0.12s ease; cursor: pointer; }
+    .mrow:hover { background: var(--ink-card); }
+  </style>
+</helmet>
+<div style="width:560px; min-height:846px; background:#1F1F1A; color:#E8E4D4; border:1px solid #3D3D36; padding:16px; font-family:'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace; font-size:13px; line-height:1.55; font-weight:400; letter-spacing:0.01em; display:flex; flex-direction:column; gap:12px;">
+
+  <!-- HEAD ROW -->
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:22px;">
+    <div class="t-eng-sm t-dim" style="display:flex; align-items:center; gap:8px; white-space:nowrap;">
+      <span>Model registry</span>
+      <span style="color:#5C564B;">·</span>
+      <span style="text-transform:none; letter-spacing:0.02em; font-family:'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace; font-size:10px; font-weight:400;">configs/models.yaml</span>
+    </div>
+    <span class="tag tag--event">catalog_ids ∋ iot_light_5</span>
+  </div>
+
+  <!-- MODEL LIST -->
+  <div style="display:flex; flex-direction:column; border-top:1px solid #2A2A26;">
+
+    <!-- 1 · rules -->
+    <div class="mrow" style="display:flex; align-items:center; gap:12px; min-height:56px; padding:7px 12px 7px 10px; border-left:2px solid transparent; border-bottom:1px solid #2A2A26;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#7DD8C6; flex-shrink:0;"></span>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:500; color:#FFFCF0;">rules</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span class="tag">rules</span>
+            <span class="tag">json-dsl</span>
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag--ghost">single-call stand-in</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 · qwen3.6-plus@dashscope -->
+    <div class="mrow" style="display:flex; align-items:center; gap:12px; min-height:56px; padding:7px 12px 7px 10px; border-left:2px solid transparent; border-bottom:1px solid #2A2A26;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#7DD8C6; flex-shrink:0;"></span>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:500; color:#FFFCF0;">qwen3.6-plus@dashscope</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span class="tag">openai_compat</span>
+            <span class="tag">json-dsl</span>
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag--warn">no seed</span>
+          <span class="tag tag--ghost">non-reproducible (alias, no served_model_version)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 · qwen3-1.7b-base@vllm -->
+    <div class="mrow" style="display:flex; align-items:center; gap:12px; min-height:56px; padding:7px 12px 7px 10px; border-left:2px solid transparent; border-bottom:1px solid #2A2A26;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#7DD8C6; flex-shrink:0;"></span>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:500; color:#FFFCF0;">qwen3-1.7b-base@vllm</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span class="tag">openai_compat</span>
+            <span class="tag">json-dsl</span>
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag--ghost">base · no adapter</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 · iot5-sft-v2@vllm  (SELECTED) -->
+    <div class="mrow" style="display:flex; align-items:center; gap:12px; min-height:56px; padding:7px 12px 7px 10px; border-left:2px solid #7DD8C6; border-bottom:1px solid #2A2A26; background:#181814;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#7DD8C6; flex-shrink:0;"></span>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:500; color:#FFFCF0;">iot5-sft-v2@vllm</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span class="tag">openai_compat</span>
+            <span class="tag">json-dsl</span>
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag--in">trained on cf-3f9a… ✓</span>
+          <span class="tag tag--ghost">LoRA iot5-v2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 · iot5-sft-v3@vllm  (idle) -->
+    <div class="mrow" style="display:flex; align-items:center; gap:12px; min-height:56px; padding:7px 12px 7px 10px; border-left:2px solid transparent; border-bottom:1px solid #2A2A26;">
+      <span style="width:8px; height:8px; border-radius:50%; background:#5C564B; flex-shrink:0;"></span>
+      <div style="display:flex; flex-direction:column; gap:4px; flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span style="font-size:13px; font-weight:500; color:#FFFCF0;">iot5-sft-v3@vllm</span>
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span class="tag">openai_compat</span>
+            <span class="tag">json-dsl</span>
+          </span>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:flex-end; gap:6px; flex-wrap:wrap;">
+          <span class="tag tag--warn">trained on cf-2b71… ≠ active</span>
+          <span class="tag tag--ghost">LoRA iot5-v3</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- DETAILS · selected row -->
+  <div class="params" style="grid-template-columns:160px minmax(0,1fr); background:#181814;">
+    <div class="params__head">
+      <div>parameter</div><div>value</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">base_model</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">Qwen/Qwen3-1.7B</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">adapter_dir</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">runs/factory_phase2/…/iot5-v2</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">adapter_sha</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">9c1e04…</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">served_model</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">iot5-v2</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">base_url</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">http://127.0.0.1:8000/v1</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">quirks</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">vllm (thinking_switch=chat_template_kwargs, max_lora_rank=32)</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">train_recipe_hash</div>
+      <div class="params__v" style="overflow-wrap:anywhere;">tr-51ab…</div>
+    </div>
+    <div class="params__row">
+      <div class="params__k">smoke</div>
+      <div class="params__v">
+        <div class="chips">
+          <span class="tag tag--in">json_object 50/50 ✓</span>
+          <span class="tag tag--in">structured_output ✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER ROW -->
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:32px;">
+    <button class="btn btn--ghost" style="min-height:32px;">Register from yaml…</button>
+    <span style="font-size:10px; color:#5C564B; letter-spacing:0.02em; text-align:right;">selection is kept in the URL (?catalog=…&amp;model=…)</span>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

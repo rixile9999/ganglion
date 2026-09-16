@@ -1,0 +1,893 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=IBM+Plex+Sans+Condensed:wght@300;500;600;700&amp;display=swap">
+  <style>
+    :root {
+      /* warm phosphor palette */
+      --ink:           #0E0E0C;
+      --ink-raised:    #13130F;
+      --ink-card:      #181814;
+      --ink-overlay:   #1F1F1A;
+      --rule:          #2A2A26;
+      --rule-soft:     #1F1F1B;
+      --rule-strong:   #3D3D36;
+
+      --bone:          #E8E4D4;
+      --bone-bright:   #FFFCF0;
+      --bone-dim:      #9A9485;
+      --bone-mute:     #5C564B;
+      --bone-faint:    #3E3A33;
+
+      --teal:          #7DD8C6;
+      --teal-dim:      #4B8079;
+      --chartreuse:    #C3E88D;
+      --chartreuse-dim:#6E8050;
+      --amber:         #F4B860;
+      --amber-dim:     #8A6736;
+      --vermillion:    #E55E5E;
+      --vermillion-dim:#8A3A3A;
+      --locked:        #28281F;
+      --locked-fg:     #5C564B;
+      --violet:        #B69BD9;   /* used sparingly for event-bus */
+
+      /* typography */
+      --mono:          'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace;
+      --sans:          'IBM Plex Sans Condensed', system-ui, sans-serif;
+
+      /* spacing */
+      --u:             8px;
+      --pad:           24px;
+      --pad-lg:        32px;
+
+      /* sizing */
+      --header-h:      52px;
+      --max-w:         1480px;
+    }
+
+    /* --- reset ---------------------------------------------------- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { margin:0; background:#0E0E0C; }
+    a { color: inherit; text-decoration: none; }
+    a:hover { color: var(--chartreuse); }
+
+    ::selection { background: var(--chartreuse); color: var(--ink); }
+
+    /* --- typographic helpers ------------------------------------- */
+    .t-eng {
+      font-family: var(--sans);
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-size: 10px;
+    }
+    .t-eng-sm { font-family: var(--sans); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; font-size: 9px; }
+    .t-num    { font-variant-numeric: tabular-nums; }
+    .t-dim    { color: var(--bone-dim); }
+    .t-mute   { color: var(--bone-mute); }
+    .t-bright { color: var(--bone-bright); }
+    .t-teal   { color: var(--teal); }
+    .t-chart  { color: var(--chartreuse); }
+    .t-amber  { color: var(--amber); }
+    .t-verm   { color: var(--vermillion); }
+    .t-lock   { color: var(--locked-fg); }
+    .italic   { font-style: italic; }
+
+    /* --- header -------------------------------------------------- */
+    .opbar {
+      height: var(--header-h);
+      border-bottom: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: 280px 1fr auto;
+      align-items: stretch;
+      background: var(--ink-raised);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .opbar__brand {
+      padding: 0 var(--pad);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-right: 1px solid var(--rule);
+    }
+    .opbar__sigil {
+      width: 22px; height: 22px;
+      border: 1px solid var(--bone);
+      position: relative;
+      flex-shrink: 0;
+    }
+    .opbar__sigil::before, .opbar__sigil::after {
+      content: '';
+      position: absolute;
+      background: var(--bone);
+    }
+    .opbar__sigil::before {
+      top: 50%; left: -3px; right: -3px; height: 1px; transform: translateY(-50%);
+    }
+    .opbar__sigil::after {
+      left: 50%; top: -3px; bottom: -3px; width: 1px; transform: translateX(-50%);
+    }
+    .opbar__brand-name {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.18em;
+    }
+    .opbar__brand-sub {
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.16em;
+      color: var(--bone-dim);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .opbar__nav {
+      display: flex;
+      overflow-x: auto;
+    }
+    .opbar__nav a {
+      padding: 0 18px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-right: 1px solid var(--rule-soft);
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+    .opbar__nav a:hover { background: var(--ink-card); }
+    .opbar__nav a.active {
+      background: var(--ink-card);
+      color: var(--bone-bright);
+    }
+    .opbar__nav a.active::after {
+      content: '';
+      position: absolute; left: 0; right: 0; bottom: -1px;
+      height: 1px; background: var(--chartreuse);
+    }
+    .opbar__nav-num {
+      font-family: var(--sans);
+      font-size: 8px;
+      color: var(--bone-mute);
+      letter-spacing: 0.16em;
+      margin-bottom: 2px;
+    }
+    .opbar__nav-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+
+    .opbar__meta {
+      display: flex;
+      align-items: stretch;
+      border-left: 1px solid var(--rule);
+    }
+    .opbar__meta-cell {
+      padding: 0 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-left: 1px solid var(--rule-soft);
+      min-width: 90px;
+    }
+    .opbar__meta-cell:first-child { border-left: none; }
+    .opbar__meta-k {
+      font-family: var(--sans);
+      font-size: 8px;
+      letter-spacing: 0.18em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+    }
+    .opbar__meta-v {
+      font-size: 11px;
+      color: var(--bone);
+      margin-top: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--chartreuse);
+      margin-right: 6px;
+      animation: ph 1.4s steps(2, end) infinite;
+      vertical-align: middle;
+    }
+    @keyframes ph { 0%, 60% { opacity: 1 } 61%, 100% { opacity: 0.25 } }
+
+    /* --- page wrapper -------------------------------------------- */
+    .page__head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 18px;
+      margin-bottom: 28px;
+      gap: 24px;
+    }
+    .page__title {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 28px;
+      letter-spacing: -0.01em;
+      color: var(--bone-bright);
+      line-height: 1.1;
+    }
+    .page__title em {
+      font-style: italic;
+      color: var(--teal);
+      font-weight: 400;
+    }
+    .page__id {
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+    .page__id::before {
+      content: '';
+      width: 28px; height: 1px;
+      background: var(--bone-mute);
+      display: inline-block;
+    }
+    .page__sub {
+      font-size: 12px;
+      color: var(--bone-dim);
+      margin-top: 10px;
+      max-width: 720px;
+      line-height: 1.6;
+    }
+    .page__sub b { color: var(--bone); font-weight: 500; }
+
+    /* --- panel / card -------------------------------------------- */
+    .panel {
+      background: var(--ink-card);
+      border: 1px solid var(--rule);
+      position: relative;
+    }
+    .panel__head {
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .panel__head-title {
+      font-family: var(--mono);
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      color: var(--bone-bright);
+    }
+    .panel__head-title small {
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--bone-mute);
+      margin-left: 12px;
+      text-transform: uppercase;
+    }
+    .panel__head-tools {
+      display: flex;
+      gap: 14px;
+      align-items: baseline;
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+    }
+    .panel__body { padding: 20px; }
+    .panel__body--flush { padding: 0; }
+
+    /* schematic corner crops */
+    .panel::before, .panel::after {
+      content: '';
+      position: absolute;
+      width: 9px; height: 9px;
+      border: 1px solid var(--bone-mute);
+      pointer-events: none;
+    }
+    .panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+    .panel::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+    /* --- tags / chips -------------------------------------------- */
+    .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 10px;
+      padding: 2px 8px;
+      border: 1px solid var(--rule-strong);
+      color: var(--bone-dim);
+      letter-spacing: 0.04em;
+      vertical-align: middle;
+      background: var(--ink-raised);
+    }
+    .tag--event { color: var(--teal); border-color: var(--teal-dim); }
+    .tag--in    { color: var(--chartreuse); border-color: var(--chartreuse-dim); }
+    .tag--fail  { color: var(--vermillion); border-color: var(--vermillion-dim); }
+    .tag--warn  { color: var(--amber); border-color: var(--amber-dim); }
+    .tag--lock  { color: var(--locked-fg); border-color: var(--bone-faint); background: var(--locked); }
+    .tag--ghost { color: var(--bone-mute); border-color: var(--rule); opacity: 0.55; }
+
+    /* --- data tables --------------------------------------------- */
+    .dtable {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .dtable th, .dtable td {
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--rule-soft);
+      vertical-align: top;
+    }
+    .dtable th {
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+      font-weight: 500;
+      padding-top: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--ink-raised);
+    }
+    .dtable td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .dtable tr:hover td { background: rgba(125,216,198,0.025); }
+
+    /* --- KPI tile ------------------------------------------------ */
+    .kpi {
+      padding: 22px 22px 18px;
+      border: 1px solid var(--rule);
+      background: var(--ink-card);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-height: 168px;
+    }
+    .kpi::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 14px; height: 14px;
+      border: 1px solid var(--bone-mute);
+      border-right: none; border-bottom: none;
+    }
+    .kpi__label {
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .kpi__id {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--bone-faint);
+      margin-bottom: 14px;
+    }
+    .kpi__num {
+      font-family: var(--mono);
+      font-size: 38px;
+      font-weight: 500;
+      color: var(--bone-bright);
+      line-height: 1;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .kpi__unit {
+      margin-top: 4px;
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.18em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+    }
+
+    /* --- histogram bars ------------------------------------------ */
+    .hbar {
+      display: grid;
+      grid-template-columns: 160px 1fr 60px;
+      gap: 12px;
+      align-items: center;
+      padding: 5px 0;
+      font-size: 12px;
+    }
+    .hbar__name { color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hbar__track {
+      height: 10px;
+      background: var(--ink-raised);
+      border: 1px solid var(--rule);
+      position: relative;
+    }
+    .hbar__fill {
+      height: 100%;
+      background: var(--teal-dim);
+      border-right: 1px solid var(--teal);
+    }
+    .hbar__count { text-align: right; color: var(--bone-bright); font-variant-numeric: tabular-nums; }
+    .hbar--fail   .hbar__fill { background: var(--vermillion-dim); border-right-color: var(--vermillion); }
+    .hbar--ok     .hbar__fill { background: var(--chartreuse-dim); border-right-color: var(--chartreuse); }
+    .hbar--ghost { opacity: 0.45; }
+
+    /* --- locked overlay (out-of-scope visualization) ------------- */
+    .locked-strip {
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--locked) 0 8px,
+        transparent 8px 16px
+      );
+      border: 1px solid var(--bone-faint);
+      padding: 9px 14px;
+      font-family: var(--sans);
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--locked-fg);
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .locked-strip::before {
+      content: '';
+      width: 11px; height: 11px;
+      border: 1.5px solid var(--locked-fg);
+      position: relative;
+      display: inline-block;
+    }
+
+    /* --- param table -------------------------------------------- */
+    .params {
+      display: grid;
+      grid-template-columns: 160px 1fr 80px;
+      border-top: 1px solid var(--rule);
+    }
+    .params__head, .params__row { display: contents; }
+    .params__head > * {
+      padding: 9px 12px;
+      font-family: var(--sans);
+      font-size: 8px;
+      letter-spacing: 0.22em;
+      color: var(--bone-mute);
+      text-transform: uppercase;
+      background: var(--ink-raised);
+      border-bottom: 1px solid var(--rule);
+    }
+    .params__row > * {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--rule-soft);
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--bone);
+      vertical-align: middle;
+    }
+    .params__k { color: var(--bone-dim); }
+
+    /* --- chip row inline ---------------------------------------- */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+  .kpi__defn {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed var(--rule);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+  </style>
+</helmet>
+<div style="width:1440px; min-height:1828px; background:#0E0E0C; background-image:radial-gradient(circle at 50% 0%, rgba(125, 216, 198, 0.025), transparent 60%), repeating-linear-gradient(0deg, transparent 0 23px, rgba(255,252,240,0.012) 23px 24px); color:#E8E4D4; font-family:'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace; font-size:13px; line-height:1.55; font-weight:400; letter-spacing:0.01em;">
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">loop log · sheet 10</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html" class="active"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Status</div><div class="opbar__meta-v"><span class="live-dot"></span>polling 5 s</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+  </div>
+</header>
+
+<main style="max-width:1480px; margin:0 auto; padding:32px 32px 48px;">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 10 / 10 <span>◦</span> loop log <span>◦</span> refine R3</div>
+      <h1 class="page__title">Feedback <em>Loops</em></h1>
+      <p class="page__sub">one manifest per run · per-iteration model state, data, corrections, decisions, training deltas</p>
+    </div>
+  </section>
+
+  <section style="display:grid; grid-template-columns:360px minmax(0,1fr); gap:24px; align-items:start;">
+
+    <!-- ===================== LEFT RAIL ===================== -->
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="panel" style="background:#13130F;">
+        <div class="panel__head">
+          <div class="panel__head-title">runs <small>iot_light_5</small></div>
+          <div class="panel__head-tools"><span>iteration order</span></div>
+        </div>
+        <div class="panel__body panel__body--flush">
+          <div style="display:flex; flex-direction:column;">
+
+            <!-- row 1: dashscope-baseline -->
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 16px 12px 14px; border-left:2px solid transparent; border-bottom:1px solid #1F1F1B;">
+              <div style="font-size:12px; color:#E8E4D4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">iot_light_5/dashscope-baseline</div>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:12px; align-items:start;">
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <span class="tag">qwen3.6-plus@dashscope</span>
+                  <div class="chips"><span class="tag tag--warn">no seed</span><span class="tag tag--ghost">non-reproducible</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <svg width="96" height="20" viewBox="0 0 96 20" style="display:block;"><polyline fill="none" stroke="#7DD8C6" stroke-width="1.5" points="0,5 16,4 32,5 48,3 64,4 80,3 96,3"></polyline></svg>
+                  <span style="font-size:12px; font-variant-numeric:tabular-nums;"><span class="t-mute">EM</span> <span class="t-bright">0.930</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- row 2: iter0-vllm-base -->
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 16px 12px 14px; border-left:2px solid transparent; border-bottom:1px solid #1F1F1B;">
+              <div style="font-size:12px; color:#E8E4D4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">iot_light_5/iter0-vllm-base</div>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:12px; align-items:start;">
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <span class="tag">qwen3-1.7b-base@vllm</span>
+                  <div class="chips"><span class="tag tag--ghost">reference</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <svg width="96" height="20" viewBox="0 0 96 20" style="display:block;"><polyline fill="none" stroke="#7DD8C6" stroke-width="1.5" points="0,15 16,16 32,15 48,16 64,15 80,16 96,15"></polyline></svg>
+                  <span style="font-size:12px; font-variant-numeric:tabular-nums;"><span class="t-mute">EM</span> <span class="t-bright">0.386</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- row 3: console chat session -->
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 16px 12px 14px; border-left:2px solid transparent; border-bottom:1px solid #1F1F1B;">
+              <div style="font-size:12px; color:#E8E4D4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">iot_light_5/console/s-20260915-01</div>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:12px; align-items:start;">
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <span class="tag">iot5-sft-v2@vllm</span>
+                  <div class="chips"><span class="tag tag--event">chat · 47 labels</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <svg width="96" height="20" viewBox="0 0 96 20" style="display:block;"><line x1="0" y1="10" x2="96" y2="10" stroke="#3D3D36" stroke-width="1" stroke-dasharray="2,3"></line></svg>
+                  <span style="font-size:12px; font-variant-numeric:tabular-nums;"><span class="t-mute">EM</span> <span class="t-mute">—</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- row 4: iter1a-synth-only -->
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 16px 12px 14px; border-left:2px solid transparent; border-bottom:1px solid #1F1F1B;">
+              <div style="font-size:12px; color:#E8E4D4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">iot_light_5/iter1a-synth-only</div>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:12px; align-items:start;">
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <span class="tag">iot5-sft-v2a@vllm</span>
+                  <div class="chips"><span class="tag">arm a</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <svg width="96" height="20" viewBox="0 0 96 20" style="display:block;"><polyline fill="none" stroke="#7DD8C6" stroke-width="1.5" points="0,16 24,11 48,8 72,7 96,7"></polyline></svg>
+                  <span style="font-size:12px; font-variant-numeric:tabular-nums;"><span class="t-mute">EM</span> <span class="t-bright">0.842</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- row 5: iter1b-synth-human · SELECTED -->
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 16px 12px 14px; border-left:2px solid #7DD8C6; border-bottom:1px solid #1F1F1B; background:#181814;">
+              <div style="font-size:12px; color:#FFFCF0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">iot_light_5/iter1b-synth-human</div>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:12px; align-items:start;">
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <span class="tag">iot5-sft-v2@vllm</span>
+                  <div class="chips"><span class="tag">arm b</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <svg width="96" height="20" viewBox="0 0 96 20" style="display:block;"><polyline fill="none" stroke="#7DD8C6" stroke-width="1.5" points="0,16 24,10 48,7 72,5 96,4"></polyline></svg>
+                  <span style="font-size:12px; font-variant-numeric:tabular-nums;"><span class="t-mute">EM</span> <span class="t-bright">0.872</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- row 6: iter2 planned -->
+            <div style="display:flex; flex-direction:column; gap:8px; padding:12px 16px 12px 14px; border-left:2px solid transparent; opacity:0.45;">
+              <div style="font-size:12px; color:#E8E4D4; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">iot_light_5/iter2-…</div>
+              <div style="display:grid; grid-template-columns:minmax(0,1fr) 96px; gap:12px; align-items:start;">
+                <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                  <div class="chips"><span class="tag tag--lock">planned</span></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <svg width="96" height="20" viewBox="0 0 96 20" style="display:block;"><line x1="0" y1="10" x2="96" y2="10" stroke="#3D3D36" stroke-width="1" stroke-dasharray="2,3"></line></svg>
+                  <span style="font-size:12px; font-variant-numeric:tabular-nums;"><span class="t-mute">EM</span> <span class="t-mute">—</span></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <div class="locked-strip"><span>runs/traces/**/manifest.json is the list SSOT · ledger rows are audit only</span></div>
+    </div>
+
+    <!-- ===================== RIGHT · SELECTED RUN ===================== -->
+    <div style="display:flex; flex-direction:column; gap:24px;">
+
+      <!-- (1) header row -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">iter1b-synth-human <small>manifest.json</small></div>
+          <div class="panel__head-tools"><span class="tag tag--in" style="text-transform:none;">drift: no</span><span class="tag tag--in" style="text-transform:none;">pool ∩ train = 0 ✓</span></div>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; padding:12px 20px;">
+          <div style="padding:0 16px 0 0; border-right:1px dashed #2A2A26; min-width:0;">
+            <div class="t-eng-sm" style="color:#5C564B; margin-bottom:3px;">parent</div>
+            <div style="font-size:11px; color:#E8E4D4; font-variant-numeric:tabular-nums; white-space:nowrap;">iter0-vllm-base</div>
+          </div>
+          <div style="padding:0 16px; border-right:1px dashed #2A2A26; min-width:0;">
+            <div class="t-eng-sm" style="color:#5C564B; margin-bottom:3px;">catalog</div>
+            <div style="font-size:11px; color:#E8E4D4; font-variant-numeric:tabular-nums; white-space:nowrap;">cf-3f9a1c2b7e04</div>
+          </div>
+          <div style="padding:0 16px; border-right:1px dashed #2A2A26; min-width:0;">
+            <div class="t-eng-sm" style="color:#5C564B; margin-bottom:3px;">dataset sha</div>
+            <div style="font-size:11px; color:#E8E4D4; font-variant-numeric:tabular-nums; white-space:nowrap;">e91c…</div>
+          </div>
+          <div style="padding:0 16px; border-right:1px dashed #2A2A26; min-width:0;">
+            <div class="t-eng-sm" style="color:#5C564B; margin-bottom:3px;">decoding</div>
+            <div style="font-size:11px; color:#E8E4D4; font-variant-numeric:tabular-nums; white-space:nowrap;">{json_object, repair 1, temp 0, repeat 1}</div>
+          </div>
+          <div style="padding:0 16px; border-right:1px dashed #2A2A26; min-width:0;">
+            <div class="t-eng-sm" style="color:#5C564B; margin-bottom:3px;">metric</div>
+            <div style="font-size:11px; color:#E8E4D4; font-variant-numeric:tabular-nums; white-space:nowrap;">exact_match</div>
+          </div>
+          <div style="padding:0 0 0 16px; min-width:0;">
+            <div class="t-eng-sm" style="color:#5C564B; margin-bottom:3px;">seed</div>
+            <div style="font-size:11px; color:#E8E4D4; font-variant-numeric:tabular-nums; white-space:nowrap;">42 <span class="t-dim">(1 of 3)</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (2) KPI tiles -->
+      <div style="display:grid; grid-template-columns:repeat(6, minmax(0,1fr)); gap:8px;">
+        <div class="kpi">
+          <div class="kpi__label">exact_match</div>
+          <div class="kpi__id">[n=500]</div>
+          <div class="kpi__num">0.872</div>
+          <div class="kpi__unit">exact / n</div>
+          <div class="kpi__defn" style="margin-top:auto; padding-top:14px; border-top:1px dashed #2A2A26;">src: summary.json</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">action_match</div>
+          <div class="kpi__id">[n=500]</div>
+          <div class="kpi__num">0.934</div>
+          <div class="kpi__unit">action / n</div>
+          <div class="kpi__defn" style="margin-top:auto; padding-top:14px; border-top:1px dashed #2A2A26;">src: summary.json</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">syntax_valid</div>
+          <div class="kpi__id">[n=500]</div>
+          <div class="kpi__num">0.996</div>
+          <div class="kpi__unit">valid / n</div>
+          <div class="kpi__defn" style="margin-top:auto; padding-top:14px; border-top:1px dashed #2A2A26;">src: summary.json</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">repair_attempts_<wbr>total</div>
+          <div class="kpi__id">[max_attempts=1]</div>
+          <div class="kpi__num">23</div>
+          <div class="kpi__unit">count</div>
+          <div class="kpi__defn" style="margin-top:auto; padding-top:14px; border-top:1px dashed #2A2A26;">src: summary.json</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">repair_successes_<wbr>total</div>
+          <div class="kpi__id">[max_attempts=1]</div>
+          <div class="kpi__num">17</div>
+          <div class="kpi__unit">count</div>
+          <div class="kpi__defn" style="margin-top:auto; padding-top:14px; border-top:1px dashed #2A2A26;">src: summary.json</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">parse_strategy</div>
+          <div class="kpi__id">[n=500]</div>
+          <div class="kpi__num">498</div>
+          <div class="kpi__unit">json_object · lenient 2</div>
+          <div class="kpi__defn" style="margin-top:auto; padding-top:14px; border-top:1px dashed #2A2A26;">src: summary.json</div>
+        </div>
+      </div>
+
+      <!-- (3) failure types | vs previous + corrections -->
+      <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:24px; align-items:stretch;">
+
+        <!-- LEFT: failure histogram -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">failure types <small>classified.jsonl</small></div>
+            <div class="panel__head-tools"><span>classified 64 / 500</span></div>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column;">
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">alias_unrecognised</div><div class="hbar__track"><div class="hbar__fill" style="width:100%"></div></div><div class="hbar__count">18</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">missing_required_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:61%"></div></div><div class="hbar__count">11</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">partial_arg_value_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:50%"></div></div><div class="hbar__count">9</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">value_out_of_range</div><div class="hbar__track"><div class="hbar__fill" style="width:39%"></div></div><div class="hbar__count">7</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">wrong_action</div><div class="hbar__track"><div class="hbar__fill" style="width:33%"></div></div><div class="hbar__count">6</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">abstention_miss_should_call</div><div class="hbar__track"><div class="hbar__fill" style="width:22%"></div></div><div class="hbar__count">4</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">type_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:17%"></div></div><div class="hbar__count">3</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">unknown_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:11%"></div></div><div class="hbar__count">2</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">syntax_invalid</div><div class="hbar__track"><div class="hbar__fill" style="width:11%"></div></div><div class="hbar__count">2</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">parallel_order_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:6%"></div></div><div class="hbar__count">1</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">value_out_of_enum</div><div class="hbar__track"><div class="hbar__fill" style="width:6%"></div></div><div class="hbar__count">1</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">unknown_tool</div><div class="hbar__track"></div><div class="hbar__count">0</div></div>
+            <div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;"><div class="hbar__name">abstention_miss_should_abstain</div><div class="hbar__track"></div><div class="hbar__count">0</div></div>
+            <div class="hbar hbar--ok hbar--ghost" style="grid-template-columns:224px 1fr 60px; border-top:1px dashed #2A2A26; margin-top:6px; padding-top:11px;"><div class="hbar__name">no_failure</div><div class="hbar__track"><div class="hbar__fill" style="width:100%"></div></div><div class="hbar__count">436</div></div>
+            <div class="t-eng-sm" style="color:#3E3A33; padding-top:10px;">bar scale max 18 · no_failure drawn on its own scale</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: compare + corrections -->
+        <div style="display:flex; flex-direction:column; gap:24px;">
+
+          <div class="panel">
+            <div class="panel__head">
+              <div class="panel__head-title">vs previous <small>compare-iter1a-synth-only.json</small></div>
+              <div class="panel__head-tools"><span>a → b</span></div>
+            </div>
+            <div class="panel__body">
+              <div class="t-eng-sm" style="color:#5C564B; margin-bottom:10px;">rows: iter1a-synth-only (a) · cols: iter1b-synth-human (b)</div>
+              <div style="display:grid; grid-template-columns:72px repeat(2, minmax(0,1fr)); gap:4px; align-items:stretch;">
+                <div></div>
+                <div class="t-eng-sm" style="color:#5C564B; padding:0 0 4px 14px;">b · pass</div>
+                <div class="t-eng-sm" style="color:#5C564B; padding:0 0 4px 14px;">b · fail</div>
+
+                <div class="t-eng-sm" style="color:#5C564B; display:flex; align-items:center;">a · pass</div>
+                <div style="padding:12px 14px; border:1px solid #2A2A26; background:#13130F;">
+                  <div style="font-size:24px; font-weight:500; line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; color:#9A9485;">415</div>
+                  <div class="t-eng-sm" style="color:#5C564B; margin-top:6px;">same_pass</div>
+                </div>
+                <div style="padding:12px 14px; border:1px solid #8A3A3A; background:#13130F;">
+                  <div style="font-size:24px; font-weight:500; line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; color:#E55E5E;">6</div>
+                  <div class="t-eng-sm" style="color:#8A3A3A; margin-top:6px;">regressed</div>
+                </div>
+
+                <div class="t-eng-sm" style="color:#5C564B; display:flex; align-items:center;">a · fail</div>
+                <div style="padding:12px 14px; border:1px solid #6E8050; background:#13130F;">
+                  <div style="font-size:24px; font-weight:500; line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; color:#C3E88D;">21</div>
+                  <div class="t-eng-sm" style="color:#6E8050; margin-top:6px;">fixed</div>
+                </div>
+                <div style="padding:12px 14px; border:1px solid #2A2A26; background:#13130F;">
+                  <div style="font-size:24px; font-weight:500; line-height:1; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; color:#9A9485;">58</div>
+                  <div class="t-eng-sm" style="color:#5C564B; margin-top:6px;">same_fail</div>
+                </div>
+              </div>
+              <div style="margin-top:16px; font-size:12px; color:#E8E4D4; font-variant-numeric:tabular-nums;">EM <span class="t-chart">+3.0 pp</span> · paired bootstrap 95% CI <span class="t-bright">[+0.8, +5.1]</span> · n 500</div>
+              <div style="margin-top:12px; display:flex; gap:16px; align-items:baseline;">
+                <a href="./traces.html" class="t-teal" style="font-size:12px; border-bottom:1px dashed #4B8079; padding-bottom:1px;">open changed-only in Label Queue →</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- (4) corrections -->
+          <div class="panel">
+            <div class="panel__head">
+              <div class="panel__head-title">corrections <small>corrections.summary.json</small></div>
+              <div class="panel__head-tools"><span>attempts[0]</span></div>
+            </div>
+            <div class="panel__body panel__body--flush">
+              <table class="dtable">
+                <thead><tr><th>gold origin</th><th style="text-align:right;">em_f0</th><th style="text-align:right;">em_fk</th><th style="text-align:right;">rescue</th><th style="text-align:right;">regression</th></tr></thead>
+                <tbody>
+                  <tr><td>dataset</td><td class="num">0.804</td><td class="num t-chart">0.872</td><td class="num t-chart">41</td><td class="num t-verm">7</td></tr>
+                  <tr><td>human <span class="t-mute">saw_f0</span></td><td class="num">0.72</td><td class="num t-chart">0.78</td><td class="num t-chart">4</td><td class="num t-verm">1</td></tr>
+                </tbody>
+              </table>
+              <div style="display:flex; gap:16px; align-items:baseline; padding:10px 20px 12px; font-size:12px;">
+                <span class="t-eng-sm" style="color:#5C564B;">hooks</span>
+                <span>retire candidates <span class="t-amber">1</span> · insufficient <span class="t-bright">2</span> · shared <span class="t-bright">4</span></span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- (5) decisions -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">decisions <small>patch_decisions.jsonl</small></div>
+          <div class="panel__head-tools"><span>human_minutes summed at read time</span></div>
+        </div>
+        <div class="panel__body">
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #3D3D36; background:#13130F;"><span class="t-eng-sm" style="color:#5C564B;">proposed</span><span style="font-size:14px; font-weight:500; color:#FFFCF0; font-variant-numeric:tabular-nums;">9</span></div>
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #6E8050; background:#13130F;"><span class="t-eng-sm" style="color:#6E8050;">blind accept</span><span style="font-size:14px; font-weight:500; color:#C3E88D; font-variant-numeric:tabular-nums;">5</span></div>
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #6E8050; background:#13130F;"><span class="t-eng-sm" style="color:#6E8050;">after_preview accept</span><span style="font-size:14px; font-weight:500; color:#C3E88D; font-variant-numeric:tabular-nums;">6</span></div>
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #8A6736; background:#13130F;"><span class="t-eng-sm" style="color:#8A6736;">held</span><span style="font-size:14px; font-weight:500; color:#F4B860; font-variant-numeric:tabular-nums;">2</span></div>
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #8A3A3A; background:#13130F;"><span class="t-eng-sm" style="color:#8A3A3A;">rejected</span><span style="font-size:14px; font-weight:500; color:#E55E5E; font-variant-numeric:tabular-nums;">2</span></div>
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #4B8079; background:#13130F;"><span class="t-eng-sm" style="color:#4B8079;">ported</span><span style="font-size:14px; font-weight:500; color:#7DD8C6; font-variant-numeric:tabular-nums;">4</span></div>
+            <div style="display:inline-flex; align-items:baseline; gap:10px; padding:8px 12px; border:1px solid #3D3D36; background:#13130F;"><span class="t-eng-sm" style="color:#5C564B;">human_minutes</span><span style="font-size:14px; font-weight:500; color:#FFFCF0; font-variant-numeric:tabular-nums;">38</span><span style="font-size:11px; color:#9A9485; font-variant-numeric:tabular-nums;">labels 31 + decisions 7</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- (6) training -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">training <small>train_provenance.json + manifest_diff vs parent</small></div>
+          <div class="panel__head-tools"><span class="tag tag--in" style="text-transform:none;">trained_on cf-3f9a1c2b7e04 ✓</span></div>
+        </div>
+        <div class="panel__body">
+          <div style="display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) 200px; gap:24px; align-items:start;">
+
+            <div class="params" style="grid-template-columns:160px minmax(0,1fr);">
+              <div class="params__head"><div>field</div><div>value</div></div>
+              <div class="params__row"><div class="params__k">base_model</div><div class="params__v">Qwen/Qwen3-1.7B</div></div>
+              <div class="params__row"><div class="params__k">adapter</div><div class="params__v">iot5-v2 <span class="t-dim">sha 9c1e04…</span></div></div>
+              <div class="params__row"><div class="params__k">train_loss</div><div class="params__v">0.213</div></div>
+              <div class="params__row"><div class="params__k">train_data_sha256</div><div class="params__v t-amber">7d0b…</div></div>
+              <div class="params__row"><div class="params__k">n_train</div><div class="params__v">1,947</div></div>
+            </div>
+
+            <div class="params" style="grid-template-columns:160px minmax(0,1fr);">
+              <div class="params__head"><div>field</div><div>value</div></div>
+              <div class="params__row"><div class="params__k">n_by_strategy</div><div class="params__v"><div style="display:flex; flex-wrap:wrap; gap:2px 10px;"><span>paraphrase 1200</span><span>ood 400</span><span>bootstrap 300</span><span class="t-chart">human_label 47</span></div></div></div>
+              <div class="params__row"><div class="params__k">train_recipe_hash</div><div class="params__v">tr-51ab…</div></div>
+              <div class="params__row"><div class="params__k">seed</div><div class="params__v">42</div></div>
+              <div class="params__row"><div class="params__k">accelerator</div><div class="params__v">H100-80GB</div></div>
+              <div class="params__row"><div class="params__k">git_head</div><div class="params__v">78c8eb9</div></div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div class="t-eng-sm" style="color:#5C564B;">manifest_diff vs iter1a</div>
+              <div style="display:flex; flex-direction:column; gap:6px; font-size:12px; border-top:1px solid #2A2A26; padding-top:10px;">
+                <div class="t-chart">+ human_label 47 rows</div>
+                <div class="t-amber">train_data_sha256 changed</div>
+                <div class="t-mute">decoding unchanged</div>
+                <div class="t-mute">recipe unchanged</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+</div>
+</x-dc>
+</body>
+</html>

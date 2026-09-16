@@ -1,0 +1,763 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=IBM+Plex+Sans+Condensed:wght@300;500;600;700&amp;display=swap">
+  <style>
+/* --- reset --------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--bone-bright); }
+button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; }
+ul { list-style: none; }
+body { margin: 0; background: #0E0E0C; }
+
+/* --- tokens -------------------------------------------------- */
+:root {
+  /* warm phosphor palette */
+  --ink:           #0E0E0C;
+  --ink-raised:    #13130F;
+  --ink-card:      #181814;
+  --ink-overlay:   #1F1F1A;
+  --rule:          #2A2A26;
+  --rule-soft:     #1F1F1B;
+  --rule-strong:   #3D3D36;
+
+  --bone:          #E8E4D4;
+  --bone-bright:   #FFFCF0;
+  --bone-dim:      #9A9485;
+  --bone-mute:     #5C564B;
+  --bone-faint:    #3E3A33;
+
+  --teal:          #7DD8C6;
+  --teal-dim:      #4B8079;
+  --chartreuse:    #C3E88D;
+  --chartreuse-dim:#6E8050;
+  --amber:         #F4B860;
+  --amber-dim:     #8A6736;
+  --vermillion:    #E55E5E;
+  --vermillion-dim:#8A3A3A;
+  --locked:        #28281F;
+  --locked-fg:     #5C564B;
+  --violet:        #B69BD9;   /* used sparingly for event-bus */
+
+  /* typography */
+  --mono:          'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace;
+  --sans:          'IBM Plex Sans Condensed', system-ui, sans-serif;
+
+  /* spacing */
+  --u:             8px;
+  --pad:           24px;
+  --pad-lg:        32px;
+
+  /* sizing */
+  --header-h:      52px;
+  --max-w:         1480px;
+}
+
+::selection { background: var(--chartreuse); color: var(--ink); }
+
+/* --- typographic helpers ------------------------------------- */
+.t-eng {
+  font-family: var(--sans);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.t-eng-sm { font-family: var(--sans); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; font-size: 9px; }
+.t-num    { font-variant-numeric: tabular-nums; }
+.t-dim    { color: var(--bone-dim); }
+.t-mute   { color: var(--bone-mute); }
+.t-bright { color: var(--bone-bright); }
+.t-teal   { color: var(--teal); }
+.t-chart  { color: var(--chartreuse); }
+.t-amber  { color: var(--amber); }
+.t-verm   { color: var(--vermillion); }
+.t-lock   { color: var(--locked-fg); }
+
+/* --- header -------------------------------------------------- */
+.opbar {
+  height: var(--header-h);
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 280px 1fr auto;
+  align-items: stretch;
+  background: var(--ink-raised);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.opbar__brand {
+  padding: 0 var(--pad);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid var(--rule);
+}
+.opbar__sigil {
+  width: 22px; height: 22px;
+  border: 1px solid var(--bone);
+  position: relative;
+  flex-shrink: 0;
+}
+.opbar__sigil::before, .opbar__sigil::after {
+  content: '';
+  position: absolute;
+  background: var(--bone);
+}
+.opbar__sigil::before {
+  top: 50%; left: -3px; right: -3px; height: 1px; transform: translateY(-50%);
+}
+.opbar__sigil::after {
+  left: 50%; top: -3px; bottom: -3px; width: 1px; transform: translateX(-50%);
+}
+.opbar__brand-name {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+}
+.opbar__brand-sub {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.opbar__nav {
+  display: flex;
+  overflow-x: auto;
+}
+.opbar__nav a {
+  padding: 0 18px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--rule-soft);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.opbar__nav a:hover { background: var(--ink-card); }
+.opbar__nav a.active {
+  background: var(--ink-card);
+  color: var(--bone-bright);
+}
+.opbar__nav a.active::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 1px; background: var(--chartreuse);
+}
+.opbar__nav-num {
+  font-family: var(--sans);
+  font-size: 8px;
+  color: var(--bone-mute);
+  letter-spacing: 0.16em;
+  margin-bottom: 2px;
+}
+.opbar__nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.opbar__meta {
+  display: flex;
+  align-items: stretch;
+  border-left: 1px solid var(--rule);
+}
+.opbar__meta-cell {
+  padding: 0 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--rule-soft);
+  min-width: 90px;
+}
+.opbar__meta-cell:first-child { border-left: none; }
+.opbar__meta-k {
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.opbar__meta-v {
+  font-size: 11px;
+  color: var(--bone);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- page wrapper -------------------------------------------- */
+.page__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  gap: 24px;
+}
+.page__title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+  color: var(--bone-bright);
+  line-height: 1.1;
+}
+.page__title em {
+  font-style: italic;
+  color: var(--teal);
+  font-weight: 400;
+}
+.page__id {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.page__id::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--bone-mute);
+  display: inline-block;
+}
+.page__sub {
+  font-size: 12px;
+  color: var(--bone-dim);
+  margin-top: 10px;
+  max-width: 720px;
+  line-height: 1.6;
+}
+.page__sub b { color: var(--bone); font-weight: 500; }
+
+/* --- panel / card -------------------------------------------- */
+.panel {
+  background: var(--ink-card);
+  border: 1px solid var(--rule);
+  position: relative;
+}
+.panel__head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.panel__head-title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--bone-bright);
+}
+.panel__head-title small {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  margin-left: 12px;
+  text-transform: uppercase;
+}
+.panel__head-tools {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.panel__body { padding: 20px; }
+.panel__body--flush { padding: 0; }
+
+/* schematic corner crops */
+.panel::before, .panel::after {
+  content: '';
+  position: absolute;
+  width: 9px; height: 9px;
+  border: 1px solid var(--bone-mute);
+  pointer-events: none;
+}
+.panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.panel::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+/* --- tags / chips -------------------------------------------- */
+.tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border: 1px solid var(--rule-strong);
+  color: var(--bone-dim);
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  background: var(--ink-raised);
+}
+.tag--event { color: var(--teal); border-color: var(--teal-dim); }
+.tag--in    { color: var(--chartreuse); border-color: var(--chartreuse-dim); }
+.tag--fail  { color: var(--vermillion); border-color: var(--vermillion-dim); }
+.tag--warn  { color: var(--amber); border-color: var(--amber-dim); }
+.tag--lock  { color: var(--locked-fg); border-color: var(--bone-faint); background: var(--locked); }
+.tag--ghost { color: var(--bone-mute); border-color: var(--rule); opacity: 0.55; }
+.tag--solid-in    { background: var(--chartreuse); color: var(--ink); border-color: var(--chartreuse); }
+.tag--solid-warn  { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+.tag--solid-fail  { background: var(--vermillion); color: var(--ink); border-color: var(--vermillion); }
+
+/* --- buttons ------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone);
+  letter-spacing: 0.06em;
+  background: var(--ink-raised);
+  transition: all 0.12s ease;
+}
+.btn:hover { background: var(--ink-overlay); border-color: var(--bone-dim); }
+.btn--primary { background: var(--chartreuse); color: var(--ink); border-color: var(--chartreuse); }
+.btn--primary:hover { background: var(--bone-bright); border-color: var(--bone-bright); }
+.btn--danger  { color: var(--vermillion); border-color: var(--vermillion-dim); }
+.btn--ghost   { background: transparent; color: var(--bone-dim); border-color: var(--rule); }
+.btn--lock    { opacity: 0.5; cursor: not-allowed; }
+.btn::before {
+  content: '›';
+  color: inherit;
+  opacity: 0.6;
+}
+
+/* --- code blocks --------------------------------------------- */
+.code {
+  background: var(--ink-raised);
+  border: 1px solid var(--rule);
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--bone);
+  overflow-x: auto;
+  position: relative;
+}
+.code::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -1px; right: -1px;
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  padding: 3px 9px;
+}
+.code .k  { color: var(--teal); }
+.code .s  { color: var(--chartreuse); }
+.code .n  { color: var(--amber); }
+.code .c  { color: var(--bone-mute); font-style: italic; }
+.code .ID { color: var(--bone-bright); }
+.code .del { color: var(--vermillion); text-decoration: line-through; }
+.code .ins { color: var(--chartreuse); }
+
+/* --- diff column --------------------------------------------- */
+.diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+  background: var(--ink-raised);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+.diff__col { padding: 12px 14px; }
+.diff__col + .diff__col { border-left: 1px solid var(--rule); }
+.diff__col-label {
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-mute);
+  margin-bottom: 8px;
+}
+.diff__col--expected .diff__col-label { color: var(--chartreuse-dim); }
+.diff__col--actual   .diff__col-label { color: var(--vermillion-dim); }
+.diff__col pre { white-space: pre-wrap; word-break: break-word; }
+
+/* --- histogram bars ------------------------------------------ */
+.hbar {
+  display: grid;
+  grid-template-columns: 160px 1fr 60px;
+  gap: 12px;
+  align-items: center;
+  padding: 5px 0;
+  font-size: 12px;
+}
+.hbar__name { color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hbar__name .id { color: var(--bone-mute); font-size: 10px; margin-right: 6px; }
+.hbar__track {
+  height: 10px;
+  background: var(--ink-raised);
+  border: 1px solid var(--rule);
+  position: relative;
+}
+.hbar__fill {
+  height: 100%;
+  background: var(--teal-dim);
+  border-right: 1px solid var(--teal);
+}
+.hbar__count { text-align: right; color: var(--bone-bright); font-variant-numeric: tabular-nums; }
+.hbar--fail   .hbar__fill { background: var(--vermillion-dim); border-right-color: var(--vermillion); }
+.hbar--warn   .hbar__fill { background: var(--amber-dim); border-right-color: var(--amber); }
+.hbar--ok     .hbar__fill { background: var(--chartreuse-dim); border-right-color: var(--chartreuse); }
+.hbar--ghost { opacity: 0.45; }
+
+/* --- micro utility ------------------------------------------- */
+hr.rule {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 16px 0;
+}
+hr.rule--dash { border-top: 1px dashed var(--rule); }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mt-8 { margin-top: 8px; }
+
+/* --- param table -------------------------------------------- */
+.params {
+  display: grid;
+  grid-template-columns: 160px 1fr 80px;
+  border-top: 1px solid var(--rule);
+}
+.params__head, .params__row { display: contents; }
+.params__head > * {
+  padding: 9px 12px;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+  background: var(--ink-raised);
+  border-bottom: 1px solid var(--rule);
+}
+.params__row > * {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--bone);
+  vertical-align: middle;
+}
+.params__k { color: var(--bone-dim); }
+.params__k small {
+  display: block;
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+.params__v.lock { color: var(--locked-fg); font-style: italic; }
+.params__src {
+  text-align: right;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+
+/* --- segmented control --------------------------------------- */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+}
+.seg__opt {
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-dim);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-right: 1px solid var(--rule-strong);
+  background: var(--ink-raised);
+}
+.seg__opt:last-child { border-right: none; }
+.seg__opt.active { background: var(--chartreuse); color: var(--ink); font-weight: 600; }
+.seg__opt:hover:not(.active) { background: var(--ink-overlay); color: var(--bone); }
+
+/* --- chip row inline ---------------------------------------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+  </style>
+</helmet>
+
+<div style="width:1440px; min-height:1415px; background:#0E0E0C; color:#E8E4D4; font-family:'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace; font-size:13px; line-height:1.55; font-weight:400; letter-spacing:0.01em; background-image: radial-gradient(circle at 50% 0%, rgba(125, 216, 198, 0.025), transparent 60%), repeating-linear-gradient(0deg, transparent 0 23px, rgba(255,252,240,0.012) 23px 24px);">
+
+  <!-- OPBAR -->
+  <header class="opbar">
+    <div class="opbar__brand">
+      <div class="opbar__sigil"></div>
+      <div>
+        <div class="opbar__brand-name">GANGLION</div>
+        <div class="opbar__brand-sub">trace explorer · sheet 05</div>
+      </div>
+    </div>
+    <nav class="opbar__nav">
+      <a href="#"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+      <a href="#"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+      <a href="#"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+      <a href="#"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+      <a href="#" class="active"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+      <a href="#"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+      <a href="#"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+      <a href="#"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+      <a href="#"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+      <a href="#"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+    </nav>
+    <div class="opbar__meta">
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">Run</div><div class="opbar__meta-v">iter1b</div></div>
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">Labelled</div><div class="opbar__meta-v">47 / 64</div></div>
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+    </div>
+  </header>
+
+  <!-- PAGE -->
+  <main style="max-width:1480px; margin:0 auto; padding:32px 32px 40px;">
+
+    <section class="page__head" style="grid-template-columns:1fr;">
+      <div>
+        <div class="page__id">SHEET 05 <span>◦</span> module 02 / analyzer <span>◦</span> label queue</div>
+        <h1 class="page__title">Trace Explorer · <em>Label Queue</em></h1>
+        <p class="page__sub"><b>runs/traces/iot_light_5/iter1b-synth-human</b> · <b>500</b> traces · <b>64</b> wrong · <b>17</b> unlabelled</p>
+      </div>
+    </section>
+
+    <!-- FILTER STRIP -->
+    <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px;">
+      <span class="seg" style="flex-shrink:0;"><span class="seg__opt">unlabelled</span><span class="seg__opt">invalid only</span><span class="seg__opt active">wrong only</span><span class="seg__opt">changed vs previous</span><span class="seg__opt">by failure_type</span><span class="seg__opt">all</span></span>
+      <div class="hbar--ok" style="display:flex; align-items:center; gap:10px; flex-shrink:0;">
+        <span style="font-size:11px; color:var(--bone-dim); white-space:nowrap;">labelled <span style="color:var(--bone-bright);">47 / 64</span> wrong</span>
+        <div class="hbar__track" style="width:140px;"><div class="hbar__fill" style="width:73%;"></div></div>
+        <span style="font-size:11px; color:var(--bone-bright); font-variant-numeric:tabular-nums;">73%</span>
+      </div>
+      <div style="font-size:11px; line-height:1.6; color:var(--bone-dim); text-align:right; max-width:380px; flex:1 1 0; min-width:0;"><span style="color:var(--bone);">j/k</span> move · <span style="color:var(--bone);">y</span> correct · <span style="color:var(--bone);">n</span> incorrect · <span style="color:var(--bone);">u</span> unsure · <span style="color:var(--bone);">o</span> order · <span style="color:var(--bone);">1–9</span> evidence · <span style="color:var(--bone);">Enter</span> commit · <span style="color:var(--bone);">z</span> undo · <span style="color:var(--bone);">g</span> raw · <span style="color:var(--bone);">?</span> help</div>
+    </div>
+
+    <!-- QUEUE + DETAIL -->
+    <section style="display:grid; grid-template-columns:420px minmax(0,1fr); gap:24px; align-items:start;">
+
+      <!-- LEFT: queue list -->
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">queue <small>wrong only · 64 rows</small></div>
+          <div class="panel__head-tools"><span class="t-teal">● iot-217</span><span>14 open</span></div>
+        </div>
+        <div class="panel__body panel__body--flush" style="display:flex; flex-direction:column; background:var(--ink-raised);">
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--chartreuse);"><circle cx="8" cy="8" r="6.25"></circle><path d="M5.2 8.3l1.9 1.9 3.8-4.2"></path></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-203</div>
+            <span class="tag tag--warn">value_out_of_range</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">주방 조명 밝기 150으로 올려줘</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--chartreuse);"><circle cx="8" cy="8" r="6.25"></circle><path d="M5.2 8.3l1.9 1.9 3.8-4.2"></path></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-209<span class="t-eng-sm" style="color:var(--vermillion);">regressed ↓</span></div>
+            <span class="tag tag--fail">missing_required_arg</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">침실 조명 예약해줘</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid var(--teal); background:var(--ink-card);">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--bone-mute);"><circle cx="8" cy="8" r="6.25"></circle></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-217<span class="t-eng-sm" style="color:var(--teal);">current</span></div>
+            <span class="tag tag--fail">alias_unrecognised</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone-bright); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">안방 불 켜줘</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--bone-mute);"><circle cx="8" cy="8" r="6.25"></circle></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-224</div>
+            <span class="tag tag--fail">wrong_action</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">거실 조명 지금 켜져 있어?</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--bone-mute);"><circle cx="8" cy="8" r="6.25"></circle></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-231</div>
+            <span class="tag tag--warn">abstention_miss_should_call</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">욕실 불 좀</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--chartreuse);"><circle cx="8" cy="8" r="6.25"></circle><path d="M5.2 8.3l1.9 1.9 3.8-4.2"></path></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-238<span class="t-eng-sm" style="color:var(--chartreuse);">fixed ↑</span></div>
+            <span class="tag tag--warn">partial_arg_value_mismatch</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">오후 7시에 거실 조명 켜줘</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--bone-mute);"><circle cx="8" cy="8" r="6.25"></circle></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-242</div>
+            <span class="tag tag--fail">type_mismatch</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">침실 밝기 절반으로 줄여줘</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--bone-mute);"><circle cx="8" cy="8" r="6.25"></circle></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">iot-256</div>
+            <span class="tag tag--fail">syntax_invalid</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">영화 모드 만들어줘, 거실은 20% 따뜻하게</div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:16px minmax(0,1fr) auto; column-gap:10px; row-gap:2px; align-items:center; padding:8px 14px 8px 12px; border-bottom:1px solid var(--rule-soft); border-left:2px solid transparent;">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="grid-row:1 / span 2; color:var(--bone-mute);"><circle cx="8" cy="8" r="6.25"></circle></svg>
+            <div style="display:flex; align-items:center; gap:10px; min-width:0; font-size:12px; color:var(--bone-bright);">adversarial-002</div>
+            <span class="tag tag--warn">partial_arg_value_mismatch</span>
+            <div style="grid-column:2 / span 2; font-family:var(--sans); font-size:13px; color:var(--bone); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">7시에 켜고 10시에 꺼줘</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT: detail iot-217 -->
+      <div class="panel">
+        <div class="panel__head">
+          <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; min-width:0;"><span class="panel__head-title">iot-217</span><span style="font-family:var(--mono); font-size:11px; color:var(--bone-dim); letter-spacing:0.01em;">· tr-4b7f09c2a1d8e3f5 · model iot5-sft-v2@vllm · iter1b · gold: dataset:sha-e91c</span></div>
+          <div class="panel__head-tools" style="flex-shrink:0;"><span class="tag tag--fail" style="text-transform:none;">wrong</span><span class="tag tag--fail" style="text-transform:none;">alias_unrecognised (conf 0.92)</span></div>
+        </div>
+
+        <div class="panel__body" style="display:flex; flex-direction:column; gap:16px;">
+
+          <!-- (2) prompt box -->
+          <div style="display:flex; align-items:baseline; gap:14px; padding:12px 14px; border:1px solid var(--rule); background:var(--ink-raised);">
+            <span class="t-eng-sm t-mute">prompt</span>
+            <span style="font-family:var(--sans); font-size:15px; font-weight:500; color:var(--bone-bright);">안방 불 켜줘</span>
+          </div>
+
+          <!-- (3) diff -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="t-eng t-dim">GROUND-TRUTH DIFF · F⁰</div>
+            <div class="diff">
+              <div class="diff__col diff__col--expected">
+                <div class="diff__col-label">EXPECTED · gold dataset:sha-e91c</div>
+<pre style="overflow-wrap:anywhere;">{
+  "calls": [{
+    "action": "set_light",
+    "args": {
+      "room":  <span style="color:var(--chartreuse); background:rgba(195,232,141,0.12);">"bedroom"</span>,
+      "state": "on"
+    }
+  }]
+}</pre>
+              </div>
+              <div class="diff__col diff__col--actual">
+                <div class="diff__col-label">PREDICTED · model output</div>
+<pre style="overflow-wrap:anywhere;">{
+  "calls": [{
+    "action": "set_light",
+    "args": {
+      "room":  <span style="color:var(--vermillion); background:rgba(229,94,94,0.12);">"안방"</span>,
+      "state": "on"
+    }
+  }]
+}</pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- (4) F0 / FK strip -->
+          <div style="display:flex; align-items:center; gap:14px; padding:8px 14px; border:1px dashed var(--rule);">
+            <span class="t-eng-sm t-mute">F⁰ / Fᴷ</span>
+            <span style="font-size:12px; color:var(--bone);">F⁰ = Fᴷ <span class="t-dim">(no hook fired)</span> · saw_f0 <span class="t-chart">true</span></span>
+          </div>
+
+          <!-- (5) classification evidence -->
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="t-eng t-dim">CLASSIFICATION EVIDENCE</div>
+            <div class="params">
+              <div class="params__head"><div>field</div><div>value</div><div style="text-align:right;">src</div></div>
+              <div class="params__row"><div class="params__k">matcher</div><div class="params__v"><span class="tag tag--fail">alias_unrecognised</span></div><div class="params__src">taxonomy</div></div>
+              <div class="params__row"><div class="params__k">arg</div><div class="params__v">room</div><div class="params__src">args</div></div>
+              <div class="params__row"><div class="params__k">value</div><div class="params__v t-amber">"안방"</div><div class="params__src">args</div></div>
+              <div class="params__row"><div class="params__k">nearest alias table hit</div><div class="params__v">안방→bedroom <span class="t-dim">(not in aliases)</span></div><div class="params__src">catalog</div></div>
+              <div class="params__row"><div class="params__k">suggested patch</div><div class="params__v">add_alias set_light.room {"안방":"bedroom"} · <a href="#" style="color:var(--teal); border-bottom:1px dashed var(--teal-dim); padding-bottom:1px;">open in Rules</a></div><div class="params__src">rules</div></div>
+            </div>
+          </div>
+
+          <!-- (6) attempts accordion (collapsed) -->
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; padding:9px 14px; border:1px solid var(--rule); background:var(--ink-raised); cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--bone-mute);"><path d="M6 3.5l4.5 4.5L6 12.5"></path></svg>
+              <span class="t-eng t-dim">ATTEMPTS (2) · repair rescued: no</span>
+            </div>
+            <span class="t-eng-sm t-mute">collapsed</span>
+          </div>
+
+          <!-- (7) verdict bar -->
+          <div style="border:1px solid var(--rule-strong); background:var(--ink-raised); padding:14px 16px; display:flex; flex-direction:column; gap:14px;">
+            <div style="display:flex; align-items:center; gap:14px;">
+              <span class="t-eng t-dim" style="min-width:64px;">VERDICT</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="btn" style="min-height:32px;"><span class="t-mute">[y]</span>correct</button>
+                <button class="btn" style="min-height:32px; background:var(--vermillion); color:var(--ink); border-color:var(--vermillion); font-weight:600;"><span style="opacity:0.7;">[n]</span>incorrect</button>
+                <button class="btn" style="min-height:32px;"><span class="t-mute">[u]</span>unsure</button>
+                <button class="btn" style="min-height:32px;"><span class="t-mute">[o]</span>order-sensitive</button>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div class="t-eng-sm t-mute">EXPECTED · prefilled from F⁰ · edit in place</div>
+              <div class="code" data-label="expected plan" style="padding:10px 12px; white-space:pre-wrap; overflow-wrap:anywhere;">{"calls":[{"action":"set_light","args":{"room":<span style="color:var(--amber); border-bottom:1px solid var(--teal); padding-bottom:1px;">"안방"</span><span style="display:inline-block; width:1px; height:13px; background:var(--teal); vertical-align:-2px; margin-left:1px;"></span>,"state":"on"}<span>}]}</span></div>
+            </div>
+
+            <div style="display:flex; align-items:center; gap:14px;">
+              <span class="t-eng-sm t-mute" style="min-width:64px;">EVIDENCE</span>
+              <div class="chips">
+                <span class="tag tag--event"><span style="color:var(--bone-bright); font-weight:600;">1</span> 안방→bedroom</span>
+                <span class="tag"><span style="color:var(--bone-bright); font-weight:600;">2</span> state:on</span>
+              </div>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; padding-top:12px; border-top:1px dashed var(--rule);">
+              <span style="font-size:11px; color:var(--bone-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">LabelRecord <span class="t-bright">lb-…</span> · origin <span class="t-bright">human:kist</span> · zone <span class="t-bright">dev</span> · family <span class="t-bright">fam-1c9e…</span> · time_to_label <span class="t-bright">14 s</span></span>
+              <button class="btn btn--primary" style="min-height:32px; flex-shrink:0;">Enter · commit + next</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

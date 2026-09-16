@@ -1,0 +1,702 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=IBM+Plex+Sans+Condensed:wght@300;500;600;700&amp;display=swap">
+  <style>
+:root {
+  /* warm phosphor palette */
+  --ink:           #0E0E0C;
+  --ink-raised:    #13130F;
+  --ink-card:      #181814;
+  --ink-overlay:   #1F1F1A;
+  --rule:          #2A2A26;
+  --rule-soft:     #1F1F1B;
+  --rule-strong:   #3D3D36;
+
+  --bone:          #E8E4D4;
+  --bone-bright:   #FFFCF0;
+  --bone-dim:      #9A9485;
+  --bone-mute:     #5C564B;
+  --bone-faint:    #3E3A33;
+
+  --teal:          #7DD8C6;
+  --teal-dim:      #4B8079;
+  --chartreuse:    #C3E88D;
+  --chartreuse-dim:#6E8050;
+  --amber:         #F4B860;
+  --amber-dim:     #8A6736;
+  --vermillion:    #E55E5E;
+  --vermillion-dim:#8A3A3A;
+  --locked:        #28281F;
+  --locked-fg:     #5C564B;
+  --violet:        #B69BD9;   /* used sparingly for event-bus */
+
+  /* typography */
+  --mono:          'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace;
+  --sans:          'IBM Plex Sans Condensed', system-ui, sans-serif;
+
+  /* spacing */
+  --u:             8px;
+  --pad:           24px;
+  --pad-lg:        32px;
+
+  /* sizing */
+  --header-h:      52px;
+  --max-w:         1480px;
+}
+
+/* --- reset --------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { margin:0; background:#0E0E0C; }
+a { color: inherit; text-decoration: none; }
+a:hover { color: var(--bone-bright); }
+button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; }
+ul { list-style: none; }
+
+/* --- typographic helpers ------------------------------------- */
+.t-eng {
+  font-family: var(--sans);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.t-eng-sm { font-family: var(--sans); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; font-size: 9px; }
+.t-num    { font-variant-numeric: tabular-nums; }
+.t-dim    { color: var(--bone-dim); }
+.t-mute   { color: var(--bone-mute); }
+.t-bright { color: var(--bone-bright); }
+.t-teal   { color: var(--teal); }
+.t-chart  { color: var(--chartreuse); }
+.t-amber  { color: var(--amber); }
+.t-verm   { color: var(--vermillion); }
+.t-lock   { color: var(--locked-fg); }
+
+/* --- header -------------------------------------------------- */
+.opbar {
+  height: var(--header-h);
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 280px 1fr auto;
+  align-items: stretch;
+  background: var(--ink-raised);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.opbar__brand {
+  padding: 0 var(--pad);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid var(--rule);
+}
+.opbar__sigil {
+  width: 22px; height: 22px;
+  border: 1px solid var(--bone);
+  position: relative;
+  flex-shrink: 0;
+}
+.opbar__sigil::before, .opbar__sigil::after {
+  content: '';
+  position: absolute;
+  background: var(--bone);
+}
+.opbar__sigil::before {
+  top: 50%; left: -3px; right: -3px; height: 1px; transform: translateY(-50%);
+}
+.opbar__sigil::after {
+  left: 50%; top: -3px; bottom: -3px; width: 1px; transform: translateX(-50%);
+}
+.opbar__brand-name {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+}
+.opbar__brand-sub {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.opbar__nav {
+  display: flex;
+  overflow-x: auto;
+}
+.opbar__nav a {
+  padding: 0 18px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--rule-soft);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.opbar__nav a:hover { background: var(--ink-card); }
+.opbar__nav a.active {
+  background: var(--ink-card);
+  color: var(--bone-bright);
+}
+.opbar__nav a.active::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 1px; background: var(--chartreuse);
+}
+.opbar__nav-num {
+  font-family: var(--sans);
+  font-size: 8px;
+  color: var(--bone-mute);
+  letter-spacing: 0.16em;
+  margin-bottom: 2px;
+}
+.opbar__nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.opbar__meta {
+  display: flex;
+  align-items: stretch;
+  border-left: 1px solid var(--rule);
+}
+.opbar__meta-cell {
+  padding: 0 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--rule-soft);
+  min-width: 90px;
+}
+.opbar__meta-cell:first-child { border-left: none; }
+.opbar__meta-k {
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.opbar__meta-v {
+  font-size: 11px;
+  color: var(--bone);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.live-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--chartreuse);
+  margin-right: 6px;
+  animation: ph 1.4s steps(2, end) infinite;
+  vertical-align: middle;
+}
+@keyframes ph { 0%, 60% { opacity: 1 } 61%, 100% { opacity: 0.25 } }
+
+/* --- page wrapper -------------------------------------------- */
+.page {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 32px var(--pad-lg) 80px;
+}
+.page__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  gap: 24px;
+}
+.page__title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+  color: var(--bone-bright);
+  line-height: 1.1;
+}
+.page__title em {
+  font-style: italic;
+  color: var(--teal);
+  font-weight: 400;
+}
+.page__id {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.page__id::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--bone-mute);
+  display: inline-block;
+}
+.page__sub {
+  font-size: 12px;
+  color: var(--bone-dim);
+  margin-top: 10px;
+  max-width: 720px;
+  line-height: 1.6;
+}
+.page__sub b { color: var(--bone); font-weight: 500; }
+
+/* --- panel / card -------------------------------------------- */
+.panel {
+  background: var(--ink-card);
+  border: 1px solid var(--rule);
+  position: relative;
+}
+.panel__head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.panel__head-title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--bone-bright);
+}
+.panel__head-title small {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  margin-left: 12px;
+  text-transform: uppercase;
+}
+.panel__head-tools {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.panel__body { padding: 20px; }
+.panel__body--flush { padding: 0; }
+
+/* schematic corner crops */
+.panel::before, .panel::after {
+  content: '';
+  position: absolute;
+  width: 9px; height: 9px;
+  border: 1px solid var(--bone-mute);
+  pointer-events: none;
+}
+.panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.panel::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+/* --- tags / chips -------------------------------------------- */
+.tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border: 1px solid var(--rule-strong);
+  color: var(--bone-dim);
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  background: var(--ink-raised);
+}
+.tag--event { color: var(--teal); border-color: var(--teal-dim); }
+.tag--in    { color: var(--chartreuse); border-color: var(--chartreuse-dim); }
+.tag--fail  { color: var(--vermillion); border-color: var(--vermillion-dim); }
+.tag--warn  { color: var(--amber); border-color: var(--amber-dim); }
+.tag--lock  { color: var(--locked-fg); border-color: var(--bone-faint); background: var(--locked); }
+
+/* --- buttons ------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone);
+  letter-spacing: 0.06em;
+  background: var(--ink-raised);
+  transition: all 0.12s ease;
+}
+.btn:hover { background: var(--ink-overlay); border-color: var(--bone-dim); }
+.btn--primary { background: var(--chartreuse); color: var(--ink); border-color: var(--chartreuse); }
+.btn--primary:hover { background: var(--bone-bright); border-color: var(--bone-bright); }
+.btn--ghost   { background: transparent; color: var(--bone-dim); border-color: var(--rule); }
+.btn::before {
+  content: '›';
+  color: inherit;
+  opacity: 0.6;
+}
+.btn--key::before { content: none; }
+
+/* --- diff column --------------------------------------------- */
+.diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--rule);
+  background: var(--ink-raised);
+  font-family: var(--mono);
+  font-size: 11.5px;
+}
+.diff__col { padding: 12px 14px; }
+.diff__col + .diff__col { border-left: 1px solid var(--rule); }
+.diff__col-label {
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-mute);
+  margin-bottom: 8px;
+}
+.diff__col--expected .diff__col-label { color: var(--chartreuse-dim); }
+.diff__col--actual   .diff__col-label { color: var(--vermillion-dim); }
+.diff__col pre { white-space: pre-wrap; word-break: break-word; }
+
+/* --- locked overlay (out-of-scope visualization) ------------- */
+.locked-strip {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--locked) 0 8px,
+    transparent 8px 16px
+  );
+  border: 1px solid var(--bone-faint);
+  padding: 9px 14px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--locked-fg);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.locked-strip::before {
+  content: '';
+  width: 11px; height: 11px;
+  border: 1.5px solid var(--locked-fg);
+  position: relative;
+  display: inline-block;
+}
+
+/* --- param table -------------------------------------------- */
+.params {
+  display: grid;
+  grid-template-columns: 160px 1fr 80px;
+  border-top: 1px solid var(--rule);
+}
+.params__head, .params__row { display: contents; }
+.params__row > * {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--bone);
+  vertical-align: middle;
+}
+.params__k { color: var(--bone-dim); }
+
+/* --- segmented control --------------------------------------- */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+}
+.seg__opt {
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-dim);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-right: 1px solid var(--rule-strong);
+  background: var(--ink-raised);
+}
+.seg__opt:last-child { border-right: none; }
+.seg__opt.active { background: var(--chartreuse); color: var(--ink); font-weight: 600; }
+.seg__opt:hover:not(.active) { background: var(--ink-overlay); color: var(--bone); }
+  </style>
+</helmet>
+<div style="width:1440px; min-height:1460px; background:#0E0E0C; color:#E8E4D4; font-family:'IBM Plex Mono', ui-monospace, monospace; font-size:13px; line-height:1.55; font-weight:400; letter-spacing:0.01em; background-image:radial-gradient(circle at 50% 0%, rgba(125, 216, 198, 0.025), transparent 60%), repeating-linear-gradient(0deg, transparent 0 23px, rgba(255,252,240,0.012) 23px 24px);">
+
+  <header class="opbar">
+    <div class="opbar__brand">
+      <div class="opbar__sigil"></div>
+      <div>
+        <div class="opbar__brand-name">GANGLION</div>
+        <div class="opbar__brand-sub">chat console · sheet 09</div>
+      </div>
+    </div>
+    <nav class="opbar__nav">
+      <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+      <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+      <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+      <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+      <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+      <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+      <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+      <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+      <a href="./chat.html" class="active"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+      <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+    </nav>
+    <div class="opbar__meta">
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">Session</div><div class="opbar__meta-v">s-20260915-01</div></div>
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+    </div>
+  </header>
+
+  <main class="page" style="padding-bottom:48px;">
+
+    <section class="page__head">
+      <div>
+        <div class="page__id">SHEET 09 <span>◦</span> R1.0 · R1.2 · R2.1 <span>◦</span> module 01 / lm</div>
+        <h1 class="page__title">Chat</h1>
+        <p class="page__sub">user text → Action IR → tool calls · every result is a <b>Trace(source='lm.invoke')</b></p>
+      </div>
+    </section>
+
+    <div style="display:grid; grid-template-columns:minmax(0,1fr) 420px; gap:24px; align-items:start;">
+
+      <!-- ============ LEFT COLUMN ============ -->
+      <div style="display:flex; flex-direction:column; gap:24px; min-width:0;">
+
+        <!-- (a) context strip -->
+        <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:stretch; min-height:52px; border:1px solid var(--rule); background:var(--ink-raised);">
+          <div style="display:flex; align-items:stretch; min-height:50px;">
+            <div class="opbar__meta-cell" style="white-space:nowrap;">
+              <div class="opbar__meta-k">Catalog</div>
+              <div class="opbar__meta-v">iot_light_5 · cf-3f9a1c2b7e04 · 5 tools</div>
+            </div>
+            <div class="opbar__meta-cell" style="white-space:nowrap;">
+              <div class="opbar__meta-k">Model</div>
+              <div class="opbar__meta-v">iot5-sft-v2@vllm · LoRA iot5-v2 · trained on cf-3f9a… <span class="t-chart">✓</span></div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; min-height:50px; padding:0 12px; border-left:1px solid var(--rule-soft); white-space:nowrap;">
+            <span class="seg">
+              <span class="seg__opt" style="display:inline-flex; align-items:center; min-height:32px;">dsl</span>
+              <span class="seg__opt active" style="display:inline-flex; align-items:center; min-height:32px;">dsl+repair</span>
+              <span class="seg__opt" style="display:inline-flex; align-items:center; min-height:32px;">native</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- (b) prompt panel -->
+        <section class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">prompt <small>user text</small></div>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="min-height:96px; padding:12px 14px; border:1px solid var(--rule-strong); background:var(--ink-raised); font-family:var(--mono); font-size:13px; line-height:1.55; color:var(--bone-bright);">거실 불 켜고 밤 11시에 꺼줘<span style="display:inline-block; width:1px; height:15px; background:var(--bone-bright); vertical-align:-3px; margin-left:1px;"></span></div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div class="t-eng-sm t-mute" style="flex:1; min-width:0;">Ctrl+Enter · 1 prompt per line · batch ≤ 20</div>
+              <button class="btn btn--ghost" style="min-height:32px;">pool을 배치로 불러오기</button>
+              <button class="btn btn--primary" style="min-height:32px;">Run</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- (c) result card -->
+        <section class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">RESULT · trace tr-8c41e2b9f07a13d0</div>
+            <div class="panel__head-tools"><span class="tag tag--event" style="text-transform:none;">order-sensitive: yes</span></div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; padding:10px 20px; border-bottom:1px solid var(--rule); background:var(--ink-raised);">
+            <span class="tag"><span class="t-mute">latency</span> 412 ms</span>
+            <span class="tag"><span class="t-mute">tokens</span> in 312 / out 41</span>
+            <span class="tag"><span class="t-mute">parse_strategy</span> json_object</span>
+            <span class="tag"><span class="t-mute">model</span> iot5-sft-v2@vllm</span>
+            <span class="tag"><span class="t-mute">fingerprint</span> cf-3f9a1c2b7e04</span>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:16px;">
+
+            <!-- (c1) numbered call list -->
+            <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; align-items:baseline; gap:10px;">
+              <span class="t-eng-sm t-dim">Calls</span>
+              <span class="t-mute" style="font-size:11px;">execution order = list order (ActionPlan.calls is an ordered tuple)</span>
+            </div>
+            <div style="display:flex; flex-direction:column; border-top:1px solid var(--rule);">
+              <div style="display:grid; grid-template-columns:28px minmax(0,1fr); gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--rule);">
+                <div style="width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--teal-dim); background:var(--ink-raised); color:var(--teal); font-family:var(--mono); font-size:12px; font-weight:500;">1</div>
+                <div style="font-family:var(--mono); font-size:14px; overflow-wrap:anywhere;"><span class="t-bright" style="font-weight:600;">set_light</span><span class="t-dim">(room=</span><span class="t-bright">living</span><span class="t-dim">, state=</span><span class="t-bright">on</span><span class="t-dim">)</span></div>
+              </div>
+              <div style="display:grid; grid-template-columns:28px minmax(0,1fr); gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed var(--rule);">
+                <div style="width:28px; height:28px; display:flex; align-items:center; justify-content:center; border:1px solid var(--teal-dim); background:var(--ink-raised); color:var(--teal); font-family:var(--mono); font-size:12px; font-weight:500;">2</div>
+                <div style="font-family:var(--mono); font-size:14px; overflow-wrap:anywhere;"><span class="t-bright" style="font-weight:600;">schedule_light</span><span class="t-dim">(room=</span><span class="t-bright">living</span><span class="t-dim">, at=</span><span class="t-bright">23:00</span><span class="t-dim">, state=</span><span class="t-bright">off</span><span class="t-dim">)</span></div>
+              </div>
+            </div>
+            </div>
+
+            <!-- (c2) F0 / FK diff -->
+            <div>
+              <div class="diff">
+                <div class="diff__col diff__col--actual" style="min-width:0;">
+                  <div class="diff__col-label">F⁰ · model output (raw plan)</div>
+<pre style="font-family:var(--mono); overflow-wrap:anywhere;">{"calls": [
+  {"action": "set_light",
+   "args": {"room": <span style="color:var(--vermillion);">"거실"</span>, "state": "on"}},
+  {"action": "schedule_light",
+   "args": {"room": <span style="color:var(--vermillion);">"거실"</span>, "at": "23:00",
+            "state": "off"}}
+]}</pre>
+                </div>
+                <div class="diff__col diff__col--expected" style="min-width:0;">
+                  <div class="diff__col-label">Fᴷ · after correction hooks</div>
+<pre style="font-family:var(--mono); overflow-wrap:anywhere;">{"calls": [
+  {"action": "set_light",
+   "args": {"room": <span style="color:var(--chartreuse);">"living"</span>, "state": "on"}},
+  {"action": "schedule_light",
+   "args": {"room": <span style="color:var(--chartreuse);">"living"</span>, "at": "23:00",
+            "state": "off"}}
+]}</pre>
+                </div>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px; padding:10px 14px; border:1px solid var(--rule); border-top:none; background:var(--ink-raised);">
+                <span class="tag tag--in">add_alias set_light.room 거실→living</span>
+                <span class="tag tag--in">add_alias schedule_light.room 거실→living</span>
+                <span class="t-dim" style="font-size:11px;">F⁰ ≠ Fᴷ — both shown so the label is not circular</span>
+              </div>
+            </div>
+
+            <!-- (c3) collapsed accordions -->
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 12px; border:1px solid var(--rule); background:var(--ink-raised); color:var(--bone-dim);">
+                <span class="t-eng-sm">Raw</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"></path></svg>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; min-height:36px; padding:0 12px; border:1px solid var(--rule); background:var(--ink-raised); color:var(--bone-dim);">
+                <span class="t-eng-sm">Attempts (1)</span>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"></path></svg>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- (d) verdict bar -->
+        <section class="panel" style="border-top:1px solid var(--rule-strong); box-shadow:0 -12px 24px rgba(14,14,12,0.7);">
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; align-items:baseline; gap:10px; min-width:0;">
+              <span class="t-eng-sm t-chart">Verdict</span>
+              <span class="t-mute" style="font-size:11px; overflow-wrap:anywhere;">writes LabelRecord to runs/traces/iot_light_5/console/s-20260915-01/labels.jsonl</span>
+            </div>
+
+            <div style="display:flex; align-items:stretch; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn--key" style="min-height:32px; color:var(--chartreuse); border-color:var(--chartreuse);"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 4px; border:1px solid currentColor; opacity:0.75; font-size:10px;">y</span>correct</button>
+                <button class="btn btn--key" style="min-height:32px; color:var(--vermillion); border-color:var(--vermillion);"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 4px; border:1px solid currentColor; opacity:0.75; font-size:10px;">n</span>incorrect</button>
+                <button class="btn btn--key" style="min-height:32px; color:var(--amber); border-color:var(--amber);"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 4px; border:1px solid currentColor; opacity:0.75; font-size:10px;">u</span>unsure</button>
+                <button class="btn btn--key" style="min-height:32px; color:var(--teal); border-color:var(--teal); background:rgba(125,216,198,0.08);"><span style="display:inline-flex; align-items:center; justify-content:center; min-width:18px; height:18px; padding:0 4px; border:1px solid currentColor; opacity:0.75; font-size:10px;">o</span>order-sensitive</button>
+              </div>
+              <div style="display:flex; align-items:stretch; min-height:32px; border:1px solid var(--rule); background:var(--ink-raised);">
+                <div class="opbar__meta-cell" style="white-space:nowrap;"><div class="opbar__meta-k">labeler</div><div class="opbar__meta-v">kist</div></div>
+                <div class="opbar__meta-cell" style="white-space:nowrap;"><div class="opbar__meta-k">zone</div><div class="opbar__meta-v">train</div></div>
+                <div class="opbar__meta-cell" style="white-space:nowrap;"><div class="opbar__meta-k">family</div><div class="opbar__meta-v">fam-7a1c…</div></div>
+                <div class="opbar__meta-cell" style="white-space:nowrap;"><div class="opbar__meta-k">time</div><div class="opbar__meta-v">0:00</div></div>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:16px;">
+              <div style="min-width:0; display:flex; flex-direction:column; gap:6px;">
+                <div class="t-eng-sm t-mute">expected editor · prefilled with F⁰ plan</div>
+                <div style="min-height:56px; padding:8px 10px; border:1px solid var(--rule-strong); background:var(--ink); font-family:var(--mono); font-size:11px; line-height:1.55; color:var(--bone-dim); overflow-wrap:anywhere;">{"calls":[{"action":"set_light","args":{"room":"거실","state":"on"}},{"action":"schedule_light","args":{"room":"거실","at":"23:00","state":"off"}}]}</div>
+              </div>
+              <div style="min-width:0; display:flex; flex-direction:column; gap:6px;">
+                <div class="t-eng-sm t-mute">evidence</div>
+                <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                  <span class="tag"><span class="t-mute">1</span> 거실→living</span>
+                  <span class="tag"><span class="t-mute">2</span> brightness:70</span>
+                  <span class="tag"><span class="t-mute">3</span> state:on</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ============ RIGHT COLUMN ============ -->
+      <div style="display:flex; flex-direction:column; gap:24px; min-width:0;">
+
+        <!-- (e) session -->
+        <section class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">SESSION s-20260915-01</div>
+            <div class="panel__head-tools"><span>previous prompts</span></div>
+          </div>
+          <div class="panel__body panel__body--flush">
+            <div style="display:flex; flex-direction:column;">
+              <div style="display:flex; align-items:center; gap:8px; min-height:40px; padding:8px 20px; border-bottom:1px solid var(--rule-soft);">
+                <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:var(--bone);">안방 불 꺼줘</div>
+                <span class="tag">1 call</span>
+                <span class="tag tag--in">valid</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; min-height:40px; padding:8px 20px; border-bottom:1px solid var(--rule-soft);">
+                <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:var(--bone);">7시에 켜고 10시에 꺼줘</div>
+                <span class="tag">2 calls</span>
+                <span class="tag tag--in">valid</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; min-height:40px; padding:8px 20px;">
+                <div style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:var(--bone);">파티 모드로 해줘</div>
+                <span class="tag tag--fail">invalid · unknown_tool</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- (f) model -->
+        <section class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">MODEL · iot5-sft-v2@vllm</div>
+          </div>
+          <div class="panel__body">
+            <div class="params" style="grid-template-columns:172px minmax(0,1fr);">
+              <div class="params__row"><div class="params__k">kind</div><div class="params__v">openai_compat</div></div>
+              <div class="params__row"><div class="params__k">client</div><div class="params__v">json-dsl</div></div>
+              <div class="params__row"><div class="params__k">base</div><div class="params__v" style="overflow-wrap:anywhere;">Qwen/Qwen3-1.7B</div></div>
+              <div class="params__row"><div class="params__k">adapter</div><div class="params__v" style="overflow-wrap:anywhere;">iot5-v2 (sha 9c1e…)</div></div>
+              <div class="params__row"><div class="params__k">served_model_version</div><div class="params__v">vllm/0.28.0</div></div>
+              <div class="params__row"><div class="params__k">trained_on</div><div class="params__v" style="overflow-wrap:anywhere;">cf-3f9a1c2b7e04 <span class="t-chart">✓</span></div></div>
+              <div class="params__row"><div class="params__k">health</div><div class="params__v"><span class="live-dot" style="background:var(--teal);"></span><span class="t-teal">live</span></div></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- (g) locked note -->
+        <div class="locked-strip">rules client = single-call stand-in</div>
+
+      </div>
+
+    </div>
+  </main>
+
+</div>
+</x-dc>
+</body>
+</html>

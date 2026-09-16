@@ -1,0 +1,862 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&amp;family=IBM+Plex+Sans+Condensed:wght@300;500;600;700&amp;display=swap">
+  <style>
+/* --- reset (web/assets/style.css) ---------------------------- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--ink); color: var(--bone); }
+a { color: inherit; text-decoration: none; }
+button { background: none; border: none; color: inherit; font: inherit; cursor: pointer; }
+ul { list-style: none; }
+
+/* --- tokens -------------------------------------------------- */
+:root {
+  --ink:           #0E0E0C;
+  --ink-raised:    #13130F;
+  --ink-card:      #181814;
+  --ink-overlay:   #1F1F1A;
+  --rule:          #2A2A26;
+  --rule-soft:     #1F1F1B;
+  --rule-strong:   #3D3D36;
+
+  --bone:          #E8E4D4;
+  --bone-bright:   #FFFCF0;
+  --bone-dim:      #9A9485;
+  --bone-mute:     #5C564B;
+  --bone-faint:    #3E3A33;
+
+  --teal:          #7DD8C6;
+  --teal-dim:      #4B8079;
+  --chartreuse:    #C3E88D;
+  --chartreuse-dim:#6E8050;
+  --amber:         #F4B860;
+  --amber-dim:     #8A6736;
+  --vermillion:    #E55E5E;
+  --vermillion-dim:#8A3A3A;
+  --locked:        #28281F;
+  --locked-fg:     #5C564B;
+  --violet:        #B69BD9;
+
+  --mono:          'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace;
+  --sans:          'IBM Plex Sans Condensed', system-ui, sans-serif;
+
+  --u:             8px;
+  --pad:           24px;
+  --pad-lg:        32px;
+
+  --header-h:      52px;
+  --max-w:         1480px;
+}
+
+body { margin: 0; background: #0E0E0C; }
+a:hover { color: var(--chartreuse); }
+
+/* --- typographic helpers ------------------------------------- */
+.t-eng {
+  font-family: var(--sans);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 10px;
+}
+.t-eng-sm { font-family: var(--sans); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; font-size: 9px; }
+.t-num    { font-variant-numeric: tabular-nums; }
+.t-dim    { color: var(--bone-dim); }
+.t-mute   { color: var(--bone-mute); }
+.t-bright { color: var(--bone-bright); }
+.t-teal   { color: var(--teal); }
+.t-chart  { color: var(--chartreuse); }
+.t-amber  { color: var(--amber); }
+.t-verm   { color: var(--vermillion); }
+.t-lock   { color: var(--locked-fg); }
+
+/* --- header -------------------------------------------------- */
+.opbar {
+  height: var(--header-h);
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 280px 1fr auto;
+  align-items: stretch;
+  background: var(--ink-raised);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.opbar__brand {
+  padding: 0 var(--pad);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid var(--rule);
+}
+.opbar__sigil {
+  width: 22px; height: 22px;
+  border: 1px solid var(--bone);
+  position: relative;
+  flex-shrink: 0;
+}
+.opbar__sigil::before, .opbar__sigil::after {
+  content: '';
+  position: absolute;
+  background: var(--bone);
+}
+.opbar__sigil::before {
+  top: 50%; left: -3px; right: -3px; height: 1px; transform: translateY(-50%);
+}
+.opbar__sigil::after {
+  left: 50%; top: -3px; bottom: -3px; width: 1px; transform: translateX(-50%);
+}
+.opbar__brand-name {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.18em;
+}
+.opbar__brand-sub {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--bone-dim);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.opbar__nav {
+  display: flex;
+  overflow-x: auto;
+}
+.opbar__nav a {
+  padding: 0 18px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid var(--rule-soft);
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.opbar__nav a:hover { background: var(--ink-card); }
+.opbar__nav a.active {
+  background: var(--ink-card);
+  color: var(--bone-bright);
+}
+.opbar__nav a.active::after {
+  content: '';
+  position: absolute; left: 0; right: 0; bottom: -1px;
+  height: 1px; background: var(--chartreuse);
+}
+.opbar__nav-num {
+  font-family: var(--sans);
+  font-size: 8px;
+  color: var(--bone-mute);
+  letter-spacing: 0.16em;
+  margin-bottom: 2px;
+}
+.opbar__nav-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+}
+
+.opbar__meta {
+  display: flex;
+  align-items: stretch;
+  border-left: 1px solid var(--rule);
+}
+.opbar__meta-cell {
+  padding: 0 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--rule-soft);
+  min-width: 90px;
+}
+.opbar__meta-cell:first-child { border-left: none; }
+.opbar__meta-k {
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.opbar__meta-v {
+  font-size: 11px;
+  color: var(--bone);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- page wrapper -------------------------------------------- */
+.page {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 32px var(--pad-lg) 80px;
+}
+.page__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 18px;
+  margin-bottom: 28px;
+  gap: 24px;
+}
+.page__title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+  color: var(--bone-bright);
+  line-height: 1.1;
+}
+.page__title em {
+  font-style: italic;
+  color: var(--teal);
+  font-weight: 400;
+}
+.page__id {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.page__id::before {
+  content: '';
+  width: 28px; height: 1px;
+  background: var(--bone-mute);
+  display: inline-block;
+}
+.page__sub {
+  font-size: 12px;
+  color: var(--bone-dim);
+  margin-top: 10px;
+  max-width: 720px;
+  line-height: 1.6;
+}
+.page__sub b { color: var(--bone); font-weight: 500; }
+
+/* --- panel / card -------------------------------------------- */
+.panel {
+  background: var(--ink-card);
+  border: 1px solid var(--rule);
+  position: relative;
+}
+.panel__head {
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.panel__head-title {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: var(--bone-bright);
+}
+.panel__head-title small {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  margin-left: 12px;
+  text-transform: uppercase;
+}
+.panel__head-tools {
+  display: flex;
+  gap: 14px;
+  align-items: baseline;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.panel__body { padding: 20px; }
+.panel__body--flush { padding: 0; }
+
+.panel::before, .panel::after {
+  content: '';
+  position: absolute;
+  width: 9px; height: 9px;
+  border: 1px solid var(--bone-mute);
+  pointer-events: none;
+}
+.panel::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.panel::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+/* --- tags / chips -------------------------------------------- */
+.tag {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border: 1px solid var(--rule-strong);
+  color: var(--bone-dim);
+  letter-spacing: 0.04em;
+  vertical-align: middle;
+  background: var(--ink-raised);
+}
+.tag--event { color: var(--teal); border-color: var(--teal-dim); }
+.tag--in    { color: var(--chartreuse); border-color: var(--chartreuse-dim); }
+.tag--fail  { color: var(--vermillion); border-color: var(--vermillion-dim); }
+.tag--warn  { color: var(--amber); border-color: var(--amber-dim); }
+.tag--lock  { color: var(--locked-fg); border-color: var(--bone-faint); background: var(--locked); }
+.tag--ghost { color: var(--bone-mute); border-color: var(--rule); opacity: 0.55; }
+
+/* --- data tables --------------------------------------------- */
+.dtable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.dtable th, .dtable td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--rule-soft);
+  vertical-align: top;
+}
+.dtable th {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+  font-weight: 500;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+  background: var(--ink-raised);
+}
+.dtable td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.dtable tr:hover td { background: rgba(125,216,198,0.025); }
+.dtable .row-ghost td { opacity: 0.5; }
+
+/* --- buttons ------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--rule-strong);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone);
+  letter-spacing: 0.06em;
+  background: var(--ink-raised);
+  transition: all 0.12s ease;
+}
+.btn:hover { background: var(--ink-overlay); border-color: var(--bone-dim); }
+.btn--primary { background: var(--chartreuse); color: var(--ink); border-color: var(--chartreuse); }
+.btn--primary:hover { background: var(--bone-bright); border-color: var(--bone-bright); }
+.btn--ghost   { background: transparent; color: var(--bone-dim); border-color: var(--rule); }
+.btn::before {
+  content: '›';
+  color: inherit;
+  opacity: 0.6;
+}
+
+/* --- KPI tile ------------------------------------------------ */
+.kpi {
+  padding: 22px 22px 18px;
+  border: 1px solid var(--rule);
+  background: var(--ink-card);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 168px;
+}
+.kpi::before {
+  content: '';
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 14px; height: 14px;
+  border: 1px solid var(--bone-mute);
+  border-right: none; border-bottom: none;
+}
+.kpi__label {
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.kpi__id {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--bone-faint);
+  margin-bottom: 14px;
+}
+.kpi__num {
+  font-family: var(--mono);
+  font-size: 38px;
+  font-weight: 500;
+  color: var(--bone-bright);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.kpi__num small {
+  font-size: 14px;
+  color: var(--bone-dim);
+  font-weight: 400;
+  margin-left: 4px;
+  letter-spacing: 0;
+}
+.kpi__unit {
+  margin-top: 4px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--bone-mute);
+  text-transform: uppercase;
+}
+.kpi__defn {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px dashed var(--rule);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+.kpi--good .kpi__num  { color: var(--chartreuse); }
+.kpi--warn .kpi__num  { color: var(--amber); }
+
+/* --- code blocks --------------------------------------------- */
+.code {
+  background: var(--ink-raised);
+  border: 1px solid var(--rule);
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--bone);
+  overflow-x: auto;
+  position: relative;
+}
+.code::before {
+  content: attr(data-label);
+  position: absolute;
+  top: -1px; right: -1px;
+  background: var(--ink);
+  border: 1px solid var(--rule);
+  font-family: var(--sans);
+  font-size: 8px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+  padding: 3px 9px;
+}
+.code .k  { color: var(--teal); }
+.code .s  { color: var(--chartreuse); }
+.code .n  { color: var(--amber); }
+.code .c  { color: var(--bone-mute); font-style: italic; }
+
+/* --- locked overlay (out-of-scope visualization) ------------- */
+.locked-strip {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--locked) 0 8px,
+    transparent 8px 16px
+  );
+  border: 1px solid var(--bone-faint);
+  padding: 9px 14px;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--locked-fg);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.locked-strip::before {
+  content: '';
+  width: 11px; height: 11px;
+  border: 1.5px solid var(--locked-fg);
+  position: relative;
+  display: inline-block;
+}
+
+/* --- action footer (apply / hold) ---------------------------- */
+.fp__actions {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+}
+.fp__actions .meta {
+  flex: 1;
+  font-family: var(--sans);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-mute);
+}
+.fp__actions .meta b { color: var(--amber); }
+
+/* --- segmented control --------------------------------------- */
+.seg {
+  display: inline-flex;
+  border: 1px solid var(--rule-strong);
+}
+.seg__opt {
+  padding: 5px 12px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--bone-dim);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  border-right: 1px solid var(--rule-strong);
+  background: var(--ink-raised);
+}
+.seg__opt:last-child { border-right: none; }
+.seg__opt.active { background: var(--chartreuse); color: var(--ink); font-weight: 600; }
+.seg__opt:hover:not(.active) { background: var(--ink-overlay); color: var(--bone); }
+  </style>
+</helmet>
+<div style="width:1440px; min-height:1800px; background:#0E0E0C; color:#E8E4D4; font-family:'IBM Plex Mono', ui-monospace, 'JetBrains Mono', 'Consolas', monospace; font-size:13px; line-height:1.55; font-weight:400; letter-spacing:0.01em; display:flex; flex-direction:column; background-image:radial-gradient(circle at 50% 0%, rgba(125, 216, 198, 0.025), transparent 60%), repeating-linear-gradient(0deg, transparent 0 23px, rgba(255,252,240,0.012) 23px 24px);">
+
+  <!-- OPBAR -->
+  <header class="opbar">
+    <div class="opbar__brand">
+      <div class="opbar__sigil"></div>
+      <div>
+        <div class="opbar__brand-name">GANGLION</div>
+        <div class="opbar__brand-sub">rule lifecycle · sheet 06</div>
+      </div>
+    </div>
+    <nav class="opbar__nav">
+      <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+      <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+      <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+      <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+      <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+      <a href="./rules.html" class="active"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+      <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+      <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+      <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+      <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+    </nav>
+    <div class="opbar__meta">
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">Held</div><div class="opbar__meta-v t-amber">2</div></div>
+      <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+    </div>
+  </header>
+
+  <main class="page" style="width:100%; display:flex; flex-direction:column; gap:24px;">
+
+    <!-- PAGE HEAD -->
+    <section class="page__head" style="display:grid; grid-template-columns:minmax(0,1fr); gap:24px; align-items:end; margin-bottom:0;">
+      <div>
+        <div class="page__id">SHEET 06</div>
+        <h1 class="page__title">Rule Lifecycle</h1>
+        <p class="page__sub">expand: <b>proposal → blind decision → reviewed port</b> · contract: <b>F⁰/Fᴷ attribution → statistical gate → retire</b></p>
+      </div>
+    </section>
+
+    <!-- SUMMARY STRIP -->
+    <section style="display:flex; flex-direction:column; gap:14px;">
+      <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:24px;">
+        <div class="kpi">
+          <div class="kpi__label">proposed</div>
+          <div class="kpi__id">src: precision.json · n_proposed</div>
+          <div class="kpi__num">9</div>
+          <div class="kpi__unit">rulepatch rows</div>
+          <div class="kpi__defn">proposed_patches.jsonl · incl. retire_rule</div>
+        </div>
+        <div class="kpi kpi--good">
+          <div class="kpi__label">accepted</div>
+          <div class="kpi__id">src: precision.json · accepted_*</div>
+          <div class="kpi__num">5 <small>/</small> 6</div>
+          <div class="kpi__unit">blind / after preview</div>
+          <div class="kpi__defn">patch_decisions.jsonl · latest per patch</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__label">ported</div>
+          <div class="kpi__id">src: precision.json · ported</div>
+          <div class="kpi__num">4</div>
+          <div class="kpi__unit">applied_in set</div>
+          <div class="kpi__defn">reviewed code edit · commit_sha referenced</div>
+        </div>
+        <div class="kpi kpi--warn">
+          <div class="kpi__label">retire candidates</div>
+          <div class="kpi__id">src: corrections.summary.json</div>
+          <div class="kpi__num">1 <small>· insufficient 2</small></div>
+          <div class="kpi__unit">by_hook · statistical gate</div>
+          <div class="kpi__defn">n_active ≥ 30 · CP95 &lt; τ · CI ≥ −δ · seeds</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span class="t-eng-sm t-mute">precision.json</span>
+        <span class="tag">precision@0.7 = <b class="t-bright" style="font-weight:500;">0.71</b> · recall vs operator stack <b class="t-bright" style="font-weight:500;">5/7</b></span>
+      </div>
+    </section>
+
+    <!-- TWO COLUMNS -->
+    <section style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:24px; align-items:start;">
+
+      <!-- LEFT · EXPAND -->
+      <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:12px; border-bottom:1px solid #2A2A26;">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div class="panel__head-title">EXPAND <small>proposed_patches.jsonl</small></div>
+            <div class="t-eng-sm t-mute">proposal → blind decision → reviewed port</div>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="t-eng-sm t-mute">stage</span>
+              <div class="seg"><span class="seg__opt active" style="display:inline-flex; align-items:center; min-height:32px;">blind</span><span class="seg__opt" style="display:inline-flex; align-items:center; min-height:32px;">after_preview</span></div>
+            </div>
+            <div class="t-eng-sm t-mute">preview hidden until a blind decision is recorded</div>
+          </div>
+        </div>
+
+        <!-- CARD A -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">pt-3a91e7 · add_alias <small>set_light · room</small></div>
+            <div class="panel__head-tools"><span class="tag tag--in">accepted · awaiting port</span></div>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:14px;">
+            <div style="display:grid; grid-template-columns:124px minmax(0,1fr); gap:6px 12px; font-size:12px; align-items:baseline;">
+              <div class="t-eng-sm t-mute">operation</div><div class="t-bright">add_alias</div>
+              <div class="t-eng-sm t-mute">target_tool · arg</div><div>set_light <span class="t-mute">·</span> room</div>
+              <div class="t-eng-sm t-mute">payload</div><div style="overflow-wrap:anywhere;">{"안방": "bedroom"}</div>
+              <div class="t-eng-sm t-mute">source_failure_type</div><div><span class="tag tag--fail">alias_unrecognised</span></div>
+              <div class="t-eng-sm t-mute">evidence</div><div>confidence <b class="t-bright" style="font-weight:500;">0.86</b> <span class="t-mute">·</span> failure_count <b class="t-bright" style="font-weight:500;">7</b> <span class="t-mute">·</span> support_share <b class="t-bright" style="font-weight:500;">0.78</b></div>
+              <div class="t-eng-sm t-mute">example_trace_ids</div><div><a href="./traces.html" class="t-teal">tr-4b7f…</a> <a href="./traces.html" class="t-teal">tr-91ce…</a> <span class="t-mute">+5</span></div>
+            </div>
+            <div class="code" data-label="edit hint" style="white-space:pre-wrap; overflow-wrap:anywhere;">EnumArg.aliases += {<span class="s">"안방"</span>: <span class="s">"bedroom"</span>}</div>
+            <div class="fp__actions" style="margin-top:0;">
+              <div class="meta">stage blind · decided_by kist</div>
+              <button class="btn btn--primary" style="min-height:32px;">[a] accept</button>
+              <button class="btn" style="min-height:32px;">[h] hold</button>
+              <button class="btn" style="min-height:32px;">[r] reject</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD B -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">pt-5e0c1a · set_default <small>set_light · state</small></div>
+            <div class="panel__head-tools"><span class="tag tag--warn">held</span></div>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:14px;">
+            <div style="display:grid; grid-template-columns:124px minmax(0,1fr); gap:6px 12px; font-size:12px; align-items:baseline;">
+              <div class="t-eng-sm t-mute">operation</div><div class="t-bright">set_default</div>
+              <div class="t-eng-sm t-mute">target_tool</div><div>set_light</div>
+              <div class="t-eng-sm t-mute">payload</div><div style="overflow-wrap:anywhere;">{"arg": "state", "value": "on", "when": "brightness present"}</div>
+              <div class="t-eng-sm t-mute">source_failure_type</div><div><span class="tag tag--fail">missing_required_arg</span></div>
+              <div class="t-eng-sm t-mute">evidence</div><div>confidence <b class="t-bright" style="font-weight:500;">0.74</b> <span class="t-mute">·</span> failure_count <b class="t-bright" style="font-weight:500;">5</b> <span class="t-mute">·</span> support_share <b class="t-bright" style="font-weight:500;">0.83</b></div>
+            </div>
+            <div class="code" data-label="edit hint" style="white-space:pre-wrap; overflow-wrap:anywhere;">defaults_when_missing += (<span class="s">"state"</span>, <span class="s">"on"</span>, <span class="c">&lt;brightness present&gt;</span>)</div>
+            <div class="fp__actions" style="margin-top:0;">
+              <div class="meta">stage blind · decided_by kist</div>
+              <button class="btn" style="min-height:32px;">[a] accept</button>
+              <button class="btn" style="min-height:32px; background:#F4B860; color:#0E0E0C; border-color:#F4B860;">[h] hold</button>
+              <button class="btn" style="min-height:32px;">[r] reject</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD C -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">pt-77c0b2 · ESCALATE <small>create_scene · actions</small></div>
+            <div class="panel__head-tools"><span class="tag tag--lock">escalated</span></div>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:14px;">
+            <div style="display:grid; grid-template-columns:124px minmax(0,1fr); gap:6px 12px; font-size:12px; align-items:baseline;">
+              <div class="t-eng-sm t-mute">operation</div><div class="t-bright">ESCALATE</div>
+              <div class="t-eng-sm t-mute">target_tool</div><div>create_scene</div>
+              <div class="t-eng-sm t-mute">reason</div><div>patch would change ToolSpec shape (nested actions)</div>
+              <div class="t-eng-sm t-mute">source_failure_type</div><div><span class="tag tag--fail">type_mismatch</span></div>
+            </div>
+            <div class="locked-strip"><span>contract patch not applicable → label, then retrain</span></div>
+            <div class="fp__actions" style="margin-top:0;">
+              <div class="meta">no contract decision · PatchNotApplicableError</div>
+              <button class="btn btn--ghost" style="min-height:32px;">→ send to label queue</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="locked-strip"><span>accept changes nothing — porting is a reviewed code edit; POST /api/patches/{id}/ported {commit_sha} sets applied_in</span></div>
+
+      </div>
+
+      <!-- RIGHT · CONTRACT -->
+      <div style="display:flex; flex-direction:column; gap:16px; min-width:0;">
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:16px; padding-bottom:12px; border-bottom:1px solid #2A2A26;">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div class="panel__head-title">CONTRACT <small>corrections.summary.json</small></div>
+            <div class="t-eng-sm t-mute">attempts[0] only · hooks: defaults / strip / prompt_correction</div>
+          </div>
+          <div class="t-eng-sm t-mute" style="flex-shrink:0;">F⁰ = model alone · Fᴷ = model + hooks</div>
+        </div>
+
+        <!-- (1) ATTRIBUTION TABLE -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">attribution by hook <small>by_hook · conservative / rewriting</small></div>
+            <div class="panel__head-tools"><span>rescues A→B · regressions in B</span></div>
+          </div>
+          <div class="panel__body panel__body--flush" style="overflow:hidden;">
+            <table class="dtable" style="table-layout:fixed; width:100%;">
+              <colgroup>
+                <col style="width:144px;">
+                <col style="width:88px;">
+                <col style="width:60px;">
+                <col style="width:68px;">
+                <col style="width:70px;">
+                <col style="width:78px;">
+                <col style="width:166px;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th style="padding-left:6px; padding-right:6px;">hook</th>
+                  <th style="padding-left:6px; padding-right:6px;">class</th>
+                  <th style="padding-left:6px; padding-right:6px;">n_active</th>
+                  <th style="padding-left:6px; padding-right:6px;">necessary</th>
+                  <th style="padding-left:6px; padding-right:6px;">rescues A→B</th>
+                  <th style="padding-left:6px; padding-right:6px;">regressions</th>
+                  <th style="padding-left:6px; padding-right:6px;">verdict</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:8px 6px;"><div class="t-bright">set_light</div><div class="t-dim" style="font-size:10px;">strip_unknown_args</div></td>
+                  <td style="padding:8px 6px;"><span class="t-dim" style="font-size:10px;">conservative</span></td>
+                  <td style="padding:8px 6px;">41</td>
+                  <td style="padding:8px 6px;">0</td>
+                  <td style="padding:8px 6px;">6 → <span class="t-bright">0</span></td>
+                  <td style="padding:8px 6px;">0</td>
+                  <td style="padding:8px 6px;"><span class="tag tag--warn">RETIRE CANDIDATE</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 6px;"><div class="t-bright">set_light</div><div class="t-dim" style="font-size:10px;">defaults_when_missing<wbr>(state)</div></td>
+                  <td style="padding:8px 6px;"><span class="t-dim" style="font-size:10px;">conservative</span></td>
+                  <td style="padding:8px 6px;">38</td>
+                  <td style="padding:8px 6px;">12</td>
+                  <td style="padding:8px 6px;">14 → 11</td>
+                  <td style="padding:8px 6px;">0</td>
+                  <td style="padding:8px 6px;"><span class="t-dim">keep</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 6px;"><div class="t-bright">schedule_light</div><div class="t-dim" style="font-size:10px;">defaults_when_missing<wbr>(state)</div></td>
+                  <td style="padding:8px 6px;"><span class="t-dim" style="font-size:10px;">conservative</span></td>
+                  <td style="padding:8px 6px;">12</td>
+                  <td style="padding:8px 6px;">3</td>
+                  <td style="padding:8px 6px;">3 → 1</td>
+                  <td style="padding:8px 6px;">0</td>
+                  <td style="padding:8px 6px;"><div style="display:flex; flex-direction:column; align-items:flex-start; gap:4px;"><span class="tag tag--ghost">insufficient evidence</span><span class="t-mute" style="font-size:10px;">n_active &lt; 30</span></div></td>
+                </tr>
+                <tr>
+                  <td style="padding:8px 6px;"><div class="t-bright">set_light</div><div class="t-dim" style="font-size:10px;">prompt_correction</div></td>
+                  <td style="padding:8px 6px;"><span class="t-amber" style="font-size:10px;">rewriting</span></td>
+                  <td style="padding:8px 6px;">9</td>
+                  <td style="padding:8px 6px;">2</td>
+                  <td style="padding:8px 6px;">2 → 2</td>
+                  <td style="padding:8px 6px;"><span class="t-verm">1</span></td>
+                  <td style="padding:8px 6px;"><span class="tag tag--ghost">insufficient evidence</span></td>
+                </tr>
+                <tr class="row-ghost">
+                  <td style="padding:8px 6px;"><div>shared</div><div class="t-dim" style="font-size:10px;">≥2 hooks</div></td>
+                  <td style="padding:8px 6px;">—</td>
+                  <td style="padding:8px 6px;">4</td>
+                  <td style="padding:8px 6px;">—</td>
+                  <td style="padding:8px 6px;">—</td>
+                  <td style="padding:8px 6px;">—</td>
+                  <td style="padding:8px 6px;"><span class="t-mute">not attributed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- (2) RETIRE CANDIDATE -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">retire candidate <small>set_light · strip_unknown_args</small></div>
+            <div class="panel__head-tools"><span class="tag tag--in">RulePatch · retire_rule</span></div>
+          </div>
+          <div class="panel__body" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:grid; grid-template-columns:20px minmax(0,1fr); gap:0 10px; font-size:12px; border-top:1px solid #2A2A26;">
+              <div class="t-chart" style="padding:8px 0; border-bottom:1px dashed #2A2A26;">✓</div>
+              <div style="padding:8px 0; border-bottom:1px dashed #2A2A26;">n_active_B = <b class="t-bright" style="font-weight:500;">41</b> <span class="t-mute">· ≥ 30</span></div>
+
+              <div class="t-chart" style="padding:8px 0; border-bottom:1px dashed #2A2A26;">✓</div>
+              <div style="padding:8px 0; border-bottom:1px dashed #2A2A26;">rescues_B = <b class="t-bright" style="font-weight:500;">0/41</b> <span class="t-mute">·</span> Clopper–Pearson 95% upper <b class="t-bright" style="font-weight:500;">8.6%</b> &lt; τ 10%</div>
+
+              <div class="t-chart" style="padding:8px 0; border-bottom:1px dashed #2A2A26;">✓</div>
+              <div style="padding:8px 0; border-bottom:1px dashed #2A2A26;">rescues_A = <b class="t-bright" style="font-weight:500;">6</b> &gt; 0</div>
+
+              <div class="t-chart" style="padding:8px 0; border-bottom:1px dashed #2A2A26;">✓</div>
+              <div style="padding:8px 0; border-bottom:1px dashed #2A2A26;">EM⁽⁰⁾_B − EM⁽ᴷ⁾_A = <b class="t-bright" style="font-weight:500;">+0.4 pp</b> <span class="t-mute">·</span> paired bootstrap CI <b class="t-bright" style="font-weight:500;">[−0.3, +1.1]</b> ≥ −δ (1 pp)</div>
+
+              <div class="t-chart" style="padding:8px 0; border-bottom:1px dashed #2A2A26;">✓</div>
+              <div style="padding:8px 0; border-bottom:1px dashed #2A2A26;">seeds <b class="t-bright" style="font-weight:500;">3/3</b> same direction</div>
+
+              <div class="t-teal" style="padding:8px 0;">→</div>
+              <div style="padding:8px 0;">issued as <span class="t-bright">RulePatch(operation='retire_rule')</span> <a href="#" class="t-teal">pt-c47d…</a></div>
+            </div>
+            <div class="fp__actions" style="margin-top:0;">
+              <div class="meta">stage blind · removal is a reviewed edit</div>
+              <button class="btn" style="min-height:32px;">[t] retire</button>
+              <button class="btn" style="min-height:32px;">[h] hold</button>
+              <button class="btn" style="min-height:32px;">[r] reject</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- (3) BY GOLD ORIGIN -->
+        <div class="panel">
+          <div class="panel__head">
+            <div class="panel__head-title">by gold origin <small>attempts[0]</small></div>
+            <div class="panel__head-tools"><span>rescue = F⁰ fail → Fᴷ pass · regression = F⁰ pass → Fᴷ fail</span></div>
+          </div>
+          <div class="panel__body panel__body--flush" style="overflow:hidden;">
+            <table class="dtable" style="width:100%;">
+              <thead>
+                <tr><th>origin</th><th class="num" style="text-align:right;">em_f0</th><th class="num" style="text-align:right;">em_fk</th><th class="num" style="text-align:right;">rescue</th><th class="num" style="text-align:right;">regression</th></tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="t-bright">dataset</span></td><td class="num">0.804</td><td class="num t-chart">0.872</td><td class="num">41</td><td class="num t-verm">7</td></tr>
+                <tr><td><span class="t-bright">human</span> <span class="t-mute">(saw_f0)</span></td><td class="num">0.72</td><td class="num t-chart">0.78</td><td class="num">4</td><td class="num t-verm">1</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+</body>
+</html>

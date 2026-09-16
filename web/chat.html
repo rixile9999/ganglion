@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Chat — Sheet 09</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+<style>
+/* page-specific elements only — everything else comes from assets/style.css */
+[hidden] { display: none !important; }   /* .chipbar/.locked-strip set display:flex */
+.chat { display: grid; grid-template-columns: minmax(0,1fr) 420px; gap: 24px; align-items: start; }
+@media (max-width: 1100px) { .chat { grid-template-columns: 1fr; } }
+.ctxbar {
+  display: flex; flex-wrap: wrap; justify-content: space-between; align-items: stretch;
+  min-height: 52px; border: 1px solid var(--rule); background: var(--ink-raised);
+}
+.ctxbar__group { display: flex; align-items: stretch; flex-wrap: wrap; min-height: 50px; }
+.ctxbar__mode {
+  display: flex; align-items: center; min-height: 50px; padding: 0 12px;
+  border-left: 1px solid var(--rule-soft);
+}
+.ctxbar select {
+  background: var(--ink); border: 1px solid var(--rule); padding: 3px 6px;
+  font-family: var(--mono); font-size: 11px; color: var(--bone-bright); margin-top: 2px;
+}
+.prompt-input {
+  min-height: 96px; width: 100%; resize: vertical; padding: 12px 14px;
+  border: 1px solid var(--rule-strong); background: var(--ink-raised);
+  font-family: var(--mono); font-size: 13px; line-height: 1.55; color: var(--bone-bright);
+}
+.prompt-input:focus { border-color: var(--teal); }
+.chipbar {
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 20px;
+  border-bottom: 1px solid var(--rule); background: var(--ink-raised);
+}
+.hooks-strip {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 14px;
+  border: 1px solid var(--rule); border-top: none; background: var(--ink-raised);
+}
+.acc { border: 1px solid var(--rule); background: var(--ink-raised); }
+.acc + .acc { margin-top: 8px; }
+.acc > summary {
+  list-style: none; cursor: pointer; min-height: 36px; padding: 9px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: var(--sans); font-size: 9px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--bone-dim);
+}
+.acc > summary::-webkit-details-marker { display: none; }
+.acc > summary::after { content: '▾'; color: var(--bone-mute); }
+.acc[open] > summary::after { content: '▴'; }
+.acc__body {
+  padding: 12px 14px; border-top: 1px solid var(--rule); background: var(--ink);
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.6;
+  white-space: pre-wrap; overflow-wrap: anywhere; color: var(--bone-dim); max-height: 340px; overflow: auto;
+}
+.keycap {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 18px;
+  height: 18px; padding: 0 4px; border: 1px solid currentColor; opacity: 0.75; font-size: 10px;
+}
+.vbtn { min-height: 32px; }
+.vbtn--y { color: var(--chartreuse); border-color: var(--chartreuse); }
+.vbtn--n { color: var(--vermillion); border-color: var(--vermillion); }
+.vbtn--u { color: var(--amber); border-color: var(--amber); }
+.vbtn--o { color: var(--teal); border-color: var(--teal); }
+.vbtn--o.on { background: rgba(125,216,198,0.10); }
+.vmeta { display: flex; align-items: stretch; min-height: 32px; border: 1px solid var(--rule); background: var(--ink-raised); }
+.editor {
+  width: 100%; min-height: 84px; resize: vertical; padding: 8px 10px;
+  border: 1px solid var(--rule-strong); background: var(--ink);
+  font-family: var(--mono); font-size: 11px; line-height: 1.55; color: var(--bone-dim);
+}
+.editor:focus { border-color: var(--teal); color: var(--bone); }
+.mrow {
+  display: flex; align-items: center; gap: 12px; min-height: 56px;
+  padding: 7px 12px 7px 10px; border-left: 2px solid transparent;
+  border-bottom: 1px solid var(--rule); cursor: pointer;
+}
+.mrow:hover { background: var(--ink-raised); }
+.mrow.active { border-left-color: var(--teal); background: var(--ink-card); }
+.mrow__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bone-mute); flex-shrink: 0; }
+.mrow__dot--live { background: var(--teal); }
+.mrow__dot--down { background: var(--vermillion); }
+.mrow__body { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 0; }
+.mrow__id { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; font-weight: 500; color: var(--bone-bright); }
+.mrow__tags { display: flex; align-items: center; justify-content: flex-end; gap: 6px; flex-wrap: wrap; }
+.sesrow {
+  display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 20px;
+  border-bottom: 1px solid var(--rule-soft); cursor: pointer;
+}
+.sesrow:hover { background: var(--ink-raised); }
+.sesrow.active { background: var(--ink-overlay); }
+.sesrow__p { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--bone); }
+.runline { display: flex; align-items: center; gap: 12px; }
+.runline__note { flex: 1; min-width: 0; }
+</style>
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">chat console · sheet 09</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html" class="active"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Session</div><div class="opbar__meta-v" id="meta-session">—</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Traces</div><div class="opbar__meta-v" id="meta-traces">0</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC</div><div class="opbar__meta-v" id="meta-clock">—</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 09 <span>◦</span> module 01 / lm <span>◦</span> live</div>
+      <h1 class="page__title">chat</h1>
+      <p class="page__sub">user text → Action IR → tool calls · every result is a <b>Trace(source='lm.invoke')</b> written to <b>runs/traces/&lt;catalog&gt;/console/&lt;session&gt;/</b>. Serving: <b>POST /api/sessions</b> then <b>POST /api/chat</b> (<b>docs/tasks/lm_request_serve.md</b>); the verdict bar writes a <b>LabelRecord</b> through <b>POST /api/labels</b>.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/CONSOLE</b><br>
+      Sheet <b>09</b> · live · rev 1.0<br>
+      Spec <b>docs/tasks/console_operator.md</b><br>
+      Source <b>ganglion/console/api.py</b>
+    </div>
+  </section>
+
+  <div id="err" hidden class="mb-16"></div>
+
+  <div class="chat">
+
+    <!-- ============ LEFT COLUMN ============ -->
+    <div class="stack-24">
+
+      <!-- (a) context strip -->
+      <div class="ctxbar">
+        <div class="ctxbar__group">
+          <div class="opbar__meta-cell">
+            <div class="opbar__meta-k">Catalog</div>
+            <div class="opbar__meta-v"><select id="catalog-select" aria-label="catalog"></select></div>
+          </div>
+          <div class="opbar__meta-cell" style="min-width:220px">
+            <div class="opbar__meta-k">Contract</div>
+            <div class="opbar__meta-v" id="ctx-contract">—</div>
+          </div>
+          <div class="opbar__meta-cell" style="min-width:220px">
+            <div class="opbar__meta-k">Model</div>
+            <div class="opbar__meta-v" id="ctx-model">—</div>
+          </div>
+        </div>
+        <div class="ctxbar__mode">
+          <span class="seg" id="mode-seg"></span>
+        </div>
+      </div>
+
+      <!-- (b) prompt -->
+      <section class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">prompt <small>user text</small></div>
+          <div class="panel__head-tools"><span id="run-state">idle</span></div>
+        </div>
+        <div class="panel__body stack-12">
+          <textarea id="prompt" class="prompt-input" spellcheck="false" placeholder="거실 불 70%로 켜줘"></textarea>
+          <div class="runline">
+            <div class="t-eng-sm t-mute runline__note">Ctrl+Enter · 1 prompt per line · batch ≤ 20</div>
+            <button class="btn btn--ghost" id="clear-btn" type="button">clear</button>
+            <button class="btn btn--primary" id="run-btn" type="button">Run</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- (c) result -->
+      <section class="panel" id="result-panel">
+        <div class="panel__head">
+          <div class="panel__head-title" id="result-title">result <small>no request yet</small></div>
+          <div class="panel__head-tools" id="result-tools"></div>
+        </div>
+        <div class="chipbar" id="result-chips" hidden></div>
+        <div class="panel__body stack-16" id="result-body">
+          <div class="idle"><span class="t-eng">no trace yet</span>Run a prompt — the result, its F⁰/Fᴷ diff and the verdict bar appear here.</div>
+        </div>
+      </section>
+
+      <!-- (d) verdict -->
+      <section class="panel" id="verdict-panel" hidden>
+        <div class="panel__body stack-12">
+          <div class="flex-c" style="align-items:baseline">
+            <span class="t-eng-sm t-chart">Verdict</span>
+            <span class="t-mute fs-11" id="verdict-target" style="overflow-wrap:anywhere"></span>
+          </div>
+
+          <div class="flex-bw gap-16" style="flex-wrap:wrap; align-items:stretch">
+            <div class="flex-c gap-8" style="flex-wrap:wrap">
+              <button class="btn vbtn vbtn--y" id="v-correct" type="button"><span class="keycap">y</span>correct</button>
+              <button class="btn vbtn vbtn--n" id="v-incorrect" type="button"><span class="keycap">n</span>incorrect</button>
+              <button class="btn vbtn vbtn--u" id="v-unsure" type="button"><span class="keycap">u</span>unsure</button>
+              <button class="btn vbtn vbtn--o on" id="v-order" type="button" aria-pressed="true"><span class="keycap">o</span>order-sensitive</button>
+            </div>
+            <div class="vmeta">
+              <div class="opbar__meta-cell"><div class="opbar__meta-k">labeler</div><div class="opbar__meta-v" id="v-labeler">—</div></div>
+              <div class="opbar__meta-cell"><div class="opbar__meta-k">zone</div><div class="opbar__meta-v" id="v-zone">—</div></div>
+              <div class="opbar__meta-cell"><div class="opbar__meta-k">family</div><div class="opbar__meta-v" id="v-family">—</div></div>
+              <div class="opbar__meta-cell"><div class="opbar__meta-k">time</div><div class="opbar__meta-v" id="v-time">0:00</div></div>
+            </div>
+          </div>
+
+          <div class="grid-asym gap-16">
+            <div class="stack-12" style="min-width:0">
+              <div class="t-eng-sm t-mute" id="editor-label">expected editor · prefilled with F⁰ plan</div>
+              <textarea id="expected" class="editor" spellcheck="false"></textarea>
+            </div>
+            <div class="stack-12" style="min-width:0">
+              <div class="t-eng-sm t-mute">evidence</div>
+              <div class="chips" id="evidence"></div>
+              <div class="t-eng-sm t-mute mt-8">note</div>
+              <input id="note" class="editor" style="min-height:0;height:30px" placeholder="optional">
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ============ RIGHT COLUMN ============ -->
+    <div class="stack-24">
+
+      <!-- (e) model registry / picker -->
+      <section class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">model <small id="models-count">registry</small></div>
+          <div class="panel__head-tools"><span class="mono" style="text-transform:none">configs/models.yaml</span></div>
+        </div>
+        <div class="panel__body panel__body--flush">
+          <div id="model-list"></div>
+        </div>
+        <div class="panel__body" id="model-detail"></div>
+      </section>
+
+      <!-- (f) session -->
+      <section class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title" id="session-title">session <small>not started</small></div>
+          <div class="panel__head-tools"><span>this page's results</span></div>
+        </div>
+        <div class="panel__body panel__body--flush">
+          <div id="session-list"><div class="idle" style="border:none"><span class="t-eng">empty</span>Results of this page's prompts are listed here.</div></div>
+        </div>
+      </section>
+
+      <div class="locked-strip" id="rules-note" hidden>rules client = single-call stand-in</div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 09 · chat console · <b>docs/tasks/console_operator.md</b></div>
+  <div>live · POST /api/sessions → /api/chat → /api/labels · single writer thread</div>
+</footer>
+
+<script src="./assets/api.js"></script>
+<script>
+(function () {
+  'use strict';
+  var API = window.GanglionAPI;
+  var esc = API.escapeHtml;
+  var fmt = API.fmt;
+
+  var MAX_BATCH = 20;
+
+  var el = {};
+  ['err','catalog-select','ctx-contract','ctx-model','mode-seg','prompt','run-btn','clear-btn',
+   'run-state','result-panel','result-title','result-tools','result-chips','result-body',
+   'verdict-panel','verdict-target','v-correct','v-incorrect','v-unsure','v-order','v-labeler',
+   'v-zone','v-family','v-time','expected','editor-label','evidence','note','model-list',
+   'model-detail','models-count','session-list','session-title','rules-note','meta-session',
+   'meta-traces','meta-clock'].forEach(function (id) {
+    el[id] = document.getElementById(id);
+  });
+
+  var state = {
+    catalogs: [],
+    catalog: null,        // the /api/catalogs row of the selected catalog
+    models: [],
+    model: null,          // the /api/models row of the selected model
+    mode: 'dsl',          // "dsl" | "dsl+repair" | "native"
+    sessions: {},         // "<catalog>|<model>" -> {session_id, run_id}
+    results: [],          // {prompt, res, label} — this page's chat responses
+    active: -1,
+    health: {},           // model_id -> health payload
+    status: { text: '', cls: 't-mute' },   // model-panel status line (survives re-renders)
+    orderSensitive: true,
+    labelStart: 0,
+    busy: false
+  };
+
+  // ---- shared plumbing --------------------------------------
+  function fail(err) { API.showError(el.err, err); }
+  function ok() { API.clearError(el.err); }
+
+  function tickClock() {
+    el['meta-clock'].textContent = new Date().toISOString().slice(11, 19);
+  }
+  setInterval(tickClock, 1000); tickClock();
+
+  setInterval(function () {
+    if (state.active >= 0 && state.labelStart) {
+      el['v-time'].textContent = fmt.clock(Date.now() - state.labelStart);
+    }
+  }, 1000);
+
+  /** One console session per (catalog, model, mode): the session's manifest
+      records `decoding.repair`, so switching the seg must open a new run. */
+  function sessionKey() {
+    return (state.catalog ? state.catalog.catalog_id : '') + '|' +
+      (state.model ? state.model.model_id : '') + '|' + state.mode;
+  }
+
+  // ---- catalogs ----------------------------------------------
+  function loadCatalogs() {
+    return API.get('/api/catalogs').then(function (payload) {
+      state.catalogs = payload.catalogs || [];
+      if (!state.catalogs.length) {
+        el['catalog-select'].innerHTML = '<option value="">none</option>';
+        el['ctx-contract'].textContent = 'no catalogs';
+        return;
+      }
+      var wanted = API.ctx.catalog;
+      var found = state.catalogs.filter(function (row) { return row.catalog_id === wanted; })[0];
+      state.catalog = found || state.catalogs[0];
+      el['catalog-select'].innerHTML = state.catalogs.map(function (row) {
+        return '<option value="' + esc(row.catalog_id) + '"' +
+          (row.catalog_id === state.catalog.catalog_id ? ' selected' : '') + '>' +
+          esc(row.catalog_id) + '</option>';
+      }).join('');
+      renderCatalogCell();
+      API.saveCtx({ catalog: state.catalog.catalog_id });
+    });
+  }
+
+  function renderCatalogCell() {
+    var c = state.catalog;
+    if (!c) { el['ctx-contract'].textContent = '—'; return; }
+    el['ctx-contract'].innerHTML = esc(c.fingerprint) + ' <span class="t-mute">· ' +
+      esc(String(c.n_tools)) + ' tools · allow_empty_calls ' + esc(String(c.allow_empty_calls)) + '</span>';
+  }
+
+  // ---- models -------------------------------------------------
+  /** local_hf health status -> the chip label shown in the picker. */
+  var LOAD_STATE = { loaded: 'loaded', not_loaded: 'not loaded', unavailable: 'unavailable' };
+
+  function kindBadge(row) {
+    if (row.kind === 'rules') return '<span class="tag">rules</span>';
+    if (row.kind === 'local_hf') return '<span class="tag tag--event">local</span>';
+    return '<span class="tag">api</span>';
+  }
+
+  function modelTags(row) {
+    var tags = [];
+    if (row.available === false) {
+      tags.push('<span class="tag tag--warn">unavailable: ' + esc(row.available_detail || '') + '</span>');
+    }
+    if (row.fingerprint_match === false) {
+      var trained = (row.trained_on && row.trained_on.catalog_fingerprint) || '';
+      tags.push('<span class="tag tag--warn">trained on ' + esc(fmt.short(trained, 10)) + ' ≠ active</span>');
+    } else if (row.fingerprint_match === true) {
+      tags.push('<span class="tag tag--in">trained on active ✓</span>');
+    }
+    if (row.kind === 'local_hf') {
+      var health = state.health[row.model_id];
+      var loaded = health && health.status === 'loaded';
+      tags.push('<span class="tag ' + (loaded ? 'tag--in' : 'tag--ghost') + '">' +
+        esc(LOAD_STATE[health ? health.status : 'not_loaded'] || health.status) + '</span>');
+    }
+    if (row.adapter_dir) tags.push('<span class="tag tag--ghost">LoRA ' + esc(fmt.short(row.adapter_dir, 26)) + '</span>');
+    if (!tags.length && row.notes) tags.push('<span class="tag tag--ghost">' + esc(fmt.short(row.notes, 44)) + '</span>');
+    return tags.join('');
+  }
+
+  function dotClass(row) {
+    var health = state.health[row.model_id];
+    if (!health) return row.available === false ? '' : 'mrow__dot--live';
+    if (health.status === 'live' || health.status === 'loaded') return 'mrow__dot--live';
+    if (health.status === 'down' || health.status === 'unavailable') return 'mrow__dot--down';
+    return '';
+  }
+
+  function renderModels() {
+    el['models-count'].textContent = state.models.length + ' registered';
+    if (!state.models.length) {
+      el['model-list'].innerHTML = '<div class="idle" style="border:none"><span class="t-eng">no model</span>' +
+        'No registry entry serves this catalog — check configs/models.yaml.</div>';
+      el['model-detail'].innerHTML = '';
+      return;
+    }
+    el['model-list'].innerHTML = state.models.map(function (row, index) {
+      return '<div class="mrow' + (state.model && row.model_id === state.model.model_id ? ' active' : '') +
+        '" data-index="' + index + '" tabindex="0" role="button">' +
+        '<span class="mrow__dot ' + dotClass(row) + '"></span>' +
+        '<div class="mrow__body">' +
+          '<div class="mrow__id">' + esc(row.model_id) + kindBadge(row) +
+            '<span class="tag">' + esc(row.client) + '</span></div>' +
+          '<div class="mrow__tags">' + modelTags(row) + '</div>' +
+        '</div></div>';
+    }).join('');
+    Array.prototype.forEach.call(el['model-list'].querySelectorAll('.mrow'), function (node) {
+      node.addEventListener('click', function () { selectModel(Number(node.dataset.index)); });
+      node.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectModel(Number(node.dataset.index)); }
+      });
+    });
+    renderModelDetail();
+  }
+
+  function paramRow(key, valueHtml) {
+    return '<div class="params__row"><div class="params__k">' + esc(key) +
+      '</div><div class="params__v" style="overflow-wrap:anywhere">' + valueHtml + '</div></div>';
+  }
+
+  function renderModelDetail() {
+    var row = state.model;
+    if (!row) { el['model-detail'].innerHTML = ''; return; }
+    var health = state.health[row.model_id];
+    var healthHtml = health
+      ? '<span class="live-dot" style="background:var(--teal)"></span><span class="t-teal">' +
+        esc(health.status) + '</span> <span class="t-mute fs-11">' + esc(fmt.short(health.detail || '', 60)) + '</span>'
+      : '<span class="t-mute">not checked</span>';
+    if (health && (health.status === 'down' || health.status === 'unavailable')) {
+      healthHtml = '<span class="t-verm">' + esc(health.status) + '</span> <span class="t-mute fs-11">' +
+        esc(fmt.short(health.detail || '', 60)) + '</span>';
+    }
+    var rows = [
+      paramRow('kind', esc(row.kind)),
+      paramRow('client', esc(row.client)),
+      paramRow('provider', esc(row.provider))
+    ];
+    if (row.served_model) rows.push(paramRow('served_model', esc(row.served_model)));
+    if (row.base_url) rows.push(paramRow('base_url', esc(row.base_url)));
+    if (row.base_model) rows.push(paramRow('base_model', esc(row.base_model)));
+    if (row.adapter_dir) rows.push(paramRow('adapter_dir', esc(row.adapter_dir)));
+    if (row.kind === 'local_hf') {
+      rows.push(paramRow('device · dtype', esc(row.device + ' · ' + row.dtype)));
+      if (health && health.vram_mb !== undefined && health.vram_mb !== null) {
+        rows.push(paramRow('vram', esc(fmt.int(health.vram_mb)) + ' MB'));
+      }
+    }
+    rows.push(paramRow('model_fingerprint', esc(row.model_fingerprint || '')));
+    rows.push(paramRow('trained_on', row.trained_on
+      ? esc(fmt.json(row.trained_on))
+      : '<span class="t-mute">none — provenance unknown</span>'));
+    rows.push(paramRow('health', healthHtml));
+
+    var buttons = '<button class="btn btn--ghost" id="health-btn" type="button">check health</button>';
+    if (row.kind === 'local_hf') {
+      buttons += '<button class="btn" id="load-btn" type="button">Load</button>' +
+        '<button class="btn btn--ghost" id="unload-btn" type="button">Unload</button>';
+    }
+    el['model-detail'].innerHTML =
+      '<div class="params" style="grid-template-columns:150px minmax(0,1fr)">' + rows.join('') + '</div>' +
+      '<div class="flex-c gap-8 mt-16" style="flex-wrap:wrap">' + buttons +
+      '<span class="fs-11 ' + esc(state.status.cls) + '" id="model-status">' +
+      esc(state.status.text) + '</span></div>';
+
+    var healthBtn = document.getElementById('health-btn');
+    if (healthBtn) healthBtn.addEventListener('click', function () { checkHealth(row.model_id, true); });
+    var loadBtn = document.getElementById('load-btn');
+    if (loadBtn) loadBtn.addEventListener('click', function () { loadLocal(row.model_id); });
+    var unloadBtn = document.getElementById('unload-btn');
+    if (unloadBtn) unloadBtn.addEventListener('click', function () { unloadLocal(row.model_id); });
+  }
+
+  /** Model-panel status line. Kept in state so a re-render (health refresh,
+      row re-paint) does not wipe the "loaded in 3.2 s" confirmation. */
+  function modelStatus(text, cls) {
+    state.status = { text: text || '', cls: cls || 't-mute' };
+    var node = document.getElementById('model-status');
+    if (!node) return;
+    node.className = 'fs-11 ' + state.status.cls;
+    node.textContent = state.status.text;
+  }
+
+  function checkHealth(modelId, verbose) {
+    if (verbose) modelStatus('checking…');
+    return API.get('/api/models/' + encodeURIComponent(modelId) + '/health').then(function (payload) {
+      state.health[modelId] = payload;
+      renderModels();
+      if (verbose) modelStatus(payload.status + ' · ' + (payload.detail || ''));
+      return payload;
+    }, function (err) { fail(err); if (verbose) modelStatus('health check failed', 't-verm'); });
+  }
+
+  function loadLocal(modelId) {
+    modelStatus('loading model… (first load downloads / fills VRAM)', 't-amber');
+    API.post('/api/models/' + encodeURIComponent(modelId) + '/load', {}).then(function (payload) {
+      ok();
+      modelStatus('loaded in ' + payload.seconds + ' s · ' + (payload.device || '') +
+        (payload.vram_mb ? ' · ' + fmt.int(payload.vram_mb) + ' MB' : ''), 't-chart');
+      return checkHealth(modelId, false);
+    }, function (err) { fail(err); modelStatus('load failed', 't-verm'); });
+  }
+
+  function unloadLocal(modelId) {
+    modelStatus('unloading…');
+    API.post('/api/models/' + encodeURIComponent(modelId) + '/unload', {}).then(function (payload) {
+      ok();
+      modelStatus(payload.unloaded ? 'unloaded' : 'was not loaded');
+      return checkHealth(modelId, false);
+    }, function (err) { fail(err); modelStatus('unload failed', 't-verm'); });
+  }
+
+  function loadModels() {
+    var catalogId = state.catalog ? state.catalog.catalog_id : '';
+    return API.get('/api/models', { catalog_id: catalogId }).then(function (payload) {
+      state.models = payload.models || [];
+      var wanted = API.ctx.model;
+      var index = 0;
+      state.models.forEach(function (row, i) { if (row.model_id === wanted) index = i; });
+      if (state.models.length) selectModel(index, true); else renderModels();
+    });
+  }
+
+  function selectModel(index, quiet) {
+    var row = state.models[index];
+    if (!row) return;
+    if (!state.model || state.model.model_id !== row.model_id) state.status = { text: '', cls: 't-mute' };
+    state.model = row;
+    state.mode = row.client === 'native' ? 'native' : (state.mode === 'native' ? 'dsl' : state.mode);
+    API.saveCtx({ model: row.model_id });
+    renderModels();
+    renderModeSeg();
+    renderModelCell();
+    el['rules-note'].hidden = row.kind !== 'rules';
+    // local_hf status is a process-local query (no network, no GPU work), so it
+    // is safe to refresh on selection; api / rules health stays on-demand.
+    if (row.kind === 'local_hf') checkHealth(row.model_id, false);
+    if (!quiet) restoreSessionTitle();
+  }
+
+  function renderModelCell() {
+    var row = state.model;
+    if (!row) { el['ctx-model'].textContent = '—'; return; }
+    var mark = '';
+    if (row.fingerprint_match === false) mark = ' <span class="t-amber">≠ active</span>';
+    else if (row.fingerprint_match === true) mark = ' <span class="t-chart">✓</span>';
+    el['ctx-model'].innerHTML = esc(row.model_id) + ' <span class="t-mute">· ' + esc(row.client) + '</span>' + mark;
+  }
+
+  function renderModeSeg() {
+    var options = state.model && state.model.client === 'native'
+      ? ['native']
+      : ['dsl', 'dsl+repair'];
+    if (options.indexOf(state.mode) === -1) state.mode = options[0];
+    el['mode-seg'].innerHTML = options.map(function (name) {
+      return '<span class="seg__opt' + (name === state.mode ? ' active' : '') +
+        '" data-mode="' + esc(name) + '">' + esc(name) + '</span>';
+    }).join('');
+  }
+
+  el['mode-seg'].addEventListener('click', function (event) {
+    var opt = event.target.closest('.seg__opt');
+    if (!opt) return;
+    state.mode = opt.dataset.mode;
+    renderModeSeg();
+    restoreSessionTitle();
+  });
+
+  el['catalog-select'].addEventListener('change', function () {
+    var id = el['catalog-select'].value;
+    state.catalog = state.catalogs.filter(function (row) { return row.catalog_id === id; })[0] || null;
+    renderCatalogCell();
+    API.saveCtx({ catalog: id, session: '', run: '' });
+    el['meta-session'].textContent = '—';
+    loadModels().catch(fail);
+    restoreSessionTitle();
+  });
+
+  // ---- session + chat ----------------------------------------
+  function ensureSession() {
+    var key = sessionKey();
+    if (state.sessions[key]) return Promise.resolve(state.sessions[key]);
+    return API.post('/api/sessions', {
+      catalog_id: state.catalog.catalog_id,
+      model_id: state.model.model_id,
+      repair: state.mode === 'dsl+repair'
+    }).then(function (payload) {
+      state.sessions[key] = payload;
+      API.saveCtx({ session: payload.session_id, run: payload.run_id });
+      el['meta-session'].textContent = payload.session_id;
+      restoreSessionTitle();
+      return payload;
+    });
+  }
+
+  function restoreSessionTitle() {
+    var session = state.sessions[sessionKey()];
+    var small = el['session-title'].querySelector('small');
+    if (small) small.textContent = session ? session.run_id : 'not started';
+  }
+
+  function setBusy(busy, note) {
+    state.busy = busy;
+    el['run-btn'].disabled = busy;
+    el['run-btn'].classList.toggle('btn--lock', busy);
+    el['run-state'].textContent = note || (busy ? 'running…' : 'idle');
+  }
+
+  function runPrompts() {
+    if (state.busy) return;
+    if (!state.catalog || !state.model) { fail(API.ApiError(0, 'no_model', 'pick a catalog and a model first')); return; }
+    var lines = el.prompt.value.split('\n').map(function (line) { return line.trim(); })
+      .filter(function (line) { return line.length; });
+    if (!lines.length) { fail(API.ApiError(0, 'empty_prompt', 'type a prompt (one per line for a batch)')); return; }
+    var truncated = false;
+    if (lines.length > MAX_BATCH) { lines = lines.slice(0, MAX_BATCH); truncated = true; }
+    ok();
+    if (truncated) fail(API.ApiError(0, 'batch_truncated', 'batch is capped at ' + MAX_BATCH + ' prompts; the first ' + MAX_BATCH + ' were sent'));
+
+    var loading = state.model.kind === 'local_hf' &&
+      (!state.health[state.model.model_id] || state.health[state.model.model_id].status !== 'loaded');
+    setBusy(true, loading ? 'loading model…' : 'running 1/' + lines.length);
+
+    ensureSession().then(function (session) {
+      var chain = Promise.resolve();
+      lines.forEach(function (prompt, index) {
+        chain = chain.then(function () {
+          setBusy(true, (loading && index === 0 ? 'loading model… ' : '') + 'running ' + (index + 1) + '/' + lines.length);
+          return API.post('/api/chat', {
+            session_id: session.session_id,
+            catalog_id: state.catalog.catalog_id,
+            model_id: state.model.model_id,
+            prompt: prompt,
+            repair: state.mode === 'dsl+repair',
+            repair_max_attempts: 1
+          }).then(function (res) {
+            state.results.push({ prompt: prompt, res: res, label: null });
+            state.active = state.results.length - 1;
+            renderSessionList();
+            renderResult();
+            if (res.model_load_seconds !== undefined) {
+              modelStatus('loaded in ' + res.model_load_seconds + ' s', 't-chart');
+              checkHealth(state.model.model_id, false);
+            }
+          });
+        });
+      });
+      return chain;
+    }).then(function () {
+      setBusy(false);
+      el.prompt.value = '';
+      el.prompt.focus();
+    }, function (err) {
+      setBusy(false, 'failed');
+      fail(err);
+    });
+  }
+
+  el['run-btn'].addEventListener('click', runPrompts);
+  el['clear-btn'].addEventListener('click', function () { el.prompt.value = ''; el.prompt.focus(); });
+  el.prompt.addEventListener('keydown', function (event) {
+    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); runPrompts(); }
+  });
+
+  // ---- result rendering ---------------------------------------
+  function chip(label, value, cls) {
+    return '<span class="tag' + (cls ? ' ' + cls : '') + '"><span class="t-mute">' + esc(label) + '</span> ' + esc(value) + '</span>';
+  }
+
+  function renderSessionList() {
+    if (!state.results.length) {
+      el['session-list'].innerHTML = '<div class="idle" style="border:none"><span class="t-eng">empty</span>' +
+        "Results of this page's prompts are listed here.</div>";
+      return;
+    }
+    el['session-list'].innerHTML = state.results.map(function (item, index) {
+      var res = item.res;
+      var calls = API.planCalls(res.plan);
+      var tag = res.error
+        ? '<span class="tag tag--fail">error</span>'
+        : (res.plan === null
+          ? '<span class="tag tag--fail">invalid</span>'
+          : '<span class="tag tag--in">valid</span>');
+      var count = res.plan ? '<span class="tag">' + calls.length + (calls.length === 1 ? ' call' : ' calls') + '</span>' : '';
+      var labelled = item.label ? '<span class="tag tag--event">' + esc(item.label.verdict) + '</span>' : '';
+      return '<div class="sesrow' + (index === state.active ? ' active' : '') + '" data-index="' + index + '" tabindex="0" role="button">' +
+        '<div class="sesrow__p">' + esc(item.prompt) + '</div>' + count + tag + labelled + '</div>';
+    }).join('');
+    Array.prototype.forEach.call(el['session-list'].querySelectorAll('.sesrow'), function (node) {
+      node.addEventListener('click', function () { state.active = Number(node.dataset.index); renderSessionList(); renderResult(); });
+      node.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault(); state.active = Number(node.dataset.index); renderSessionList(); renderResult();
+        }
+      });
+    });
+    el['meta-traces'].textContent = String(state.results.length);
+  }
+
+  function renderResult() {
+    var item = state.results[state.active];
+    if (!item) return;
+    var res = item.res;
+
+    el['result-title'].innerHTML = 'result <small>trace ' + esc(res.trace_id) + '</small>';
+    el['result-tools'].innerHTML =
+      (res.error ? '<span class="tag tag--fail">model failure</span>' : '') +
+      '<span class="tag tag--event" style="text-transform:none">order-sensitive: ' +
+      (res.order_sensitive ? 'yes' : 'no') + '</span>' +
+      (res.repeat_index ? '<span class="tag tag--ghost">repeat ' + esc(String(res.repeat_index)) + '</span>' : '');
+
+    el['result-chips'].hidden = false;
+    el['result-chips'].innerHTML =
+      chip('latency', fmt.ms(res.latency_ms)) +
+      chip('tokens', fmt.tokens(res.input_tokens, res.output_tokens)) +
+      chip('parse_strategy', res.parse_strategy || '—', res.parse_strategy === 'failed' ? 'tag--fail' : '') +
+      chip('model', res.model_id) +
+      chip('fingerprint', res.catalog_fingerprint) +
+      (res.model_load_seconds !== undefined ? chip('model load', res.model_load_seconds + ' s') : '');
+
+    var blocks = [];
+
+    blocks.push('<div class="stack-12"><div class="flex-c" style="align-items:baseline">' +
+      '<span class="t-eng-sm t-dim">prompt</span></div>' +
+      '<div class="code" data-label="user"><span class="t-bright">' + esc(item.prompt) + '</span></div></div>');
+
+    if (res.error) {
+      blocks.push('<div class="callout t-verm"><b>' + esc(res.error) + '</b><br>' +
+        '<span class="t-dim fs-11">the trace was still written — raw output and attempts are preserved below</span></div>');
+    }
+
+    var callSource = res.plan !== null ? res.plan : res.raw_plan;
+    var callNote = res.plan !== null
+      ? 'execution order = list order (ActionPlan.calls is an ordered tuple)'
+      : 'validation failed — showing the unvalidated raw_plan';
+    blocks.push('<div class="stack-12">' +
+      '<div class="flex-c" style="align-items:baseline"><span class="t-eng-sm t-dim">calls</span>' +
+      '<span class="t-mute fs-11">' + esc(callNote) + '</span></div>' +
+      API.renderPlanCalls(callSource, { empty: res.plan === null ? 'no decodable plan' : 'no calls — abstention' }) +
+      '</div>');
+
+    // F⁰ / Fᴷ
+    var diff = API.diffPlans(res.f0_plan, res.plan);
+    var f0Body = res.f0_plan !== null
+      ? '<pre style="font-family:var(--mono);overflow-wrap:anywhere">' + diff.leftHtml + '</pre>'
+      : '<pre class="t-mute" style="font-family:var(--mono);overflow-wrap:anywhere">' +
+        esc(res.f0_error ? 'F⁰ failed: ' + res.f0_error : 'no raw plan to re-validate without hooks') + '</pre>';
+    var fkBody = res.plan !== null
+      ? '<pre style="font-family:var(--mono);overflow-wrap:anywhere">' + diff.rightHtml + '</pre>'
+      : '<pre class="t-mute" style="font-family:var(--mono);overflow-wrap:anywhere">' +
+        esc(res.error || 'no validated plan') + '</pre>';
+    var hooks = (res.hooks_diff || []).map(function (line) {
+      return '<span class="tag tag--in">' + esc(line) + '</span>';
+    }).join('');
+    var hooksNote = (res.hooks_diff && res.hooks_diff.length)
+      ? 'F⁰ ≠ Fᴷ — both shown so the label is not circular'
+      : (res.f0_plan !== null && res.plan !== null && diff.equal
+        ? 'F⁰ = Fᴷ — no correction hook changed the plan'
+        : 'no hook attribution (F⁰ unavailable)');
+    blocks.push('<div>' +
+      '<div class="diff">' +
+        '<div class="diff__col diff__col--actual" style="min-width:0">' +
+          '<div class="diff__col-label">F⁰ · model output, hooks stripped</div>' + f0Body + '</div>' +
+        '<div class="diff__col diff__col--expected" style="min-width:0">' +
+          '<div class="diff__col-label">Fᴷ · after correction hooks</div>' + fkBody + '</div>' +
+      '</div>' +
+      '<div class="hooks-strip">' + hooks +
+        '<span class="t-dim fs-11">' + esc(hooksNote) + '</span></div>' +
+      '</div>');
+
+    // accordions
+    var attempts = res.attempts || [];
+    var attemptsBody = attempts.length
+      ? attempts.map(function (attempt) {
+        return '#' + esc(String(attempt.attempt)) + (attempt.reason ? ' · ' + esc(attempt.reason) : '') +
+          '\n' + esc(attempt.content || '');
+      }).join('\n\n')
+      : esc('(no attempt was recorded — the call never reached the model)');
+    blocks.push('<div>' +
+      '<details class="acc"><summary>Raw</summary><div class="acc__body">' +
+        esc(fmt.pretty(res.raw)) + '</div></details>' +
+      '<details class="acc"><summary>Attempts (' + attempts.length + ')</summary>' +
+        '<div class="acc__body">' + attemptsBody + '</div></details>' +
+      '<details class="acc"><summary>tool_calls (native shape)</summary>' +
+        '<div class="acc__body">' + esc(fmt.pretty(res.tool_calls)) + '</div></details>' +
+      '</div>');
+
+    el['result-body'].innerHTML = blocks.join('');
+    renderVerdict(item);
+  }
+
+  // ---- verdict ------------------------------------------------
+  function renderVerdict(item) {
+    var res = item.res;
+    el['verdict-panel'].hidden = false;
+    el['verdict-target'].textContent = 'writes a LabelRecord for ' + res.trace_id + ' into ' +
+      state.catalog.catalog_id + '/' + res.run_id + '/labels.jsonl';
+    var prefill = res.f0_plan !== null ? res.f0_plan : (res.plan !== null ? res.plan : res.raw_plan);
+    el['editor-label'].textContent = res.f0_plan !== null
+      ? 'expected editor · prefilled with F⁰ plan'
+      : (res.plan !== null ? 'expected editor · prefilled with Fᴷ plan (F⁰ unavailable)' : 'expected editor · no plan to prefill');
+    el.expected.value = prefill ? fmt.pretty(prefill) : '{"calls": []}';
+    el.note.value = '';
+    state.orderSensitive = true;
+    setOrderButton();
+    state.labelStart = Date.now();
+    el['v-time'].textContent = '0:00';
+    if (item.label) {
+      el['v-labeler'].textContent = item.label.labeler || '—';
+      el['v-zone'].textContent = item.label.zone || '—';
+      el['v-family'].textContent = fmt.short(item.label.family_id || '', 10);
+    } else {
+      el['v-labeler'].textContent = '—';
+      el['v-zone'].textContent = '—';
+      el['v-family'].textContent = '—';
+    }
+
+    var evidence = (res.hooks_diff || []).map(function (line, index) {
+      return '<span class="tag"><span class="t-mute">' + (index + 1) + '</span> ' + esc(line) + '</span>';
+    });
+    if (!evidence.length) {
+      API.planCalls(res.plan !== null ? res.plan : res.raw_plan).forEach(function (call, index) {
+        Object.keys(call.args || {}).forEach(function (key) {
+          var value = call.args[key];
+          evidence.push('<span class="tag"><span class="t-mute">' + (index + 1) + '</span> ' +
+            esc(key) + ':' + esc(typeof value === 'object' ? fmt.json(value) : String(value)) + '</span>');
+        });
+      });
+    }
+    el.evidence.innerHTML = evidence.length ? evidence.join('') :
+      '<span class="tag tag--ghost">no evidence</span>';
+  }
+
+  function setOrderButton() {
+    el['v-order'].classList.toggle('on', state.orderSensitive);
+    el['v-order'].setAttribute('aria-pressed', state.orderSensitive ? 'true' : 'false');
+  }
+
+  function submitVerdict(verdict) {
+    var item = state.results[state.active];
+    if (!item) return;
+    var res = item.res;
+    var body = {
+      catalog_id: state.catalog.catalog_id,
+      run_id: res.run_id,
+      trace_id: res.trace_id,
+      verdict: verdict,
+      saw_f0: true,
+      order_sensitive: state.orderSensitive,
+      note: el.note.value.trim(),
+      session_id: res.session_id,
+      time_to_label_ms: Math.max(0, Date.now() - state.labelStart)
+    };
+    if (verdict === 'incorrect') {
+      var text = el.expected.value.trim();
+      var parsed;
+      try { parsed = JSON.parse(text); } catch (err) {
+        fail(API.ApiError(0, 'invalid_json', 'the expected editor is not valid JSON: ' + err.message));
+        return;
+      }
+      body.expected_plan = parsed;
+      body.endorsed = (res.f0_plan !== null && text === fmt.pretty(res.f0_plan)) ? 'f0' : 'custom';
+    } else if (verdict === 'correct') {
+      body.endorsed = (res.hooks_diff && res.hooks_diff.length) ? 'fk' : null;
+    }
+    if (item.label && item.label.label_id) body.supersedes = item.label.label_id;
+    ok();
+    el['run-state'].textContent = 'labelling…';
+    API.post('/api/labels', body).then(function (payload) {
+      el['run-state'].textContent = 'labelled · ' + verdict +
+        (payload.graded_score === null ? '' : ' · graded ' + fmt.rate(payload.graded_score));
+      el['v-zone'].textContent = payload.zone;
+      el['v-family'].textContent = fmt.short(payload.family_id, 10);
+      // Read the stored label back so the labeler shown is the server's, not a guess.
+      return API.get('/api/runs/' + state.catalog.catalog_id + '/' + res.run_id + '/traces/' + res.trace_id);
+    }).then(function (detail) {
+      if (detail && detail.label) {
+        item.label = detail.label;
+        el['v-labeler'].textContent = detail.label.labeler || '—';
+      }
+      renderSessionList();
+    }, function (err) {
+      fail(err);
+      el['run-state'].textContent = 'label refused';
+    });
+  }
+
+  el['v-correct'].addEventListener('click', function () { submitVerdict('correct'); });
+  el['v-incorrect'].addEventListener('click', function () { submitVerdict('incorrect'); });
+  el['v-unsure'].addEventListener('click', function () { submitVerdict('unsure'); });
+  el['v-order'].addEventListener('click', function () { state.orderSensitive = !state.orderSensitive; setOrderButton(); });
+
+  // Verdict keys. Never intercept a modified chord (Ctrl/Cmd+Z stays undo) and
+  // never fire while the operator is typing in a field.
+  document.addEventListener('keydown', function (event) {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+    var tag = (event.target && event.target.tagName) || '';
+    if (tag === 'TEXTAREA' || tag === 'INPUT' || tag === 'SELECT' || event.target.isContentEditable) return;
+    if (el['verdict-panel'].hidden) return;
+    if (event.key === 'y') { event.preventDefault(); submitVerdict('correct'); }
+    else if (event.key === 'n') { event.preventDefault(); submitVerdict('incorrect'); }
+    else if (event.key === 'u') { event.preventDefault(); submitVerdict('unsure'); }
+    else if (event.key === 'o') { event.preventDefault(); state.orderSensitive = !state.orderSensitive; setOrderButton(); }
+  });
+
+  // ---- boot ---------------------------------------------------
+  loadCatalogs()
+    .then(function () { if (state.catalog) return loadModels(); })
+    .then(function () { renderSessionList(); })
+    .catch(fail);
+}());
+</script>
+</body>
+</html>

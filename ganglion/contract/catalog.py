@@ -43,6 +43,23 @@ class Catalog:
                 return tool
         return None
 
+    def describe(self) -> dict[str, Any]:
+        """Deterministic JSON-able description — see [[contract_describe]].
+
+        Lazy import: ``ganglion/contract/__init__.py`` imports this module
+        first and ``describe.py`` needs ``Catalog``; a module-level import
+        would be a circular import at package init.
+        """
+        from ganglion.contract.describe import describe as _describe
+
+        return _describe(self)
+
+    def fingerprint(self) -> str:
+        """``cf-`` content fingerprint of :meth:`describe` — see [[contract_describe]]."""
+        from ganglion.contract.describe import catalog_fingerprint as _fingerprint
+
+        return _fingerprint(self)
+
     def render_json_dsl(self) -> str:
         lines: list[str] = [
             "Return JSON only.",

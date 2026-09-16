@@ -177,3 +177,69 @@ def test_run_bfcl_irrelevance_fails_when_model_calls() -> None:
     results = run_bfcl(lambda _catalog: client, [case])
     assert not results[0].grade.valid
     assert results[0].grade.error_type == "irrelevance:unexpected_call"
+
+
+# ---------------------------------------------------------------------------
+# 2026-09-16 revision: failure raw preservation + traces_from_bfcl_results
+# ---------------------------------------------------------------------------
+
+from ganglion.analyzer.trace import Trace  # noqa: E402
+from ganglion.benchmarks.bfcl.runner import traces_from_bfcl_results  # noqa: E402
+
+
+class _RawError(ValueError):
+    def __init__(self, raw) -> None:
+        super().__init__("no plan")
+        self.raw = raw
+
+
+def test_run_bfcl_preserves_exception_raw() -> None:
+    case = _case("0", [{"calc": {"x": [5]}}])
+    raw = [{"name": "calc", "arguments": {"x": "five"}}]
+    client = _FakeClient({"run calc": _RawError(raw)})
+    results = run_bfcl(lambda _catalog: client, [case])
+    run = results[0].runs[0]
+    assert run.plan is None
+    assert run.raw is raw
+    assert run.error == "_RawError: no plan"
+    assert run.latency_ms is not None
+
+
+def test_traces_from_bfcl_results_shape() -> None:
+    ok_case = _case("0", [{"calc": {"x": [5]}}])
+    bad_case = _case("1", [{"calc": {"x": [6]}}])
+    plan = ActionPlan(calls=(ToolCall("calc", {"x": 5}),))
+    ok_client = _FakeClient({"run calc": plan})
+    bad_client = _FakeClient({"run calc": _RawError([{"name": "calc", "arguments": {"x": "five"}}])})
+    results = run_bfcl(lambda _c: ok_client, [ok_case]) + run_bfcl(lambda _c: bad_client, [bad_case])
+
+    traces = traces_from_bfcl_results(results, category="simple_python", run_id="t", model_id="stub")
+    assert len(traces) == 2
+    ok, bad = traces
+    assert ok.catalog_id == bad.catalog_id == "bfcl/simple_python"
+    assert ok.source == bad.source == "benchmark.bfcl"
+    assert ok.case_id == ok_case.id and bad.case_id == bad_case.id
+    assert ok.prompt == "run calc"
+    # Errata E6: ground truth is not a plan; never put it in expected_plan.
+    assert ok.expected_plan is None and bad.expected_plan is None
+    assert ok.plan == plan.to_jsonable()
+    assert ok.error_type is None
+    # _FakeClient returns raw=None on success → no attempts, no raw_plan.
+    assert ok.attempts == () and ok.raw_plan is None and ok.raw_output == ""
+    assert bad.plan is None
+    assert bad.error_type == "_RawError: no plan"
+    assert bad.raw_plan == {"calls": [{"action": "calc", "args": {"x": "five"}}]}
+    assert len(bad.attempts) == 1
+    assert bad.repeat_index == 0 and ok.repeat_index == 0
+    assert ok.trace_id != bad.trace_id
+    assert all(Trace.from_dict(t.to_dict()) == t for t in traces)
+
+
+def test_traces_from_bfcl_results_repeat_index() -> None:
+    case = _case("0", [{"calc": {"x": [5]}}])
+    plan = ActionPlan(calls=(ToolCall("calc", {"x": 5}),))
+    client = _FakeClient({"run calc": plan})
+    results = run_bfcl(lambda _c: client, [case], repeat=3)
+    traces = traces_from_bfcl_results(results, category="simple_python", run_id="t", model_id="stub")
+    assert [t.repeat_index for t in traces] == [0, 1, 2]
+    assert len({t.trace_id for t in traces}) == 3

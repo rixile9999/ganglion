@@ -97,3 +97,39 @@ def test_repair_recovers_invalid_json() -> None:
     )
     assert result.plan is not None
     assert len(result.raw["attempts"]) == 2
+
+
+def test_exhausted_repair_raises_repair_exhausted_error_with_raw() -> None:
+    """Terminal failure carries the attempt chain so the trace store keeps it."""
+    from ganglion.analyzer.repair import RepairExhaustedError
+
+    catalog = get_catalog("iot_light_5")
+    bad = '{"calls": [{"action": "turn_on_lamp", "args": {"room": "living", "state": "on"}}]}'
+    completer = ScriptedCompleter([bad, bad])
+
+    with pytest.raises(RepairExhaustedError) as excinfo:
+        run_dsl_with_repair(
+            catalog,
+            "거실 불 켜줘",
+            completer,
+            RepairConfig(enabled=True, max_attempts=1),
+        )
+    exc = excinfo.value
+    assert isinstance(exc, DSLValidationError)
+    assert len(exc.attempts) == 2
+    assert [a["attempt"] for a in exc.attempts] == [0, 1]
+    assert all(a["content"] == bad for a in exc.attempts)
+    assert all("error" in a for a in exc.attempts)
+    assert exc.raw == {"attempts": list(exc.attempts), "final_content": bad}
+    assert exc.__cause__ is not None
+
+
+def test_repair_disabled_error_also_carries_raw() -> None:
+    from ganglion.analyzer.repair import RepairExhaustedError
+
+    catalog = get_catalog("iot_light_5")
+    not_json = "여기까지 생각해봤는데 결론은: set_light"
+    with pytest.raises(RepairExhaustedError) as excinfo:
+        run_dsl_with_repair(catalog, "거실 불 켜줘", ScriptedCompleter([not_json]), RepairConfig())
+    assert excinfo.value.raw["final_content"] == not_json
+    assert excinfo.value.attempts[0]["input_tokens"] == 10

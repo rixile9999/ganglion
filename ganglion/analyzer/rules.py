@@ -18,6 +18,14 @@ runs a deterministic pattern matcher that proposes (never applies) a
   ``extend_argspec``          — relax / extend an ``ArgSpec``.
   ``ESCALATE``                — out-of-band: the patch would change ``ToolSpec``
                                 shape itself (a Module 3 design decision).
+  ``retire_rule``             — accepted (not produced here): emitted by
+                                [[analyzer_correction_attribution]] for hooks
+                                that never rescue; payload ``{"hook_kind", "arg"}``.
+
+Matchers read predicted calls through ``_pred_calls`` (``plan`` if validated,
+else ``raw_plan`` — errata E1) so validation-failure traces contribute their
+evidence, and gold through ``_gold_calls`` (a label gold from ``golds=`` wins
+over the dataset ``expected_plan``).
 
 The boundary is load-bearing: synthesis **proposes**; humans (or
 [[factory_pipeline]] with an explicit gating flag) **apply**. This module
@@ -31,6 +39,8 @@ Public surface:
     RulePatch                       — one proposed patch (frozen dataclass).
     RuleSynthConfig                 — synthesis knobs (frozen dataclass).
     synthesize_rules                — main entry: classifications → patches.
+    make_patch_id                   — content-addressed ``patch_id`` (public
+                                      alias of ``_make_patch_id``).
     write_proposed_patches_sidecar  — JSONL writer.
     write_synthesis_summary         — summary JSON writer (+ returns dict).
 """
@@ -47,17 +57,34 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from ganglion.analyzer.taxonomy import Classification, FailureType
+from ganglion.analyzer.taxonomy import Classification, FailureType, _calls_for_matching, _calls_from_plan
 from ganglion.analyzer.trace import Trace
 from ganglion.contract.catalog import Catalog
+from ganglion.contract.types import ActionPlan
 
 __all__ = [
+    "OPERATIONS",
     "RulePatch",
     "RuleSynthConfig",
+    "make_patch_id",
     "synthesize_rules",
     "write_proposed_patches_sidecar",
     "write_synthesis_summary",
 ]
+
+#: Every ``RulePatch.operation`` value the analyzer vocabulary knows. Payload
+#: shapes per operation are the SSOT table in ``docs/tasks/analyzer_rule_synthesis.md``
+#: (mirrored in the implementation contract §9.1). ``RulePatch.from_dict`` is
+#: tolerant of unknown strings so forward-compatible records still load.
+OPERATIONS: tuple[str, ...] = (
+    "add_alias",
+    "set_default",
+    "enable_strip_unknown_args",
+    "add_prompt_correction",
+    "extend_argspec",
+    "ESCALATE",
+    "retire_rule",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -96,12 +123,16 @@ class RulePatch:
     ``failure_count``, ``support_share`` ∈ [0,1], ``example_trace_ids`` (up
     to 5), and ``confidence`` = frequency × consistency × narrowness.
 
-    ``operation`` values mirror the patch-shape vocabulary from the spec:
-    ``add_alias``, ``set_default``, ``enable_strip_unknown_args``,
-    ``add_prompt_correction``, ``extend_argspec``, and the special
-    ``ESCALATE`` form used when the patch would require a new ``ArgSpec``
-    variant — i.e. a Module 3 design decision rather than a synthesisable
-    rule. The composite handler treats ``ESCALATE`` specially.
+    ``operation`` values mirror the patch-shape vocabulary from the spec
+    (:data:`OPERATIONS`): ``add_alias``, ``set_default``,
+    ``enable_strip_unknown_args``, ``add_prompt_correction``,
+    ``extend_argspec``, the special ``ESCALATE`` form used when the patch
+    would require a new ``ArgSpec`` variant — i.e. a Module 3 design decision
+    rather than a synthesisable rule — and ``retire_rule`` (payload
+    ``{"hook_kind": "defaults_when_missing" | "strip_unknown_args" |
+    "prompt_correction", "arg": str | None}``), which is *accepted* here but
+    produced by [[analyzer_correction_attribution]]. The composite handler
+    treats ``ESCALATE`` specially.
     """
 
     patch_id: str
@@ -170,9 +201,47 @@ def _short_hash(operation: str, target_tool: str, payload: Mapping[str, Any]) ->
     return hashlib.sha256(serialised.encode("utf-8")).hexdigest()[:12]
 
 
-def _make_patch_id(catalog_id: str, operation: str, target_tool: str,
-                   payload: Mapping[str, Any]) -> str:
+def make_patch_id(
+    catalog_id: str,
+    operation: str,
+    target_tool: str,
+    payload: Mapping[str, Any],
+) -> str:
+    """``"rs-<catalog_id>-" + sha256(json{operation, target_tool, payload})[:12]``.
+
+    Content-addressed: the same ``(operation, target_tool, payload)`` under
+    the same catalog always yields the same id, so re-running synthesis (or
+    the attribution edge emitting ``retire_rule``) dedups for free.
+    ``catalog_id`` is ``catalog.name`` for every patch this module emits.
+    """
     return f"rs-{catalog_id}-{_short_hash(operation, target_tool, payload)}"
+
+
+# Private alias kept for callers written against the pre-revision name.
+_make_patch_id = make_patch_id
+
+
+def _pred_calls(tr: Trace) -> list[dict[str, Any]]:
+    """Predicted calls of a trace: ``plan`` if validated, else ``raw_plan``.
+
+    Mirror of the taxonomy's ``_calls_for_matching`` (errata E1) so the
+    validation-failure traces — exactly the ones ``set_default`` /
+    ``enable_strip_unknown_args`` exist for — contribute their evidence.
+    """
+    return _calls_for_matching(tr)
+
+
+def _gold_calls(
+    tr: Trace,
+    golds: Mapping[str, ActionPlan] | None,
+) -> list[dict[str, Any]]:
+    """Gold calls for a trace: the ``golds[case_id]`` label plan wins over
+    the dataset ``expected_plan``; ``[]`` when neither exists."""
+    if golds is not None:
+        gold = golds.get(tr.case_id)
+        if gold is not None:
+            return _calls_from_plan(gold)
+    return _calls_from_plan(tr.expected_plan)
 
 
 def _evidence_dict(
@@ -272,6 +341,7 @@ def _match_missing_required_arg(
     traces: Mapping[str, Trace],
     catalog: Catalog,
     config: RuleSynthConfig,
+    golds: Mapping[str, ActionPlan] | None = None,
 ) -> list[RulePatch]:
     """Propose ``set_default`` patches for arg-missing failures.
 
@@ -304,26 +374,27 @@ def _match_missing_required_arg(
         example_ids: list[str] = []
         for c in group:
             tr = traces.get(c.trace_id)
-            if tr is None or tr.plan is None:
+            if tr is None:
                 continue
-            for call in tr.plan.get("calls", []) or []:
+            for call in _pred_calls(tr):
                 if call.get("action") != target_tool:
                     continue
                 pred_args = call.get("args", {}) or {}
                 cooccurring_args[frozenset(pred_args.keys())] += 1
-            if tr.expected_plan is not None:
-                for call in tr.expected_plan.get("calls", []) or []:
-                    if call.get("action") != target_tool:
-                        continue
-                    gold_args = call.get("args", {}) or {}
-                    if arg_name in gold_args:
-                        v = gold_args[arg_name]
-                        # Hashable values only — patches must JSON-serialise.
-                        try:
-                            hash(v)
-                        except TypeError:
-                            v = json.dumps(v, sort_keys=True, default=str)
-                        recovery_values[v] += 1
+            # Gold block sits OUTSIDE the predicted-calls guard (errata E1):
+            # a trace with no predicted calls still contributes its gold value.
+            for call in _gold_calls(tr, golds):
+                if call.get("action") != target_tool:
+                    continue
+                gold_args = call.get("args", {}) or {}
+                if arg_name in gold_args:
+                    v = gold_args[arg_name]
+                    # Hashable values only — patches must JSON-serialise.
+                    try:
+                        hash(v)
+                    except TypeError:
+                        v = json.dumps(v, sort_keys=True, default=str)
+                    recovery_values[v] += 1
             if len(example_ids) < 5:
                 example_ids.append(c.trace_id)
 
@@ -357,7 +428,7 @@ def _match_missing_required_arg(
         }
         out.append(
             RulePatch(
-                patch_id=_make_patch_id(catalog.name, "set_default", target_tool, payload),
+                patch_id=make_patch_id(catalog.name, "set_default", target_tool, payload),
                 catalog_id=catalog.name,
                 target_tool=target_tool,
                 operation="set_default",
@@ -380,6 +451,7 @@ def _match_unknown_arg(
     traces: Mapping[str, Trace],
     catalog: Catalog,
     config: RuleSynthConfig,
+    golds: Mapping[str, ActionPlan] | None = None,
 ) -> list[RulePatch]:
     """Propose ``enable_strip_unknown_args`` or ``extend_argspec`` per spec.
 
@@ -427,7 +499,7 @@ def _match_unknown_arg(
             )
             out.append(
                 RulePatch(
-                    patch_id=_make_patch_id(
+                    patch_id=make_patch_id(
                         catalog.name, "enable_strip_unknown_args", target_tool, payload,
                     ),
                     catalog_id=catalog.name,
@@ -449,9 +521,9 @@ def _match_unknown_arg(
             observed_types: dict[str, int] = defaultdict(int)
             for c in group:
                 tr = traces.get(c.trace_id)
-                if tr is None or tr.plan is None:
+                if tr is None:
                     continue
-                for call in tr.plan.get("calls", []) or []:
+                for call in _pred_calls(tr):
                     if call.get("action") != target_tool:
                         continue
                     val = (call.get("args", {}) or {}).get(arg_name)
@@ -473,7 +545,7 @@ def _match_unknown_arg(
             )
             out.append(
                 RulePatch(
-                    patch_id=_make_patch_id(
+                    patch_id=make_patch_id(
                         catalog.name, "extend_argspec", target_tool, payload,
                     ),
                     catalog_id=catalog.name,
@@ -498,8 +570,12 @@ def _functional_alias_map(
     traces: Mapping[str, Trace],
     target_tool: str,
     arg_name: str,
+    golds: Mapping[str, ActionPlan] | None = None,
 ) -> tuple[dict[str, str], int, list[str]]:
     """Build observed→accepted alias map from classifications + gold traces.
+
+    Gold comes from ``_gold_calls`` (label gold via ``golds`` wins over the
+    dataset ``expected_plan``). Serves both alias matchers.
 
     Returns ``(alias_map, same_recovery, example_ids)``. The map is
     **functional**: if any observed value maps to two distinct accepted
@@ -512,9 +588,9 @@ def _functional_alias_map(
         if not isinstance(observed, str):
             continue
         tr = traces.get(c.trace_id)
-        if tr is None or tr.expected_plan is None:
+        if tr is None:
             continue
-        for call in tr.expected_plan.get("calls", []) or []:
+        for call in _gold_calls(tr, golds):
             if call.get("action") != target_tool:
                 continue
             gold_args = call.get("args", {}) or {}
@@ -547,7 +623,7 @@ def _build_alias_matcher(
     *,
     kind: str,
     source_failure_type: FailureType,
-) -> Callable[[list[Classification], Mapping[str, Trace], Catalog, RuleSynthConfig], list[RulePatch]]:
+) -> "_Matcher":
     """Factory for the enum + string alias matchers — identical except for
     ``kind`` (``"enum"`` vs ``"string"``) and ``source_failure_type``."""
 
@@ -556,6 +632,7 @@ def _build_alias_matcher(
         traces: Mapping[str, Trace],
         catalog: Catalog,
         config: RuleSynthConfig,
+        golds: Mapping[str, ActionPlan] | None = None,
     ) -> list[RulePatch]:
         out: list[RulePatch] = []
         total = len(classifs)
@@ -567,7 +644,7 @@ def _build_alias_matcher(
             if len(group) < _ALIAS_MATCHER_K:
                 continue
             alias_map, same_recovery, example_ids = _functional_alias_map(
-                group, traces, target_tool, arg_name,
+                group, traces, target_tool, arg_name, golds,
             )
             if not alias_map:
                 continue
@@ -584,7 +661,7 @@ def _build_alias_matcher(
             )
             out.append(
                 RulePatch(
-                    patch_id=_make_patch_id(catalog.name, "add_alias", target_tool, payload),
+                    patch_id=make_patch_id(catalog.name, "add_alias", target_tool, payload),
                     catalog_id=catalog.name,
                     target_tool=target_tool,
                     operation="add_alias",
@@ -621,11 +698,12 @@ def _match_abstention_miss_should_call(
     traces: Mapping[str, Trace],
     catalog: Catalog,
     config: RuleSynthConfig,
+    golds: Mapping[str, ActionPlan] | None = None,
 ) -> list[RulePatch]:
     """Propose ``add_prompt_correction`` when the model abstains too often.
 
-    Groups by the gold ``target_tool`` (extracted from
-    ``trace.expected_plan``) — when ≥ N traces show ``{"calls":[]}`` on
+    Groups by the gold ``target_tool`` (from ``_gold_calls``: label gold,
+    else ``trace.expected_plan``) — when ≥ N traces show ``{"calls":[]}`` on
     prompts that DO match a known tool, emit a system-level nudge.
     """
     out: list[RulePatch] = []
@@ -635,9 +713,9 @@ def _match_abstention_miss_should_call(
     grouped: dict[str, list[Classification]] = defaultdict(list)
     for c in classifs:
         tr = traces.get(c.trace_id)
-        if tr is None or tr.expected_plan is None:
+        if tr is None:
             continue
-        gold_calls = tr.expected_plan.get("calls", []) or []
+        gold_calls = _gold_calls(tr, golds)
         if not gold_calls:
             continue
         gold_action = gold_calls[0].get("action", "")
@@ -666,7 +744,7 @@ def _match_abstention_miss_should_call(
         )
         out.append(
             RulePatch(
-                patch_id=_make_patch_id(
+                patch_id=make_patch_id(
                     catalog.name, "add_prompt_correction", target_tool, payload,
                 ),
                 catalog_id=catalog.name,
@@ -741,6 +819,7 @@ def _match_type_mismatch(
     traces: Mapping[str, Trace],
     catalog: Catalog,
     config: RuleSynthConfig,
+    golds: Mapping[str, ActionPlan] | None = None,
 ) -> list[RulePatch]:
     """Propose ``extend_argspec`` patches with the smallest type relaxation.
 
@@ -766,13 +845,16 @@ def _match_type_mismatch(
         example_ids: list[str] = []
         for c in group:
             tr = traces.get(c.trace_id)
-            if tr is None or tr.plan is None or tr.expected_plan is None:
+            if tr is None:
                 continue
-            for call in tr.plan.get("calls", []) or []:
+            gold_calls = _gold_calls(tr, golds)
+            if not gold_calls:
+                continue
+            for call in _pred_calls(tr):
                 if call.get("action") != target_tool:
                     continue
                 pred_v = (call.get("args", {}) or {}).get(arg_name)
-                for gold_call in tr.expected_plan.get("calls", []) or []:
+                for gold_call in gold_calls:
                     if gold_call.get("action") != target_tool:
                         continue
                     gold_v = (gold_call.get("args", {}) or {}).get(arg_name)
@@ -807,7 +889,7 @@ def _match_type_mismatch(
             )
             out.append(
                 RulePatch(
-                    patch_id=_make_patch_id(
+                    patch_id=make_patch_id(
                         catalog.name, "extend_argspec", target_tool, payload,
                     ),
                     catalog_id=catalog.name,
@@ -836,7 +918,7 @@ def _match_type_mismatch(
             }
             out.append(
                 RulePatch(
-                    patch_id=_make_patch_id(
+                    patch_id=make_patch_id(
                         catalog.name, "ESCALATE", target_tool, payload,
                     ),
                     catalog_id=catalog.name,
@@ -872,7 +954,19 @@ def _transform_to_spec_hint(transform_name: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-_MATCHERS: tuple[tuple[FailureType, Any], ...] = (
+_Matcher = Callable[
+    [
+        list[Classification],
+        Mapping[str, Trace],
+        Catalog,
+        RuleSynthConfig,
+        "Mapping[str, ActionPlan] | None",
+    ],
+    list[RulePatch],
+]
+
+
+_MATCHERS: tuple[tuple[FailureType, _Matcher], ...] = (
     (FailureType.MISSING_REQUIRED_ARG, _match_missing_required_arg),
     (FailureType.UNKNOWN_ARG, _match_unknown_arg),
     (FailureType.VALUE_OUT_OF_ENUM, _match_value_out_of_enum),
@@ -887,6 +981,8 @@ def synthesize_rules(
     traces: Iterable[Trace],
     catalog: Catalog,
     config: RuleSynthConfig = RuleSynthConfig(),
+    *,
+    golds: Mapping[str, ActionPlan] | None = None,
 ) -> list[RulePatch]:
     """Promote classified failures into proposed ``ToolSpec`` patches.
 
@@ -898,6 +994,11 @@ def synthesize_rules(
     ``traces`` is fully consumed into a lookup; pass a list / tuple to
     avoid generator exhaustion. Matchers tolerate missing trace lookups
     (the corresponding classification is simply skipped).
+
+    ``golds`` maps ``case_id`` → gold :class:`ActionPlan` (typically from
+    [[analyzer_label_store]]'s ``gold_map``); a label gold wins over the
+    trace's dataset ``expected_plan`` in every matcher that reads gold.
+    Predicted calls come from ``plan`` when validated, else ``raw_plan``.
     """
     trace_lookup = {tr.trace_id: tr for tr in traces}
     patches: list[RulePatch] = []
@@ -910,7 +1011,7 @@ def synthesize_rules(
         if not group:
             continue
         try:
-            patches.extend(matcher(group, trace_lookup, catalog, config))
+            patches.extend(matcher(group, trace_lookup, catalog, config, golds))
         except Exception:
             # Per spec: fail loud per group, not per run. The composite
             # layer is responsible for writing synthesis.errors.jsonl;

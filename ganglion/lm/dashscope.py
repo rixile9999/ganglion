@@ -1,14 +1,26 @@
-"""DashScope-backed Qwen clients.
+"""OpenAI-SDK Qwen clients (DashScope / vLLM / OpenAI-compatible).
 
-Three OpenAI-SDK-against-DashScope clients plus a transport-specific completer
-adapter:
+Three OpenAI-SDK clients plus a transport-specific completer adapter
+([[lm_client]], `docs/tasks/lm_client.md`):
 
 - `QwenJSONDSLClient` — `response_format={"type": "json_object"}`; supports M4 repair.
 - `QwenFreeformJSONDSLClient` — no `response_format`; salvaged via `parse_json_dsl_lenient`.
 - `QwenNativeToolClient` — native `tools=[...]` baseline.
 
-The repair-loop core (`run_dsl_with_repair`, `RepairConfig`, `CompletionResponse`)
-lives in `ganglion.analyzer.repair`; this module re-exports them for backwards
+Every client is parameterised by `QwenConfig`, whose `provider` field selects
+the provider-specific thinking switch (`_thinking_extra_body`): DashScope
+takes `extra_body={"enable_thinking": …}`, vLLM's Qwen3 chat template takes
+`extra_body={"chat_template_kwargs": {"enable_thinking": …}}`, and a plain
+OpenAI endpoint takes nothing.
+
+Failure shape: the freeform and native clients raise `ModelOutputError`
+(`ganglion.lm.client`) carrying the model's raw output; the json-dsl client
+goes through `run_dsl_with_repair`, whose terminal failure is
+`RepairExhaustedError` (same `.raw` / `.attempts` attributes).
+
+The repair-loop core (`run_dsl_with_repair`, `RepairConfig`,
+`CompletionResponse`, `RepairExhaustedError`) lives in
+`ganglion.analyzer.repair`; this module re-exports them for backwards
 compatibility (see `docs/tasks/analyzer_repair_policy.md`).
 """
 from __future__ import annotations
@@ -22,28 +34,40 @@ from typing import Any
 from ganglion.analyzer.repair import (
     CompletionResponse,
     RepairConfig,
+    RepairExhaustedError,
     run_dsl_with_repair,
 )
-from ganglion.contract import Catalog, parse_json_dsl_lenient
-from ganglion.lm.client import ModelResult
+from ganglion.contract import Catalog, DSLValidationError, parse_json_dsl_lenient
+from ganglion.lm.client import ModelOutputError, ModelResult
 
 __all__ = [
     "CompletionResponse",
+    "PROVIDERS",
     "QwenConfig",
     "QwenFreeformJSONDSLClient",
     "QwenJSONDSLClient",
     "QwenNativeToolClient",
     "RepairConfig",
+    "RepairExhaustedError",
     "run_dsl_with_repair",
 ]
+
+#: Providers `QwenConfig.provider` accepts; the value only changes how the
+#: thinking switch is encoded (see `_thinking_extra_body`).
+PROVIDERS: tuple[str, ...] = ("dashscope", "vllm", "openai")
+
+DEFAULT_BASE_URL = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+DEFAULT_MODEL = "qwen3.6-plus"
 
 
 @dataclass(frozen=True)
 class QwenConfig:
     api_key: str
-    model: str = "qwen3.6-plus"
-    base_url: str = "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+    model: str = DEFAULT_MODEL
+    base_url: str = DEFAULT_BASE_URL
     disable_thinking: bool = True
+    # "dashscope" | "vllm" | "openai" — selects the thinking-switch encoding.
+    provider: str = "dashscope"
 
     @classmethod
     def from_env(cls) -> "QwenConfig":
@@ -52,16 +76,42 @@ class QwenConfig:
             raise RuntimeError("DASHSCOPE_API_KEY is not set")
         return cls(
             api_key=api_key,
-            model=os.getenv("GANGLION_MODEL") or os.getenv("RLM_MODEL", "qwen3.6-plus"),
-            base_url=os.getenv(
-                "DASHSCOPE_BASE_URL",
-                "https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
-            ),
+            model=os.getenv("GANGLION_MODEL") or os.getenv("RLM_MODEL", DEFAULT_MODEL),
+            base_url=os.getenv("DASHSCOPE_BASE_URL", DEFAULT_BASE_URL),
             disable_thinking=(
                 os.getenv("GANGLION_ENABLE_THINKING") or os.getenv("RLM_ENABLE_THINKING", "")
             ).lower()
             not in {"1", "true", "yes"},
         )
+
+
+def _thinking_extra_body(config: QwenConfig, enable: bool) -> dict[str, Any] | None:
+    """Provider-specific `extra_body` that turns Qwen3 thinking on or off.
+
+    - `dashscope` → `{"enable_thinking": enable}` (DashScope compatible-mode).
+    - `vllm` → `{"chat_template_kwargs": {"enable_thinking": enable}}` (the
+      Qwen3 chat template flag, forwarded by vLLM's OpenAI server).
+    - `openai` → `None` (a plain OpenAI endpoint rejects unknown fields).
+
+    Unknown providers raise `ValueError` — the registry validates the field
+    before a client is built, so this is a programming error, not config.
+    """
+    if config.provider == "dashscope":
+        return {"enable_thinking": bool(enable)}
+    if config.provider == "vllm":
+        return {"chat_template_kwargs": {"enable_thinking": bool(enable)}}
+    if config.provider == "openai":
+        return None
+    raise ValueError(
+        f"unknown provider {config.provider!r}; expected one of {PROVIDERS}"
+    )
+
+
+def _attempts(raw: Any) -> tuple[dict[str, Any], ...]:
+    """`attempts_from_raw` behind a lazy import (keeps lm → analyzer one-way)."""
+    from ganglion.analyzer.trace import attempts_from_raw
+
+    return attempts_from_raw(raw)
 
 
 class _OpenAIDSLCompleter:
@@ -87,6 +137,12 @@ class _OpenAIDSLCompleter:
 
 
 class QwenJSONDSLClient:
+    """`response_format=json_object` client wired to the repair slot.
+
+    Terminal validation failure surfaces as `RepairExhaustedError`
+    (`ganglion.analyzer.repair`) carrying `.raw` / `.attempts`.
+    """
+
     def __init__(
         self,
         catalog: Catalog,
@@ -100,9 +156,7 @@ class QwenJSONDSLClient:
         self.config = config or QwenConfig.from_env()
         self.repair = repair or RepairConfig()
         self._openai = OpenAI(api_key=self.config.api_key, base_url=self.config.base_url)
-        extra_body = (
-            {"enable_thinking": False} if self.config.disable_thinking else None
-        )
+        extra_body = _thinking_extra_body(self.config, not self.config.disable_thinking)
         self._completer = _OpenAIDSLCompleter(
             self._openai, self.config.model, extra_body
         )
@@ -114,6 +168,14 @@ class QwenJSONDSLClient:
 
 
 class QwenFreeformJSONDSLClient:
+    """No `response_format`; output salvaged by `parse_json_dsl_lenient`.
+
+    `enable_thinking` (constructor kwarg) is the thinking switch for this
+    client — it deliberately ignores `config.disable_thinking` so the same
+    config can back both the `freeform` and `thinking` registry clients.
+    Validation failure raises `ModelOutputError(raw=<content str>)`.
+    """
+
     def __init__(
         self,
         catalog: Catalog,
@@ -140,7 +202,7 @@ class QwenFreeformJSONDSLClient:
             },
             {"role": "user", "content": user_prompt},
         ]
-        extra_body = {"enable_thinking": self.enable_thinking}
+        extra_body = _thinking_extra_body(self.config, self.enable_thinking)
         started = time.perf_counter()
         if self.enable_thinking:
             content, reasoning, usage = self._stream_completion(messages, extra_body)
@@ -155,9 +217,18 @@ class QwenFreeformJSONDSLClient:
             usage = getattr(completion, "usage", None)
         latency_ms = (time.perf_counter() - started) * 1000
 
-        plan, parse_strategy = parse_json_dsl_lenient(
-            content, catalog=self.catalog, prompt=user_prompt,
-        )
+        try:
+            plan, parse_strategy = parse_json_dsl_lenient(
+                content, catalog=self.catalog, prompt=user_prompt,
+            )
+        except DSLValidationError as exc:
+            raise ModelOutputError(
+                str(exc),
+                raw=content,
+                attempts=_attempts(content),
+                input_tokens=getattr(usage, "prompt_tokens", None),
+                output_tokens=getattr(usage, "completion_tokens", None),
+            ) from exc
         return ModelResult(
             plan=plan,
             raw={
@@ -174,7 +245,7 @@ class QwenFreeformJSONDSLClient:
     def _stream_completion(
         self,
         messages: list[dict[str, str]],
-        extra_body: dict[str, bool],
+        extra_body: dict[str, Any] | None,
     ) -> tuple[str, str, Any]:
         stream = self.client.chat.completions.create(
             model=self.config.model,
@@ -202,6 +273,14 @@ class QwenFreeformJSONDSLClient:
 
 
 class QwenNativeToolClient:
+    """Native `tools=[...]` baseline sharing the DSL validator.
+
+    Returned `tool_calls` are converted to Action-IR calls and validated by
+    the same `Catalog`; failures raise `ModelOutputError` with
+    `raw=<dsl_calls list>` (validation) or `raw=<message.content or "">`
+    (no tool call at all) — errata E12.
+    """
+
     def __init__(self, catalog: Catalog, config: QwenConfig | None = None) -> None:
         from openai import OpenAI
 
@@ -217,9 +296,7 @@ class QwenNativeToolClient:
             },
             {"role": "user", "content": user_prompt},
         ]
-        extra_body = (
-            {"enable_thinking": False} if self.config.disable_thinking else None
-        )
+        extra_body = _thinking_extra_body(self.config, not self.config.disable_thinking)
         started = time.perf_counter()
         completion = self.client.chat.completions.create(
             model=self.config.model,
@@ -232,14 +309,28 @@ class QwenNativeToolClient:
         message = completion.choices[0].message
         tool_calls = getattr(message, "tool_calls", None) or []
         if not tool_calls:
-            raise RuntimeError(f"model did not return a tool call: {message.content}")
+            content = getattr(message, "content", None) or ""
+            raise ModelOutputError(
+                f"model did not return a tool call: {content}",
+                raw=content,
+                attempts=_attempts(content),
+            )
 
-        dsl_calls = []
+        dsl_calls: list[dict[str, Any]] = []
         for raw_call in tool_calls:
             function = raw_call.function
-            args = json.loads(function.arguments or "{}")
+            try:
+                args = json.loads(function.arguments or "{}")
+            except json.JSONDecodeError:
+                # Keep the undecodable text so the trace shows what came back.
+                args = {"__raw_arguments__": function.arguments}
             dsl_calls.append({"action": function.name, "args": args})
-        plan = self.catalog.parse_json_dsl({"calls": dsl_calls}, prompt=user_prompt)
+        try:
+            plan = self.catalog.parse_json_dsl({"calls": dsl_calls}, prompt=user_prompt)
+        except DSLValidationError as exc:
+            raise ModelOutputError(
+                str(exc), raw=dsl_calls, attempts=_attempts(dsl_calls)
+            ) from exc
 
         emitted_calls = [
             {"name": call.action, "arguments": call.args}

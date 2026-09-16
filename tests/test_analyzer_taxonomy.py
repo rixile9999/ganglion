@@ -18,6 +18,8 @@ from ganglion.analyzer.taxonomy import (
     classify_traces,
     write_classified_sidecar,
 )
+from dataclasses import replace
+
 from ganglion.analyzer.trace import Trace
 from ganglion.contract.builtins import get_catalog
 from ganglion.contract.catalog import Catalog
@@ -335,3 +337,128 @@ def test_priority_ordering_syntax_beats_unknown_tool():
     )
     result = classify(trace, catalog=CATALOG)
     assert result.failure_type == FailureType.SYNTAX_INVALID
+
+
+# ---------------------------------------------------------------------------
+# 2026-09-16 revision: matchers read raw_plan when validation failed
+# ---------------------------------------------------------------------------
+
+
+def _failed_trace(raw_plan: dict | None, *, error_type: str | None = "RepairExhaustedError: x",
+                  raw_output: str | None = None) -> Trace:
+    """A validation-failure trace: plan None, raw_plan as given."""
+    if raw_output is None:
+        raw_output = json.dumps(raw_plan) if raw_plan is not None else ""
+    return Trace(
+        case_id="case-f",
+        catalog_id="iot_light_5",
+        run_id="run-test",
+        source="benchmark.iot",
+        prompt="turn on the living room light",
+        raw_output=raw_output,
+        parse_strategy="json_object",
+        latency_ms=10.0,
+        input_tokens_total=10,
+        output_tokens_total=5,
+        model_id="scripted",
+        timestamp="2026-05-20T00:00:00Z",
+        attempts=({"attempt": 0, "content": raw_output},) if raw_output else (),
+        expected_plan=None,
+        plan=None,
+        error_type=error_type,
+        raw_plan=raw_plan,
+    )
+
+
+def test_raw_plan_missing_required_arg_is_not_abstention_or_syntax():
+    trace = _failed_trace(_plan("set_light", {"room": "living"}))
+    gold = _action_plan("set_light", {"room": "living", "state": "on"})
+    result = classify(trace, catalog=CATALOG, gold=gold)
+    assert result.failure_type == FailureType.MISSING_REQUIRED_ARG
+    assert result.evidence["arg_name"] == "state"
+    # Same verdict without gold.
+    assert classify(trace, catalog=CATALOG).failure_type == FailureType.MISSING_REQUIRED_ARG
+
+
+def test_raw_plan_unknown_arg_and_enum_value():
+    unknown = _failed_trace(_plan("set_light", {"room": "living", "state": "on", "id": 3}))
+    assert classify(unknown, catalog=CATALOG).failure_type == FailureType.UNKNOWN_ARG
+    enum = _failed_trace(_plan("set_light", {"room": "living", "state": "blue"}))
+    assert classify(enum, catalog=CATALOG).failure_type == FailureType.VALUE_OUT_OF_ENUM
+    tool = _failed_trace(_plan("activate_warp_drive", {}))
+    assert classify(tool, catalog=CATALOG).failure_type == FailureType.UNKNOWN_TOOL
+
+
+def test_nothing_decodable_with_error_is_syntax_invalid():
+    trace = _failed_trace(None, error_type="RepairExhaustedError: invalid JSON", raw_output="{not json")
+    result = classify(trace, catalog=CATALOG)
+    assert result.failure_type == FailureType.SYNTAX_INVALID
+    assert result.evidence["raw"] == "{not json"
+    # error_type alone (no raw text) is enough.
+    no_raw = _failed_trace(None, error_type="RuntimeError: boom", raw_output="")
+    assert classify(no_raw, catalog=CATALOG).failure_type == FailureType.SYNTAX_INVALID
+
+
+def test_decodable_raw_plan_is_never_syntax_invalid_even_with_json_error_text():
+    trace = _failed_trace(
+        _plan("set_light", {"room": "living"}),
+        error_type="RepairExhaustedError: could not extract JSON DSL: invalid JSON",
+    )
+    assert classify(trace, catalog=CATALOG).failure_type == FailureType.MISSING_REQUIRED_ARG
+
+
+def test_explicit_empty_calls_in_raw_plan_is_abstention():
+    trace = _failed_trace({"calls": []}, error_type="RepairExhaustedError: 'calls' must not be empty")
+    gold = _action_plan("set_light", {"room": "living", "state": "on"})
+    result = classify(trace, catalog=CATALOG, gold=gold)
+    assert result.failure_type == FailureType.ABSTENTION_MISS_SHOULD_CALL
+    assert result.evidence == {"predicted_count": 0, "expected_count": 1}
+
+
+def test_nothing_decodable_without_evidence_but_gold_is_abstention():
+    trace = _failed_trace(None, error_type=None, raw_output="")
+    gold = _action_plan("set_light", {"room": "living", "state": "on"})
+    assert classify(trace, catalog=CATALOG, gold=gold).failure_type == FailureType.ABSTENTION_MISS_SHOULD_CALL
+
+
+def test_validation_failed_but_unexplained_is_unclassified():
+    """plan None, raw_plan structurally fine → fall-through is NO_FAILURE @ 0.0."""
+    trace = _failed_trace(_plan("set_light", {"room": "living", "state": "on"}),
+                          error_type="DSLValidationError: custom validator said no")
+    gold = _action_plan("set_light", {"room": "living", "state": "on"})
+    result = classify(trace, catalog=CATALOG, gold=gold)
+    assert result.failure_type == FailureType.NO_FAILURE
+    assert result.confidence == 0.0
+    assert result.evidence.get("unclassified") == "validation_failed"
+
+
+def test_validated_plan_still_preferred_over_raw_plan():
+    """When both exist, `plan` wins (fixtures with dicts in `plan` stay valid)."""
+    good = _make_trace(plan=_plan("set_light", {"room": "living", "state": "on"}))
+    trace = Trace.from_dict({**good.to_dict(), "raw_plan": _plan("set_light", {"room": "living"}), "trace_id": ""})
+    gold = _action_plan("set_light", {"room": "living", "state": "on"})
+    result = classify(trace, catalog=CATALOG, gold=gold)
+    assert result.failure_type == FailureType.NO_FAILURE
+    assert result.confidence == 1.0
+
+
+def test_chat_path_failed_strategy_with_decodable_raw_is_classified_structurally():
+    """`lm.serve` stamps `parse_strategy="failed"` on every errored result.
+
+    Without gating that signal on `raw_plan is None`, every chat validation
+    failure was filed as `syntax_invalid` at confidence 1.0 — no structural
+    matcher ran, the run histogram was useless and `synthesize_rules` proposed
+    nothing. Observed live on an out-of-range brightness.
+    """
+    raw_plan = _plan("set_light", {"room": "living", "state": "on", "brightness": 250})
+    trace = _failed_trace(raw_plan, error_type="ModelOutputError: brightness must be <= 100")
+    trace = replace(trace, parse_strategy="failed")
+    result = classify(trace, catalog=CATALOG)
+    assert result.failure_type == FailureType.VALUE_OUT_OF_RANGE
+    assert result.confidence == 1.0
+    # ... and with nothing decodable it is still syntax_invalid.
+    nothing = replace(
+        _failed_trace(None, error_type="ModelOutputError: bad", raw_output="not json"),
+        parse_strategy="failed",
+    )
+    assert classify(nothing, catalog=CATALOG).failure_type == FailureType.SYNTAX_INVALID

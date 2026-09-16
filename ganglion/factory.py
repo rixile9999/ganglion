@@ -5,11 +5,10 @@ level: wires the `synth → finetune → benchmark → analyzer.{trace, failure,
 metrics, rule} → contract.catalog.published` cycle into a single named entry
 function (`run_pipeline`).
 
-This file would be `ganglion/factory.py` per the spec target path, but the
-legacy package at `ganglion/factory/` (Phase-1 per-customer LoRA pipeline) is
-still on disk, and Python forbids a module and package from sharing a name.
-We therefore land the composite under `ganglion/factory_pipeline.py`; consumers
-of the spec target should rename once the legacy package retires.
+Trace persistence goes through the single IoT materialiser
+`ganglion.benchmarks.iot.runner.traces_from_results` (`source="benchmark.iot"`,
+`error_type=run.error`) — see [[analyzer_trace_store]]; this module keeps no
+private duplicate of that mapping.
 
 Approach for this batch: **function-call orchestration**. The primitive layers
 (`ganglion.lm.*`, `ganglion.benchmarks.*`, `ganglion.analyzer.*`,
@@ -30,24 +29,23 @@ because no real rule synthesis exists to mutate the catalog between cycles.
 """
 from __future__ import annotations
 
-import time
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
 
-from ganglion.analyzer.metrics import CaseResult, RunResult, summarize
-from ganglion.analyzer.trace import Trace, TraceStore
+from ganglion.analyzer.metrics import CaseResult, summarize
+from ganglion.analyzer.trace import TraceStore
 from ganglion.benchmarks.bfcl.loader import (
     CATEGORIES as BFCL_CATEGORIES,
     load_category as load_bfcl_category,
 )
 from ganglion.benchmarks.bfcl.runner import run_bfcl, summarize_bfcl
 from ganglion.benchmarks.iot.dataset import default_dataset_for, load_dataset
+from ganglion.benchmarks.iot.runner import run_iot, traces_from_results
 from ganglion.contract.builtins import get_catalog
 from ganglion.contract.catalog import Catalog
-from ganglion.lm.client import ModelClient, ModelResult
+from ganglion.lm.client import ModelClient
 
 __all__ = [
     "IterationResult",
@@ -162,90 +160,6 @@ def _build_client(name: str, catalog: Catalog) -> ModelClient:
     raise ValueError(f"unknown client_id: {name!r}")
 
 
-def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
-
-
-def _trace_from_run(
-    *,
-    case_id: str,
-    catalog_id: str,
-    run_id: str,
-    source: str,
-    prompt: str,
-    expected_plan: dict[str, Any] | None,
-    run: RunResult,
-    client_id: str,
-) -> Trace:
-    """Convert one (case, run) pair into the canonical `Trace` shape."""
-    raw_output = ""
-    attempts: tuple[dict[str, Any], ...] = ()
-    parse_strategy = "strict"
-    if isinstance(run.raw, str):
-        raw_output = run.raw
-    elif isinstance(run.raw, dict):
-        # QwenJSONDSLClient stores the final attempt's text in `raw["content"]`;
-        # the lenient parsers also populate `raw["parse_strategy"]`.
-        content = run.raw.get("content")
-        if isinstance(content, str):
-            raw_output = content
-        raw_attempts = run.raw.get("attempts")
-        if isinstance(raw_attempts, list):
-            attempts = tuple(dict(att) for att in raw_attempts)
-        ps = run.raw.get("parse_strategy")
-        if isinstance(ps, str):
-            parse_strategy = ps
-    return Trace(
-        case_id=case_id,
-        catalog_id=catalog_id,
-        run_id=run_id,
-        source=source,
-        prompt=prompt,
-        raw_output=raw_output,
-        parse_strategy=parse_strategy,
-        latency_ms=float(run.latency_ms) if run.latency_ms is not None else 0.0,
-        input_tokens_total=int(run.input_tokens or 0),
-        output_tokens_total=int(run.output_tokens or 0),
-        model_id=client_id,
-        timestamp=_now_iso(),
-        attempts=attempts,
-        expected_plan=expected_plan,
-        plan=run.plan.to_jsonable() if run.plan is not None else None,
-        error_type=None if run.error is None else "runtime_error",
-    )
-
-
-def _ingest_iot_traces(
-    *,
-    case_results: list[CaseResult],
-    catalog_id: str,
-    run_id: str,
-    client_id: str,
-    store: TraceStore | None,
-) -> None:
-    """Persist IoT case traces into the (optional) `TraceStore`.
-
-    Stand-in for what `analyzer.trace.recorded` events would carry once
-    primitive layers emit them. See `docs/tasks/factory_pipeline.md`
-    §Procedure: `on analyzer.trace.recorded(...)`.
-    """
-    if store is None:
-        return
-    for case in case_results:
-        for run in case.runs:
-            trace = _trace_from_run(
-                case_id=case.id,
-                catalog_id=catalog_id,
-                run_id=run_id,
-                source="iot",
-                prompt=case.prompt,
-                expected_plan=case.expected.to_jsonable(),
-                run=run,
-                client_id=client_id,
-            )
-            store.append(trace)
-
-
 def _run_iot_iteration(
     *,
     catalog: Catalog,
@@ -259,54 +173,27 @@ def _run_iot_iteration(
         raise ValueError(f"IoT dataset is empty: {dataset_path}")
     client = _build_client(config.client_id, catalog)
 
-    case_results: list[CaseResult] = []
-    for case in cases:
-        runs: list[RunResult] = []
-        started = time.perf_counter()
-        try:
-            mr: ModelResult = client.invoke(case.prompt)
-            runs.append(
-                RunResult(
-                    plan=mr.plan,
-                    raw=mr.raw,
-                    latency_ms=mr.latency_ms,
-                    input_tokens=mr.input_tokens,
-                    output_tokens=mr.output_tokens,
-                )
-            )
-        except Exception as exc:  # pragma: no cover - smoke fallback
-            runs.append(
-                RunResult(
-                    plan=None,
-                    raw=None,
-                    latency_ms=(time.perf_counter() - started) * 1000,
-                    input_tokens=None,
-                    output_tokens=None,
-                    error=f"{type(exc).__name__}: {exc}",
-                )
-            )
-        case_results.append(
-            CaseResult(
-                id=case.id,
-                prompt=case.prompt,
-                expected=case.expected,
-                runs=tuple(runs),
-            )
-        )
+    # The canonical IoT loop: per-case exceptions are recorded (with the
+    # exception's `.raw` when present) instead of raised.
+    case_results: list[CaseResult] = run_iot(client, cases)
 
     summary = summarize(case_results)
     summary["catalog_id"] = config.catalog_id
     summary["client_id"] = config.client_id
     summary["benchmark"] = "iot"
 
-    store = TraceStore(config.trace_store_dir) if config.trace_store_dir else None
-    _ingest_iot_traces(
-        case_results=case_results,
-        catalog_id=config.catalog_id,
-        run_id=run_id,
-        client_id=config.client_id,
-        store=store,
-    )
+    if config.trace_store_dir:
+        # Stand-in for what `analyzer.trace.recorded` events would carry once
+        # primitive layers emit them (docs/tasks/factory_pipeline.md).
+        store = TraceStore(config.trace_store_dir)
+        for trace in traces_from_results(
+            case_results,
+            catalog_id=config.catalog_id,
+            run_id=run_id,
+            model_id=config.client_id,
+            source="benchmark.iot",
+        ):
+            store.append(trace)
     return summary
 
 

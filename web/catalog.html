@@ -5,6 +5,40 @@
 <title>GANGLION ◦ Catalog Inspector — Sheet 02</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="./assets/style.css">
+<style>
+/* page-specific elements only — everything else comes from assets/style.css */
+[hidden] { display: none !important; }
+.ctlbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.ctlbar__left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ctlbar select {
+  height: 32px; min-width: 200px; padding: 0 10px;
+  border: 1px solid var(--rule-strong); background: var(--ink-raised);
+  font-family: var(--mono); font-size: 12px; color: var(--bone-bright);
+}
+.cols3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; align-items: start; }
+@media (max-width: 1100px) { .cols3 { grid-template-columns: 1fr; } }
+.col { display: flex; flex-direction: column; min-height: 620px; }
+.col .panel__body { flex: 1; display: flex; flex-direction: column; gap: 14px; min-height: 0; }
+.pane {
+  flex: 1; overflow: auto; max-height: 620px;
+  font-family: var(--mono); font-size: 12px; line-height: 1.6;
+  color: var(--bone-bright); white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.pane--lock { color: var(--locked-fg); }
+.canon { flex: 1; overflow: auto; max-height: 620px; }
+.canon .dtable td:first-child { width: 190px; }
+.canon__target { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.compile textarea {
+  width: 100%; min-height: 200px; resize: vertical; padding: 10px 12px;
+  border: 1px solid var(--rule-strong); background: var(--ink);
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.55; color: var(--bone);
+}
+.compile textarea:focus { border-color: var(--teal); }
+.compile input[type=text] {
+  height: 30px; padding: 0 8px; border: 1px solid var(--rule); background: var(--ink);
+  font-family: var(--mono); font-size: 12px; color: var(--bone-bright); min-width: 200px;
+}
+</style>
 </head>
 <body>
 
@@ -25,215 +59,140 @@
     <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
     <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
     <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
   </nav>
   <div class="opbar__meta">
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">Bus</div><div class="opbar__meta-v"><span class="live-dot"></span>online</div></div>
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">Active</div><div class="opbar__meta-v">iot_light_5 · v07</div></div>
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Catalogs</div><div class="opbar__meta-v" id="meta-count">—</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Active</div><div class="opbar__meta-v" id="meta-active">—</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC</div><div class="opbar__meta-v" id="meta-clock">—</div></div>
   </div>
 </header>
 
 <main class="page">
 
-  <!-- HEAD -->
   <section class="page__head">
     <div>
-      <div class="page__id">SHEET 02 / 07 <span>◦</span> module 03 / contract <span>◦</span> read-only</div>
+      <div class="page__id">SHEET 02 <span>◦</span> module 03 / contract <span>◦</span> read-only</div>
       <h1 class="page__title">catalog <em>inspector</em></h1>
-      <p class="page__sub">A <b>Catalog</b> is the compiler boundary (§docs/tasks/contract_catalog.md). It renders two artifacts from one SSOT — <b>render_json_dsl()</b> for prompt-side and <b>render_openai_tools()</b> for the native baseline. Both must remain arity-equivalent; divergence is the §7 fail-loud signal. ToolSpec and EnumArg/StringArg <span class="italic">aliases</span> are the canonicalisation hook.</p>
+      <p class="page__sub">original spec ⇄ Action IR ⇄ canonicalisation · one <b>ToolSpec</b> traversal, three renders. A <b>Catalog</b> is the compiler boundary (<b>docs/tasks/contract_catalog.md</b>): <b>render_json_dsl()</b> is what the model sees, <b>render_openai_tools()</b> is the native baseline, and <b>describe()</b> — served by <b>GET /api/catalogs/{id}</b> — is what the fingerprint is taken over.</p>
     </div>
     <div class="folio">
-      Drawn by <b>GANGLION/FACTORY</b><br>
-      Sheet <b>02</b> of <b>07</b> · rev 1.3<br>
-      Spec <b>docs/tasks/contract_catalog.md</b><br>
-      Source <b>ganglion/contract/catalog.py</b>
+      Drawn by <b>GANGLION/CONSOLE</b><br>
+      Sheet <b>02</b> · live · rev 2.0<br>
+      Spec <b>docs/tasks/contract_describe.md</b><br>
+      Source <b>ganglion/contract/describe.py</b>
     </div>
   </section>
 
-  <!-- TIER SELECTOR -->
-  <section class="panel">
+  <div id="err" hidden class="mb-16"></div>
+
+  <!-- CONTROL STRIP -->
+  <section class="ctlbar mb-24">
+    <div class="ctlbar__left">
+      <span class="t-eng-sm t-mute">catalog</span>
+      <select id="catalog-select" aria-label="catalog"></select>
+      <span class="t-eng-sm t-mute">fingerprint</span>
+      <span class="tag tag--event" id="fp-tag">—</span>
+      <span class="tag" id="tools-tag">—</span>
+      <span class="tag tag--ghost" id="empty-tag">—</span>
+      <span class="tag tag--lock" id="source-tag">—</span>
+    </div>
+    <div class="flex-c gap-16">
+      <span class="t-eng-sm t-mute">POST /api/catalogs/compile</span>
+      <button class="btn btn--ghost" id="compile-toggle" type="button">Compile OpenAI / MCP tool list…</button>
+    </div>
+  </section>
+
+  <!-- COMPILE PANEL -->
+  <section class="panel compile mb-24" id="compile-panel" hidden>
     <div class="panel__head">
-      <div class="panel__head-title">catalogs <small>4 registered · click to inspect</small></div>
-      <div class="panel__head-tools"><span class="tag tag--lock">READ-ONLY</span></div>
+      <div class="panel__head-title">compile <small>schema_compiler · external tool schema → Catalog</small></div>
+      <div class="panel__head-tools"><span class="tag tag--event">contract.catalog.compiled</span></div>
     </div>
     <div class="contract">
-      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">catalog_id</div></div>
-      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">DSL render · OpenAI tools render</div></div>
-      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">contract.catalog.published</div></div>
-      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">arity divergence between renders</div></div>
-      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">parse_json_dsl(render) == identity</div></div>
+      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">OpenAI / MCP / bare function schema list</div></div>
+      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">compiled/&lt;sha12&gt; · catalog.json</div></div>
+      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">contract.catalog.compiled</div></div>
+      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">422 invalid_tools — nothing written</div></div>
+      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">resolve_catalog(id).name == id</div></div>
     </div>
-    <div class="panel__body panel__body--flush">
-      <table class="dtable">
-        <thead><tr><th>catalog_id</th><th class="num">version</th><th class="num">tools</th><th>allow_empty_calls</th><th>published</th><th>source</th></tr></thead>
-        <tbody>
-          <tr><td><span class="t-chart">iot_light_5</span> <small class="t-mute">[active]</small></td><td class="num">v07</td><td class="num">5</td><td><span class="tag tag--ghost">false</span></td><td>2026-05-19 08:14:02</td><td class="t-dim">ganglion/contract/builtins/iot_light.py</td></tr>
-          <tr><td>home_iot_20</td><td class="num">v04</td><td class="num">20</td><td><span class="tag tag--ghost">false</span></td><td>2026-05-18 11:02:48</td><td class="t-dim">ganglion/contract/builtins/home_iot.py</td></tr>
-          <tr><td>smart_home_50</td><td class="num">v02</td><td class="num">50</td><td><span class="tag tag--ghost">false</span></td><td>2026-05-15 09:30:00</td><td class="t-dim">ganglion/contract/builtins/smart_home.py</td></tr>
-          <tr><td>bfcl_v4_simple</td><td class="num">v01</td><td class="num"><span class="t-amber">per-case</span></td><td><span class="tag tag--in">true</span></td><td>2026-05-16 18:44:11</td><td class="t-dim">compiled via schema_compiler</td></tr>
-        </tbody>
-      </table>
+    <div class="panel__body stack-12">
+      <div class="flex-c gap-16" style="flex-wrap:wrap">
+        <span class="t-eng-sm t-mute">name</span>
+        <input id="compile-name" type="text" value="compiled_tools">
+        <label class="flex-c gap-8 t-dim fs-12" style="cursor:pointer">
+          <input id="compile-empty" type="checkbox"> allow_empty_calls
+        </label>
+        <button class="btn btn--primary" id="compile-run" type="button">Compile</button>
+        <span class="t-mute fs-11" id="compile-status"></span>
+      </div>
+      <textarea id="compile-tools" spellcheck="false" placeholder='[{"type":"function","function":{"name":"send_email","parameters":{"type":"object","properties":{"to":{"type":"string"}},"required":["to"]}}}]'></textarea>
+      <div class="t-mute fs-11">A JSON array of tools (OpenAI <span class="mono">{"type":"function",…}</span>, MCP <span class="mono">inputSchema</span>, or bare function schemas), or an object with a <span class="mono">tools</span> key. Compiled catalogs land in <span class="mono">&lt;runs&gt;/compiled/&lt;sha12&gt;/catalog.json</span> and appear in the picker above.</div>
     </div>
   </section>
 
-  <!-- TREE + DUAL RENDER -->
-  <section class="grid-asym mt-24">
+  <!-- THREE RENDERS -->
+  <section class="cols3">
 
-    <!-- LEFT: tree + alias -->
-    <div class="stack-24">
-      <div class="panel">
-        <div class="panel__head">
-          <div class="panel__head-title">ToolSpec tree <small>iot_light_5 · 5 tools</small></div>
-          <div class="panel__head-tools"><span class="t-dim">click to highlight</span></div>
-        </div>
-        <div class="panel__body">
-          <ul class="tree">
-            <li class="expandable"><span class="tnode tnode--cat">Catalog · iot_light_5 <span class="t-mute fs-10">[v07]</span></span>
-              <ul>
-                <li class="expandable"><span class="tnode tnode--tool">set_light(room, state, brightness?)</span>
-                  <ul>
-                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span><span class="talias">aliases: 거실→living, 안방→bedroom, 부엌→kitchen, 화장실→bath</span></li>
-                    <li><span class="tnode tnode--arg">state <span class="tkind">EnumArg</span></span><span class="talias">aliases: 켜→on, 꺼→off, 켜줘→on, 꺼줘→off</span></li>
-                    <li><span class="tnode tnode--arg">brightness <span class="tkind">IntArg [0..100]</span></span><span class="t-mute fs-10" style="margin-left:6px">required=false</span></li>
-                  </ul></li>
-                <li class="expandable"><span class="tnode tnode--tool">set_color(room, color)</span>
-                  <ul>
-                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span></li>
-                    <li><span class="tnode tnode--arg">color <span class="tkind">StringArg</span></span><span class="talias">aliases: 주황→orange, 빨강→red, 파랑→blue</span></li>
-                  </ul></li>
-                <li class="expandable"><span class="tnode tnode--tool">dim_light(room, level)</span>
-                  <ul>
-                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span></li>
-                    <li><span class="tnode tnode--arg">level <span class="tkind">IntArg [0..100]</span></span></li>
-                  </ul></li>
-                <li class="expandable"><span class="tnode tnode--tool">set_scene(scene)</span>
-                  <ul>
-                    <li><span class="tnode tnode--arg">scene <span class="tkind">EnumArg</span></span><span class="talias">aliases: 영화→movie, 수면→sleep, 집중→focus, 파티→party</span></li>
-                  </ul></li>
-                <li class="expandable"><span class="tnode tnode--tool">schedule_light(room, at, state)</span>
-                  <ul>
-                    <li><span class="tnode tnode--arg">room <span class="tkind">EnumArg</span></span></li>
-                    <li><span class="tnode tnode--arg">at <span class="tkind">TimeArg ISO-8601</span></span></li>
-                    <li><span class="tnode tnode--arg">state <span class="tkind">EnumArg</span></span></li>
-                  </ul></li>
-              </ul>
-            </li>
-          </ul>
+    <!-- ORIGINAL -->
+    <div class="panel col">
+      <div class="panel__head">
+        <div class="panel__head-title">ORIGINAL <small>source_tools</small></div>
+        <div class="panel__head-tools"><span id="original-kind">—</span></div>
+      </div>
+      <div class="panel__body">
+        <div id="original-note"></div>
+        <div class="pane" id="original-pane"></div>
+      </div>
+    </div>
+
+    <!-- ACTION IR -->
+    <div class="panel col">
+      <div class="panel__head" style="flex-wrap:wrap">
+        <div class="panel__head-title">ACTION IR <small>exactly the bytes the model sees</small></div>
+        <div class="panel__head-tools" style="flex-basis:100%">
+          <span class="seg" id="ir-seg">
+            <span class="seg__opt active" data-view="dsl">DSL</span>
+            <span class="seg__opt" data-view="openai">OpenAI tools</span>
+            <span class="seg__opt" data-view="schema">JSON-Schema</span>
+            <span class="seg__opt" data-view="prompt">system prompt</span>
+          </span>
         </div>
       </div>
-
-      <div class="panel">
-        <div class="panel__head">
-          <div class="panel__head-title">alias canonicalisation map <small>11 alias pairs</small></div>
-          <div class="panel__head-tools"><span class="t-dim">EnumArg.aliases ∪ StringArg.aliases</span></div>
-        </div>
-        <div class="panel__body panel__body--flush">
-          <table class="dtable">
-            <thead><tr><th>arg path</th><th>alias (in)</th><th>canonical (out)</th><th>source</th></tr></thead>
-            <tbody>
-              <tr><td>set_light.room</td><td class="t-amber">거실</td><td>→ living</td><td class="t-mute">EnumArg.aliases</td></tr>
-              <tr><td>set_light.room</td><td class="t-amber">안방</td><td>→ bedroom</td><td class="t-mute">EnumArg.aliases</td></tr>
-              <tr><td>set_light.state</td><td class="t-amber">켜줘</td><td>→ on</td><td class="t-mute">EnumArg.aliases</td></tr>
-              <tr><td>set_light.state</td><td class="t-amber">꺼</td><td>→ off</td><td class="t-mute">EnumArg.aliases</td></tr>
-              <tr><td>set_color.color</td><td class="t-amber">주황</td><td>→ orange</td><td class="t-mute">StringArg.aliases</td></tr>
-              <tr><td>set_color.color</td><td class="t-amber">빨강</td><td>→ red</td><td class="t-mute">StringArg.aliases</td></tr>
-              <tr><td>set_scene.scene</td><td class="t-amber">영화</td><td>→ movie</td><td class="t-mute">EnumArg.aliases</td></tr>
-              <tr><td>set_scene.scene</td><td class="t-amber">수면</td><td>→ sleep</td><td class="t-mute">EnumArg.aliases</td></tr>
-            </tbody>
-          </table>
+      <div class="panel__body">
+        <div class="pane" id="ir-pane"></div>
+        <div class="flex-c gap-8" style="flex-wrap:wrap; padding-top:14px; border-top:1px dashed var(--rule)">
+          <span class="tag" id="ir-size">—</span>
+          <span class="tag tag--in" id="ir-note">—</span>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: dual render + invariant -->
-    <div class="stack-24">
-
-      <div class="panel">
-        <div class="panel__head">
-          <div class="panel__head-title">catalog invariants</div>
-          <div class="panel__head-tools"><span class="t-chart">● all green</span></div>
-        </div>
-        <div class="panel__body">
-          <table class="dtable">
-            <tbody>
-              <tr><td class="t-dim">allow_empty_calls</td><td><div class="toggle lock"><div class="toggle__sw"></div><span>false · locked</span></div></td></tr>
-              <tr><td class="t-dim">parse_json_dsl(render_json_dsl) == identity</td><td class="t-chart">✓ verified at publish</td></tr>
-              <tr><td class="t-dim">render arity match (DSL ↔ OpenAI)</td><td class="t-chart">✓ 5 / 5 tools</td></tr>
-              <tr><td class="t-dim">duplicate alias keys</td><td class="t-chart">✓ 0</td></tr>
-              <tr><td class="t-dim">unreachable EnumArg values</td><td class="t-chart">✓ 0</td></tr>
-              <tr><td class="t-dim">tests/test_validator.py</td><td class="t-chart">✓ pass · 42 cases</td></tr>
-            </tbody>
-          </table>
+    <!-- CANONICALISATION -->
+    <div class="panel col">
+      <div class="panel__head">
+        <div class="panel__head-title">CANONICALISATION <small>what the two renders hide</small></div>
+        <div class="panel__head-tools"><span id="canon-count">—</span></div>
+      </div>
+      <div class="panel__body panel__body--flush" style="gap:0">
+        <div class="canon" id="canon-pane"></div>
+        <div style="padding:12px 20px; border-top:1px solid var(--rule); font-size:11px; line-height:1.5; color:var(--bone-dim)">
+          fingerprint = sha256(describe()) — moves on alias / hook edits, not only on examples
         </div>
       </div>
+    </div>
 
-      <div class="panel">
-        <div class="panel__head">
-          <div class="panel__head-title">dual render <small>same SSOT · two artifacts</small></div>
-          <div class="panel__head-tools">
-            <span class="seg"><span class="seg__opt active">side-by-side</span><span class="seg__opt">DSL only</span><span class="seg__opt">OpenAI only</span></span>
-          </div>
-        </div>
-        <div class="panel__body">
-          <div class="grid-2">
-            <div class="code" data-label="render_json_dsl()">
-<span class="c">// passed to system prompt</span>
-TOOLS:
-- set_light(room, state, brightness?)
-- set_color(room, color)
-- dim_light(room, level)
-- set_scene(scene)
-- schedule_light(room, at, state)
+  </section>
 
-EMIT JSON: {<span class="s">"calls"</span>: [{<span class="s">"tool"</span>:..,<span class="s">"args"</span>:{..}}]}
-
-ALIASES:
-  room: 거실→living, 안방→bedroom, 부엌→kitchen
-  state: 켜→on, 꺼→off
-  color: 주황→orange, 빨강→red
-  scene: 영화→movie, 수면→sleep
-            </div>
-            <div class="code" data-label="render_openai_tools()">
-<span class="c">// passed to native tool_calls path</span>
-[
-  {<span class="k">"type"</span>:<span class="s">"function"</span>,
-   <span class="k">"function"</span>:{
-     <span class="k">"name"</span>:<span class="s">"set_light"</span>,
-     <span class="k">"description"</span>:<span class="s">"control a single light"</span>,
-     <span class="k">"parameters"</span>:{
-       <span class="k">"type"</span>:<span class="s">"object"</span>,
-       <span class="k">"required"</span>:[<span class="s">"room"</span>,<span class="s">"state"</span>],
-       <span class="k">"properties"</span>:{
-         <span class="k">"room"</span>:{<span class="k">"type"</span>:<span class="s">"string"</span>,
-                  <span class="k">"enum"</span>:[<span class="s">"living"</span>,<span class="s">"bedroom"</span>,<span class="s">"kitchen"</span>,<span class="s">"bath"</span>]},
-         <span class="k">"state"</span>:{<span class="k">"enum"</span>:[<span class="s">"on"</span>,<span class="s">"off"</span>]},
-         <span class="k">"brightness"</span>:{<span class="k">"type"</span>:<span class="s">"integer"</span>,
-                        <span class="k">"minimum"</span>:<span class="n">0</span>,<span class="k">"maximum"</span>:<span class="n">100</span>}
-       }}}}
-  ... 4 more tools
-]
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel__head">
-          <div class="panel__head-title">scaling — token cost vs catalog size</div>
-          <div class="panel__head-tools"><span class="t-dim">M2 experiment · runs/m2_run.sh</span></div>
-        </div>
-        <div class="panel__body panel__body--flush">
-          <table class="dtable">
-            <thead><tr><th>tier</th><th class="num">tools</th><th class="num">DSL tokens</th><th class="num">OpenAI tools tokens</th><th class="num">ratio</th></tr></thead>
-            <tbody>
-              <tr><td><span class="t-chart">iot_light_5</span></td><td class="num">5</td><td class="num">214</td><td class="num">1,488</td><td class="num t-chart">6.95×</td></tr>
-              <tr><td>home_iot_20</td><td class="num">20</td><td class="num">802</td><td class="num">5,612</td><td class="num t-chart">7.00×</td></tr>
-              <tr><td>smart_home_50</td><td class="num">50</td><td class="num">1,932</td><td class="num">13,488</td><td class="num t-chart">6.98×</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
+  <!-- TOOLSPEC TREE -->
+  <section class="panel mt-24">
+    <div class="panel__head">
+      <div class="panel__head-title">ToolSpec tree <small id="tree-sub">—</small></div>
+      <div class="panel__head-tools"><span class="t-dim">click a node to collapse</span></div>
+    </div>
+    <div class="panel__body">
+      <ul class="tree" id="tree"></ul>
     </div>
   </section>
 
@@ -245,9 +204,9 @@ ALIASES:
     </div>
     <div class="panel__body">
       <div class="grid-3">
-        <a href="./pipeline.html" class="callout">factory pipeline (catalog as input)</a>
-        <a href="./rules.html" class="callout">rule synthesis (catalog as output)</a>
-        <a href="./events.html" class="callout">contract.catalog.published events</a>
+        <a href="./chat.html" class="callout">chat against this catalog →</a>
+        <a href="./rules.html" class="callout">rule synthesis (catalog as output) →</a>
+        <a href="./traces.html" class="callout">traces labelled against it →</a>
       </div>
     </div>
   </section>
@@ -256,23 +215,297 @@ ALIASES:
 
 <footer class="footer">
   <div>SHEET 02 · catalog inspector · <b>docs/tasks/contract_catalog.md</b></div>
-  <div>read-only · invariants checked at publish · §5 contract surface</div>
+  <div>live · GET /api/catalogs · GET /api/catalogs/{id} · POST /api/catalogs/compile</div>
 </footer>
 
-<script src="./assets/data.js"></script>
+<script src="./assets/api.js"></script>
 <script>
-// tree expand/collapse
-document.querySelectorAll('.tree li.expandable > .tnode').forEach(n => {
-  n.addEventListener('click', () => n.parentElement.classList.toggle('collapsed'));
-});
-// seg
-document.querySelectorAll('.seg').forEach((seg) => {
-  seg.addEventListener('click', (e) => {
-    const opt = e.target.closest('.seg__opt'); if (!opt) return;
-    seg.querySelectorAll('.seg__opt').forEach((o) => o.classList.remove('active'));
-    opt.classList.add('active');
+(function () {
+  'use strict';
+  var API = window.GanglionAPI;
+  var esc = API.escapeHtml;
+  var fmt = API.fmt;
+
+  var el = {};
+  ['err','catalog-select','fp-tag','tools-tag','empty-tag','source-tag','compile-toggle',
+   'compile-panel','compile-name','compile-empty','compile-run','compile-tools','compile-status',
+   'original-kind','original-note','original-pane','ir-seg','ir-pane','ir-size','ir-note',
+   'canon-pane','canon-count','tree','tree-sub','meta-count','meta-active','meta-clock'
+  ].forEach(function (id) { el[id] = document.getElementById(id); });
+
+  var state = { catalogs: [], row: null, detail: null, view: 'dsl' };
+
+  function fail(err) { API.showError(el.err, err); }
+  function ok() { API.clearError(el.err); }
+
+  function tickClock() { el['meta-clock'].textContent = new Date().toISOString().slice(11, 19); }
+  setInterval(tickClock, 1000); tickClock();
+
+  // ---- catalog list ------------------------------------------
+  function loadCatalogs(selectId) {
+    return API.get('/api/catalogs').then(function (payload) {
+      state.catalogs = payload.catalogs || [];
+      el['meta-count'].textContent = String(state.catalogs.length);
+      if (!state.catalogs.length) {
+        el['catalog-select'].innerHTML = '<option>none</option>';
+        el['original-pane'].innerHTML = '';
+        el['ir-pane'].innerHTML = '';
+        el['canon-pane'].innerHTML = '<div class="idle"><span class="t-eng">no catalog</span>' +
+          'The registry served no catalogs — is ganglion/contract/builtins importable?</div>';
+        return;
+      }
+      var wanted = selectId || API.ctx.catalog;
+      var found = state.catalogs.filter(function (row) { return row.catalog_id === wanted; })[0];
+      state.row = found || state.catalogs[0];
+      el['catalog-select'].innerHTML = state.catalogs.map(function (row) {
+        var label = row.catalog_id + (row.label ? ' · ' + row.label : '');
+        return '<option value="' + esc(row.catalog_id) + '"' +
+          (row.catalog_id === state.row.catalog_id ? ' selected' : '') + '>' + esc(label) + '</option>';
+      }).join('');
+      return loadDetail(state.row.catalog_id);
+    });
+  }
+
+  function loadDetail(catalogId) {
+    return API.get('/api/catalogs/' + catalogId).then(function (detail) {
+      ok();
+      state.detail = detail;
+      state.row = state.catalogs.filter(function (row) { return row.catalog_id === catalogId; })[0] || state.row;
+      API.saveCtx({ catalog: catalogId });
+      renderStrip();
+      renderOriginal();
+      renderIR();
+      renderCanon();
+      renderTree();
+    }, fail);
+  }
+
+  function renderStrip() {
+    var detail = state.detail;
+    var row = state.row || {};
+    el['fp-tag'].textContent = detail.fingerprint;
+    el['tools-tag'].textContent = (detail.describe.tools || []).length + ' tools';
+    el['empty-tag'].textContent = 'allow_empty_calls ' + detail.describe.allow_empty_calls;
+    el['source-tag'].textContent = detail.source === 'compiled'
+      ? 'compiled · schema_compiler'
+      : 'builtin · hand-authored';
+    el['meta-active'].textContent = detail.catalog_id;
+    el['original-kind'].textContent = detail.source;
+    var sub = el['tree-sub'];
+    if (sub) sub.textContent = detail.catalog_id + ' · ' + (detail.describe.tools || []).length + ' tools';
+  }
+
+  // ---- ORIGINAL ----------------------------------------------
+  function renderOriginal() {
+    var detail = state.detail;
+    if (detail.source_tools && detail.source_tools.length) {
+      el['original-note'].innerHTML =
+        '<div class="flex-c gap-8" style="flex-wrap:wrap">' +
+        '<span class="tag tag--in">as submitted to POST /api/catalogs/compile</span>' +
+        '<span class="tag tag--warn">lossy: description / nesting may be dropped in the re-render</span></div>';
+      el['original-pane'].className = 'pane';
+      el['original-pane'].textContent = fmt.pretty(detail.source_tools);
+      return;
+    }
+    el['original-note'].innerHTML =
+      '<div class="locked-strip"><span style="line-height:1.5">hand-authored tier · 원본 명세 없음 ' +
+      '(builtin catalogs are Python modules under ganglion/contract/builtins/)</span></div>' +
+      '<div class="t-eng-sm t-lock mt-16">example · what a compiled catalog would show here ' +
+      '(this is the re-render, not a source document)</div>';
+    el['original-pane'].className = 'pane pane--lock';
+    el['original-pane'].textContent = fmt.pretty((detail.openai_tools || [])[0] || null);
+  }
+
+  // ---- ACTION IR ---------------------------------------------
+  function irText() {
+    var detail = state.detail;
+    if (state.view === 'dsl') return detail.json_dsl || '';
+    if (state.view === 'openai') return fmt.pretty(detail.openai_tools);
+    if (state.view === 'schema') {
+      return detail.json_schema === null
+        ? '// no JSON-Schema — ganglion.lm.grammar is not importable in this process\n' +
+          '// (the grammar mask is optional; see docs/tasks/lm_grammar_mask.md)'
+        : fmt.pretty(detail.json_schema);
+    }
+    return detail.system_prompt || '';
+  }
+
+  var IR_NOTE = {
+    dsl: 'render_json_dsl() — appended to the system prompt',
+    openai: 'render_openai_tools() — the native tool-call baseline',
+    schema: 'catalog_to_json_schema() — the grammar-mask constraint',
+    prompt: 'byte-identical to the SFT prompt'
+  };
+
+  function renderIR() {
+    var text = irText();
+    el['ir-pane'].textContent = text;
+    el['ir-size'].textContent = fmt.int(text.length) + ' chars · ~' + fmt.int(Math.ceil(text.length / 3.4)) + ' tokens (est.)';
+    el['ir-note'].textContent = IR_NOTE[state.view];
+    Array.prototype.forEach.call(el['ir-seg'].querySelectorAll('.seg__opt'), function (opt) {
+      opt.classList.toggle('active', opt.dataset.view === state.view);
+    });
+  }
+
+  el['ir-seg'].addEventListener('click', function (event) {
+    var opt = event.target && event.target.closest ? event.target.closest('.seg__opt') : null;
+    if (!opt) return;
+    state.view = opt.dataset.view;
+    renderIR();
   });
-});
+
+  // ---- CANONICALISATION --------------------------------------
+  function aliasCell(aliases) {
+    return Object.keys(aliases).map(function (key) {
+      return '<span class="t-amber">' + esc(key) + '</span>→' + esc(aliases[key]);
+    }).join(' · ');
+  }
+
+  function canonRows() {
+    var rows = [];
+    var plain = [];
+    (state.detail.describe.tools || []).forEach(function (tool) {
+      var before = rows.length;
+      (tool.args || []).forEach(function (arg) {
+        var target = tool.name + '.' + arg.name;
+        if (arg.aliases && Object.keys(arg.aliases).length) {
+          rows.push({ target: target, hook: 'aliases', cls: 'tag--in', value: aliasCell(arg.aliases) });
+        }
+        if (arg.kind === 'integer' && arg.allow_percent) {
+          rows.push({ target: target, hook: 'allow_percent', cls: 'tag--in',
+            value: 'true · "70%" → 70 · range ' + esc(arg.min) + '..' + esc(arg.max) });
+        }
+        if (arg.kind === 'time') {
+          rows.push({ target: target, hook: 'TimeArg', cls: 'tag--in', value: '24h · HH:MM' });
+        }
+        if (arg.kind === 'string' && arg.pattern) {
+          rows.push({ target: target, hook: 'pattern', cls: 'tag--in', value: esc(String(arg.pattern)) });
+        }
+        if (arg.kind === 'raw') {
+          rows.push({ target: target, hook: 'RawArg', cls: 'tag--in',
+            value: esc(arg.dsl_description || '') + ' · json_schema ' + esc(fmt.short(fmt.json(arg.json_schema), 70)) });
+        }
+      });
+      (tool.defaults_when_missing || []).forEach(function (rule) {
+        rows.push({ target: tool.name, hook: 'defaults_when_missing', cls: 'tag--in',
+          value: esc(rule.arg) + '=' + esc(fmt.json(rule.value)) +
+            ' <span class="t-mute">(predicate: ' + (rule.predicate_present ? 'present' : 'always') + ')</span>' });
+      });
+      if (tool.strip_unknown_args) {
+        rows.push({ target: tool.name, hook: 'strip_unknown_args', cls: 'tag--in', value: 'true' });
+      }
+      if (tool.prompt_correction) {
+        rows.push({ target: tool.name, hook: 'prompt_correction', cls: 'tag--warn',
+          value: 'true · rewrites args from the prompt' });
+      }
+      if (tool.custom_validator) {
+        rows.push({ target: tool.name, hook: 'custom_validator', cls: 'tag--in', value: 'true · never stripped' });
+      }
+      if (rows.length === before) plain.push(tool.name);
+    });
+    return { rows: rows, plain: plain };
+  }
+
+  function renderCanon() {
+    var result = canonRows();
+    el['canon-count'].textContent = result.rows.length + ' hooks';
+    if (!result.rows.length) {
+      el['canon-pane'].innerHTML = '<div class="idle" style="border:none"><span class="t-eng">no hooks</span>' +
+        'This catalog canonicalises nothing — F⁰ and Fᴷ are always identical.</div>';
+      return;
+    }
+    var body = result.rows.map(function (row) {
+      return '<tr><td><div class="canon__target"><span>' + esc(row.target) + '</span>' +
+        '<span class="tag ' + row.cls + '">' + esc(row.hook) + '</span></div></td>' +
+        '<td>' + row.value + '</td></tr>';
+    }).join('');
+    if (result.plain.length) {
+      body += '<tr class="row-ghost"><td><div class="canon__target"><span>' +
+        esc(result.plain.length + ' tool' + (result.plain.length === 1 ? '' : 's')) +
+        '</span><span class="tag tag--ghost">no hook</span></div></td><td>' +
+        esc(result.plain.join(', ')) + '</td></tr>';
+    }
+    el['canon-pane'].innerHTML =
+      '<table class="dtable"><thead><tr><th>target · hook</th><th>value</th></tr></thead><tbody>' +
+      body + '</tbody></table>';
+  }
+
+  // ---- ToolSpec tree ------------------------------------------
+  function argLine(arg) {
+    var kind = arg.kind;
+    if (arg.kind === 'integer' || arg.kind === 'number') kind += ' [' + arg.min + '..' + arg.max + ']';
+    var alias = (arg.aliases && Object.keys(arg.aliases).length)
+      ? '<span class="talias">aliases: ' + esc(Object.keys(arg.aliases).map(function (key) {
+        return key + '→' + arg.aliases[key];
+      }).join(', ')) + '</span>'
+      : '';
+    return '<li><span class="tnode tnode--arg">' + esc(arg.name) +
+      ' <span class="tkind">' + esc(kind) + '</span></span>' +
+      (arg.required ? '' : '<span class="t-mute fs-10" style="margin-left:6px">required=false</span>') +
+      alias + '</li>';
+  }
+
+  function renderTree() {
+    var describe = state.detail.describe;
+    var tools = (describe.tools || []).map(function (tool) {
+      var signature = tool.name + '(' + (tool.args || []).map(function (arg) {
+        return arg.name + (arg.required ? '' : '?');
+      }).join(', ') + ')';
+      return '<li class="expandable"><span class="tnode tnode--tool">' + esc(signature) + '</span>' +
+        '<ul>' + (tool.args || []).map(argLine).join('') +
+        (tool.description ? '<li><span class="t-mute fs-11">' + esc(tool.description) + '</span></li>' : '') +
+        '</ul></li>';
+    }).join('');
+    el.tree.innerHTML = '<li class="expandable"><span class="tnode tnode--cat">Catalog · ' +
+      esc(describe.name) + ' <span class="t-mute fs-10">[' + esc(state.detail.fingerprint) + ']</span></span>' +
+      '<ul>' + tools + '</ul></li>';
+    Array.prototype.forEach.call(el.tree.querySelectorAll('li.expandable > .tnode'), function (node) {
+      node.addEventListener('click', function () { node.parentElement.classList.toggle('collapsed'); });
+    });
+  }
+
+  // ---- compile -------------------------------------------------
+  el['compile-toggle'].addEventListener('click', function () {
+    el['compile-panel'].hidden = !el['compile-panel'].hidden;
+    if (!el['compile-panel'].hidden) el['compile-tools'].focus();
+  });
+
+  el['compile-run'].addEventListener('click', function () {
+    var text = el['compile-tools'].value.trim();
+    if (!text) { fail(API.ApiError(0, 'empty_tools', 'paste a JSON tool list first')); return; }
+    var parsed;
+    try { parsed = JSON.parse(text); } catch (err) {
+      fail(API.ApiError(0, 'invalid_json', 'the tool list is not valid JSON: ' + err.message));
+      return;
+    }
+    var tools = Array.isArray(parsed) ? parsed : parsed.tools;
+    if (!Array.isArray(tools) || !tools.length) {
+      fail(API.ApiError(0, 'invalid_tools', 'expected a non-empty JSON array of tools (or {"tools": [...]})'));
+      return;
+    }
+    ok();
+    el['compile-status'].textContent = 'compiling…';
+    API.post('/api/catalogs/compile', {
+      name: el['compile-name'].value.trim() || 'compiled_tools',
+      tools: tools,
+      allow_empty_calls: el['compile-empty'].checked
+    }).then(function (payload) {
+      el['compile-status'].textContent = payload.catalog_id + ' · ' + payload.fingerprint +
+        ' · ' + payload.n_tools + ' tools';
+      return loadCatalogs(payload.catalog_id);
+    }, function (err) {
+      el['compile-status'].textContent = 'refused';
+      fail(err);
+    });
+  });
+
+  el['catalog-select'].addEventListener('change', function () {
+    loadDetail(el['catalog-select'].value);
+  });
+
+  // ---- boot ----------------------------------------------------
+  loadCatalogs().catch(fail);
+}());
 </script>
 </body>
 </html>

@@ -398,3 +398,167 @@ def test_non_functional_alias_map_skipped():
     patches = synthesize_rules(classifs, traces, CATALOG)
     # Functional check fails → no add_alias patch emitted.
     assert all(p.operation != "add_alias" for p in patches)
+
+
+# ---------------------------------------------------------------------------
+# 2026-09-16 revision: golds=, _pred_calls over raw_plan, retire_rule, make_patch_id
+# ---------------------------------------------------------------------------
+
+from ganglion.analyzer.rules import OPERATIONS, make_patch_id  # noqa: E402
+from ganglion.contract.types import ActionPlan, ToolCall  # noqa: E402
+
+
+def _failed_trace(*, case_id: str, raw_plan: dict, expected_plan: dict | None) -> Trace:
+    """Validation-failure trace: `plan` None, model output only in `raw_plan`."""
+    content = json.dumps(raw_plan)
+    return Trace(
+        case_id=case_id,
+        catalog_id="iot_light_5",
+        run_id="run-test",
+        source="benchmark.iot",
+        prompt="test prompt",
+        raw_output=content,
+        parse_strategy="json_object",
+        latency_ms=10.0,
+        input_tokens_total=10,
+        output_tokens_total=5,
+        model_id="scripted",
+        timestamp="2026-05-20T00:00:00Z",
+        attempts=({"attempt": 0, "content": content, "error": "set_light.state is required"},),
+        expected_plan=expected_plan,
+        plan=None,
+        error_type="RepairExhaustedError: set_light.state is required",
+        raw_plan=raw_plan,
+    )
+
+
+def _gold_plan(action: str, args: dict) -> ActionPlan:
+    return ActionPlan(calls=(ToolCall(action=action, args=args),))
+
+
+def test_missing_required_arg_uses_raw_plan_and_golds():
+    """Errata E1: validation-failure traces (plan None) still contribute."""
+    classifs: list[Classification] = []
+    traces: list[Trace] = []
+    golds: dict[str, ActionPlan] = {}
+    for i in range(5):
+        raw_plan = {"calls": [{"action": "set_light", "args": {"room": "living", "brightness": 70}}]}
+        tr = _failed_trace(case_id=f"c-{i}", raw_plan=raw_plan, expected_plan=None)
+        traces.append(tr)
+        golds[tr.case_id] = _gold_plan("set_light", {"room": "living", "state": "on", "brightness": 70})
+        classifs.append(_classification(
+            trace_id=tr.trace_id,
+            failure_type=FailureType.MISSING_REQUIRED_ARG,
+            evidence={"action": "set_light", "arg_name": "state", "declared_args": []},
+        ))
+    # No expected_plan and no golds → no gold value → nothing to propose.
+    assert synthesize_rules(classifs, traces, CATALOG) == []
+    patches = synthesize_rules(classifs, traces, CATALOG, golds=golds)
+    assert len(patches) == 1
+    patch = patches[0]
+    assert patch.operation == "set_default"
+    assert patch.payload["default"] == "on"
+    # Predicate hint is read from raw_plan (the omitted-state signature).
+    assert patch.payload["predicate_hint"] == {"requires_args": ["brightness", "room"]}
+
+
+def test_golds_override_expected_plan():
+    classifs: list[Classification] = []
+    traces: list[Trace] = []
+    golds: dict[str, ActionPlan] = {}
+    for i in range(5):
+        plan = {"calls": [{"action": "set_light", "args": {"room": "living", "brightness": 70}}]}
+        dataset_gold = {"calls": [{"action": "set_light", "args": {"room": "living", "state": "on", "brightness": 70}}]}
+        tr = _make_trace(case_id=f"c-{i}", plan=plan, expected_plan=dataset_gold)
+        traces.append(tr)
+        golds[tr.case_id] = _gold_plan("set_light", {"room": "living", "state": "off", "brightness": 70})
+        classifs.append(_classification(
+            trace_id=tr.trace_id,
+            failure_type=FailureType.MISSING_REQUIRED_ARG,
+            evidence={"action": "set_light", "arg_name": "state", "declared_args": []},
+        ))
+    [patch] = synthesize_rules(classifs, traces, CATALOG, golds=golds)
+    assert patch.payload["default"] == "off"
+
+
+def test_alias_matcher_reads_golds_for_failed_traces():
+    classifs: list[Classification] = []
+    traces: list[Trace] = []
+    golds: dict[str, ActionPlan] = {}
+    for i in range(3):
+        raw_plan = {"calls": [{"action": "set_light", "args": {"room": "lounge area", "state": "on"}}]}
+        tr = _failed_trace(case_id=f"c-{i}", raw_plan=raw_plan, expected_plan=None)
+        traces.append(tr)
+        golds[tr.case_id] = _gold_plan("set_light", {"room": "living", "state": "on"})
+        classifs.append(_classification(
+            trace_id=tr.trace_id,
+            failure_type=FailureType.VALUE_OUT_OF_ENUM,
+            evidence={"action": "set_light", "arg_name": "room", "value": "lounge area"},
+        ))
+    [patch] = synthesize_rules(classifs, traces, CATALOG, golds=golds)
+    assert patch.operation == "add_alias"
+    assert patch.payload["aliases"] == {"lounge area": "living"}
+
+
+def test_missing_required_arg_gold_counted_even_without_predicted_calls():
+    """E1: the gold block sits outside the predicted-calls guard."""
+    classifs: list[Classification] = []
+    traces: list[Trace] = []
+    for i in range(5):
+        # raw_plan decodes but has no calls for set_light at all.
+        tr = _failed_trace(
+            case_id=f"c-{i}",
+            raw_plan={"calls": []},
+            expected_plan={"calls": [{"action": "set_light", "args": {"room": "living", "state": "on"}}]},
+        )
+        traces.append(tr)
+        classifs.append(_classification(
+            trace_id=tr.trace_id,
+            failure_type=FailureType.MISSING_REQUIRED_ARG,
+            evidence={"action": "set_light", "arg_name": "state", "declared_args": []},
+        ))
+    [patch] = synthesize_rules(classifs, traces, CATALOG)
+    assert patch.operation == "set_default"
+    assert patch.payload["default"] == "on"
+    assert patch.payload["predicate_hint"] == {"requires_args": []}
+
+
+def test_make_patch_id_is_public_and_matches_emitted_ids():
+    classifs: list[Classification] = []
+    traces: list[Trace] = []
+    for i in range(5):
+        plan = {"calls": [{"action": "list_devices", "args": {"phantom_id": "8"}}]}
+        traces.append(_make_trace(case_id=f"c-{i}", plan=plan, expected_plan={"calls": []}))
+        classifs.append(_classification(
+            trace_id=traces[-1].trace_id,
+            failure_type=FailureType.UNKNOWN_ARG,
+            evidence={"action": "list_devices", "arg_name": "phantom_id"},
+        ))
+    for patch in synthesize_rules(classifs, traces, CATALOG):
+        assert patch.patch_id == make_patch_id(
+            patch.catalog_id, patch.operation, patch.target_tool, patch.payload,
+        )
+    pid = make_patch_id("iot_light_5", "retire_rule", "set_light", {"hook_kind": "strip_unknown_args", "arg": None})
+    assert pid.startswith("rs-iot_light_5-") and len(pid) == len("rs-iot_light_5-") + 12
+    # Key order in the payload does not matter.
+    assert pid == make_patch_id("iot_light_5", "retire_rule", "set_light", {"arg": None, "hook_kind": "strip_unknown_args"})
+
+
+def test_retire_rule_patch_round_trips():
+    assert "retire_rule" in OPERATIONS
+    payload = {"hook_kind": "defaults_when_missing", "arg": "state"}
+    patch = RulePatch(
+        patch_id=make_patch_id("iot_light_5", "retire_rule", "set_light", payload),
+        catalog_id="iot_light_5",
+        target_tool="set_light",
+        operation="retire_rule",
+        payload=payload,
+        evidence={"failure_count": 0, "support_share": 0.0, "example_trace_ids": [], "confidence": 0.9},
+        source_failure_type=FailureType.NO_FAILURE,
+        created_at="2026-09-16T00:00:00Z",
+    )
+    row = json.loads(json.dumps(patch.to_dict(), sort_keys=True))
+    restored = RulePatch.from_dict(row)
+    assert restored == patch
+    assert restored.operation == "retire_rule"
+    assert restored.payload == payload

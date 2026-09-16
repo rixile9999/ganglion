@@ -1,4 +1,4 @@
-[← Self-maintenance tasks](./README.md) · General principle: [task_principle](../agent-forge/task_principle.md) · Siblings: [[contract_schema_compiler]] · [[contract_null_action]]
+[← Self-maintenance tasks](./README.md) · General principle: [task_principle](../agent-forge/task_principle.md) · Siblings: [[contract_schema_compiler]] · [[contract_null_action]] · [[contract_describe]] · [[contract_patch_apply]]
 
 # contract_catalog
 
@@ -17,12 +17,14 @@ Define the immutable Catalog contract (Catalog, ToolSpec, ArgSpec taxonomy, Acti
   - ArgSpec taxonomy (`EnumArg`, `IntArg`, `NumberArg`, `StringArg`, `BoolArg`, `TimeArg`, `RawArg`) with the locale/domain canonicalisation hooks `EnumArg.aliases` and `StringArg.aliases` (e.g. `"거실" → "living"`, `"movie mode" → "movie"`). `RawArg` is the escape hatch for shapes the generic renderer cannot express, paired with `ToolSpec.custom_validator`.
   - `parse_json_dsl()` pipeline: `str | Mapping → strict JSON → fenced ```json``` fallback → first decodable `{...}` → `validate()` → `ActionPlan(calls=tuple[ToolCall, ...])`. Frozen `ToolCall(name, args)`; value equality semantics so `result.plan == expected` is the exact-match metric.
   - `allow_empty_calls` opt-in flag — linkage point with [[contract_null_action]] (does not own the abstention semantics, only carries the boolean).
+  - `Catalog.describe()` / `Catalog.fingerprint()` — thin methods delegating to `ganglion/contract/describe.py` (`describe(catalog)`, `catalog_fingerprint(catalog)`). The import is lazy inside each method body because `ganglion/contract/__init__.py` imports `catalog` before `describe` (a module-level import would be a circular import at package init). The description shape and the `cf-` hashing rule are owned by [[contract_describe]]; this doc only carries the two entry points.
   - `DSLValidationError` taxonomy with field-path information for unknown tool, missing required arg, alias miss, enum miss, type miss.
   - Target post-redesign paths: `ganglion/contract/catalog.py`, `ganglion/contract/tool_spec.py`, `ganglion/contract/arg_spec.py`, `ganglion/contract/types.py`, `ganglion/contract/parse.py`, `ganglion/contract/builtins/{iot_light,home_iot_20,smart_home_50}.py` ([[benchmark_iot]] hands these out).
 - **out-of-scope**:
   - External schema ingestion (OpenAI / MCP / bare function schemas / BFCL `function` entries) → [[contract_schema_compiler]].
   - Benchmark-specific per-case Catalog construction (e.g. one Catalog per BFCL row) → [[benchmark_iot]], [[benchmark_bfcl]].
   - Automated alias / default discovery from failure traces → [[analyzer_rule_synthesis]] *proposes* patches in the `DefaultRule` / `PromptCorrection` shape, but this doc only defines that shape — never produces patches itself.
+  - Applying a proposed patch to a Catalog in memory, and stripping post-correction hooks for F⁰ replay → [[contract_patch_apply]]. The description shape and fingerprint hashing → [[contract_describe]].
   - Provider-specific output adapters beyond the neutral `{name, arguments}` shape (Anthropic `tool_use` blocks, Gemini `functionCall`, etc.) — deferred.
   - Direct execution of tool calls — that boundary belongs to the runtime executor, not the contract.
   - Repair loop control flow → [[analyzer_repair_policy]]; the contract only raises `DSLValidationError`, it does not retry.
@@ -75,9 +77,10 @@ on DSLValidationError:
   - `render_openai_tools() -> list[dict]` — OpenAI `tools=[...]` schema list (one entry per `ToolSpec`).
   - `parse_json_dsl(raw) -> ActionPlan` — frozen `ActionPlan(calls=tuple[ToolCall, ...])` with value equality.
   - `validate_call(name, args) -> ToolCall` — single-call validation surface for analyzer replay.
+  - `describe() -> dict` / `fingerprint() -> str` — deterministic description and `cf-` content hash ([[contract_describe]]).
 - **event**:
   - emit `contract.catalog.published(catalog_id, version)` on `register()` of a Catalog (built-in or compiler-produced).
-  - consume `analyzer.rule.proposed(catalog_id, rule_patch, evidence)` only as a *proposal* — patches enter the codebase via human review, never auto-applied.
+  - consume `analyzer.rule.proposed(catalog_id, rule_patch, evidence)` only as a *proposal* — a patch is not applied without a gate: either `analyzer.patch.decided(patch_id, stage, decision="accept")` recorded by a human ([[analyzer_patch_decision]]) or [[factory_pipeline]]'s explicit `auto_apply=True`. The in-memory application is [[contract_patch_apply]]; the durable change is a reviewed source edit under `ganglion/contract/builtins/` followed by a fresh `contract.catalog.published`.
 - **failure**:
   - Malformed JSON, no parseable object found → `DSLValidationError("could not parse JSON DSL output")`.
   - `calls` missing → `DSLValidationError("missing 'calls' field")`.
@@ -93,3 +96,5 @@ on DSLValidationError:
 - `dsl_render_chars` = `len(catalog.render_json_dsl())` per catalog — the IR-compression headline number.
 - `openai_render_chars` = `len(json.dumps(catalog.render_openai_tools()))` per catalog — the native-baseline comparator. Ratio `dsl_render_chars / openai_render_chars` is the evidence the POC publishes.
 - `parse_strategy_counts` = breakdown by `strict | fenced | embedded` from the lenient parser path, surfaced for [[analyzer_metrics]] consumption.
+
+Status: live implementation at `ganglion/contract/{catalog,tool_spec,types,parse}.py`; spec revised 2026-09-16 (`describe()` / `fingerprint()` entry points, patch-gate wording).

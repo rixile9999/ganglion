@@ -14,6 +14,14 @@ This module is deterministic-rules-only. LLM-judge classification, rule
 synthesis from classifications, and cross-case statistics are explicitly
 out-of-scope and live in sibling tasks.
 
+Matchers read the *predicted* calls through :func:`_calls_for_matching`:
+``trace.plan`` (validated) when present, else ``trace.raw_plan`` (decoded but
+unvalidated — [[analyzer_trace_store]]). A validation failure is therefore
+classified by what the model actually said (``missing_required_arg``,
+``unknown_arg``, …) instead of collapsing into ``syntax_invalid`` / abstention.
+The fall-through ``("no_failure", 0.0)`` is the ``unclassified`` convention,
+never a pass.
+
 Public surface:
     FailureType            — string-valued enum covering the taxonomy.
     Classification         — frozen dataclass; one per trace.
@@ -111,7 +119,15 @@ def _calls_from_plan(plan: Any) -> list[dict[str, Any]]:
     if isinstance(plan, ActionPlan):
         return [{"action": c.action, "args": dict(c.args)} for c in plan.calls]
     if isinstance(plan, Mapping):
-        calls = plan.get("calls", []) or []
+        if "calls" in plan:
+            calls = plan.get("calls") or []
+        elif "action" in plan:
+            # `Catalog.validate` accepts a single top-level call; mirror it.
+            calls = [plan]
+        else:
+            calls = []
+        if not isinstance(calls, (list, tuple)):
+            return []
         out: list[dict[str, Any]] = []
         for call in calls:
             if isinstance(call, Mapping):
@@ -124,6 +140,28 @@ def _calls_from_plan(plan: Any) -> list[dict[str, Any]]:
                 )
         return out
     return []
+
+
+def _calls_for_matching(trace: Trace) -> list[dict[str, Any]]:
+    """Predicted calls a matcher should reason about.
+
+    ``trace.plan`` (validated) when it is not ``None``; otherwise the calls of
+    ``trace.raw_plan`` — the decoded-but-unvalidated model output preserved
+    by [[analyzer_trace_store]]. ``plan`` is preferred so fixtures that put a
+    dict in ``plan`` classify exactly as before.
+    """
+    if trace.plan is not None:
+        return _calls_from_plan(trace.plan)
+    return _calls_from_plan(trace.raw_plan)
+
+
+def _raw_plan_declares_no_calls(trace: Trace) -> bool:
+    """True when ``raw_plan`` is an explicit abstention (``{"calls": []}``)."""
+    raw_plan = trace.raw_plan
+    if not isinstance(raw_plan, Mapping) or "calls" not in raw_plan:
+        return False
+    calls = raw_plan.get("calls")
+    return isinstance(calls, (list, tuple)) and len(calls) == 0
 
 
 def _kind_of(spec: Any) -> str:
@@ -175,12 +213,22 @@ def _match_syntax_invalid(
     catalog: Catalog | None,
     gold: ActionPlan | None,
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
+    # Errata E2: fires iff the client reported `parse_strategy == "failed"`
+    # OR nothing decodable exists at all (no validated plan, no raw_plan) and
+    # there is *some* evidence of an attempt (an error or raw text). A trace
+    # whose raw decodes to a mapping is never syntax_invalid — it falls
+    # through to the structural matchers on `raw_plan`.
+    #
+    # Both signals are therefore gated on `raw_plan is None`: `ganglion.lm.serve`
+    # stamps `parse_strategy="failed"` on *every* errored ServeResult (the chat
+    # path), so without the gate a perfectly decodable out-of-range plan from a
+    # chat turn was filed as syntax_invalid at confidence 1.0 and no structural
+    # matcher — hence no rule synthesis — ever saw it.
     parse_strategy = (trace.parse_strategy or "").lower()
-    error_type = (trace.error_type or "").lower()
-    json_markers = ("json", "parse", "invalid syntax")
-    syntax_signal = parse_strategy == "failed" or (
-        trace.plan is None and any(m in error_type for m in json_markers)
-    )
+    if trace.raw_plan is not None:
+        return None
+    nothing_decodable = trace.plan is None and bool(trace.error_type or trace.raw_output)
+    syntax_signal = parse_strategy == "failed" or nothing_decodable
     if not syntax_signal:
         return None
     return (
@@ -197,7 +245,7 @@ def _match_unknown_tool(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    pred_calls = _calls_from_plan(trace.plan)
+    pred_calls = _calls_for_matching(trace)
     if not pred_calls:
         return None
     known = {tool.name for tool in catalog.tools}
@@ -223,7 +271,7 @@ def _match_wrong_action(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if gold is None:
         return None
-    pred_calls = _calls_from_plan(trace.plan)
+    pred_calls = _calls_for_matching(trace)
     gold_calls = _calls_from_plan(gold)
     if not pred_calls or not gold_calls:
         return None
@@ -252,15 +300,22 @@ def _match_abstention_should_call(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if gold is None:
         return None
-    pred_calls = _calls_from_plan(trace.plan)
+    pred_calls = _calls_for_matching(trace)
     gold_calls = _calls_from_plan(gold)
-    if not pred_calls and gold_calls:
-        return (
-            FailureType.ABSTENTION_MISS_SHOULD_CALL,
-            1.0,
-            {"predicted_count": 0, "expected_count": len(gold_calls)},
-        )
-    return None
+    if pred_calls or not gold_calls:
+        return None
+    # The model produced no calls at all. When validation failed (`plan is
+    # None`) this only counts as an abstention if there is nothing decodable
+    # (`raw_plan is None`) or the raw output explicitly says `{"calls": []}`;
+    # a decodable raw_plan of another shape is garbage, not an abstention,
+    # and falls through to the structural matchers / `unclassified`.
+    if trace.plan is None and trace.raw_plan is not None and not _raw_plan_declares_no_calls(trace):
+        return None
+    return (
+        FailureType.ABSTENTION_MISS_SHOULD_CALL,
+        1.0,
+        {"predicted_count": 0, "expected_count": len(gold_calls)},
+    )
 
 
 def _match_abstention_should_abstain(
@@ -270,7 +325,7 @@ def _match_abstention_should_abstain(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if gold is None:
         return None
-    pred_calls = _calls_from_plan(trace.plan)
+    pred_calls = _calls_for_matching(trace)
     gold_calls = _calls_from_plan(gold)
     if pred_calls and not gold_calls:
         return (
@@ -294,7 +349,7 @@ def _match_missing_required_arg(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    for call in _calls_from_plan(trace.plan):
+    for call in _calls_for_matching(trace):
         tool = _resolve_tool(catalog, call.get("action", ""))
         if tool is None:
             continue
@@ -320,7 +375,7 @@ def _match_unknown_arg(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    for call in _calls_from_plan(trace.plan):
+    for call in _calls_for_matching(trace):
         tool = _resolve_tool(catalog, call.get("action", ""))
         if tool is None:
             continue
@@ -346,7 +401,7 @@ def _match_type_mismatch(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    for call in _calls_from_plan(trace.plan):
+    for call in _calls_for_matching(trace):
         tool = _resolve_tool(catalog, call.get("action", ""))
         if tool is None:
             continue
@@ -386,7 +441,7 @@ def _match_value_out_of_enum(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    for call in _calls_from_plan(trace.plan):
+    for call in _calls_for_matching(trace):
         tool = _resolve_tool(catalog, call.get("action", ""))
         if tool is None:
             continue
@@ -418,7 +473,7 @@ def _match_alias_unrecognised(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    for call in _calls_from_plan(trace.plan):
+    for call in _calls_for_matching(trace):
         tool = _resolve_tool(catalog, call.get("action", ""))
         if tool is None:
             continue
@@ -453,7 +508,7 @@ def _match_value_out_of_range(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if catalog is None:
         return None
-    for call in _calls_from_plan(trace.plan):
+    for call in _calls_for_matching(trace):
         tool = _resolve_tool(catalog, call.get("action", ""))
         if tool is None:
             continue
@@ -487,7 +542,7 @@ def _match_parallel_order_mismatch(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if gold is None:
         return None
-    pred_calls = _calls_from_plan(trace.plan)
+    pred_calls = _calls_for_matching(trace)
     gold_calls = _calls_from_plan(gold)
     if len(pred_calls) < 2 or len(pred_calls) != len(gold_calls):
         return None
@@ -527,7 +582,7 @@ def _match_partial_arg_value_mismatch(
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
     if gold is None:
         return None
-    pred_calls = _calls_from_plan(trace.plan)
+    pred_calls = _calls_for_matching(trace)
     gold_calls = _calls_from_plan(gold)
     if not pred_calls or len(pred_calls) != len(gold_calls):
         return None
@@ -561,8 +616,17 @@ def _match_no_failure(
     catalog: Catalog | None,
     gold: ActionPlan | None,
 ) -> tuple[FailureType, float, dict[str, Any]] | None:
+    if trace.plan is None:
+        # Validation failed but no upstream matcher explained why (e.g. a
+        # custom_validator rejection not visible in the calls). This is the
+        # `unclassified` convention: NO_FAILURE with confidence 0.0.
+        return (
+            FailureType.NO_FAILURE,
+            0.0,
+            {"unclassified": "validation_failed", "error_type": trace.error_type or ""},
+        )
     if gold is not None:
-        pred_calls = _calls_from_plan(trace.plan)
+        pred_calls = _calls_for_matching(trace)
         gold_calls = _calls_from_plan(gold)
         if pred_calls == gold_calls:
             return (FailureType.NO_FAILURE, 1.0, {})

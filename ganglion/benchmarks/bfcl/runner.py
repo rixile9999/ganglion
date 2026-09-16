@@ -7,6 +7,13 @@ with a single shared `Catalog`. BFCL cases each ship their own tool list
 
 This module is the M1'-M5' measurement entry point. M5' (irrelevance /
 abstention) enables abstention-aware catalogs with `allow_empty_calls`.
+
+Per [[benchmark_bfcl]] (docs/tasks/benchmark_bfcl.md) the per-run `except`
+preserves the failed model output (`raw=getattr(exc, "raw", None)`), and
+`traces_from_bfcl_results` is the trace materialiser for the
+[[analyzer_trace_store]] — `expected_plan` is always `None` there because
+`BFCLCase.ground_truth` is a per-arg accepted-value structure, not a plan
+(errata E6); grade verdicts stay in `summary.json`.
 """
 from __future__ import annotations
 
@@ -18,6 +25,12 @@ from dataclasses import dataclass
 from statistics import median, pstdev
 from typing import Any, Protocol
 
+from ganglion.analyzer.trace import (
+    Trace,
+    attempts_from_raw,
+    now_iso,
+    raw_plan_from_attempts,
+)
 from ganglion.benchmarks.bfcl.grader import GraderResult, ast_match
 from ganglion.benchmarks.bfcl.loader import BFCLCase
 from ganglion.benchmarks.bfcl.case_catalog import build_case_catalog
@@ -87,12 +100,14 @@ def run_bfcl(
                         output_tokens=model_result.output_tokens,
                     )
                 )
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 — failed runs are recorded, not raised
                 latency_ms = (time.perf_counter() - started) * 1000
                 runs.append(
                     BFCLRunResult(
                         plan=None,
-                        raw=None,
+                        # Failure raw preservation: ModelOutputError /
+                        # RepairExhaustedError carry the model's output.
+                        raw=getattr(exc, "raw", None),
                         latency_ms=latency_ms,
                         input_tokens=None,
                         output_tokens=None,
@@ -194,6 +209,68 @@ def summarize_bfcl(results: list[BFCLCaseResult]) -> dict[str, Any]:
     }
 
 
+_DEFAULT_PARSE_STRATEGY = "json_object"
+
+
+def _parse_strategy_from_raw(raw: Any) -> str:
+    if isinstance(raw, dict):
+        strategy = raw.get("parse_strategy")
+        if isinstance(strategy, str) and strategy:
+            return strategy
+    return _DEFAULT_PARSE_STRATEGY
+
+
+def traces_from_bfcl_results(
+    results: list[BFCLCaseResult],
+    *,
+    category: str,
+    run_id: str,
+    model_id: str,
+) -> list[Trace]:
+    """Materialise one `Trace` per `(case, repeat_index)` from BFCL results.
+
+    `catalog_id = f"bfcl/{category}"`, `source = "benchmark.bfcl"`,
+    `case_id = case.id`, `prompt = case.user_message`, `error_type = run.error`,
+    `attempts = attempts_from_raw(run.raw)`, `raw_plan` from the attempts,
+    `plan = run.plan.to_jsonable()` or `None`. `expected_plan` is **always
+    `None`** — BFCL ground truth is a per-arg accepted-value set, not an
+    Action IR (errata E6); pass/fail lives in the run's `summary.json`.
+
+    Callers pass one category's results at a time (the CLI groups per
+    category before calling); every result is stamped with `category`.
+    """
+    catalog_id = f"bfcl/{category}"
+    timestamp = now_iso()
+    traces: list[Trace] = []
+    for result in results:
+        for repeat_index, run in enumerate(result.runs):
+            attempts = attempts_from_raw(run.raw)
+            raw_output = str(attempts[-1].get("content", "")) if attempts else ""
+            traces.append(
+                Trace(
+                    case_id=result.case.id,
+                    catalog_id=catalog_id,
+                    run_id=run_id,
+                    source="benchmark.bfcl",
+                    prompt=result.case.user_message,
+                    raw_output=raw_output,
+                    parse_strategy=_parse_strategy_from_raw(run.raw),
+                    latency_ms=float(run.latency_ms) if run.latency_ms is not None else 0.0,
+                    input_tokens_total=int(run.input_tokens or 0),
+                    output_tokens_total=int(run.output_tokens or 0),
+                    model_id=model_id,
+                    timestamp=timestamp,
+                    attempts=attempts,
+                    expected_plan=None,
+                    plan=run.plan.to_jsonable() if run.plan is not None else None,
+                    error_type=run.error,
+                    raw_plan=raw_plan_from_attempts(attempts),
+                    repeat_index=repeat_index,
+                )
+            )
+    return traces
+
+
 def _rate(count: int, total: int) -> float:
     return round(count / total, 4) if total else 0.0
 
@@ -228,4 +305,5 @@ __all__ = [
     "build_case_catalog",
     "run_bfcl",
     "summarize_bfcl",
+    "traces_from_bfcl_results",
 ]

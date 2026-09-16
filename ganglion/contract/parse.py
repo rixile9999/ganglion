@@ -41,25 +41,61 @@ def validate_json_dsl(payload: Mapping[str, Any]) -> ActionPlan:
     return _default_catalog().validate(payload)
 
 
+def _plan_shaped(payload: Any) -> bool:
+    """True when ``payload`` is a mapping the Catalog would try to validate.
+
+    Used to tell "the text held no Action IR at all" (a genuine extraction
+    failure) apart from "the text held an Action IR that did not validate"
+    (a *validation* failure whose message is the one the operator needs).
+    """
+    return isinstance(payload, Mapping) and ("calls" in payload or "action" in payload)
+
+
+def _decode_or_none(text: str) -> Any:
+    try:
+        return json.loads(text)
+    except (TypeError, ValueError):
+        return None
+
+
 def parse_json_dsl_lenient(
     raw: str,
     *,
     catalog: Catalog | None = None,
     prompt: str | None = None,
 ) -> tuple[ActionPlan, str]:
+    """Strict → fenced ```json``` → first decodable ``{...}`` salvage chain.
+
+    On total failure the raised error is the **first plan-shaped candidate's**
+    validation error (e.g. ``brightness must be <= 100``) — not the last
+    candidate tried. The salvage loop walks every ``{`` in the text, so the
+    inner ``args`` object is always tried last and its generic "expected
+    'calls' array" complaint used to overwrite the real diagnosis, which then
+    reached the failure taxonomy and the operator as ``syntax_invalid``.
+    """
     if catalog is None:
         catalog = _default_catalog()
+
+    # The first error from a candidate that actually looked like an Action IR.
+    structural_error: DSLValidationError | None = None
+
+    def _remember(exc: DSLValidationError, payload: Any) -> None:
+        nonlocal structural_error
+        if structural_error is None and _plan_shaped(payload):
+            structural_error = exc
 
     try:
         return catalog.parse_json_dsl(raw, prompt=prompt), "strict"
     except DSLValidationError as strict_error:
-        last_error = strict_error
+        last_error: DSLValidationError = strict_error
+        _remember(strict_error, raw if isinstance(raw, Mapping) else _decode_or_none(raw))
 
     for fenced in re.findall(r"```(?:json)?\s*(.*?)```", raw, flags=re.DOTALL | re.IGNORECASE):
         try:
             return catalog.parse_json_dsl(fenced.strip(), prompt=prompt), "fenced"
         except DSLValidationError as exc:
             last_error = exc
+            _remember(exc, _decode_or_none(fenced.strip()))
 
     decoder = json.JSONDecoder()
     for index, char in enumerate(raw):
@@ -73,7 +109,10 @@ def parse_json_dsl_lenient(
             return catalog.parse_json_dsl(payload, prompt=prompt), "embedded"
         except DSLValidationError as exc:
             last_error = exc
+            _remember(exc, payload)
 
+    if structural_error is not None:
+        raise structural_error
     raise DSLValidationError(f"could not extract JSON DSL: {last_error}") from last_error
 
 

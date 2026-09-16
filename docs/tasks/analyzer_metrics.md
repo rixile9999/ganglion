@@ -4,7 +4,9 @@
 
 Pure offline aggregation surface over the [[analyzer_trace_store]] and the [[analyzer_failure_taxonomy]] classification sidecar. Consumes traces + classifications for a single `(catalog_id, run_id)`, folds them into a canonical `summary.json`, renders a stamped markdown `report.md`, and emits exactly one `analyzer.metrics.summarized` event. **This task does not read traces from anywhere except [[analyzer_trace_store]]; it does not mutate them; it does not classify; it does not synthesise repair rules.**
 
-Unifies the three summary code paths in tree today — `ganglion/eval/metrics.py:summarize`, `ganglion/eval/bfcl_runner.py:summarize_bfcl`, and the `ganglion/factory/customer/eval.py` reuse — behind a single field-stable schema.
+Unifies the summary code paths behind a single field-stable schema: `ganglion/analyzer/metrics.py:summarize` (IoT `CaseResult` lists) and the BFCL summary in `ganglion/benchmarks/bfcl/runner.py`. Persistence of the result next to the run's traces is delegated to the **run bundle** ([[analyzer_run_manifest]]); cross-run deltas are delegated to [[analyzer_compare]].
+
+Status: `summarize` / `graded_score` / `CaseResult` / `RunResult` implemented at `ganglion/analyzer/metrics.py`, markdown renderer at `ganglion/analyzer/reports.py`. 2026-09-16 console-batch revision: `summary.json` + `report.md` are written by the run producer through `write_run_bundle`; `by_failure_type` comes from `classified.jsonl` via [[analyzer_analyze]].
 
 ## Role
 
@@ -14,7 +16,7 @@ Aggregate `Trace + Classification` pairs for one `(catalog_id, run_id)` into a v
 
 - **in-scope**:
   - Aggregation functions over `Trace + Classification` pairs:
-    - Rates: `syntax_valid_rate`, `exact_match_rate`, `action_match_rate`, `ast_match_rate` (BFCL benches only — see [[benchmark_bfcl]]), `abstention_correct_rate` (from `Catalog.allow_empty_calls` cases via [[null_action_contract]] semantics).
+    - Rates: `syntax_valid_rate`, `exact_match_rate`, `action_match_rate`, `ast_match_rate` (BFCL benches only — see [[benchmark_bfcl]]), `abstention_correct_rate` (from `Catalog.allow_empty_calls` cases via [[contract_null_action]] semantics).
     - Latency: `latency_ms_mean`, `latency_ms_p50`, `latency_ms_p95`, `latency_ms_stddev`.
     - Token totals: `input_tokens_total`, `output_tokens_total` (plus per-trace means as a drift signal).
     - Parse-strategy counts: `strict | fenced | embedded | failed` (Counter dict).
@@ -24,11 +26,12 @@ Aggregate `Trace + Classification` pairs for one `(catalog_id, run_id)` into a v
     - `by_arg` — per-arg failure attribution from `Classification.evidence.arg_name`.
     - `by_strategy` — per synth strategy if `Trace.meta.strategy` is populated.
     - `by_category` — per BFCL category for [[benchmark_bfcl]] runs; absent otherwise.
-    - `by_failure_type` — histogram keyed on the [[analyzer_failure_taxonomy]] enum.
-  - Graded score: per-trace `graded_score ∈ {0, 0.25, 0.5, 0.75, 1.0}` distribution + mean, ported from `ganglion/eval/metrics.py:graded_score`.
+    - `by_failure_type` — histogram keyed on the [[analyzer_failure_taxonomy]] enum plus the `unclassified` key (`no_failure` at `confidence == 0.0`), computed by [[analyzer_analyze]]'s `histogram()` from `classified.jsonl`; absent when the sidecar is absent.
+  - Graded score: per-trace `graded_score ∈ {0, 0.25, 0.5, 0.75, 1.0}` distribution + mean (`ganglion/analyzer/metrics.py:graded_score`); also returned by the console's `POST /api/labels` as immediate feedback ([[analyzer_label_store]]).
   - Canonical JSON schema with `schema_version: 1` (bump on any field rename / removal; additive fields are backwards-compatible).
   - Markdown report renderer suitable for `docs/*_report.md` files: one headline block, per-breakdown tables, top-N failures.
-  - Persistence to `runs/traces/<catalog_id>/<run_id>/summary.json` + `runs/traces/<catalog_id>/<run_id>/report.md`.
+  - Persistence to `runs/traces/<catalog_id>/<run_id>/summary.json` + `runs/traces/<catalog_id>/<run_id>/report.md` — written **once, by the run producer** (CLI `--trace-store`, factory iteration) via `write_run_bundle(base_dir, manifest, summary, report_md)` from [[analyzer_run_manifest]], so a summary never exists without its `manifest.json`. Console chat sessions have no summary (`summary: null` in the run list). `read_summary(base_dir, catalog_id, run_id)` is the read path.
+  - `summarize()` output keys today (the `schema_version: 1` surface): `total`, `runs_per_case`, `syntax_valid_rate`, `exact_match_rate`, `action_match_rate`, `latency_ms_{mean,p50,p95,stddev}`, `input_tokens_total`, `output_tokens_total`, `parse_strategy_counts`, `reasoning_chars_total`, `repair_attempts_total`, `repair_successes_total`, `failures[]`. The loop page's KPI tiles read exactly these with `src:` stamps.
   - Stamp convention: every numeric in `report.md` is followed by an HTML comment `<!-- src:summary.json#/path/to/field -->` so downstream verifiers (the legacy [[report_freshness]] concept, now under `docs/tasks/legacy/`) can cross-check prose against the underlying JSON.
   - Target implementation paths: `ganglion/analyzer/metrics.py` (aggregator + schema) and `ganglion/analyzer/reports.py` (markdown renderer + stamp helper).
 - **out-of-scope**:
@@ -37,7 +40,8 @@ Aggregate `Trace + Classification` pairs for one `(catalog_id, run_id)` into a v
   - Repair rule *synthesis* from failure frequencies — see [[analyzer_rule_synthesis]].
   - Trace mutation of any kind, including in-place enrichment — forbidden by the [[analyzer_trace_store]] append-only contract.
   - Dashboards / interactive UI / web rendering — this task writes JSON + markdown to disk only.
-  - Cross-run statistical tests (paired t-tests, bootstrap CIs, significance markers) — defer to a future `analyzer_compare` task.
+  - Cross-run statistics (transition matrix, paired-bootstrap CI on ΔEM, `manifest_diff`, refusal on mismatched decoding) — owned by [[analyzer_compare]].
+  - Writing `manifest.json` or listing runs — [[analyzer_run_manifest]]; this task hands its dict to `write_run_bundle` and never writes the bundle itself.
   - Real-time / streaming aggregation — strictly offline batch over completed runs only.
   - Editing or backfilling historical `runs/m{2,3,4}/*.json` artifacts — those remain as-is; this task writes under `runs/traces/…` exclusively.
 - **on violation**: if a requested metric requires data outside the canonical `Trace` shape, do not fabricate it locally and do not read out-of-band files. Stop and escalate by proposing a new field on `Trace` via [[analyzer_trace_store]] in a separate PR. Likewise, if a metric requires data that should live on `Classification`, escalate to [[analyzer_failure_taxonomy]] — never invent a side-channel inside this task.
@@ -133,4 +137,4 @@ The aggregator is a fold — single pass, O(n_traces) time, O(distinct keys) spa
 
 ## Wikilinks
 
-[[analyzer_trace_store]] · [[analyzer_failure_taxonomy]] · [[analyzer_rule_synthesis]] · [[analyzer_repair_policy]] · [[benchmark_iot]] · [[benchmark_bfcl]]
+[[analyzer_trace_store]] · [[analyzer_failure_taxonomy]] · [[analyzer_rule_synthesis]] · [[analyzer_repair_policy]] · [[analyzer_run_manifest]] · [[analyzer_compare]] · [[analyzer_analyze]] · [[analyzer_label_store]] · [[benchmark_iot]] · [[benchmark_bfcl]]

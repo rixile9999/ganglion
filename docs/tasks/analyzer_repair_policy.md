@@ -2,7 +2,9 @@
 
 # analyzer_repair_policy
 
-Specify the repair-loop as a **configurable policy** rather than a fixed retry. Today, `ganglion/runtime/qwen.py:run_dsl_with_repair` (lines 72-124) hard-codes one corrective user message and one budget knob (`RepairConfig(enabled, max_attempts)`). This task lifts that into a `RepairPolicy` protocol so different policies — per-`FailureType` retry messages, custom budgets, A/B ablations — can be tried live or replayed against recorded traces without making new API calls.
+Specify the repair-loop as a **configurable policy** rather than a fixed retry. Today, `ganglion/analyzer/repair.py:run_dsl_with_repair` hard-codes one corrective user message and one budget knob (`RepairConfig(enabled, max_attempts)`). This task lifts that into a `RepairPolicy` protocol so different policies — per-`FailureType` retry messages, custom budgets, A/B ablations — can be tried live or replayed against recorded traces without making new API calls.
+
+Status: `RepairConfig` + `run_dsl_with_repair` live at `ganglion/analyzer/repair.py` (tests `tests/test_repair_loop.py`); the `RepairPolicy` protocol is still spec-only. 2026-09-16 console-batch revision (`RepairExhaustedError` so the failed raw survives to the trace store) in progress.
 
 ## Role
 
@@ -14,13 +16,14 @@ Decide, given the conversation-so-far and the most recent validation error, whet
   - `RepairPolicy` protocol with a single method:
     - `decide(attempts: list[dict], last_error: DSLValidationError) -> RepairAction`
     - `RepairAction` = `Retry(retry_message: list[dict])` | `GiveUp(reason: str)`. Policies are *stateless* — input is the recorded attempts log, output is the next decision.
+  - `class RepairExhaustedError(DSLValidationError)` with attributes `attempts: tuple[dict, ...]` and `raw: dict` (`{"attempts": [...], "final_content": str}`). Raised by `run_dsl_with_repair` — instead of a bare re-raise — when validation fails and repair is disabled or the budget is exhausted; the trailing `RuntimeError` ("repair loop exited without returning") also becomes `RepairExhaustedError`. It subclasses `DSLValidationError`, so every caller that catches the base class still works, and the benchmark runners' `getattr(exc, "raw", None)` ([[benchmark_iot]], [[benchmark_bfcl]]) preserves the full attempt chain into `Trace.attempts` / `Trace.raw_plan` ([[analyzer_trace_store]]).
   - Concrete policies, all in `ganglion/analyzer/repair.py`:
     - `NoRepairPolicy()` — always returns `GiveUp("repair_disabled")`. Reproduces today's `RepairConfig(enabled=False)`.
     - `FixedRetryPolicy(max_attempts=1, message_template=DEFAULT)` — reproduces today's `RepairConfig(enabled=True, max_attempts=1)` byte-for-byte. **Drop-in default.**
     - `PerFailureTypePolicy(rules: Mapping[FailureType, PolicyRule])` — branches on the [[analyzer_failure_taxonomy]] classification of `last_error` and applies a per-type budget + retry-message template.
     - `AblationPolicy(policies: Sequence[RepairPolicy], branch_fn: Callable[[list[dict]], int])` — routes between sibling policies for offline A/B comparison (e.g. by `trace_id % n`, by catalog tag).
   - Retry-message templates:
-    - Default — `"Your previous JSON failed validation: {error}. Return only valid JSON conforming to the catalog."` (verbatim with today's `run_dsl_with_repair` message at `qwen.py:117-120`).
+    - Default — `"Your previous JSON failed validation: {error}. Return only valid JSON that matches the DSL."` (verbatim with today's `run_dsl_with_repair` message in `ganglion/analyzer/repair.py`).
     - Per-`FailureType` specialisations (consumed by `PerFailureTypePolicy`):
       - `syntax_invalid` → restate the catalog headers (the `Return JSON only.` + JSON-shape lines from `Catalog.render_json_dsl()`).
       - `unknown_action` → list the allowed action names from the catalog, framed as `"Use one of: …"`.
@@ -55,7 +58,9 @@ sync pipeline (live):
                 append (assistant: prev_response) + (user: message) to conversation
                 continue loop
             GiveUp(reason):
-                raise exc  # original DSLValidationError, with reason attached to attempts log
+                raise RepairExhaustedError(str(exc), attempts=tuple(attempts_so_far),
+                                          raw={"attempts": attempts_so_far, "final_content": prev_response})
+                # subclass of DSLValidationError; carries the chain so the trace store keeps the raw
 
 offline replay pipeline:
     consume analyzer.trace.recorded(trace_id) event from [[analyzer_trace_store]]
@@ -88,12 +93,14 @@ per-`FailureType` budgets without re-implementing the global cap.
   - replay mode: a `Trace` loaded by [[analyzer_trace_store]] in response to `analyzer.trace.recorded`.
 - **out**:
   - `RepairAction = Retry(retry_message: list[dict]) | GiveUp(reason: str)` returned per call to `policy.decide`.
+  - On terminal failure, `RepairExhaustedError(attempts, raw)` raised to the caller — never a bare `DSLValidationError` without `.raw`, never a `RuntimeError`.
   - One `analyzer.repair.replayed(trace_id, policy_id, succeeded: bool, attempts_used: int, disagreement_count: int)` event per replayed trace.
   - No file artifacts owned directly; replay results are aggregated by [[analyzer_trace_store]] consumers.
 - **event**: consume `analyzer.trace.recorded` (replay trigger). Emit `analyzer.repair.replayed`.
 - **failure**:
   - Policy raises during `decide` → caught, logged, coerced to `GiveUp("policy_error: …")`. Original call site sees normal `GiveUp`.
   - Policy returns `Retry` past its own declared budget → `RepairBudgetExceeded` (fail loud).
+  - Validation fails with repair disabled or budget exhausted → `RepairExhaustedError` carrying `attempts` and `raw`; `tests/test_repair_loop.py` expectations of `DSLValidationError` keep passing (subclass).
   - Replay over a `Trace` with no `attempts` key, or attempts missing the `error` field → emit `analyzer.repair.replayed(..., status="degenerate")`, do not crash.
   - Unknown `FailureType` in `PerFailureTypePolicy.rules` → fall through to the default template; do not raise.
 - **success**:
@@ -111,5 +118,6 @@ per-`FailureType` budgets without re-implementing the global cap.
 
 ## Notes for implementors
 
-- The new module lives under `ganglion/analyzer/` (the third peer of `lm/` and `contract/` per [docs/goal/goal.md](../goal/goal.md)). It must not import from `ganglion/runtime/qwen.py`; the dependency runs the other way — lm depends on the analyzer protocol, never the reverse.
+- The module lives under `ganglion/analyzer/` (the third peer of `lm/` and `contract/` per [docs/goal/goal.md](../goal/goal.md)). Import direction today is `lm.dashscope → analyzer.repair → contract`, while `analyzer/repair.py` itself imports `ganglion.lm.client` (`ModelResult`) and `ganglion.lm.prompts` — the graph is already bidirectional at module level; new cross-module imports (e.g. `attempts_from_raw` inside `lm/`) are done lazily inside functions to avoid import-time cycles.
+- `RepairExhaustedError` is the analyzer-side twin of `ModelOutputError` ([[lm_client]]): both subclass `DSLValidationError` and both carry `.raw` / `.attempts` so `traces_from_results` can record the failed output regardless of which client produced it.
 - `Trace` (from [[analyzer_trace_store]]) is consumed as an immutable record: read `trace.attempts`, do not mutate.

@@ -26,6 +26,11 @@ htmlcov/
 examples/bfcl/v4/full/
 runs/bfcl/*.log
 
+# Derived global event index (regenerable; see docs/tasks/analyzer_event_ledger.md).
+# Run-scoped events.jsonl and runs/**/ledger/global.jsonl ARE committed.
+runs/ledger/index.jsonl
+runs/**/ledger/index.jsonl
+
 # LoRA binaries (adapters + trainer checkpoints + tokenizers) across all runs
 # Track *.json/jsonl/md/py/sh/log; ignore safetensors/bin/ckpt + adapter dirs
 runs/**/adapter/

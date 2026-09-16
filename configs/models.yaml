@@ -1,0 +1,96 @@
+# Ganglion model registry ([[lm_model_registry]], docs/tasks/lm_model_registry.md).
+#
+# One entry per model_id. `kind` selects the client family:
+#   rules          offline regex stand-in (the three SCALING_TIERS only)
+#   openai_compat  any OpenAI-compatible chat endpoint (DashScope, vLLM, OpenAI)
+#   local_hf       in-process transformers (+ optional PEFT LoRA adapter)
+# `client` selects the prompt/decoding path: json-dsl | freeform | thinking | native.
+# String values support `${VAR:-default}` expansion. `DASHSCOPE_BASE_URL`, when
+# set, overrides `base_url` for `provider: dashscope` entries only.
+# Secrets are never stored here: `api_key_env` names the environment variable.
+models:
+  - model_id: rules
+    kind: rules
+    client: json-dsl
+    provider: none
+    # Measured `--llm rules --tier <t> --limit 50`: exact_match 1.0 on all
+    # three scaling tiers (the iot_light intents are a subset of the larger
+    # catalogs and the datasets share their prompts). NOT home_assistant_4 —
+    # that tier renames every action, so rules scores 0.0 there.
+    # For any other catalog the offline model is `qwen3-0.6b@local`.
+    catalog_ids: [iot_light_5, home_iot_20, smart_home_50]
+    notes: offline regex stand-in (single call; scaling tiers only)
+
+  - model_id: qwen3.6-plus@dashscope
+    kind: openai_compat
+    provider: dashscope
+    client: json-dsl
+    served_model: "${GANGLION_MODEL:-qwen3.6-plus}"
+    base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    api_key_env: DASHSCOPE_API_KEY
+    catalog_ids: ["*"]
+
+  - model_id: qwen3.6-plus-text@dashscope
+    kind: openai_compat
+    provider: dashscope
+    client: freeform
+    served_model: "${GANGLION_MODEL:-qwen3.6-plus}"
+    base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    api_key_env: DASHSCOPE_API_KEY
+    catalog_ids: ["*"]
+
+  - model_id: qwen3.6-plus-thinking@dashscope
+    kind: openai_compat
+    provider: dashscope
+    client: thinking
+    served_model: "${GANGLION_MODEL:-qwen3.6-plus}"
+    base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    api_key_env: DASHSCOPE_API_KEY
+    catalog_ids: ["*"]
+
+  - model_id: qwen3.6-plus-native@dashscope
+    kind: openai_compat
+    provider: dashscope
+    client: native
+    served_model: "${GANGLION_MODEL:-qwen3.6-plus}"
+    base_url: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
+    api_key_env: DASHSCOPE_API_KEY
+    catalog_ids: ["*"]
+
+  - model_id: local@vllm
+    kind: openai_compat
+    provider: vllm
+    client: json-dsl
+    served_model: "${GANGLION_VLLM_MODEL:-Qwen/Qwen3-1.7B}"
+    base_url: "${GANGLION_VLLM_BASE_URL:-http://127.0.0.1:8000/v1}"
+    catalog_ids: ["*"]
+    notes: "vllm serve ${GANGLION_VLLM_MODEL:-Qwen/Qwen3-1.7B} --enable-lora --max-lora-rank 32"
+
+  # In-process HF inference (H100 / CUDA; weights pulled from the HF hub on
+  # first load). Optional per-entry fields: device (auto | cuda | cuda:N | cpu),
+  # dtype (bfloat16 | float32), max_new_tokens, grammar_mask.
+  - model_id: qwen3-0.6b@local
+    kind: local_hf
+    provider: local
+    base_model: Qwen/Qwen3-0.6B
+    catalog_ids: ["*"]
+    notes: untuned base; ~1.2 GB download on first load
+
+  - model_id: qwen3-1.7b@local
+    kind: local_hf
+    provider: local
+    base_model: Qwen/Qwen3-1.7B
+    catalog_ids: ["*"]
+    notes: untuned base; SFT target of lm_finetune
+
+  # A trained LoRA adapter on top of a base model. Adapters under runs/ are
+  # also auto-discovered as `local:<dir name>` (load_registry(discover=True));
+  # list one here to give it a stable id and training provenance.
+  # - model_id: iot-lora@local
+  #   kind: local_hf
+  #   provider: local
+  #   base_model: Qwen/Qwen3-1.7B
+  #   adapter_dir: runs/factory_iot_light_5/adapter
+  #   catalog_ids: [iot_light_5]
+  #   trained_on: {catalog_fingerprint: cf-000000000000, dataset_sha256: "", run_id: sft-0}
+  #   notes: LoRA r=32 over synth + human_sft

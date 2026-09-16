@@ -9,12 +9,18 @@ hosted at `runtime/qwen.py` / `lm/dashscope.py`. The `RepairPolicy` protocol
 described in `docs/tasks/analyzer_repair_policy.md` is a follow-up; today's
 `RepairConfig` is the byte-equal stand-in for `FixedRetryPolicy(max_attempts=1)`.
 
+Terminal failure surfaces as :class:`RepairExhaustedError` ([[analyzer_repair_policy]]
+2026-09-16 revision): a ``DSLValidationError`` subclass carrying ``.attempts``
+and ``.raw`` so the benchmark runners' ``getattr(exc, "raw", None)`` preserves
+the failed model output into the trace store ([[analyzer_trace_store]]).
+
 Directed import graph: `lm.dashscope → analyzer.repair → contract`. `analyzer.repair`
 must not import from `lm/*` to keep the dependency one-way.
 """
 from __future__ import annotations
 
 import time
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -26,8 +32,39 @@ __all__ = [
     "CompletionResponse",
     "Completer",
     "RepairConfig",
+    "RepairExhaustedError",
     "run_dsl_with_repair",
 ]
+
+
+class RepairExhaustedError(DSLValidationError):
+    """Validation failed and the repair budget is disabled or exhausted.
+
+    Subclasses ``DSLValidationError`` so every caller that catches the base
+    class keeps working. Carries the full attempt chain so the failed output
+    survives to the trace store:
+
+    - ``attempts``: ``tuple[dict, ...]`` — the same records ``run_dsl_with_repair``
+      would have returned in ``ModelResult.raw["attempts"]`` (each with
+      ``attempt``, ``content``, ``input_tokens``, ``output_tokens``, ``error``).
+    - ``raw``: ``{"attempts": [...], "final_content": str}`` — byte-compatible
+      with the success-path ``ModelResult.raw`` shape, so
+      ``attempts_from_raw(exc.raw)`` needs no special case.
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        attempts: Sequence[Mapping[str, Any]] = (),
+        final_content: str = "",
+    ) -> None:
+        super().__init__(message)
+        self.attempts: tuple[dict[str, Any], ...] = tuple(dict(att) for att in attempts)
+        self.raw: dict[str, Any] = {
+            "attempts": [dict(att) for att in self.attempts],
+            "final_content": final_content,
+        }
 
 
 @dataclass(frozen=True)
@@ -87,7 +124,11 @@ def run_dsl_with_repair(
             last_error = exc
             attempts[-1]["error"] = str(exc)
             if not repair.enabled or attempt >= repair.max_attempts:
-                raise
+                raise RepairExhaustedError(
+                    str(exc),
+                    attempts=attempts,
+                    final_content=response.content,
+                ) from exc
             messages = messages + [
                 {"role": "assistant", "content": response.content},
                 {
@@ -99,4 +140,8 @@ def run_dsl_with_repair(
                 },
             ]
 
-    raise RuntimeError(f"repair loop exited without returning; last_error={last_error}")
+    raise RepairExhaustedError(
+        f"repair loop exited without returning; last_error={last_error}",
+        attempts=attempts,
+        final_content=str(attempts[-1].get("content", "")) if attempts else "",
+    )

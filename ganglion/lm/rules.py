@@ -1,3 +1,10 @@
+"""Deterministic offline stand-in for the LLM ([[lm_client]]).
+
+Regex / keyword pipeline matched to the ``iot_light_5`` catalog only. Zero
+network; used by ``pytest``, the offline CLI path and the console ``seed``.
+A validation failure raises ``ModelOutputError`` carrying the payload
+(errata E9) so the failed output survives into the trace store.
+"""
 from __future__ import annotations
 
 import re
@@ -5,7 +12,10 @@ import time
 from typing import Any
 
 from ganglion.contract.builtins.iot_light import CATALOG as IOT_LIGHT_CATALOG, ROOM_ALIASES
-from ganglion.lm.client import ModelResult
+from ganglion.contract.tool_spec import DSLValidationError
+from ganglion.lm.client import ModelOutputError, ModelResult
+
+__all__ = ["RuleBasedJSONDSLClient"]
 
 
 class RuleBasedJSONDSLClient:
@@ -14,7 +24,15 @@ class RuleBasedJSONDSLClient:
     def invoke(self, user_prompt: str) -> ModelResult:
         started = time.perf_counter()
         payload = self._to_payload(user_prompt)
-        plan = IOT_LIGHT_CATALOG.parse_json_dsl(payload, prompt=user_prompt)
+        try:
+            plan = IOT_LIGHT_CATALOG.parse_json_dsl(payload, prompt=user_prompt)
+        except DSLValidationError as exc:
+            # Lazy import keeps the module-level graph lm → contract only.
+            from ganglion.analyzer.trace import attempts_from_raw
+
+            raise ModelOutputError(
+                str(exc), raw=payload, attempts=attempts_from_raw(payload)
+            ) from exc
         return ModelResult(
             plan=plan,
             raw=payload,

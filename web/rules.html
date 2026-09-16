@@ -2,9 +2,37 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>GANGLION ◦ Rule Synthesis Review — Sheet 06</title>
+<title>GANGLION ◦ Rule Lifecycle — Sheet 06</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="./assets/style.css">
+<style>
+/* page-local elements only — every other class comes from assets/style.css */
+[hidden] { display: none !important; }
+.pick { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pick select, .pick input {
+  border: 1px solid var(--rule-strong); background: var(--ink-raised);
+  padding: 5px 10px; font-family: var(--mono); font-size: 11px; color: var(--bone); max-width: 460px;
+}
+.pick select:focus, .pick input:focus { border-color: var(--teal); }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px; align-items: start; }
+.colhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); margin-bottom: 16px; }
+.pcard { margin-bottom: 16px; border-left: 2px solid transparent; cursor: default; }
+.pcard.is-sel { border-left-color: var(--teal); }
+.pfields { display: grid; grid-template-columns: 136px minmax(0,1fr); gap: 6px 12px; font-size: 12px; align-items: baseline; }
+.pfields > div:nth-child(odd) { font-family: var(--sans); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; font-size: 9px; color: var(--bone-mute); }
+.wrapv { overflow-wrap: anywhere; }
+.code.wrapv { overflow-x: hidden; }   /* pre-wrap already breaks; kills the 1px ::before scrollbar */
+.portform { display: flex; align-items: center; gap: 8px; }
+.portform input {
+  border: 1px solid var(--rule-strong); background: var(--ink); padding: 5px 8px;
+  font-family: var(--mono); font-size: 11px; color: var(--bone); width: 150px;
+}
+.portform input:focus { border-color: var(--teal); }
+.gaterow { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 0 10px; font-size: 12px; border-top: 1px solid var(--rule); }
+.gaterow > div { padding: 8px 0; border-bottom: 1px dashed var(--rule); }
+.seg__opt.is-off { opacity: 0.4; cursor: not-allowed; }
+@media (max-width: 1100px) { .cols { grid-template-columns: minmax(0,1fr); } }
+</style>
 </head>
 <body>
 
@@ -13,7 +41,7 @@
     <div class="opbar__sigil"></div>
     <div>
       <div class="opbar__brand-name">GANGLION</div>
-      <div class="opbar__brand-sub">rule synthesis review · sheet 06</div>
+      <div class="opbar__brand-sub">rule lifecycle · sheet 06</div>
     </div>
   </div>
   <nav class="opbar__nav">
@@ -25,253 +53,638 @@
     <a href="./rules.html" class="active"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
     <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
     <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
   </nav>
   <div class="opbar__meta">
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">Pending</div><div class="opbar__meta-v t-amber">3</div></div>
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">Lifetime</div><div class="opbar__meta-v">17 applied</div></div>
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Held</div><div class="opbar__meta-v t-amber" id="metaHeld">—</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k" id="metaZoneK">Local</div><div class="opbar__meta-v" id="metaClock">—</div></div>
   </div>
 </header>
 
 <main class="page">
 
-  <section class="page__head">
+  <section class="page__head" style="grid-template-columns:minmax(0,1fr);">
     <div>
-      <div class="page__id">SHEET 06 / 07 <span>◦</span> module 02 / analyzer <span>◦</span> feedback edge</div>
-      <h1 class="page__title">rule synthesis · <em>feedback edge</em></h1>
-      <p class="page__sub">The <b>goal §2 feedback edge</b>. Analyzer reads the per-iteration failure histogram and proposes <b>ToolSpec patches</b> (R1–R11 patterns promoted from <span class="t-mute">runs/factory_bfcl/post_correction.py</span>). Patches arrive with <span class="t-bright">evidence</span> traceable to specific traces. Default is <span class="t-amber">hold</span> — the operator decides what enters the next catalog version.</p>
-    </div>
-    <div class="folio">
-      Drawn by <b>GANGLION/FACTORY</b><br>
-      Sheet <b>06</b> of <b>07</b> · rev 1.3<br>
-      Spec <b>docs/tasks/analyzer_rule_synthesis.md</b><br>
-      Source <b>ganglion/analyzer/rules.py</b>
+      <div class="page__id">SHEET 06 <span>◦</span> module 02 / analyzer <span>◦</span> feedback edge</div>
+      <h1 class="page__title">Rule <em>Lifecycle</em></h1>
+      <p class="page__sub">expand: <b>proposal → blind decision → reviewed port</b> · contract: <b>F⁰/Fᴷ attribution → statistical gate → retire</b>. Accepting changes nothing by itself — porting is a reviewed code edit recorded with its commit sha.</p>
     </div>
   </section>
 
-  <!-- CONTRACT -->
-  <section class="panel">
-    <div class="panel__head">
-      <div class="panel__head-title">proposal pipeline · contract</div>
-      <div class="panel__head-tools"><span class="t-amber">3 pending approval</span></div>
+  <div id="err" hidden class="mb-16"></div>
+
+  <!-- RUN PICKER + ANALYZE -->
+  <div class="flex-bw gap-16 mb-24" style="flex-wrap:wrap;">
+    <div class="pick">
+      <span class="t-eng-sm t-mute">run</span>
+      <select id="runPick" aria-label="run"></select>
+      <button class="btn" id="analyzeBtn" type="button">Analyze</button>
+      <button class="btn btn--ghost" id="reload" type="button">reload</button>
+      <span class="fs-11 t-chart" id="analyzeMsg"></span>
     </div>
-    <div class="contract">
-      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">failure histogram · trace samples</div></div>
-      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">rule_patch + evidence</div></div>
-      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.rule.proposed</div></div>
-      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">evidence < τ · no pattern matched</div></div>
-      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">patch carries evidence ≥ τ · traceable to trace_ids</div></div>
-    </div>
-    <div class="scope">
-      <div class="scope__row scope__row--in"><div class="scope__k">IN-SCOPE</div><div class="scope__v">Propose alias additions · enum extensions · null-action allowance · arg-optional relaxation. Each proposal carries (rule_id, confidence, evidence: trace_id list).</div></div>
-      <div class="scope__row scope__row--out"><div class="scope__k">OUT-OF</div><div class="scope__v">Applying patches (contract_catalog owns) · auto-merging without human approval (factory_pipeline gate) · synthesising patterns not in R1–R11.</div></div>
-      <div class="scope__row scope__row--viol"><div class="scope__k">ON-VIOL</div><div class="scope__v">Patch without evidence link → reject (§7). Every proposal must be traceable to specific traces.</div></div>
+    <div class="t-eng-sm t-mute right" id="runMeta">—</div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <section class="stack-16 mb-24">
+    <div class="grid-4" id="kpis"></div>
+    <div class="flex-c gap-16" style="flex-wrap:wrap;">
+      <span class="t-eng-sm t-mute">precision</span>
+      <span class="chips" id="precisionChips"></span>
     </div>
   </section>
 
-  <!-- PATCH CARDS -->
-  <section class="grid-2 mt-24" style="grid-template-columns: 1fr">
+  <section class="cols">
 
-    <!-- P-014 -->
-    <div class="panel">
-      <div class="panel__head">
-        <div class="panel__head-title">P-014 · alias_extension <small>R3 pattern · confidence 0.94</small></div>
-        <div class="panel__head-tools"><span class="tag tag--warn">PENDING</span></div>
-      </div>
-      <div class="panel__body">
-        <div class="grid-asym">
-          <div>
-            <div class="t-eng t-dim mb-8">PATCH · target iot_light_5 / set_light / room</div>
-            <div class="diff">
-              <div class="diff__col diff__col--expected">
-                <div class="diff__col-label">BEFORE · v07</div>
-<pre>EnumArg(
-  values=["living","bedroom","kitchen","bath"],
-  aliases={}
-)</pre>
-              </div>
-              <div class="diff__col diff__col--actual" style="border-left-color:var(--chartreuse-dim)">
-                <div class="diff__col-label" style="color:var(--chartreuse-dim)">AFTER · v08 (proposed)</div>
-<pre>EnumArg(
-  values=["living","bedroom","kitchen","bath"],
-  aliases={
-    <span class="ins">"거실":"living",</span>
-    <span class="ins">"안방":"bedroom",</span>
-    <span class="ins">"주방":"kitchen"</span>
-  }
-)</pre>
-              </div>
-            </div>
-            <div class="fp__actions">
-              <button class="btn btn--ghost">Hold</button>
-              <button class="btn">Inspect traces</button>
-              <button class="btn btn--primary">Apply · bump v08</button>
-            </div>
+    <!-- LEFT · EXPAND -->
+    <div style="min-width:0;">
+      <div class="colhead">
+        <div>
+          <div class="panel__head-title">EXPAND <small>proposed_patches.jsonl</small></div>
+          <div class="t-eng-sm t-mute mt-8">proposal → blind decision → reviewed port · <span class="t-bright">[a]</span> accept · <span class="t-bright">[h]</span> hold · <span class="t-bright">[r]</span> reject on the selected card</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px; flex-shrink:0;">
+          <div class="flex-c gap-8">
+            <span class="t-eng-sm t-mute">stage</span>
+            <span class="seg" id="segStage">
+              <span class="seg__opt active" data-stage="blind">blind</span>
+              <span class="seg__opt" data-stage="after_preview">after_preview</span>
+            </span>
           </div>
-          <div>
-            <div class="t-eng t-dim mb-8">EVIDENCE · failure histogram excerpt</div>
-            <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F04</span>alias_unresolved</div><div class="hbar__track"><div class="hbar__fill" style="width:88%"></div></div><div class="hbar__count">62</div></div>
-            <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum</div><div class="hbar__track"><div class="hbar__fill" style="width:22%"></div></div><div class="hbar__count">12</div></div>
-            <div class="t-eng t-dim mt-16 mb-8">REPRESENTATIVE TRACES (3 of 74)</div>
-            <table class="dtable">
-              <tbody>
-                <tr><td><a href="./traces.html" class="t-bright">T-2206</a></td><td class="t-dim">"거실 불 켜줘"</td></tr>
-                <tr><td><a href="./traces.html" class="t-bright">T-2189</a></td><td class="t-dim">"안방 환하게"</td></tr>
-                <tr><td><a href="./traces.html" class="t-bright">T-2174</a></td><td class="t-dim">"주방 등 꺼"</td></tr>
-              </tbody>
-            </table>
-            <div class="t-eng t-dim mt-16">EXPECTED LIFT · +0.041 em (modelled from histogram)</div>
-          </div>
+          <div class="t-eng-sm t-mute">preview hidden until a blind decision is recorded</div>
         </div>
       </div>
+      <div id="patchList"></div>
+      <div class="locked-strip"><span>accept changes nothing — porting is a reviewed code edit; POST /api/patches/{id}/ported {commit_sha} records it</span></div>
     </div>
 
-    <!-- P-015 -->
-    <div class="panel">
-      <div class="panel__head">
-        <div class="panel__head-title">P-015 · enum_extension <small>R7 pattern · confidence 0.82</small></div>
-        <div class="panel__head-tools"><span class="tag tag--warn">PENDING</span></div>
-      </div>
-      <div class="panel__body">
-        <div class="grid-asym">
-          <div>
-            <div class="t-eng t-dim mb-8">PATCH · target bfcl_per_case / get_weather / units</div>
-            <div class="diff">
-              <div class="diff__col diff__col--expected">
-                <div class="diff__col-label">BEFORE · v01</div>
-<pre>EnumArg(values=["metric","imperial"])</pre>
-              </div>
-              <div class="diff__col diff__col--actual" style="border-left-color:var(--chartreuse-dim)">
-                <div class="diff__col-label" style="color:var(--chartreuse-dim)">AFTER · v02 (proposed)</div>
-<pre>EnumArg(
-  values=["metric","imperial",
-          <span class="ins">"celsius","fahrenheit"</span>],
-  aliases={
-    <span class="ins">"celsius":"metric",</span>
-    <span class="ins">"fahrenheit":"imperial"</span>
-  }
-)</pre>
-              </div>
-            </div>
-            <div class="fp__actions">
-              <button class="btn btn--ghost">Hold</button>
-              <button class="btn">Inspect traces</button>
-              <button class="btn btn--primary">Apply · bump v02</button>
-            </div>
-          </div>
-          <div>
-            <div class="t-eng t-dim mb-8">EVIDENCE · failure histogram excerpt</div>
-            <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum</div><div class="hbar__track"><div class="hbar__fill" style="width:78%"></div></div><div class="hbar__count">18</div></div>
-            <div class="t-eng t-dim mt-16 mb-8">REPRESENTATIVE TRACES (3 of 18)</div>
-            <table class="dtable">
-              <tbody>
-                <tr><td><a href="./traces.html" class="t-bright">T-2208</a></td><td class="t-dim">units="celsius"</td></tr>
-                <tr><td><a href="./traces.html" class="t-bright">T-2222</a></td><td class="t-dim">units="fahrenheit"</td></tr>
-                <tr><td><a href="./traces.html" class="t-bright">T-2241</a></td><td class="t-dim">units="C"</td></tr>
-              </tbody>
-            </table>
-            <div class="t-eng t-dim mt-16">EXPECTED LIFT · +0.017 em</div>
-          </div>
+    <!-- RIGHT · CONTRACT -->
+    <div style="min-width:0;">
+      <div class="colhead">
+        <div>
+          <div class="panel__head-title">CONTRACT <small>corrections.summary.json</small></div>
+          <div class="t-eng-sm t-mute mt-8">attempts[0] only · hooks: defaults_when_missing / strip_unknown_args / prompt_correction</div>
         </div>
+        <div class="t-eng-sm t-mute" style="flex-shrink:0;">F⁰ = model alone · Fᴷ = model + hooks</div>
       </div>
-    </div>
 
-    <!-- P-016 -->
-    <div class="panel">
-      <div class="panel__head">
-        <div class="panel__head-title">P-016 · null_action_allow <small>R9 pattern · confidence 0.71</small></div>
-        <div class="panel__head-tools"><span class="tag tag--warn">PENDING</span></div>
-      </div>
-      <div class="panel__body">
-        <div class="grid-asym">
-          <div>
-            <div class="t-eng t-dim mb-8">PATCH · target iot_light_5 / Catalog · allow_empty_calls</div>
-            <div class="diff">
-              <div class="diff__col diff__col--expected">
-                <div class="diff__col-label">BEFORE · v07</div>
-<pre>Catalog(
-  tools=[...],
-  allow_empty_calls=False
-)</pre>
-              </div>
-              <div class="diff__col diff__col--actual" style="border-left-color:var(--chartreuse-dim)">
-                <div class="diff__col-label" style="color:var(--chartreuse-dim)">AFTER · v08 (proposed)</div>
-<pre>Catalog(
-  tools=[...],
-  allow_empty_calls=<span class="ins">True</span>
-)</pre>
-              </div>
-            </div>
-            <div class="fp__actions">
-              <button class="btn btn--ghost">Hold</button>
-              <button class="btn">Inspect traces</button>
-              <button class="btn btn--primary">Apply · bump v08</button>
-            </div>
-          </div>
-          <div>
-            <div class="t-eng t-dim mb-8">EVIDENCE</div>
-            <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F09</span>empty_calls_required</div><div class="hbar__track"><div class="hbar__fill" style="width:62%"></div></div><div class="hbar__count">14</div></div>
-            <div class="t-eng t-dim mt-16 mb-8">CAUTION · breadth-of-impact</div>
-            <div class="callout">All five IoT tools become abstainable. Verify downstream abstention is desired before applying.</div>
-            <div class="t-eng t-dim mt-16">EXPECTED LIFT · +0.009 em · breadth-risk +medium</div>
-          </div>
+      <div class="panel mb-16">
+        <div class="panel__head">
+          <div class="panel__head-title">attribution by hook <small>by_hook · conservative / rewriting</small></div>
+          <div class="panel__head-tools"><span>rescues · regressions</span></div>
         </div>
+        <div class="panel__body panel__body--flush" id="byHook"></div>
       </div>
-    </div>
 
-  </section>
-
-  <!-- BULK CONTROLS -->
-  <section class="panel mt-24">
-    <div class="panel__head">
-      <div class="panel__head-title">bulk actions · iter 6 batch</div>
-      <div class="panel__head-tools"><span class="t-dim">applies via contract_catalog · bumps version once</span></div>
-    </div>
-    <div class="panel__body">
-      <div class="flex-bw">
-        <div class="t-dim">3 patches selected · projected lift <b class="t-chart">+0.067 em</b> · projected breadth-risk <b class="t-amber">medium</b></div>
-        <div class="flex gap-8">
-          <button class="btn btn--ghost">Hold all (default)</button>
-          <button class="btn">Apply selected</button>
-          <button class="btn btn--primary">Apply all · publish v08</button>
+      <div class="panel mb-16">
+        <div class="panel__head">
+          <div class="panel__head-title">retire candidates <small>statistical gate</small></div>
+          <div class="panel__head-tools"><span class="tag tag--in">RulePatch · retire_rule</span></div>
         </div>
+        <div class="panel__body" id="retire"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel__head">
+          <div class="panel__head-title">by gold origin <small>attempts[0]</small></div>
+          <div class="panel__head-tools"><span>rescue = F⁰ fail → Fᴷ pass · regression = F⁰ pass → Fᴷ fail</span></div>
+        </div>
+        <div class="panel__body panel__body--flush" id="byOrigin"></div>
       </div>
     </div>
-  </section>
 
-  <!-- R-PATTERN REGISTRY -->
-  <section class="panel mt-24">
-    <div class="panel__head">
-      <div class="panel__head-title">R-pattern registry <small>R1–R11 · promoted from runs/factory_bfcl/post_correction.py</small></div>
-      <div class="panel__head-tools"><span class="t-dim">τ confidence threshold = 0.70</span></div>
-    </div>
-    <div class="panel__body panel__body--flush">
-      <table class="dtable">
-        <thead><tr><th>id</th><th>name</th><th>trigger</th><th>state</th><th class="num">historical applied</th></tr></thead>
-        <tbody>
-          <tr><td>R1</td><td>missing_required_to_optional</td><td class="t-dim">F02 on rare arg</td><td><span class="t-chart">enabled</span></td><td class="num">2</td></tr>
-          <tr><td>R2</td><td>argument_rename</td><td class="t-dim">F10 frequent neighbour</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
-          <tr><td>R3</td><td>alias_extension</td><td class="t-dim">F04 + F03 same arg</td><td><span class="t-chart">enabled</span></td><td class="num">8</td></tr>
-          <tr><td>R4</td><td>enum_synonym</td><td class="t-dim">F03 with adjacent value</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
-          <tr><td>R5</td><td>type_relax_to_string</td><td class="t-dim">F05 numeric/string mix</td><td><span class="t-amber">cautious</span></td><td class="num">0</td></tr>
-          <tr><td>R6</td><td>range_relax</td><td class="t-dim">F06 out-of-range frequent</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
-          <tr><td>R7</td><td>enum_extension</td><td class="t-dim">F03 oov value frequent</td><td><span class="t-chart">enabled</span></td><td class="num">2</td></tr>
-          <tr><td>R8</td><td>parallel_fan_in_hint</td><td class="t-dim">F11 parallel undercount</td><td><span class="t-amber">cautious</span></td><td class="num">1</td></tr>
-          <tr><td>R9</td><td>null_action_allow</td><td class="t-dim">F09 abstain &gt; 5%</td><td><span class="t-chart">enabled</span></td><td class="num">1</td></tr>
-          <tr><td>R10</td><td>argument_default</td><td class="t-dim">F02 + observed default</td><td><span class="t-amber">cautious</span></td><td class="num">0</td></tr>
-          <tr><td>R11</td><td>arg_optional_relax</td><td class="t-dim">F02 on rarely-used arg</td><td><span class="t-amber">cautious</span></td><td class="num">0</td></tr>
-        </tbody>
-      </table>
-    </div>
   </section>
 
 </main>
 
 <footer class="footer">
-  <div>SHEET 06 · rule synthesis · <b>docs/tasks/analyzer_rule_synthesis.md</b></div>
-  <div>goal §2 feedback edge · evidence-traceable · human-gated by default</div>
+  <div>SHEET 06 · rule lifecycle · <b>analyzer_rule_synthesis · analyzer_patch_decision · analyzer_correction_attribution</b></div>
+  <div>decisions are append-only · preview re-parses attempts[0] under the patched catalog, in memory only</div>
 </footer>
 
-<script src="./assets/data.js"></script>
+<script src="./assets/api.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var API = window.GanglionAPI;
+  var errEl = document.getElementById('err');
+  if (!API || typeof API.get !== 'function') {
+    errEl.hidden = false;
+    errEl.innerHTML = '<div class="callout t-verm">web/assets/api.js did not load — window.GanglionAPI is missing</div>';
+    return;
+  }
+  var fmt = API.fmt;
+  var esc = API.escapeHtml;
+  function $(sel) { return document.querySelector(sel); }
+  function fail(err) { API.showError(errEl, err); }
+  function ok() { API.clearError(errEl); }
+
+  var state = {
+    runs: [], run: null, detail: null, patches: [], precision: {}, retire: [],
+    stage: 'blind', selected: null, shownAt: Date.now()
+  };
+
+  function segs(value) { return String(value || '').split('/').map(encodeURIComponent).join('/'); }
+  function runPath(row) { return '/api/runs/' + segs(row.catalog_id) + '/' + segs(row.run_id); }
+  function tracesLink(traceId) {
+    return API.withQuery('./traces.html', {
+      catalog: state.run.catalog_id, run: state.run.run_id, filter: 'all', trace: traceId
+    });
+  }
+
+  // ---- run picker ----------------------------------------------------
+  function fillPicker(runs, selected) {
+    var select = $('#runPick');
+    select.innerHTML = '';
+    var order = [];
+    var byCatalog = {};
+    runs.forEach(function (row) {
+      if (!byCatalog[row.catalog_id]) { byCatalog[row.catalog_id] = []; order.push(row.catalog_id); }
+      byCatalog[row.catalog_id].push(row);
+    });
+    order.forEach(function (catalog) {
+      var group = document.createElement('optgroup');
+      group.label = catalog;
+      byCatalog[catalog].forEach(function (row) {
+        var option = document.createElement('option');
+        option.value = catalog + '' + row.run_id;
+        option.textContent = row.run_id + (row.has_patches ? '  · patches' : '  · not analyzed') +
+          (row.iteration === null || row.iteration === undefined ? '' : '  · iter ' + row.iteration);
+        if (selected && row.catalog_id === selected.catalog_id && row.run_id === selected.run_id) option.selected = true;
+        group.appendChild(option);
+      });
+      select.appendChild(group);
+    });
+  }
+
+  function pickDefault(runs) {
+    var hit = null;
+    runs.forEach(function (row) {
+      if (API.ctx.run && row.run_id === API.ctx.run && (!API.ctx.catalog || row.catalog_id === API.ctx.catalog)) hit = row;
+    });
+    if (hit) return hit;
+    var withPatches = runs.filter(function (row) { return row.has_patches; });
+    var pool = withPatches.length ? withPatches : runs;
+    var latest = null;
+    pool.forEach(function (row) {
+      if (!latest || String(row.started_at || '') >= String(latest.started_at || '')) latest = row;
+    });
+    return latest;
+  }
+
+  // ---- KPIs ----------------------------------------------------------
+  function kpi(label, id, value, unit, defn, modifier) {
+    return '<div class="kpi' + (modifier ? ' ' + modifier : '') + '">' +
+      '<div class="kpi__label">' + esc(label) + '</div>' +
+      '<div class="kpi__id">' + esc(id) + '</div>' +
+      '<div class="kpi__num">' + value + '</div>' +
+      '<div class="kpi__unit">' + esc(unit) + '</div>' +
+      '<div class="kpi__defn">' + esc(defn) + '</div></div>';
+  }
+
+  function hookVerdicts() {
+    var byHook = ((state.detail && state.detail.corrections) || {}).by_hook || {};
+    var counts = { retire_candidate: 0, insufficient_evidence: 0, keep: 0 };
+    Object.keys(byHook).forEach(function (name) {
+      var verdict = byHook[name].verdict;
+      if (counts[verdict] === undefined) counts[verdict] = 0;
+      counts[verdict] += 1;
+    });
+    return counts;
+  }
+
+  function renderKpis() {
+    var precision = state.precision || {};
+    var verdicts = hookVerdicts();
+    $('#kpis').innerHTML =
+      kpi('proposed', 'src: precision · n_proposed', fmt.int(precision.n_proposed || 0),
+        'rulepatch rows', 'proposed_patches.jsonl · incl. retire_rule') +
+      kpi('accepted', 'src: precision · accepted_*',
+        fmt.int(precision.accepted_blind || 0) + ' <small>/</small> ' + fmt.int(precision.accepted_after_preview || 0),
+        'blind / after preview', 'patch_decisions.jsonl · latest per patch · stage',
+        (precision.accepted_blind || precision.accepted_after_preview) ? 'kpi--good' : '') +
+      kpi('ported', 'src: precision · ported', fmt.int(precision.ported || 0),
+        'commit_sha recorded', 'reviewed code edit — the console never writes the catalog') +
+      kpi('retire candidates', 'src: corrections.summary.json',
+        fmt.int(verdicts.retire_candidate) + ' <small>· insufficient ' + fmt.int(verdicts.insufficient_evidence) + '</small>',
+        'by_hook · statistical gate', 'n_active ≥ 30 · rescues = 0 · CP95 upper < 10%',
+        verdicts.retire_candidate ? 'kpi--warn' : '');
+
+    var chips = [];
+    if (precision.n_proposed === undefined) {
+      $('#precisionChips').innerHTML = '<span class="tag tag--ghost">no analyzed run</span>';
+      $('#metaHeld').textContent = '—';
+      return;
+    }
+    chips.push('<span class="tag">precision@' + esc(fmt.rate(precision.conf_threshold, 2)) + ' = <b class="t-bright">' +
+      esc(fmt.rate(precision.precision_at_conf)) + '</b></span>');
+    chips.push('<span class="tag">acceptance <b class="t-bright">' + esc(fmt.rate(precision.patch_acceptance_rate)) + '</b></span>');
+    chips.push('<span class="tag">conf ≥ threshold <b class="t-bright">' + esc(fmt.int(precision.n_conf_ge_threshold || 0)) + '</b></span>');
+    ['held', 'rejected', 'retired'].forEach(function (key) {
+      if (precision[key]) chips.push('<span class="tag tag--warn" style="text-transform:none;">' + esc(key + ' ' + precision[key]) + '</span>');
+    });
+    var byOperation = precision.by_operation || {};
+    Object.keys(byOperation).sort().forEach(function (operation) {
+      var row = byOperation[operation];
+      chips.push('<span class="tag tag--ghost" style="text-transform:none;">' +
+        esc(operation + ' ' + row.accepted + '/' + row.proposed) + '</span>');
+    });
+    $('#precisionChips').innerHTML = chips.join('');
+    $('#metaHeld').textContent = precision.held === undefined ? '—' : precision.held;
+  }
+
+  // ---- patch cards ---------------------------------------------------
+  function editHint(patch) {
+    var payload = patch.payload || {};
+    var tool = patch.target_tool || '?';
+    switch (patch.operation) {
+      case 'add_alias':
+        return tool + '.' + (payload.arg || '?') + ' · ' + (payload.kind === 'string' ? 'StringArg' : 'EnumArg') +
+          '.aliases += ' + fmt.json(payload.aliases || {});
+      case 'set_default':
+        return tool + '.defaults_when_missing += (' + fmt.json(payload.arg) + ', ' + fmt.json(payload.default) +
+          ', <predicate: requires ' + fmt.json(((payload.predicate_hint || {}).requires_args) || []) + '>)';
+      case 'enable_strip_unknown_args':
+        return tool + '.strip_unknown_args = True';
+      case 'extend_argspec':
+        return tool + '.' + (payload.arg || '?') + ' → ' + (payload.spec_hint || '?') +
+          (payload.transform ? '  · transform ' + payload.transform : '') +
+          (payload.observed_types ? '  · observed ' + fmt.json(payload.observed_types) : '');
+      case 'add_prompt_correction':
+        return tool + '.prompt_correction ← ' + fmt.json(payload.system_nudge || '') +
+          '   # not mechanically applicable (PatchNotApplicableError)';
+      case 'retire_rule':
+        return 'remove ' + tool + '.' + (payload.hook_kind || '?') +
+          (payload.arg ? '(' + payload.arg + ')' : '') + '   # reviewed removal';
+      case 'ESCALATE':
+        return '# ' + (payload.blocked_reason || 'ToolSpec shape change — label, then retrain');
+      default:
+        return fmt.json(payload);
+    }
+  }
+
+  function decisionTag(patch) {
+    var decisions = patch.decisions || {};
+    var chips = [];
+    ['blind', 'after_preview', 'ported'].forEach(function (stage) {
+      var decision = decisions[stage];
+      if (!decision) return;
+      var cls = decision.decision === 'accept' ? 'tag--in'
+        : (decision.decision === 'hold' ? 'tag--warn'
+          : (decision.decision === 'ported' ? 'tag--event' : 'tag--fail'));
+      chips.push('<span class="tag ' + cls + '" style="text-transform:none;" title="' +
+        esc(stage + ' · ' + decision.decided_by + ' · ' + fmt.ts(decision.decided_at) + (decision.reason ? ' · ' + decision.reason : '')) +
+        '">' + esc(stage === 'ported'
+          ? 'ported · ' + fmt.short(decision.commit_sha || '', 10)
+          : stage + ' · ' + decision.decision) + '</span>');
+    });
+    if (!chips.length) chips.push('<span class="tag tag--ghost">undecided</span>');
+    return chips.join('');
+  }
+
+  function previewBlock(patch) {
+    var preview = patch.preview;
+    if (!preview) {
+      return '<div class="locked-strip"><span>preview hidden — record a blind decision first (the blind judgement must not be anchored on the preview)</span></div>';
+    }
+    if (preview.applicable === false) {
+      return '<div class="gate"><div class="gate__head"><span>preview</span><b>not applicable</b></div>' +
+        '<div class="gate__body t-amber">' + esc(preview.detail || 'apply_patch raised PatchNotApplicableError') + '</div></div>';
+    }
+    return '<div class="gate"><div class="gate__head"><span>preview · attempts[0] re-parsed under the patched catalog</span>' +
+      '<b>' + esc(preview.rescues + ' rescued · ' + preview.regressions + ' regressed') + '</b></div>' +
+      '<div class="gate__body">' + esc('graded cases considered: ' + (preview.n_considered === undefined ? '—' : preview.n_considered)) +
+      ' <span class="t-mute">· in memory only, the catalog on disk is untouched</span></div></div>';
+  }
+
+  function renderPatches() {
+    var host = $('#patchList');
+    if (!state.patches.length) {
+      host.innerHTML = '<div class="idle"><span class="t-eng">no proposals</span>' +
+        (state.run && state.run.has_patches ? 'proposed_patches.jsonl is empty for this run' : 'press Analyze to run classify → synthesize → attribute') +
+        '</div>';
+      return;
+    }
+    host.innerHTML = state.patches.map(function (patch) {
+      var payload = patch.payload || {};
+      var evidence = patch.evidence || {};
+      var escalate = patch.operation === 'ESCALATE';
+      var examples = (evidence.example_trace_ids || []).slice(0, 5).map(function (traceId) {
+        return '<a class="t-teal" href="' + esc(tracesLink(traceId)) + '" title="' + esc(traceId) + '">' +
+          esc(fmt.short(traceId, 11)) + '</a>';
+      }).join(' ');
+      var blind = (patch.decisions || {}).blind;
+      var disabled = state.stage === 'after_preview' && !blind;
+      var actions = escalate
+        ? '<a class="btn btn--ghost" href="' + esc(API.withQuery('./traces.html', {
+            catalog: state.run.catalog_id, run: state.run.run_id, filter: 'all',
+            trace: (evidence.example_trace_ids || [])[0] || ''
+          })) + '">send to label queue</a>'
+        : '<button class="btn btn--primary" type="button" data-act="accept"' + (disabled ? ' disabled' : '') + '>[a] ' +
+            (patch.operation === 'retire_rule' ? 'retire' : 'accept') + '</button>' +
+          '<button class="btn" type="button" data-act="hold"' + (disabled ? ' disabled' : '') + '>[h] hold</button>' +
+          '<button class="btn btn--danger" type="button" data-act="reject"' + (disabled ? ' disabled' : '') + '>[r] reject</button>';
+      return '<div class="panel pcard' + (state.selected === patch.patch_id ? ' is-sel' : '') + '" data-patch="' + esc(patch.patch_id) + '">' +
+        '<div class="panel__head">' +
+          '<div class="panel__head-title">' + esc(fmt.short(patch.patch_id, 22)) + ' · ' + esc(patch.operation) +
+            '<small>' + esc(patch.target_tool + (payload.arg ? ' · ' + payload.arg : '')) + '</small></div>' +
+          '<div class="panel__head-tools">' + decisionTag(patch) + '</div>' +
+        '</div>' +
+        '<div class="panel__body stack-12">' +
+          '<div class="pfields">' +
+            '<div>operation</div><div class="t-bright">' + esc(patch.operation) + '</div>' +
+            '<div>target_tool · arg</div><div>' + esc(patch.target_tool) + (payload.arg ? ' <span class="t-mute">·</span> ' + esc(payload.arg) : '') + '</div>' +
+            '<div>payload</div><div class="wrapv">' + esc(fmt.json(payload)) + '</div>' +
+            '<div>source_failure_type</div><div><span class="tag tag--fail" style="text-transform:none;">' + esc(patch.source_failure_type) + '</span></div>' +
+            '<div>evidence</div><div>confidence <b class="t-bright">' + esc(fmt.rate(evidence.confidence)) +
+              '</b> <span class="t-mute">·</span> failure_count <b class="t-bright">' + esc(fmt.int(evidence.failure_count)) +
+              '</b> <span class="t-mute">·</span> support_share <b class="t-bright">' + esc(fmt.rate(evidence.support_share)) + '</b>' +
+              (evidence.evidence_quality ? ' <span class="tag tag--warn" style="text-transform:none;">' + esc(evidence.evidence_quality) + '</span>' : '') + '</div>' +
+            '<div>example traces</div><div class="chips">' + (examples || '<span class="t-mute">none</span>') + '</div>' +
+            '<div>catalog_id</div><div class="t-dim">' + esc(patch.catalog_id) + ' <span class="t-mute">· ' + esc(fmt.ts(patch.created_at)) + '</span></div>' +
+          '</div>' +
+          '<div class="code wrapv" data-label="edit hint" style="white-space:pre-wrap;">' + esc(editHint(patch)) + '</div>' +
+          (escalate ? '<div class="locked-strip"><span>contract patch not applicable → label, then retrain</span></div>' : previewBlock(patch)) +
+          '<div class="fp__actions" style="margin-top:0; flex-wrap:wrap;">' +
+            '<div class="meta">stage ' + esc(state.stage) + (disabled ? ' · <b>blind decision required first</b>' : '') + '</div>' +
+            actions +
+          '</div>' +
+          '<div class="flex-bw gap-16" style="border-top:1px dashed var(--rule); padding-top:12px; flex-wrap:wrap;">' +
+            '<span class="t-eng-sm t-mute">ported · reviewed code edit</span>' +
+            '<span class="portform"><input type="text" data-sha placeholder="commit sha" aria-label="commit sha">' +
+            '<button class="btn" type="button" data-act="ported">record port</button></span>' +
+          '</div>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  // ---- contract column -----------------------------------------------
+  function verdictTag(verdict) {
+    if (verdict === 'retire_candidate') return '<span class="tag tag--warn">retire candidate</span>';
+    if (verdict === 'keep') return '<span class="t-dim">keep</span>';
+    return '<span class="tag tag--ghost">' + esc(String(verdict || 'insufficient_evidence').replace(/_/g, ' ')) + '</span>';
+  }
+
+  function renderByHook() {
+    var corrections = (state.detail || {}).corrections;
+    if (!corrections) {
+      $('#byHook').innerHTML = '<div class="idle"><span class="t-eng">no attribution</span>press Analyze to write corrections.summary.json</div>';
+      return;
+    }
+    var byHook = corrections.by_hook || {};
+    var names = Object.keys(byHook).sort();
+    if (!names.length) {
+      $('#byHook').innerHTML = '<div class="idle"><span class="t-eng">no active hook</span>no defaults / strip / prompt_correction changed a plan in this run</div>';
+      return;
+    }
+    var rows = names.map(function (name) {
+      var stats = byHook[name];
+      var parts = String(name).split(':');
+      return '<tr>' +
+        '<td><div class="t-bright">' + esc(parts[0]) + '</div><div class="t-dim fs-10">' + esc(parts.slice(1).join(':')) +
+          (stats.arg ? '(' + esc(stats.arg) + ')' : '') + '</div></td>' +
+        '<td><span class="' + (stats['class'] === 'rewriting' ? 't-amber' : 't-dim') + ' fs-10">' + esc(stats['class']) + '</span></td>' +
+        '<td class="num">' + esc(fmt.int(stats.n_active)) + '</td>' +
+        '<td class="num">' + esc(fmt.int(stats.necessary)) + '</td>' +
+        '<td class="num">' + esc(fmt.int(stats.rescues)) + '</td>' +
+        '<td class="num' + (stats.regressions ? ' t-verm' : '') + '">' + esc(fmt.int(stats.regressions)) + '</td>' +
+        '<td>' + verdictTag(stats.verdict) +
+          (stats.cp95_upper === null || stats.cp95_upper === undefined ? '' :
+            '<div class="t-mute fs-10">CP95 ≤ ' + esc(fmt.rate(stats.cp95_upper)) + '</div>') + '</td>' +
+        '</tr>';
+    }).join('');
+    $('#byHook').innerHTML = '<table class="dtable"><thead><tr><th>hook</th><th>class</th>' +
+      '<th class="num">n_active</th><th class="num">necessary</th><th class="num">rescues</th>' +
+      '<th class="num">regressions</th><th>verdict</th></tr></thead><tbody>' + rows +
+      '<tr class="row-ghost"><td><div>shared</div><div class="t-dim fs-10">≥2 hooks active</div></td><td>—</td>' +
+      '<td class="num">' + esc(fmt.int(corrections.shared || 0)) + '</td><td class="num">—</td><td class="num">—</td>' +
+      '<td class="num">—</td><td><span class="t-mute">not attributed</span></td></tr>' +
+      '</tbody></table>';
+  }
+
+  function renderRetire() {
+    var host = $('#retire');
+    if (!state.retire.length) {
+      host.innerHTML = '<div class="idle"><span class="t-eng">none</span>' +
+        'the gate needs n_active ≥ 30, rescues = 0 and a Clopper–Pearson 95% upper bound &lt; 10%</div>';
+      return;
+    }
+    host.innerHTML = state.retire.map(function (row) {
+      var lines = [
+        ['✓', 'n_active = <b class="t-bright">' + esc(fmt.int(row.n_active)) + '</b> <span class="t-mute">· ≥ 30</span>'],
+        ['✓', 'rescues = <b class="t-bright">' + esc(fmt.int(row.rescues)) + '/' + esc(fmt.int(row.n_active)) +
+          '</b> <span class="t-mute">·</span> Clopper–Pearson 95% upper <b class="t-bright">' + esc(fmt.rate(row.cp95_upper)) + '</b> &lt; τ 0.10'],
+        ['✓', 'regressions = <b class="t-bright">' + esc(fmt.int(row.regressions)) + '</b> <span class="t-mute">· necessary ' + esc(fmt.int(row.necessary)) + '</span>'],
+        ['→', 'issue as <span class="t-bright">RulePatch(operation=\'retire_rule\')</span> — it appears in the EXPAND column after the next Analyze']
+      ];
+      return '<div class="mb-16"><div class="panel__head-title mb-8">' + esc(row.hook) +
+        ' <small>' + esc(row['class'] || '') + '</small></div><div class="gaterow">' +
+        lines.map(function (line) {
+          return '<div class="' + (line[0] === '→' ? 't-teal' : 't-chart') + '">' + line[0] + '</div><div>' + line[1] + '</div>';
+        }).join('') + '</div></div>';
+    }).join('');
+  }
+
+  function renderByOrigin() {
+    var corrections = (state.detail || {}).corrections;
+    var byOrigin = (corrections || {}).by_gold_origin || {};
+    var names = Object.keys(byOrigin).sort();
+    if (!names.length) {
+      $('#byOrigin').innerHTML = '<div class="idle"><span class="t-eng">no gold</span>label some traces, or run Analyze</div>';
+      return;
+    }
+    var rows = names.map(function (origin) {
+      var row = byOrigin[origin];
+      return '<tr><td><span class="t-bright">' + esc(origin) + '</span></td>' +
+        '<td class="num">' + esc(fmt.int(row.n)) + '</td>' +
+        '<td class="num">' + esc(fmt.rate(row.em_f0)) + '</td>' +
+        '<td class="num t-chart">' + esc(fmt.rate(row.em_fk)) + '</td>' +
+        '<td class="num">' + esc(fmt.int(row.n_rescued)) + '</td>' +
+        '<td class="num' + (row.n_regressed ? ' t-verm' : '') + '">' + esc(fmt.int(row.n_regressed)) + '</td></tr>';
+    }).join('');
+    $('#byOrigin').innerHTML = '<table class="dtable"><thead><tr><th>gold origin</th><th class="num">n</th>' +
+      '<th class="num">em_f0</th><th class="num">em_fk</th><th class="num">rescue</th><th class="num">regression</th>' +
+      '</tr></thead><tbody>' + rows + '</tbody></table>' +
+      '<div class="flex-c gap-16" style="padding:10px 20px 12px; font-size:12px;">' +
+      '<span class="t-eng-sm t-mute">totals</span><span>n <b class="t-bright">' + esc(fmt.int(corrections.n)) +
+      '</b> · unattributable <b class="t-bright">' + esc(fmt.int(corrections.unattributable)) +
+      '</b> · rescue <b class="t-chart">' + esc(fmt.rate(corrections.rescue)) +
+      '</b> · regression <b class="t-verm">' + esc(fmt.rate(corrections.regression)) + '</b></span></div>';
+  }
+
+  // ---- loading -------------------------------------------------------
+  function loadRuns(keep) {
+    return API.get('/api/runs').then(function (data) {
+      state.runs = data.runs || [];
+      if (!state.runs.length) {
+        $('#patchList').innerHTML = '<div class="idle"><span class="t-eng">empty runs dir</span>' +
+          'python -m ganglion.console seed --runs runs/traces --limit 120</div>';
+        $('#byHook').innerHTML = $('#byOrigin').innerHTML = $('#retire').innerHTML =
+          '<div class="idle"><span class="t-eng">no run</span>seed one first</div>';
+        state.precision = {};
+        renderKpis();
+        $('#runMeta').textContent = '0 runs';
+        return null;
+      }
+      var selected = keep ? state.runs.filter(function (row) {
+        return row.catalog_id === keep.catalog_id && row.run_id === keep.run_id;
+      })[0] : null;
+      state.run = selected || pickDefault(state.runs);
+      fillPicker(state.runs, state.run);
+      return loadRun();
+    });
+  }
+
+  function loadRun() {
+    var run = state.run;
+    API.saveCtx({ catalog: run.catalog_id, run: run.run_id });
+    $('#runMeta').innerHTML = esc(run.catalog_id + '/' + run.run_id) + ' · ' + esc(run.model_id) + ' · ' +
+      esc(run.catalog_fingerprint) + ' · ' + esc(run.n_traces) + ' traces · ' + esc(run.n_labels) + ' labels';
+    return Promise.all([
+      API.get(runPath(run)),
+      API.get(runPath(run) + '/patches')
+    ]).then(function (both) {
+      ok();
+      state.detail = both[0];
+      state.patches = both[1].patches || [];
+      state.precision = both[1].precision || {};
+      state.retire = both[1].retire_candidates || [];
+      state.shownAt = Date.now();
+      if (!state.selected && state.patches.length) state.selected = state.patches[0].patch_id;
+      renderKpis();
+      renderPatches();
+      renderByHook();
+      renderRetire();
+      renderByOrigin();
+    });
+  }
+
+  function reloadPatches() {
+    return API.get(runPath(state.run) + '/patches').then(function (data) {
+      ok();
+      state.patches = data.patches || [];
+      state.precision = data.precision || {};
+      state.retire = data.retire_candidates || [];
+      renderKpis();
+      renderPatches();
+      renderRetire();
+    });
+  }
+
+  // ---- decisions ------------------------------------------------------
+  function decide(patchId, decision) {
+    var patch = state.patches.filter(function (row) { return row.patch_id === patchId; })[0];
+    if (!patch) return;
+    if (patch.operation === 'ESCALATE') {
+      fail({ error: 'ESCALATE has no contract decision', detail: 'apply_patch would raise PatchNotApplicableError — label the traces instead' });
+      return;
+    }
+    if (state.stage === 'after_preview' && !(patch.decisions || {}).blind) {
+      fail({ error: 'blind decision required first', detail: 'record a blind decision on ' + patchId + ' before judging the preview' });
+      return;
+    }
+    if (decision === 'accept' && patch.operation === 'retire_rule') decision = 'retire';
+    API.post('/api/patches/' + encodeURIComponent(patchId) + '/decision', {
+      catalog_id: state.run.catalog_id,
+      run_id: state.run.run_id,
+      stage: state.stage,
+      decision: decision,
+      reason: '',
+      time_to_decide_ms: Math.max(0, Date.now() - state.shownAt)
+    }).then(function () {
+      state.shownAt = Date.now();
+      return reloadPatches();
+    }).catch(fail);
+  }
+
+  function port(patchId, sha) {
+    if (!sha) { fail({ error: 'commit sha required', detail: 'a port is a reviewed code edit — record the commit that carries it' }); return; }
+    API.post('/api/patches/' + encodeURIComponent(patchId) + '/ported', {
+      catalog_id: state.run.catalog_id, run_id: state.run.run_id, commit_sha: sha
+    }).then(reloadPatches).catch(fail);
+  }
+
+  // ---- events ---------------------------------------------------------
+  $('#runPick').addEventListener('change', function (ev) {
+    var parts = String(ev.target.value).split('');
+    var hit = state.runs.filter(function (row) { return row.catalog_id === parts[0] && row.run_id === parts[1]; })[0];
+    if (!hit) return;
+    state.run = hit;
+    state.selected = null;
+    loadRun().catch(fail);
+  });
+  $('#reload').addEventListener('click', function () { loadRuns(state.run).catch(fail); });
+  $('#analyzeBtn').addEventListener('click', function () {
+    if (!state.run) return;
+    var button = $('#analyzeBtn');
+    button.disabled = true;
+    button.textContent = 'Analyzing…';
+    API.post(runPath(state.run) + '/analyze', {}).then(function (result) {
+      ok();
+      $('#analyzeMsg').textContent = '✔ classified ' + result.n_classified + '/' + result.n_traces +
+        ' · ' + result.n_patches + ' patches · corrections n=' + ((result.corrections || {}).n);
+      return loadRun();
+    }).catch(fail).then(function () {
+      button.disabled = false;
+      button.textContent = 'Analyze';
+    });
+  });
+  document.getElementById('segStage').addEventListener('click', function (ev) {
+    var opt = ev.target.closest ? ev.target.closest('.seg__opt') : null;
+    if (!opt) return;
+    state.stage = opt.getAttribute('data-stage');
+    Array.prototype.forEach.call(this.querySelectorAll('.seg__opt'), function (node) {
+      node.classList.toggle('active', node === opt);
+    });
+    renderPatches();
+  });
+  $('#patchList').addEventListener('click', function (ev) {
+    var card = ev.target.closest ? ev.target.closest('.pcard') : null;
+    if (!card) return;
+    var patchId = card.getAttribute('data-patch');
+    if (state.selected !== patchId) {
+      state.selected = patchId;
+      Array.prototype.forEach.call(document.querySelectorAll('.pcard'), function (node) {
+        node.classList.toggle('is-sel', node === card);
+      });
+      state.shownAt = Date.now();
+    }
+    var button = ev.target.closest ? ev.target.closest('button[data-act]') : null;
+    if (!button) return;
+    var action = button.getAttribute('data-act');
+    if (action === 'ported') port(patchId, (card.querySelector('input[data-sha]') || {}).value || '');
+    else decide(patchId, action);
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;  // never swallow Ctrl/Cmd+Z and friends
+    var target = ev.target;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' ||
+      target.tagName === 'SELECT' || target.isContentEditable)) return;
+    if (!state.selected) return;
+    if (ev.key === 'a') decide(state.selected, 'accept');
+    else if (ev.key === 'h') decide(state.selected, 'hold');
+    else if (ev.key === 'r') decide(state.selected, 'reject');
+    else if (ev.key === 't') decide(state.selected, 'retire');
+  });
+
+  (function clock() {
+    var offset = -(new Date()).getTimezoneOffset() / 60;
+    document.getElementById('metaZoneK').textContent = 'UTC' + (offset >= 0 ? '+' : '−') + Math.abs(offset);
+    function tick() {
+      var now = new Date();
+      document.getElementById('metaClock').textContent =
+        String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') +
+        ':' + String(now.getSeconds()).padStart(2, '0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }());
+
+  loadRuns(null).catch(fail);
+}());
+</script>
 </body>
 </html>

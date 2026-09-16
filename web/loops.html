@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ Feedback Loops — Sheet 10</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+<style>
+/* page-local elements only — every other class comes from assets/style.css */
+[hidden] { display: none !important; }
+.loop { display: grid; grid-template-columns: 360px minmax(0,1fr); gap: 24px; align-items: start; }
+.rrow {
+  display: flex; flex-direction: column; gap: 8px; padding: 12px 16px 12px 14px;
+  border-left: 2px solid transparent; border-bottom: 1px solid var(--rule-soft); cursor: pointer;
+}
+.rrow:hover { background: var(--ink-card); }
+.rrow.is-sel { border-left-color: var(--teal); background: var(--ink-card); }
+.rrow__id { font-size: 12px; color: var(--bone); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rrow.is-sel .rrow__id { color: var(--bone-bright); }
+.rrow__grid { display: grid; grid-template-columns: minmax(0,1fr) 96px; gap: 12px; align-items: start; }
+.rrow__em { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; font-variant-numeric: tabular-nums; font-size: 12px; }
+.mhead { display: flex; flex-wrap: wrap; padding: 12px 20px; }
+.mhead__cell { padding: 0 16px; border-right: 1px dashed var(--rule); min-width: 0; }
+.mhead__cell:first-child { padding-left: 0; }
+.mhead__cell:last-child { border-right: none; }
+.mhead__v { font-size: 11px; color: var(--bone); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tiles { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 8px; }
+.tiles .kpi { padding: 16px 14px 14px; min-height: 150px; }
+.tiles .kpi__num { font-size: 30px; }
+.matrix { display: grid; grid-template-columns: 72px repeat(2, minmax(0,1fr)); gap: 4px; align-items: stretch; }
+.mcell { padding: 12px 14px; border: 1px solid var(--rule); background: var(--ink-raised); }
+.mcell__n { font-size: 24px; font-weight: 500; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--bone-dim); }
+.mcell--fix { border-color: var(--chartreuse-dim); }
+.mcell--fix .mcell__n { color: var(--chartreuse); }
+.mcell--reg { border-color: var(--vermillion-dim); }
+.mcell--reg .mcell__n { color: var(--vermillion); }
+.chip { display: inline-flex; align-items: baseline; gap: 10px; padding: 8px 12px; border: 1px solid var(--rule-strong); background: var(--ink-raised); }
+.chip b { font-size: 14px; font-weight: 500; color: var(--bone-bright); font-variant-numeric: tabular-nums; }
+.chip--good { border-color: var(--chartreuse-dim); } .chip--good b { color: var(--chartreuse); }
+.chip--warn { border-color: var(--amber-dim); } .chip--warn b { color: var(--amber); }
+.chip--bad { border-color: var(--vermillion-dim); } .chip--bad b { color: var(--vermillion); }
+.chip--teal { border-color: var(--teal-dim); } .chip--teal b { color: var(--teal); }
+.evpay { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 24px; align-items: start; }
+.train { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) 220px; gap: 24px; align-items: start; }
+@media (max-width: 1100px) {
+  .loop, .two, .train { grid-template-columns: minmax(0,1fr); }
+  .tiles { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+</style>
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">loop log · sheet 10</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html" class="active"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+  </nav>
+  <div class="opbar__meta">
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Runs</div><div class="opbar__meta-v" id="metaRuns">—</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k" id="metaZoneK">Local</div><div class="opbar__meta-v" id="metaClock">—</div></div>
+  </div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET 10 <span>◦</span> loop log <span>◦</span> one manifest per run</div>
+      <h1 class="page__title">Feedback <em>Loops</em></h1>
+      <p class="page__sub">One <b>manifest.json</b> per run — per-iteration model state, data, corrections, decisions and training deltas. <b>runs/traces/**/manifest.json</b> is the list SSOT; ledger rows are audit only.</p>
+    </div>
+    <div class="folio">
+      Drawn by <b>GANGLION/CONSOLE</b><br>
+      Sheet <b>10</b> · live<br>
+      Specs <b>analyzer_run_manifest.md</b><br>
+      <b>analyzer_compare.md</b>
+    </div>
+  </section>
+
+  <div id="err" hidden class="mb-16"></div>
+
+  <section class="loop">
+
+    <!-- LEFT RAIL -->
+    <div class="stack-12" id="rail"></div>
+
+    <!-- RIGHT -->
+    <div class="stack-24" id="pane">
+      <div class="idle"><span class="t-eng">no run selected</span>pick a run in the rail</div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div>SHEET 10 · loop log · <b>analyzer_run_manifest · analyzer_compare · analyzer_correction_attribution · analyzer_patch_decision</b></div>
+  <div>every number here is read from a file a primitive wrote — the page computes nothing</div>
+</footer>
+
+<script src="./assets/api.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var API = window.GanglionAPI;
+  var errEl = document.getElementById('err');
+  if (!API || typeof API.get !== 'function') {
+    errEl.hidden = false;
+    errEl.innerHTML = '<div class="callout t-verm">web/assets/api.js did not load — window.GanglionAPI is missing</div>';
+    return;
+  }
+  var fmt = API.fmt;
+  var esc = API.escapeHtml;
+  function $(sel) { return document.querySelector(sel); }
+  function fail(err) { API.showError(errEl, err); }
+  function ok() { API.clearError(errEl); }
+
+  var FAILURE_TYPES = [
+    'syntax_invalid', 'unknown_tool', 'wrong_action', 'missing_required_arg', 'unknown_arg',
+    'type_mismatch', 'value_out_of_enum', 'value_out_of_range', 'alias_unrecognised',
+    'abstention_miss_should_call', 'abstention_miss_should_abstain', 'parallel_order_mismatch',
+    'partial_arg_value_mismatch'
+  ];
+
+  var state = { runs: [], run: null, detail: null, compare: null, events: [], live: null };
+
+  function segs(value) { return String(value || '').split('/').map(encodeURIComponent).join('/'); }
+  function runPath(row) { return '/api/runs/' + segs(row.catalog_id) + '/' + segs(row.run_id); }
+  function em(row) {
+    var summary = row && row.summary;
+    return summary && summary.exact_match_rate !== undefined && summary.exact_match_rate !== null
+      ? Number(summary.exact_match_rate) : null;
+  }
+  function parentOf(row) {
+    if (!row || !row.parent_run_id) return null;
+    return state.runs.filter(function (other) {
+      return other.catalog_id === row.catalog_id && other.run_id === row.parent_run_id;
+    })[0] || null;
+  }
+
+  // ---- left rail ------------------------------------------------------
+  function spark(row) {
+    var here = em(row);
+    var parent = parentOf(row);
+    var before = parent ? em(parent) : null;
+    function y(value) { return (18 - 16 * value).toFixed(1); }
+    if (here === null) {
+      return '<svg width="96" height="20" viewBox="0 0 96 20"><line x1="0" y1="10" x2="96" y2="10" ' +
+        'stroke="#3D3D36" stroke-width="1" stroke-dasharray="2,3"></line></svg>';
+    }
+    if (before === null) {
+      return '<svg width="96" height="20" viewBox="0 0 96 20"><line x1="0" y1="' + y(here) + '" x2="96" y2="' + y(here) +
+        '" stroke="#7DD8C6" stroke-width="1.5"></line></svg>';
+    }
+    return '<svg width="96" height="20" viewBox="0 0 96 20"><polyline fill="none" stroke="' +
+      (here >= before ? '#7DD8C6' : '#E55E5E') + '" stroke-width="1.5" points="0,' + y(before) + ' 96,' + y(here) +
+      '"></polyline></svg>';
+  }
+
+  function badges(row) {
+    var out = [];
+    if (row.iteration !== null && row.iteration !== undefined) {
+      out.push('<span class="tag">iter ' + esc(row.iteration) + '</span>');
+    }
+    if (row.benchmark === 'chat') {
+      out.push('<span class="tag tag--event" title="console chat session">chat · ' + esc(row.n_labels) + ' labels</span>');
+    }
+    if (row.iteration === 0 && !row.parent_run_id) {
+      out.push('<span class="tag tag--ghost" title="iteration 0 with no parent_run_id">reference</span>');
+    }
+    var decoding = row.decoding || {};
+    if (decoding.seed === undefined && row.client_kind !== 'rules') {
+      out.push('<span class="tag tag--warn" title="manifest.decoding records no seed — this run is not reproducible">no seed</span>');
+    }
+    if (!row.has_classified) {
+      out.push('<span class="tag tag--ghost" title="no classified.jsonl — run Analyze on the Rules page">not analyzed</span>');
+    }
+    return out.join('');
+  }
+
+  function renderRail() {
+    var host = $('#rail');
+    if (!state.runs.length) {
+      host.innerHTML = '<div class="panel"><div class="panel__body"><div class="idle">' +
+        '<span class="t-eng">empty runs dir</span>python -m ganglion.console seed --runs runs/traces --limit 120</div></div></div>';
+      return;
+    }
+    var order = [];
+    var byCatalog = {};
+    state.runs.forEach(function (row) {
+      if (!byCatalog[row.catalog_id]) { byCatalog[row.catalog_id] = []; order.push(row.catalog_id); }
+      byCatalog[row.catalog_id].push(row);
+    });
+    host.innerHTML = order.map(function (catalog) {
+      var rows = byCatalog[catalog].map(function (row) {
+        var value = em(row);
+        var selected = state.run && state.run.catalog_id === row.catalog_id && state.run.run_id === row.run_id;
+        return '<div class="rrow' + (selected ? ' is-sel' : '') + '" data-cat="' + esc(row.catalog_id) +
+          '" data-run="' + esc(row.run_id) + '">' +
+          '<div class="rrow__id">' + esc(row.catalog_id + '/' + row.run_id) + '</div>' +
+          '<div class="rrow__grid">' +
+            '<div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start; min-width:0;">' +
+              '<span class="tag" style="text-transform:none;">' + esc(row.model_id) + '</span>' +
+              '<div class="chips">' + badges(row) + '</div>' +
+            '</div>' +
+            '<div class="rrow__em">' + spark(row) +
+              '<span><span class="t-mute">EM</span> <span class="' + (value === null ? 't-mute' : 't-bright') + '">' +
+              esc(value === null ? '—' : fmt.rate(value)) + '</span></span>' +
+            '</div>' +
+          '</div></div>';
+      }).join('');
+      return '<div class="panel"><div class="panel__head">' +
+        '<div class="panel__head-title">runs <small>' + esc(catalog) + '</small></div>' +
+        '<div class="panel__head-tools"><span>iteration order</span></div></div>' +
+        '<div class="panel__body panel__body--flush">' + rows + '</div></div>';
+    }).join('') +
+      '<div class="locked-strip"><span>runs/traces/**/manifest.json is the list SSOT · ledger rows are audit only</span></div>';
+  }
+
+  // ---- right pane sections --------------------------------------------
+  function panel(title, small, tools, body, flush) {
+    return '<div class="panel"><div class="panel__head">' +
+      '<div class="panel__head-title">' + esc(title) + (small ? '<small>' + esc(small) + '</small>' : '') + '</div>' +
+      '<div class="panel__head-tools">' + (tools || '') + '</div></div>' +
+      '<div class="panel__body' + (flush ? ' panel__body--flush' : '') + '">' + body + '</div></div>';
+  }
+
+  function driftTag(manifest) {
+    if (!state.live) {
+      return '<span class="tag tag--ghost" title="the catalog id is not resolvable (per-case BFCL catalog) or the request failed">drift: unknown</span>';
+    }
+    var same = state.live.fingerprint === manifest.catalog_fingerprint;
+    return '<span class="tag ' + (same ? 'tag--in' : 'tag--fail') + '" style="text-transform:none;" title="' +
+      esc('run ' + manifest.catalog_fingerprint + ' vs live ' + state.live.fingerprint) + '">drift: ' +
+      (same ? 'no' : 'yes') + '</span>';
+  }
+
+  function manifestHeader(manifest) {
+    var cells = [
+      ['parent', manifest.parent_run_id || '—'],
+      ['catalog', manifest.catalog_id + ' · ' + manifest.catalog_fingerprint],
+      ['model', manifest.model_id + ' · ' + (manifest.client_kind || '—')],
+      ['dataset sha', manifest.dataset_sha256 ? fmt.short(manifest.dataset_sha256, 12) : '—'],
+      ['metric', manifest.metric_kind + ' · ' + manifest.benchmark],
+      ['n_cases', fmt.int(manifest.n_cases) + (manifest.limit ? ' (limit ' + manifest.limit + ')' : '')],
+      ['git_head', manifest.git_head ? fmt.short(manifest.git_head, 9) : '—'],
+      ['started', fmt.ts(manifest.started_at)],
+      ['decoding', fmt.json(manifest.decoding || {})]
+    ];
+    var body = '<div class="mhead">' + cells.map(function (cell) {
+      return '<div class="mhead__cell"><div class="t-eng-sm t-mute mb-8">' + esc(cell[0]) + '</div>' +
+        '<div class="mhead__v">' + esc(cell[1]) + '</div></div>';
+    }).join('') + '</div>';
+    return '<div class="panel"><div class="panel__head">' +
+      '<div class="panel__head-title">' + esc(manifest.run_id) + '<small>manifest.json</small></div>' +
+      '<div class="panel__head-tools">' + driftTag(manifest) +
+      '<span class="tag" style="text-transform:none;">' + esc(state.detail.n_traces + ' traces · ' + state.detail.n_labels + ' labels') + '</span>' +
+      '</div></div>' + body + '</div>';
+  }
+
+  function tile(label, id, value, unit, defn, modifier) {
+    return '<div class="kpi' + (modifier ? ' ' + modifier : '') + '">' +
+      '<div class="kpi__label">' + esc(label) + '</div>' +
+      '<div class="kpi__id">' + esc(id) + '</div>' +
+      '<div class="kpi__num">' + esc(value) + '</div>' +
+      '<div class="kpi__unit">' + esc(unit) + '</div>' +
+      '<div class="kpi__defn">' + esc(defn) + '</div></div>';
+  }
+
+  function tiles(summary, manifest) {
+    if (!summary) {
+      return '<div class="idle"><span class="t-eng">no summary.json</span>' +
+        (manifest.benchmark === 'chat' ? 'console chat sessions carry no benchmark metric' : 'this run has no summary bundle') +
+        '</div>';
+    }
+    var n = '[n=' + (summary.total === undefined ? '—' : summary.total) + ']';
+    var maxAttempts = '[max_attempts=' + ((manifest.decoding || {}).repair_max_attempts || 0) + ']';
+    return '<div class="tiles">' +
+      tile('exact_match', n, fmt.rate(summary.exact_match_rate), 'exact / n', 'src: summary.json',
+        summary.exact_match_rate >= 0.85 ? 'kpi--good' : (summary.exact_match_rate < 0.6 ? 'kpi--fail' : 'kpi--warn')) +
+      tile('action_match', n, fmt.rate(summary.action_match_rate), 'action / n', 'src: summary.json') +
+      tile('syntax_valid', n, fmt.rate(summary.syntax_valid_rate), 'valid / n', 'src: summary.json') +
+      tile('repair_attempts', maxAttempts, fmt.int(summary.repair_attempts_total || 0), 'count', 'src: summary.json') +
+      tile('repair_successes', maxAttempts, fmt.int(summary.repair_successes_total || 0), 'count', 'src: summary.json') +
+      tile('latency p50', '[p95 ' + fmt.ms(summary.latency_ms_p95) + ']', fmt.ms(summary.latency_ms_p50), 'per invocation', 'src: summary.json') +
+      '</div>';
+  }
+
+  function histogramPanel(histogram) {
+    var counts = histogram || {};
+    var max = 0;
+    FAILURE_TYPES.forEach(function (name) { max = Math.max(max, counts[name] || 0); });
+    var classified = 0;
+    Object.keys(counts).forEach(function (name) { classified += counts[name] || 0; });
+    var bars = FAILURE_TYPES.slice().sort(function (a, b) { return (counts[b] || 0) - (counts[a] || 0); })
+      .map(function (name) {
+        var value = counts[name] || 0;
+        var width = max ? Math.round(100 * value / max) : 0;
+        return '<div class="hbar hbar--fail" style="grid-template-columns:224px 1fr 60px;">' +
+          '<div class="hbar__name">' + esc(name) + '</div>' +
+          '<div class="hbar__track">' + (value ? '<div class="hbar__fill" style="width:' + width + '%"></div>' : '') + '</div>' +
+          '<div class="hbar__count">' + value + '</div></div>';
+      }).join('');
+    var tail = ['no_failure', 'unclassified'].map(function (name) {
+      var value = counts[name] || 0;
+      return '<div class="hbar ' + (name === 'no_failure' ? 'hbar--ok' : 'hbar--warn') + ' hbar--ghost" ' +
+        'style="grid-template-columns:224px 1fr 60px; border-top:1px dashed var(--rule); margin-top:6px; padding-top:11px;">' +
+        '<div class="hbar__name">' + esc(name) + '</div>' +
+        '<div class="hbar__track">' + (value ? '<div class="hbar__fill" style="width:100%"></div>' : '') + '</div>' +
+        '<div class="hbar__count">' + value + '</div></div>';
+    }).join('');
+    var body = classified
+      ? bars + tail + '<div class="t-eng-sm t-mute mt-8">bar scale max ' + max +
+        ' · no_failure / unclassified drawn on their own scale</div>'
+      : '<div class="idle"><span class="t-eng">not classified</span>press Analyze on the Rules page</div>';
+    return panel('failure types', 'classified.jsonl', '<span>' + esc(classified + ' classified') + '</span>', body);
+  }
+
+  function comparePanel() {
+    var manifest = state.detail.manifest;
+    if (!manifest.parent_run_id) {
+      return panel('vs previous', 'compare', '<span>a → b</span>',
+        '<div class="idle"><span class="t-eng">no parent</span>this run has no parent_run_id to compare against</div>');
+    }
+    var compare = state.compare;
+    if (!compare) {
+      return panel('vs previous', 'compare-' + manifest.parent_run_id + '.json', '<span>a → b</span>',
+        '<div class="idle"><span class="t-eng">no compare</span>' +
+        'python -m ganglion.console compare ' + esc(manifest.catalog_id) + ' ' + esc(manifest.parent_run_id) + ' ' + esc(manifest.run_id) +
+        '</div>');
+    }
+    var counts = compare.counts || {};
+    function cell(value, label, modifier) {
+      return '<div class="mcell' + (modifier ? ' ' + modifier : '') + '">' +
+        '<div class="mcell__n">' + esc(fmt.int(value)) + '</div>' +
+        '<div class="t-eng-sm t-mute mt-8">' + esc(label) + '</div></div>';
+    }
+    var delta = compare.em_delta === null || compare.em_delta === undefined ? null : compare.em_delta * 100;
+    var ci = compare.ci95
+      ? '[' + (compare.ci95[0] * 100).toFixed(1) + ', ' + (compare.ci95[1] * 100).toFixed(1) + '] pp'
+      : 'not computed';
+    var body = '<div class="t-eng-sm t-mute mb-8">rows: ' + esc(compare.run_a) + ' (a) · cols: ' + esc(compare.run_b) + ' (b)</div>' +
+      '<div class="matrix">' +
+        '<div></div><div class="t-eng-sm t-mute" style="padding:0 0 4px 14px;">b · pass</div>' +
+        '<div class="t-eng-sm t-mute" style="padding:0 0 4px 14px;">b · fail</div>' +
+        '<div class="t-eng-sm t-mute flex-c">a · pass</div>' +
+        cell(counts.same_pass, 'same_pass') + cell(counts.regressed, 'regressed', 'mcell--reg') +
+        '<div class="t-eng-sm t-mute flex-c">a · fail</div>' +
+        cell(counts.fixed, 'fixed', 'mcell--fix') + cell(counts.same_fail, 'same_fail') +
+      '</div>' +
+      '<div class="mt-16 fs-12 t-num">EM <span class="' + (delta === null ? 't-mute' : (delta >= 0 ? 't-chart' : 't-verm')) + '">' +
+        esc(delta === null ? '—' : (delta >= 0 ? '+' : '') + delta.toFixed(1) + ' pp') +
+        '</span> · a ' + esc(fmt.rate(compare.em_a)) + ' → b ' + esc(fmt.rate(compare.em_b)) +
+        ' · paired bootstrap 95% CI <span class="t-bright">' + esc(ci) + '</span> · n ' + esc(fmt.int(compare.n)) +
+        ' · graded ' + esc(fmt.int(compare.n_graded)) + '</div>' +
+      '<div class="mt-8 fs-11 t-dim">only_a ' + esc(fmt.int(counts.only_a)) + ' · only_b ' + esc(fmt.int(counts.only_b)) +
+        ' · ungraded ' + esc(fmt.int(counts.ungraded)) + ' · bootstrap ' + esc(fmt.int(compare.bootstrap)) +
+        ' · seed ' + esc(compare.seed) + '</div>' +
+      (compare.warnings && compare.warnings.length
+        ? '<div class="gate mt-16"><div class="gate__head"><span>warnings</span><b>manifests differ</b></div>' +
+          '<div class="gate__body">' + compare.warnings.map(esc).join('<br>') + '</div></div>'
+        : '') +
+      '<div class="mt-16"><a class="t-teal" style="border-bottom:1px dashed var(--teal-dim);" href="' +
+        esc(API.withQuery('./traces.html', {
+          catalog: manifest.catalog_id, run: manifest.run_id, filter: 'changed'
+        })) + '">open changed-only in the Label Queue →</a></div>';
+    return panel('vs previous', 'compare-' + compare.run_a + '.json', '<span>a → b</span>', body);
+  }
+
+  function correctionsPanel() {
+    var corrections = state.detail.corrections;
+    if (!corrections) {
+      return panel('corrections', 'corrections.summary.json', '<span>attempts[0]</span>',
+        '<div class="idle"><span class="t-eng">no attribution</span>press Analyze on the Rules page</div>');
+    }
+    var byOrigin = corrections.by_gold_origin || {};
+    var rows = Object.keys(byOrigin).sort().map(function (origin) {
+      var row = byOrigin[origin];
+      return '<tr><td>' + esc(origin) + '</td><td class="num">' + esc(fmt.int(row.n)) + '</td>' +
+        '<td class="num">' + esc(fmt.rate(row.em_f0)) + '</td>' +
+        '<td class="num t-chart">' + esc(fmt.rate(row.em_fk)) + '</td>' +
+        '<td class="num t-chart">' + esc(fmt.int(row.n_rescued)) + '</td>' +
+        '<td class="num t-verm">' + esc(fmt.int(row.n_regressed)) + '</td></tr>';
+    }).join('');
+    var byHook = corrections.by_hook || {};
+    var verdicts = { retire_candidate: 0, insufficient_evidence: 0, keep: 0 };
+    Object.keys(byHook).forEach(function (name) {
+      var verdict = byHook[name].verdict;
+      if (verdicts[verdict] === undefined) verdicts[verdict] = 0;
+      verdicts[verdict] += 1;
+    });
+    var body = '<table class="dtable"><thead><tr><th>gold origin</th><th class="num">n</th>' +
+      '<th class="num">em_f0</th><th class="num">em_fk</th><th class="num">rescue</th><th class="num">regression</th>' +
+      '</tr></thead><tbody>' + (rows || '<tr><td colspan="6" class="t-mute">no gold</td></tr>') + '</tbody></table>' +
+      '<div class="flex-c gap-16" style="padding:10px 20px 12px; font-size:12px; flex-wrap:wrap;">' +
+      '<span class="t-eng-sm t-mute">hooks</span>' +
+      '<span>keep <span class="t-bright">' + verdicts.keep + '</span> · retire candidates <span class="t-amber">' +
+      verdicts.retire_candidate + '</span> · insufficient <span class="t-bright">' + verdicts.insufficient_evidence +
+      '</span> · shared <span class="t-bright">' + esc(fmt.int(corrections.shared)) +
+      '</span> · unattributable <span class="t-bright">' + esc(fmt.int(corrections.unattributable)) + '</span></span>' +
+      '<a class="t-teal" style="border-bottom:1px dashed var(--teal-dim);" href="' +
+      esc(API.withQuery('./rules.html', { catalog: state.run.catalog_id, run: state.run.run_id })) +
+      '">open in Rule Lifecycle →</a></div>';
+    return panel('corrections', 'corrections.summary.json', '<span>attempts[0]</span>', body, true);
+  }
+
+  function decisionsPanel() {
+    var precision = state.detail.precision || {};
+    var chips = [
+      ['proposed', precision.n_proposed, ''],
+      ['blind accept', precision.accepted_blind, 'chip--good'],
+      ['after_preview accept', precision.accepted_after_preview, 'chip--good'],
+      ['held', precision.held, 'chip--warn'],
+      ['rejected', precision.rejected, 'chip--bad'],
+      ['retired', precision.retired, 'chip--warn'],
+      ['ported', precision.ported, 'chip--teal'],
+      ['labels', state.detail.n_labels, '']
+    ].map(function (chip) {
+      return '<span class="chip ' + chip[2] + '"><span class="t-eng-sm t-mute">' + esc(chip[0]) + '</span><b>' +
+        esc(fmt.int(chip[1] || 0)) + '</b></span>';
+    }).join('');
+    return panel('decisions', 'patch_decisions.jsonl', '<span>latest per patch · per stage</span>',
+      '<div class="chips gap-8">' + chips + '</div>' +
+      '<div class="mt-16 fs-11 t-dim">acceptance ' + esc(fmt.rate(precision.patch_acceptance_rate)) +
+      ' · precision@' + esc(fmt.rate(precision.conf_threshold, 2)) + ' ' + esc(fmt.rate(precision.precision_at_conf)) + '</div>');
+  }
+
+  function params(rows) {
+    return '<div class="params" style="grid-template-columns:150px minmax(0,1fr);">' +
+      '<div class="params__head"><div>field</div><div>value</div></div>' +
+      rows.map(function (row) {
+        return '<div class="params__row"><div class="params__k">' + esc(row[0]) + '</div>' +
+          '<div class="params__v" style="overflow-wrap:anywhere;">' + (row[2] ? row[1] : esc(row[1])) + '</div></div>';
+      }).join('') + '</div>';
+  }
+
+  function trainingPanel() {
+    var manifest = state.detail.manifest;
+    var provenance = manifest.train_provenance || {};
+    var used = manifest.labels_used || {};
+    var left = params([
+      ['base_model', manifest.base_model || '—'],
+      ['adapter_dir', manifest.adapter_dir || '—'],
+      ['adapter_sha256', manifest.adapter_sha256 ? fmt.short(manifest.adapter_sha256, 12) : '—'],
+      ['model_fingerprint', manifest.model_fingerprint || '—'],
+      ['served_model', manifest.served_model_version || '—']
+    ]);
+    var provenanceRows = Object.keys(provenance).sort().map(function (key) {
+      return [key, fmt.json(provenance[key])];
+    });
+    var labelRows = Object.keys(used).sort().map(function (key) { return ['labels · ' + key, fmt.int(used[key])]; });
+    var right = params((provenanceRows.concat(labelRows)).length
+      ? provenanceRows.concat(labelRows).concat([
+        ['accelerator', manifest.accelerator || '—'],
+        ['python', manifest.python || '—']
+      ])
+      : [
+        ['train_provenance', '—'],
+        ['labels_used', '—'],
+        ['accelerator', manifest.accelerator || '—'],
+        ['python', manifest.python || '—'],
+        ['finished', fmt.ts(manifest.finished_at)]
+      ]);
+    var diff = (state.compare && state.compare.manifest_diff) || {};
+    var keys = Object.keys(diff).sort();
+    var diffHtml = keys.length
+      ? keys.map(function (key) {
+        var change = diff[key] || {};
+        return '<div class="t-amber" style="overflow-wrap:anywhere;">' + esc(key) + '</div>' +
+          '<div class="fs-11 t-dim mb-8" style="overflow-wrap:anywhere;">' + esc(fmt.json(change.a)) + ' → ' +
+          esc(fmt.json(change.b)) + '</div>';
+      }).join('')
+      : '<div class="t-mute">' + esc(state.compare ? 'identical to the parent manifest' : 'no compare file') + '</div>';
+    var trained = (manifest.extra || {}).trained_on_fingerprint || null;
+    var tools = manifest.base_model
+      ? '<span class="tag ' + (trained && trained !== manifest.catalog_fingerprint ? 'tag--warn' : 'tag--in') +
+        '" style="text-transform:none;">' + esc('trained on ' + (trained || manifest.catalog_fingerprint)) + '</span>'
+      : '<span class="tag tag--ghost">no training block</span>';
+    return panel('training', 'manifest.json + manifest_diff vs parent', tools,
+      '<div class="train">' + left + right +
+      '<div><div class="t-eng-sm t-mute mb-8">manifest_diff vs ' + esc(manifest.parent_run_id || '—') + '</div>' +
+      '<div style="border-top:1px solid var(--rule); padding-top:10px; font-size:12px;">' + diffHtml + '</div></div></div>');
+  }
+
+  function eventsPanel() {
+    var events = state.events || [];
+    if (!events.length) {
+      return panel('events', 'events.jsonl', '<span>append-only</span>',
+        '<div class="idle"><span class="t-eng">no events</span>this run directory has no events.jsonl rows</div>');
+    }
+    var tail = events.slice(-25);
+    var rows = tail.map(function (event) {
+      var module = String(event.name || '').split('.')[0];
+      var payload = fmt.json(event.payload);
+      return '<div class="events__row" title="' + esc(event.ts + ' · ' + event.event_id) + '">' +
+        '<div class="events__t">' + esc(String(fmt.ts(event.ts)).split(' ')[1] || fmt.ts(event.ts)) + '</div>' +
+        '<div class="events__mod events__mod--' + esc(module) + '">' + esc(module) + '</div>' +
+        '<div class="events__name">' + esc(event.name) + '</div>' +
+        '<div class="events__pay evpay" title="' + esc(payload) + '">' + esc(payload) + '</div>' +
+        '<div class="right t-mute">' + esc(event.producer) + '</div></div>';
+    }).join('');
+    return panel('events', 'events.jsonl', '<span>' + esc(events.length + ' rows · last ' + tail.length) + '</span>',
+      '<div class="events" style="grid-template-columns:78px 92px 1.3fr minmax(0,2fr) 130px">' +
+      '<div class="events__head"><div>t · UTC</div><div>module</div><div>name</div><div>payload</div><div class="right">producer</div></div>' +
+      rows + '</div>', true);
+  }
+
+  function renderPane() {
+    var detail = state.detail;
+    if (!detail) {
+      $('#pane').innerHTML = '<div class="idle"><span class="t-eng">no run selected</span>pick a run in the rail</div>';
+      return;
+    }
+    $('#pane').innerHTML =
+      manifestHeader(detail.manifest) +
+      tiles(detail.summary, detail.manifest) +
+      '<div class="two">' + histogramPanel(detail.histogram) +
+      '<div class="stack-24">' + comparePanel() + correctionsPanel() + '</div></div>' +
+      decisionsPanel() +
+      trainingPanel() +
+      eventsPanel();
+  }
+
+  // ---- loading ---------------------------------------------------------
+  function selectRun(row) {
+    state.run = row;
+    state.detail = null;
+    state.compare = null;
+    state.events = [];
+    state.live = null;
+    API.saveCtx({ catalog: row.catalog_id, run: row.run_id });
+    renderRail();
+    return API.get(runPath(row)).then(function (detail) {
+      state.detail = detail;
+      var jobs = [
+        API.get('/api/runs/' + segs(row.catalog_id) + '/' + segs(row.run_id) + '/events')
+          .then(function (data) { state.events = data.events || []; })
+          .catch(function () { state.events = detail.events_tail || []; }),
+        API.get('/api/catalogs/' + segs(row.catalog_id))
+          .then(function (data) { state.live = data; })
+          .catch(function () { state.live = null; })
+      ];
+      var parent = detail.manifest.parent_run_id;
+      if (parent && (detail.compares || []).length) {
+        jobs.push(API.get('/api/compare', {
+          catalog_id: row.catalog_id, run_a: parent, run_b: row.run_id
+        }).then(function (data) { state.compare = data; }).catch(function (err) {
+          state.compare = null;
+          fail(err);
+        }));
+      }
+      return Promise.all(jobs);
+    }).then(function () {
+      ok();
+      renderPane();
+    });
+  }
+
+  function loadRuns() {
+    return API.get('/api/runs').then(function (data) {
+      state.runs = data.runs || [];
+      $('#metaRuns').textContent = state.runs.length;
+      renderRail();
+      if (!state.runs.length) {
+        $('#pane').innerHTML = '<div class="idle"><span class="t-eng">empty runs dir</span>' +
+          'python -m ganglion.console seed --runs runs/traces --limit 120</div>';
+        return null;
+      }
+      var wanted = null;
+      state.runs.forEach(function (row) {
+        if (API.ctx.run && row.run_id === API.ctx.run && (!API.ctx.catalog || row.catalog_id === API.ctx.catalog)) wanted = row;
+      });
+      if (!wanted) {
+        state.runs.forEach(function (row) {
+          if (!wanted || String(row.started_at || '') >= String(wanted.started_at || '')) wanted = row;
+        });
+      }
+      return selectRun(wanted);
+    });
+  }
+
+  $('#rail').addEventListener('click', function (ev) {
+    var row = ev.target.closest ? ev.target.closest('.rrow') : null;
+    if (!row) return;
+    var catalog = row.getAttribute('data-cat');
+    var runId = row.getAttribute('data-run');
+    var hit = state.runs.filter(function (candidate) {
+      return candidate.catalog_id === catalog && candidate.run_id === runId;
+    })[0];
+    if (hit) selectRun(hit).catch(fail);
+  });
+
+  (function clock() {
+    var offset = -(new Date()).getTimezoneOffset() / 60;
+    document.getElementById('metaZoneK').textContent = 'UTC' + (offset >= 0 ? '+' : '−') + Math.abs(offset);
+    function tick() {
+      var now = new Date();
+      document.getElementById('metaClock').textContent =
+        String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') +
+        ':' + String(now.getSeconds()).padStart(2, '0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }());
+
+  loadRuns().catch(fail);
+}());
+</script>
+</body>
+</html>

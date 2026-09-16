@@ -92,3 +92,32 @@ def test_iot_pipeline_persists_traces(tmp_path: Path) -> None:
     assert len(jsonl_files) == 1
     lines = jsonl_files[0].read_text(encoding="utf-8").splitlines()
     assert len(lines) == 3
+
+
+def test_iot_pipeline_traces_use_canonical_source_and_shape(tmp_path: Path) -> None:
+    import json
+
+    from ganglion.analyzer.trace import Trace, TraceStore
+
+    trace_dir = tmp_path / "traces"
+    run_pipeline(
+        PipelineConfig(
+            catalog_id="iot_light_5",
+            benchmark="iot",
+            tier="iot_light_5",
+            client_id="rules",
+            max_iter=1,
+            limit=2,
+            run_id="fp",
+            trace_store_dir=trace_dir,
+        )
+    )
+    [shard] = list(trace_dir.rglob("traces.jsonl"))
+    rows = [json.loads(line) for line in shard.read_text(encoding="utf-8").splitlines()]
+    assert len(rows) == 2
+    assert {row["source"] for row in rows} == {"benchmark.iot"}
+    assert all(row["error_type"] is None for row in rows)
+    assert all(row["plan"] is not None and row["raw_plan"] is not None for row in rows)
+    assert all(row["repeat_index"] == 0 for row in rows)
+    traces = list(TraceStore(trace_dir).iter(catalog_id="iot_light_5", run_id="fp/iter-1"))
+    assert len(traces) == 2 and all(isinstance(t, Trace) for t in traces)

@@ -2,9 +2,58 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>GANGLION ◦ Trace Explorer — Sheet 05</title>
+<title>GANGLION ◦ Trace Explorer · Label Queue — Sheet 05</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="./assets/style.css">
+<style>
+/* page-local elements only — every other class comes from assets/style.css */
+[hidden] { display: none !important; }
+.pick { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.pick select {
+  border: 1px solid var(--rule-strong); background: var(--ink-raised);
+  padding: 5px 10px; font-family: var(--mono); font-size: 11px; color: var(--bone); max-width: 460px;
+}
+.pick select:focus { border-color: var(--teal); }
+.seg__opt.is-off { opacity: 0.4; cursor: not-allowed; }
+.seg__opt b { font-weight: 600; margin-left: 6px; font-variant-numeric: tabular-nums; }
+.qrow {
+  display: grid; grid-template-columns: 16px minmax(0,1fr) auto;
+  column-gap: 10px; row-gap: 2px; align-items: center;
+  padding: 8px 14px 8px 12px; border-bottom: 1px solid var(--rule-soft);
+  border-left: 2px solid transparent; cursor: pointer;
+}
+.qrow:hover { background: var(--ink-card); }
+.qrow.is-sel { border-left-color: var(--teal); background: var(--ink-card); }
+.qrow__mark { grid-row: 1 / span 2; font-size: 12px; text-align: center; }
+.qrow__id { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--bone-bright); }
+.qrow__prompt {
+  grid-column: 2 / span 2; font-family: var(--sans); font-size: 13px; color: var(--bone);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.queue { display: flex; flex-direction: column; background: var(--ink-raised); max-height: 70vh; overflow-y: auto; }
+.strip { display: flex; align-items: center; gap: 14px; padding: 8px 14px; border: 1px dashed var(--rule); font-size: 12px; flex-wrap: wrap; }
+.acc__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 9px 14px; border: 1px solid var(--rule); background: var(--ink-raised); cursor: pointer; }
+.acc__body { display: none; padding-top: 10px; }
+.acc.is-open .acc__body { display: block; }
+.ed { background: var(--ink-raised); border: 1px solid var(--rule); position: relative; }
+.ed textarea {
+  width: 100%; min-height: 76px; resize: vertical; background: transparent; border: none; outline: none;
+  color: var(--bone); font-family: var(--mono); font-size: 11.5px; line-height: 1.6; padding: 14px 16px;
+}
+.ed textarea:focus { box-shadow: inset 0 0 0 1px var(--teal-dim); }
+.ed__label {
+  position: absolute; top: -1px; right: -1px; background: var(--ink); border: 1px solid var(--rule);
+  font-family: var(--sans); font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--bone-dim); padding: 3px 9px;
+}
+.vbar { border: 1px solid var(--rule-strong); background: var(--ink-raised); padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
+.btn.is-on { background: var(--chartreuse); color: var(--ink); border-color: var(--chartreuse); font-weight: 600; }
+.btn.is-on--bad { background: var(--vermillion); color: var(--ink); border-color: var(--vermillion); font-weight: 600; }
+.btn.is-on--warn { background: var(--amber); color: var(--ink); border-color: var(--amber); font-weight: 600; }
+.jsonwrap { overflow-x: hidden; }   /* pre-wrap already breaks; kills the 1px ::before scrollbar */
+.jsonwrap pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: var(--mono); font-size: 11.5px; }
+@media (max-width: 1100px) { .queue { max-height: none; } }
+</style>
 </head>
 <body>
 
@@ -25,195 +74,756 @@
     <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
     <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
     <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
   </nav>
   <div class="opbar__meta">
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">Store</div><div class="opbar__meta-v">12,401 rows</div></div>
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">This iter</div><div class="opbar__meta-v">900</div></div>
-    <div class="opbar__meta-cell"><div class="opbar__meta-k">UTC+09</div><div class="opbar__meta-v">14:32:17</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k">Run</div><div class="opbar__meta-v" id="metaRun">—</div></div>
+    <div class="opbar__meta-cell"><div class="opbar__meta-k" id="metaZoneK">Local</div><div class="opbar__meta-v" id="metaClock">—</div></div>
   </div>
 </header>
 
 <main class="page">
 
-  <section class="page__head">
+  <section class="page__head" style="grid-template-columns:minmax(0,1fr);">
     <div>
-      <div class="page__id">SHEET 05 / 07 <span>◦</span> module 02 / analyzer <span>◦</span> append-only</div>
-      <h1 class="page__title">trace <em>explorer</em></h1>
-      <p class="page__sub">Browse the <b>append-only JSONL trace store</b> emitted by benchmark consumers and classified by <a href="./traces.html">analyzer_failure_taxonomy</a>. Every trace carries an immutable <span class="t-bright">trace_id</span>, a <span class="t-bright">FailureType</span> from 14 buckets, the repair-loop history, and the ground-truth diff against the catalog-anchored expected ActionPlan.</p>
-    </div>
-    <div class="folio">
-      Drawn by <b>GANGLION/FACTORY</b><br>
-      Sheet <b>05</b> of <b>07</b> · rev 1.3<br>
-      Specs <b>analyzer_trace_store.md</b><br>
-      <b>analyzer_failure_taxonomy.md</b>
+      <div class="page__id">SHEET 05 <span>◦</span> module 02 / analyzer <span>◦</span> label queue</div>
+      <h1 class="page__title">Trace Explorer · <em>Label Queue</em></h1>
+      <p class="page__sub" id="headSub">reading <b>/api/runs</b> …</p>
     </div>
   </section>
 
-  <!-- 14-BUCKET HISTOGRAM -->
-  <section class="panel">
-    <div class="panel__head">
-      <div class="panel__head-title">failure taxonomy · 14-bucket histogram <small>iter 6 · n=900 · matchers priority-ordered</small></div>
-      <div class="panel__head-tools"><span class="t-chart">▲ coverage 100%</span><span class="t-dim">no unclassified</span></div>
-    </div>
-    <div class="contract">
-      <div class="contract__cell contract__cell--in"><div class="contract__k">IN</div><div class="contract__v">trace_id</div></div>
-      <div class="contract__cell contract__cell--out"><div class="contract__k">OUT</div><div class="contract__v">FailureType label (one-of-14)</div></div>
-      <div class="contract__cell contract__cell--event"><div class="contract__k">EVENT</div><div class="contract__v">→ analyzer.failure.classified</div></div>
-      <div class="contract__cell contract__cell--fail"><div class="contract__k">FAIL</div><div class="contract__v">no matcher fires (un-bucketed)</div></div>
-      <div class="contract__cell contract__cell--success"><div class="contract__k">OK</div><div class="contract__v">14-bucket coverage = 100%</div></div>
-    </div>
-    <div class="panel__body">
-      <div class="grid-2 gap-24">
-        <div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F03</span>invalid_enum_value</div><div class="hbar__track"><div class="hbar__fill" style="width:78%"></div></div><div class="hbar__count">84</div></div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F04</span>alias_unresolved</div><div class="hbar__track"><div class="hbar__fill" style="width:58%"></div></div><div class="hbar__count">62</div></div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F02</span>missing_required_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:38%"></div></div><div class="hbar__count">41</div></div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F14</span>graded_partial</div><div class="hbar__track"><div class="hbar__fill" style="width:35%"></div></div><div class="hbar__count">38</div></div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F07</span>malformed_dsl</div><div class="hbar__track"><div class="hbar__fill" style="width:30%"></div></div><div class="hbar__count">33</div></div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F01</span>unknown_tool</div><div class="hbar__track"><div class="hbar__fill" style="width:25%"></div></div><div class="hbar__count">27</div></div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F10</span>extra_unknown_arg</div><div class="hbar__track"><div class="hbar__fill" style="width:21%"></div></div><div class="hbar__count">23</div></div>
-        </div>
-        <div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F05</span>type_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:17%"></div></div><div class="hbar__count">19</div></div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F11</span>parallel_count_mismatch</div><div class="hbar__track"><div class="hbar__fill" style="width:16%"></div></div><div class="hbar__count">17</div></div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F09</span>empty_calls_when_required</div><div class="hbar__track"><div class="hbar__fill" style="width:13%"></div></div><div class="hbar__count">14</div></div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F06</span>out_of_range</div><div class="hbar__track"><div class="hbar__fill" style="width:11%"></div></div><div class="hbar__count">12</div></div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F13</span>repair_exhausted</div><div class="hbar__track"><div class="hbar__fill" style="width:9%"></div></div><div class="hbar__count">9</div></div>
-          <div class="hbar hbar--fail"><div class="hbar__name"><span class="id">F08</span>json_parse_error</div><div class="hbar__track"><div class="hbar__fill" style="width:8%"></div></div><div class="hbar__count">8</div></div>
-          <div class="hbar hbar--warn"><div class="hbar__name"><span class="id">F12</span>argument_order</div><div class="hbar__track"><div class="hbar__fill" style="width:5%"></div></div><div class="hbar__count">5</div></div>
-        </div>
-      </div>
-    </div>
-  </section>
+  <div id="err" hidden class="mb-16"></div>
 
-  <!-- BROWSER + DETAIL -->
-  <section class="grid-asym mt-24">
+  <!-- RUN PICKER -->
+  <div class="flex-bw gap-16 mb-16" style="flex-wrap:wrap;">
+    <div class="pick">
+      <span class="t-eng-sm t-mute">run</span>
+      <select id="runPick" aria-label="run"></select>
+      <button class="btn btn--ghost" id="reload" type="button">reload</button>
+    </div>
+    <div class="t-eng-sm t-mute" id="runMeta">—</div>
+  </div>
 
-    <!-- LEFT: list -->
+  <!-- FILTER STRIP -->
+  <div class="flex-bw gap-16 mb-24" style="flex-wrap:wrap; align-items:center;">
+    <span class="seg" id="segFilter" style="flex-shrink:0;">
+      <span class="seg__opt" data-filter="unlabelled">unlabelled<b data-count="unlabelled">0</b></span>
+      <span class="seg__opt" data-filter="invalid">invalid only<b data-count="invalid">0</b></span>
+      <span class="seg__opt active" data-filter="wrong">wrong only<b data-count="wrong">0</b></span>
+      <span class="seg__opt" data-filter="changed" id="segChanged">changed vs previous<b data-count="changed">0</b></span>
+      <span class="seg__opt" data-filter="by_failure">by failure_type</span>
+      <span class="seg__opt" data-filter="all">all<b data-count="all">0</b></span>
+    </span>
+    <div class="pick" id="ftWrap" hidden>
+      <span class="t-eng-sm t-mute">failure_type</span>
+      <select id="ftPick" aria-label="failure type"></select>
+    </div>
+    <div class="flex-c" style="flex-shrink:0;">
+      <span class="fs-11 t-dim">labelled <span class="t-bright" id="progText">0 / 0</span></span>
+      <div class="hbar hbar--ok" style="display:block; padding:0;"><div class="hbar__track" style="width:140px;"><div class="hbar__fill" id="progFill" style="width:0%"></div></div></div>
+      <span class="fs-11 t-bright t-num" id="progPct">0%</span>
+      <span class="fs-11 t-chart" id="commitMsg"></span>
+    </div>
+    <div class="fs-11 t-dim right" style="flex:1 1 260px; min-width:0;">
+      <span class="t-bright">j/k</span> move · <span class="t-bright">y</span> correct · <span class="t-bright">n</span> incorrect ·
+      <span class="t-bright">u</span> unsure · <span class="t-bright">o</span> order · <span class="t-bright">Enter</span> commit ·
+      <span class="t-bright">z</span> undo · <span class="t-bright">g</span> raw · <span class="t-bright">?</span> help
+    </div>
+  </div>
+
+  <div class="gate mb-24" id="help" hidden>
+    <div class="gate__head"><span>keyboard</span><b>label queue</b></div>
+    <div class="gate__body">
+      <b>j</b> / <b>k</b> next / previous trace · <b>y</b> verdict correct · <b>n</b> verdict incorrect (needs an expected plan) ·
+      <b>u</b> verdict unsure · <b>o</b> toggle order_sensitive · <b>Enter</b> commit the verdict and advance ·
+      <b>z</b> undo — reopen the trace just labelled, prefilled, so the next commit supersedes it ·
+      <b>g</b> toggle the RAW / ATTEMPTS accordion · <b>?</b> this help.
+      <span class="t-mute">Ctrl/Cmd shortcuts (undo in the editor, reload, …) are never intercepted; keys are inert while the expected-plan editor has focus — commit there with Ctrl+Enter.</span>
+    </div>
+  </div>
+
+  <!-- QUEUE + DETAIL -->
+  <section class="grid-asym-r" style="grid-template-columns:420px minmax(0,1fr); align-items:start;">
+
     <div class="panel">
       <div class="panel__head">
-        <div class="panel__head-title">recent traces <small>iter 6 · click to inspect</small></div>
-        <div class="panel__head-tools">
-          <span class="seg"><span class="seg__opt active">all</span><span class="seg__opt">fails only</span><span class="seg__opt">repair&gt;0</span></span>
-        </div>
+        <div class="panel__head-title">queue <small id="queueSub">—</small></div>
+        <div class="panel__head-tools"><span id="queueTools">—</span></div>
       </div>
       <div class="panel__body panel__body--flush">
-        <table class="dtable">
-          <thead><tr><th>trace_id</th><th>case</th><th>failure</th><th class="num">repair</th><th>t</th></tr></thead>
-          <tbody>
-            <tr class="t-bright" style="background:rgba(125,216,198,0.04)"><td>T-2206 ●</td><td>iot_light:case_0142</td><td><span class="tag tag--warn">F04</span></td><td class="num">1</td><td class="t-mute">14:30:12.118</td></tr>
-            <tr><td>T-2207</td><td>iot_light:case_0143</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.241</td></tr>
-            <tr><td>T-2208</td><td>bfcl:simple_python:032</td><td><span class="tag tag--fail">F03</span></td><td class="num">2</td><td class="t-mute">14:30:12.318</td></tr>
-            <tr><td>T-2209</td><td>bfcl:irrelevance:004</td><td><span class="tag tag--warn">F09</span></td><td class="num">0</td><td class="t-mute">14:30:12.402</td></tr>
-            <tr><td>T-2210</td><td>iot_light:case_0144</td><td><span class="tag tag--warn">F14</span></td><td class="num">1</td><td class="t-mute">14:30:12.488</td></tr>
-            <tr><td>T-2211</td><td>bfcl:parallel:017</td><td><span class="tag tag--warn">F11</span></td><td class="num">0</td><td class="t-mute">14:30:12.561</td></tr>
-            <tr><td>T-2212</td><td>iot_light:case_0145</td><td><span class="tag tag--fail">F07</span></td><td class="num">3</td><td class="t-mute">14:30:12.629</td></tr>
-            <tr><td>T-2213</td><td>bfcl:callable:028</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.711</td></tr>
-            <tr><td>T-2214</td><td>iot_light:case_0146</td><td><span class="tag tag--fail">F02</span></td><td class="num">1</td><td class="t-mute">14:30:12.802</td></tr>
-            <tr><td>T-2215</td><td>iot_light:case_0147</td><td><span class="tag tag--in">— pass</span></td><td class="num">0</td><td class="t-mute">14:30:12.881</td></tr>
-            <tr class="row-ghost"><td>T-2216</td><td>iot_light:case_0148</td><td><span class="tag tag--ghost">duplicate · §8</span></td><td class="num">0</td><td class="t-mute">14:30:12.882</td></tr>
-          </tbody>
-        </table>
+        <div class="queue" id="queue"></div>
       </div>
     </div>
 
-    <!-- RIGHT: detail T-2206 -->
-    <div class="panel">
+    <div class="panel" id="detailPanel">
       <div class="panel__head">
-        <div class="panel__head-title">trace · T-2206 <small>iot_light · case_0142 · 14:30:12.118</small></div>
-        <div class="panel__head-tools"><span class="tag tag--warn">F04 alias_unresolved</span></div>
-      </div>
-
-      <div class="panel__body">
-        <table class="dtable mb-16">
-          <tbody>
-            <tr><td class="t-dim">prompt</td><td class="t-bright">거실 불 켜줘</td></tr>
-            <tr><td class="t-dim">catalog</td><td>iot_light_5 · v07</td></tr>
-            <tr><td class="t-dim">client</td><td>qwen (JSON DSL)</td></tr>
-            <tr><td class="t-dim">repair attempts</td><td>1 of max 1</td></tr>
-            <tr><td class="t-dim">classified by</td><td class="t-teal">analyzer_failure_taxonomy → F04</td></tr>
-            <tr><td class="t-dim">reason</td><td>arg <b>set_light.room</b> value <span class="t-amber">'거실'</span> not resolved by EnumArg.aliases</td></tr>
-          </tbody>
-        </table>
-
-        <div class="t-eng t-dim mb-8">GROUND-TRUTH DIFF</div>
-        <div class="diff">
-          <div class="diff__col diff__col--expected">
-            <div class="diff__col-label">EXPECTED · ActionPlan</div>
-<pre>{
-  "calls": [{
-    "tool": "set_light",
-    "args": {
-      "room":  <span class="ins">"living"</span>,
-      "state": "on"
-    }
-  }]
-}</pre>
-          </div>
-          <div class="diff__col diff__col--actual">
-            <div class="diff__col-label">ACTUAL · model output</div>
-<pre>{
-  "calls": [{
-    "tool": "set_light",
-    "args": {
-      "room":  <span class="del">"거실"</span>,
-      "state": "on"
-    }
-  }]
-}</pre>
-          </div>
+        <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 12px; min-width:0;">
+          <span class="panel__head-title" id="dTitle">—</span>
+          <span class="fs-11 t-dim" id="dSub"></span>
         </div>
-
-        <hr class="rule rule--dash">
-        <div class="t-eng t-dim mb-8">REPAIR LOOP</div>
-        <table class="dtable">
-          <tbody>
-            <tr><td class="t-dim">attempt 1</td><td><span class="tag tag--fail">F04</span> · re-prompted with alias hint</td><td class="t-mute">t+87ms</td></tr>
-            <tr><td class="t-dim">final</td><td><span class="tag tag--fail">F04</span> · repair exhausted</td><td class="t-mute">t+164ms</td></tr>
-          </tbody>
-        </table>
-
-        <hr class="rule rule--dash">
-        <div class="t-eng t-dim mb-8">PROPOSAL DOWNSTREAM</div>
-        <div class="callout">contributes evidence to <a href="./rules.html" class="t-bright">P-014 · R3 alias_extension</a> · weight 0.041</div>
+        <div class="panel__head-tools" id="dTags" style="flex-shrink:0;"></div>
+      </div>
+      <div class="panel__body stack-16" id="dBody">
+        <div class="idle"><span class="t-eng">no trace selected</span>pick a run above</div>
       </div>
     </div>
-  </section>
 
-  <!-- ROLLUP -->
-  <section class="panel mt-24">
-    <div class="panel__head">
-      <div class="panel__head-title">store metadata · analyzer_trace_store invariants</div>
-      <div class="panel__head-tools"><span class="t-chart">append-only · locked</span></div>
-    </div>
-    <div class="panel__body panel__body--flush">
-      <table class="dtable">
-        <tbody>
-          <tr><td class="t-dim">store_path</td><td>runs/traces/store.jsonl</td><td class="t-dim">retention_days = 90</td></tr>
-          <tr><td class="t-dim">total rows</td><td>12,401</td><td class="t-dim">size 92.4 MB</td></tr>
-          <tr><td class="t-dim">append_mode</td><td><span class="tag tag--lock">locked · invariant</span></td><td class="t-dim">rewrites rejected; corrections become new rows</td></tr>
-          <tr><td class="t-dim">monotonic offset cursor</td><td>position 12,401</td><td class="t-dim">consumed by analyzer_failure_taxonomy</td></tr>
-        </tbody>
-      </table>
-    </div>
   </section>
 
 </main>
 
 <footer class="footer">
-  <div>SHEET 05 · trace explorer · <b>analyzer_trace_store · analyzer_failure_taxonomy</b></div>
-  <div>append-only · classify priority-ordered · 14-bucket coverage 100%</div>
+  <div>SHEET 05 · label queue · <b>analyzer_trace_store · analyzer_label_store · analyzer_failure_taxonomy</b></div>
+  <div>gold = resolve_gold(trace, labels) · labels append-only · expected_plan validated by the catalog (422 when it does not parse)</div>
 </footer>
 
-<script src="./assets/data.js"></script>
+<script src="./assets/api.js"></script>
 <script>
-document.querySelectorAll('.seg').forEach((seg) => {
-  seg.addEventListener('click', (e) => {
-    const opt = e.target.closest('.seg__opt'); if (!opt) return;
-    seg.querySelectorAll('.seg__opt').forEach((o) => o.classList.remove('active'));
-    opt.classList.add('active');
+(function () {
+  'use strict';
+
+  var API = window.GanglionAPI;
+  var errEl = document.getElementById('err');
+  if (!API || typeof API.get !== 'function') {
+    errEl.hidden = false;
+    errEl.innerHTML = '<div class="callout t-verm">web/assets/api.js did not load — window.GanglionAPI is missing</div>';
+    return;
+  }
+  var fmt = API.fmt;
+  var esc = API.escapeHtml;
+  function $(sel) { return document.querySelector(sel); }
+  function fail(err) { API.showError(errEl, err); }
+  function ok() { API.clearError(errEl); }
+
+  var FAILURE_TYPES = [
+    'syntax_invalid', 'unknown_tool', 'wrong_action', 'missing_required_arg', 'unknown_arg',
+    'type_mismatch', 'value_out_of_enum', 'value_out_of_range', 'alias_unrecognised',
+    'abstention_miss_should_call', 'abstention_miss_should_abstain', 'parallel_order_mismatch',
+    'partial_arg_value_mismatch', 'no_failure', 'unclassified'
+  ];
+  var OK_TYPES = { no_failure: 1 };
+  // `should_abstain` means the gold IS the empty plan — see analyzer/labels.py
+  // resolve_gold, which takes the label's expected_plan verbatim as gold.
+  var ABSTAIN_PLAN = '{\n  "calls": []\n}';
+
+  var state = {
+    runs: [], run: null, detailRun: null,
+    filter: 'wrong', failureType: '', rows: [], counts: {}, index: -1,
+    detail: null, verdict: '', orderSensitive: true, sawF0: false,
+    selectedAt: 0, undo: null, supersedes: null,
+    expectedPrefill: '', expectedDraft: null
+  };
+
+  // ---- small helpers -------------------------------------------------
+  function segs(value) { return String(value || '').split('/').map(encodeURIComponent).join('/'); }
+  function runPath(row) { return '/api/runs/' + segs(row.catalog_id) + '/' + segs(row.run_id); }
+  function safeName(runId) { return String(runId || '').split('/').join('__'); }
+  function statusTag(status) {
+    var cls = status === 'pass' ? 'tag--in' : (status === 'ungraded' ? 'tag--ghost' : 'tag--fail');
+    return '<span class="tag ' + cls + '" style="text-transform:none;">' + esc(status) + '</span>';
+  }
+  function failTag(type, conf) {
+    if (!type) return '<span class="tag tag--ghost">unclassified</span>';
+    var cls = OK_TYPES[type] ? 'tag--in' : (type === 'unclassified' ? 'tag--ghost' : 'tag--fail');
+    var tail = (conf === null || conf === undefined) ? '' : ' (conf ' + fmt.rate(conf, 2) + ')';
+    return '<span class="tag ' + cls + '" style="text-transform:none;">' + esc(type + tail) + '</span>';
+  }
+  function jsonBlock(label, value) {
+    return '<div class="code jsonwrap" data-label="' + esc(label) + '"><pre>' +
+      esc(fmt.pretty(value)) + '</pre></div>';
+  }
+
+  // ---- run picker ----------------------------------------------------
+  function fillPicker(runs, selected) {
+    var select = $('#runPick');
+    select.innerHTML = '';
+    var groups = [];
+    var seen = {};
+    runs.forEach(function (row) {
+      if (!seen[row.catalog_id]) { seen[row.catalog_id] = []; groups.push(row.catalog_id); }
+      seen[row.catalog_id].push(row);
+    });
+    groups.forEach(function (catalog) {
+      var group = document.createElement('optgroup');
+      group.label = catalog;
+      seen[catalog].forEach(function (row) {
+        var option = document.createElement('option');
+        option.value = catalog + '' + row.run_id;
+        option.textContent = row.run_id +
+          (row.iteration === null || row.iteration === undefined ? '' : '  · iter ' + row.iteration) +
+          '  · ' + row.n_traces + ' traces · ' + row.n_labels + ' labels';
+        if (selected && row.catalog_id === selected.catalog_id && row.run_id === selected.run_id) {
+          option.selected = true;
+        }
+        group.appendChild(option);
+      });
+      select.appendChild(group);
+    });
+  }
+
+  function pickDefault(runs) {
+    var wanted = API.ctx.run;
+    var catalog = API.ctx.catalog;
+    var hit = null;
+    runs.forEach(function (row) {
+      if (wanted && row.run_id === wanted && (!catalog || row.catalog_id === catalog)) hit = row;
+    });
+    if (hit) return hit;
+    var latest = null;
+    runs.forEach(function (row) {
+      if (!latest || String(row.started_at || '') >= String(latest.started_at || '')) latest = row;
+    });
+    return latest;
+  }
+
+  // ---- filters -------------------------------------------------------
+  function changedEnabled(row) {
+    if (!row) return false;
+    var parent = row.parent_run_id;
+    if (!parent) return false;
+    return (row.has_compare || []).indexOf(safeName(parent)) !== -1;
+  }
+
+  function paintSeg() {
+    var enabled = changedEnabled(state.run);
+    var changed = document.getElementById('segChanged');
+    changed.classList.toggle('is-off', !enabled);
+    changed.title = enabled
+      ? 'per-case direction from compare-' + safeName(state.run.parent_run_id) + '.json'
+      : (state.run && state.run.parent_run_id
+        ? 'no compare file yet — run: python -m ganglion.console compare ' + state.run.catalog_id + ' ' + state.run.parent_run_id + ' ' + state.run.run_id
+        : 'this run has no parent_run_id, so there is nothing to compare against');
+    Array.prototype.forEach.call(document.querySelectorAll('#segFilter .seg__opt'), function (opt) {
+      var name = opt.getAttribute('data-filter');
+      var on = (name === 'by_failure') ? (state.filter === 'all' && !!state.failureType) : (name === state.filter && !state.failureType);
+      opt.classList.toggle('active', on);
+    });
+    if (state.failureType) document.getElementById('ftWrap').hidden = false;
+  }
+
+  function paintCounts(counts) {
+    Object.keys(counts || {}).forEach(function (key) {
+      var cell = document.querySelector('#segFilter b[data-count="' + key + '"]');
+      if (cell) cell.textContent = counts[key];
+    });
+    var total = state.rows.length;
+    var done = state.rows.filter(function (row) { return row.label; }).length;
+    var pct = total ? Math.round(100 * done / total) : 0;
+    $('#progText').textContent = done + ' / ' + total + ' in filter';
+    $('#progPct').textContent = pct + '%';
+    $('#progFill').style.width = pct + '%';
+  }
+
+  function fillFailureTypes(histogram) {
+    var select = $('#ftPick');
+    var current = state.failureType;
+    select.innerHTML = '';
+    var any = document.createElement('option');
+    any.value = '';
+    any.textContent = '— any —';
+    select.appendChild(any);
+    FAILURE_TYPES.forEach(function (name) {
+      var option = document.createElement('option');
+      var count = (histogram || {})[name];
+      option.value = name;
+      option.textContent = name + (count === undefined ? '' : '  · ' + count);
+      if (name === current) option.selected = true;
+      select.appendChild(option);
+    });
+  }
+
+  // ---- queue ---------------------------------------------------------
+  function directionBadge(direction) {
+    if (direction === 'fixed') return '<span class="t-eng-sm t-chart">fixed ↑</span>';
+    if (direction === 'regressed') return '<span class="t-eng-sm t-verm">regressed ↓</span>';
+    return '';
+  }
+
+  function renderQueue() {
+    var queue = $('#queue');
+    if (!state.rows.length) {
+      queue.innerHTML = '<div class="idle"><span class="t-eng">empty</span>no trace matches this filter</div>';
+      return;
+    }
+    queue.innerHTML = state.rows.map(function (row, i) {
+      var mark = row.label
+        ? '<span class="t-chart" title="labelled ' + esc(row.label.verdict) + '">✔</span>'
+        : '<span class="t-mute" title="unlabelled">○</span>';
+      return '<div class="qrow' + (i === state.index ? ' is-sel' : '') + '" data-i="' + i + '">' +
+        '<div class="qrow__mark">' + mark + '</div>' +
+        '<div class="qrow__id">' + esc(row.case_id) +
+          (row.repeat_index ? '<span class="t-mute">#' + row.repeat_index + '</span>' : '') +
+          directionBadge(row.direction) + '</div>' +
+        failTag(row.failure_type, null) +
+        '<div class="qrow__prompt">' + esc(row.prompt) + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function renderF0(attribution) {
+    if (!attribution) {
+      return '<div class="strip"><span class="t-eng-sm t-mute">F⁰ / Fᴷ</span>' +
+        '<span class="t-dim">no attribution — run <b class="t-bright">Analyze</b> on the Rules page ' +
+        '(POST /api/runs/…/analyze writes corrections.jsonl)</span></div>';
+    }
+    if (attribution.unattributable) {
+      return '<div class="strip"><span class="t-eng-sm t-mute">F⁰ / Fᴷ</span>' +
+        '<span class="t-dim">unattributable — no first attempt, or no gold for this case</span></div>';
+    }
+    var diff = API.diffPlans(attribution.f0_plan, attribution.fk_plan);
+    var verdict = diff.equal
+      ? '<span>F⁰ = Fᴷ <span class="t-dim">(no hook changed the plan)</span></span>'
+      : '<span>' + diff.changes.map(function (change) {
+        return '<span class="tag tag--warn" style="text-transform:none;">' +
+          esc(change.path + ': ' + fmt.json(change.from) + ' → ' + fmt.json(change.to)) + '</span>';
+      }).join(' ') + '</span>';
+    function flag(label, value) {
+      var cls = value === true ? 't-chart' : (value === false ? 't-verm' : 't-mute');
+      return '<span class="t-dim">' + esc(label) + '</span> <span class="' + cls + '">' +
+        esc(value === null || value === undefined ? 'ungraded' : String(value)) + '</span>';
+    }
+    var hooks = [];
+    (attribution.rescued_by || []).forEach(function (h) { hooks.push('<span class="tag tag--in" style="text-transform:none;">rescued by ' + esc(h) + '</span>'); });
+    (attribution.regressed_by || []).forEach(function (h) { hooks.push('<span class="tag tag--fail" style="text-transform:none;">regressed by ' + esc(h) + '</span>'); });
+    (attribution.necessary_hooks || []).forEach(function (h) { hooks.push('<span class="tag tag--warn" style="text-transform:none;">necessary ' + esc(h) + '</span>'); });
+    (attribution.active_hooks || []).forEach(function (h) { hooks.push('<span class="tag" style="text-transform:none;">active ' + esc(h) + '</span>'); });
+    return '<div class="strip"><span class="t-eng-sm t-mute">F⁰ / Fᴷ</span>' + verdict + '</div>' +
+      '<div class="strip">' + flag('F⁰ ok', attribution.f0_ok) + flag('Fᴷ ok', attribution.fk_ok) +
+      flag('rescued', attribution.rescued) + flag('regressed', attribution.regressed) +
+      (hooks.length ? '<span class="chips">' + hooks.join('') + '</span>' : '') + '</div>';
+  }
+
+  function renderEvidence(detail, row) {
+    var classification = detail.classification || {};
+    var rows = [];
+    rows.push(['matcher', failTag(row ? row.failure_type : classification.failure_type, classification.confidence), 'taxonomy']);
+    var evidence = classification.evidence || {};
+    Object.keys(evidence).sort().forEach(function (key) {
+      rows.push([key, '<span class="t-amber">' + esc(fmt.json(evidence[key])) + '</span>', 'evidence']);
+    });
+    rows.push(['gold origin', esc(detail.gold_origin || 'none'), 'labels']);
+    rows.push(['parse_strategy', esc(detail.trace.parse_strategy || '—'), 'trace']);
+    if (detail.trace.error_type) {
+      rows.push(['error', '<span class="t-verm">' + esc(detail.trace.error_type) + '</span>', 'trace']);
+    }
+    return '<div><div class="t-eng t-dim mb-8">CLASSIFICATION EVIDENCE</div><div class="params">' +
+      '<div class="params__head"><div>field</div><div>value</div><div class="right">src</div></div>' +
+      rows.map(function (cells) {
+        return '<div class="params__row"><div class="params__k">' + esc(cells[0]) + '</div>' +
+          '<div class="params__v">' + cells[1] + '</div>' +
+          '<div class="params__src">' + esc(cells[2]) + '</div></div>';
+      }).join('') + '</div></div>';
+  }
+
+  function renderAttempts(trace) {
+    var attempts = trace.attempts || [];
+    var body = attempts.map(function (attempt, i) {
+      return jsonBlock('attempt ' + (attempt.attempt === undefined ? i : attempt.attempt), attempt.content);
+    }).join('');
+    body += jsonBlock('raw_output', trace.raw_output);
+    body += jsonBlock('raw_plan (unvalidated)', trace.raw_plan);
+    return '<div class="acc" id="acc"><div class="acc__head" id="accHead">' +
+      '<span class="t-eng t-dim">ATTEMPTS (' + attempts.length + ') · parse ' + esc(trace.parse_strategy || '—') +
+      ' · latency ' + esc(fmt.ms(trace.latency_ms)) + ' · ' + esc(fmt.tokens(trace.input_tokens_total, trace.output_tokens_total)) + '</span>' +
+      '<span class="t-eng-sm t-mute" id="accState">collapsed · [g]</span></div>' +
+      '<div class="acc__body stack-12">' + body + '</div></div>';
+  }
+
+  function renderLabel(label) {
+    if (!label) return '<span class="t-mute">no label yet</span>';
+    return 'LabelRecord <span class="t-bright">' + esc(label.label_id) + '</span> · verdict <span class="t-bright">' +
+      esc(label.verdict) + '</span> · origin <span class="t-bright">' + esc(label.origin) + '</span> · zone <span class="t-bright">' +
+      esc(label.zone) + '</span> · family <span class="t-bright">' + esc(label.family_id) + '</span> · ' +
+      esc(fmt.ts(label.created_at)) + (label.note ? ' · <span class="t-dim">' + esc(label.note) + '</span>' : '');
+  }
+
+  function renderDetail() {
+    var detail = state.detail;
+    var row = state.rows[state.index] || {};
+    if (!detail) {
+      $('#dTitle').textContent = '—';
+      $('#dSub').textContent = '';
+      $('#dTags').innerHTML = '';
+      $('#dBody').innerHTML = '<div class="idle"><span class="t-eng">no trace selected</span>pick a row in the queue</div>';
+      return;
+    }
+    var trace = detail.trace;
+    $('#dTitle').textContent = trace.case_id;
+    $('#dSub').textContent = '· ' + trace.trace_id + ' · model ' + trace.model_id + ' · ' + trace.run_id +
+      ' · gold: ' + (detail.gold_origin || 'none') + ' · ' + fmt.ts(trace.timestamp);
+    $('#dTags').innerHTML = statusTag(detail.status) + failTag(row.failure_type, row.failure_confidence);
+
+    // EXPECTED (gold, chartreuse) vs PREDICTED (model, vermillion)
+    var gold = (detail.label && detail.label.expected_plan) || trace.expected_plan;
+    // when validation failed there is no plan — diff the unvalidated raw_plan instead,
+    // so the operator still sees exactly which arg the model got wrong
+    var predicted = trace.plan !== null && trace.plan !== undefined ? trace.plan : trace.raw_plan;
+    var diff = API.diffPlans(predicted, gold);
+    var html = '';
+    html += '<div style="display:flex; align-items:baseline; gap:14px; padding:12px 14px; border:1px solid var(--rule); background:var(--ink-raised);">' +
+      '<span class="t-eng-sm t-mute">prompt</span>' +
+      '<span class="sans" style="font-size:15px; font-weight:500; color:var(--bone-bright);">' + esc(trace.prompt) + '</span></div>';
+    html += '<div><div class="t-eng t-dim mb-8">GROUND-TRUTH DIFF · ' +
+      esc(diff.equal ? 'identical' : diff.changes.length + ' change(s)') + '</div>' +
+      '<div class="diff">' +
+      '<div class="diff__col diff__col--expected"><div class="diff__col-label">EXPECTED · gold ' + esc(detail.gold_origin || 'none') + '</div>' +
+      '<pre style="overflow-wrap:anywhere;">' + diff.rightHtml + '</pre></div>' +
+      '<div class="diff__col diff__col--actual"><div class="diff__col-label">PREDICTED · ' +
+      esc(trace.plan === null || trace.plan === undefined ? 'validation failed — raw_plan shown' : 'validated plan') + '</div>' +
+      '<pre style="overflow-wrap:anywhere;">' + diff.leftHtml + '</pre></div>' +
+      '</div></div>';
+    html += renderF0(detail.attribution);
+    html += renderEvidence(detail, row);
+    html += renderAttempts(trace);
+
+    var expected = (detail.label && detail.label.expected_plan) ||
+      (detail.attribution && detail.attribution.f0_plan) || trace.plan || trace.raw_plan || { calls: [] };
+    state.expectedPrefill = fmt.pretty(expected);
+    state.expectedDraft = null;
+    html += '<div class="vbar">' +
+      '<div class="flex-c gap-16"><span class="t-eng t-dim" style="min-width:64px;">VERDICT</span>' +
+      '<div class="flex-c gap-8" id="verdictBtns">' +
+      '<button class="btn" type="button" data-verdict="correct"><span class="t-mute">[y]</span>correct</button>' +
+      '<button class="btn" type="button" data-verdict="incorrect"><span class="t-mute">[n]</span>incorrect</button>' +
+      '<button class="btn" type="button" data-verdict="unsure"><span class="t-mute">[u]</span>unsure</button>' +
+      '<button class="btn" type="button" data-verdict="should_abstain" title="verdict should_abstain">abstain</button>' +
+      '<button class="btn" type="button" id="orderBtn"><span class="t-mute">[o]</span>order-sensitive</button>' +
+      '</div></div>' +
+      '<div><div class="t-eng-sm t-mute mb-8" id="expLabel">EXPECTED · prefilled from ' +
+      esc(detail.label && detail.label.expected_plan ? 'the current label' : (detail.attribution && detail.attribution.f0_plan ? 'F⁰' : 'the predicted plan')) +
+      ' · edit in place · Ctrl+Enter commits</div>' +
+      '<div class="ed"><span class="ed__label">expected plan</span>' +
+      '<textarea id="expEditor" spellcheck="false">' + esc(fmt.pretty(expected)) + '</textarea></div></div>' +
+      '<div class="flex-c gap-16"><span class="t-eng-sm t-mute" style="min-width:64px;">NOTE</span>' +
+      '<div class="ed" style="flex:1 1 auto;"><textarea id="noteEditor" rows="1" style="min-height:34px;" spellcheck="false" placeholder="optional note"></textarea></div></div>' +
+      '<div class="flex-bw gap-16" style="padding-top:12px; border-top:1px dashed var(--rule);">' +
+      '<span class="fs-11 t-dim" id="labelLine" style="min-width:0; overflow:hidden; text-overflow:ellipsis;">' + renderLabel(detail.label) + '</span>' +
+      '<button class="btn btn--primary" type="button" id="commitBtn" style="flex-shrink:0;">Enter · commit + next</button>' +
+      '</div></div>';
+
+    $('#dBody').innerHTML = html;
+    wireDetail();
+    paintVerdict();
+  }
+
+  function wireDetail() {
+    var head = document.getElementById('accHead');
+    if (head) head.addEventListener('click', toggleAccordion);
+    Array.prototype.forEach.call(document.querySelectorAll('#verdictBtns button[data-verdict]'), function (button) {
+      button.addEventListener('click', function () { setVerdict(button.getAttribute('data-verdict')); });
+    });
+    var order = document.getElementById('orderBtn');
+    if (order) order.addEventListener('click', toggleOrder);
+    var commit = document.getElementById('commitBtn');
+    if (commit) commit.addEventListener('click', commitLabel);
+    var editor = document.getElementById('expEditor');
+    if (editor) {
+      editor.addEventListener('keydown', function (ev) {
+        if ((ev.ctrlKey || ev.metaKey) && ev.key === 'Enter') { ev.preventDefault(); commitLabel(); }
+      });
+    }
+  }
+
+  function toggleAccordion() {
+    var acc = document.getElementById('acc');
+    if (!acc) return;
+    acc.classList.toggle('is-open');
+    var stateEl = document.getElementById('accState');
+    if (stateEl) stateEl.textContent = (acc.classList.contains('is-open') ? 'expanded' : 'collapsed') + ' · [g]';
+  }
+
+  function paintVerdict() {
+    Array.prototype.forEach.call(document.querySelectorAll('#verdictBtns button[data-verdict]'), function (button) {
+      var verdict = button.getAttribute('data-verdict');
+      button.classList.remove('is-on', 'is-on--bad', 'is-on--warn');
+      if (verdict !== state.verdict) return;
+      if (verdict === 'correct') button.classList.add('is-on');
+      else if (verdict === 'incorrect') button.classList.add('is-on--bad');
+      else button.classList.add('is-on--warn');
+    });
+    var order = document.getElementById('orderBtn');
+    if (order) order.classList.toggle('is-on', state.orderSensitive);
+  }
+
+  /**
+   * Selecting `should_abstain` must not commit the model's own plan as gold:
+   * resolve_gold takes the label's expected_plan verbatim, so the prefilled
+   * predicted plan would become the ground truth for a case the operator just
+   * said should have produced no call at all. Swap the editor to the empty
+   * plan (and restore the draft when the operator changes their mind), so what
+   * is on screen is exactly what is committed.
+   */
+  function setVerdict(verdict) {
+    var previous = state.verdict;
+    state.verdict = verdict;
+    var editor = document.getElementById('expEditor');
+    var caption = document.getElementById('expLabel');
+    if (editor && verdict === 'should_abstain' && previous !== 'should_abstain') {
+      state.expectedDraft = editor.value;
+      editor.value = ABSTAIN_PLAN;
+      if (caption) {
+        caption.textContent = 'EXPECTED · abstention gold {"calls": []} · a catalog with ' +
+          'allow_empty_calls=false will refuse it · Ctrl+Enter commits';
+      }
+    } else if (editor && previous === 'should_abstain' && verdict !== 'should_abstain') {
+      editor.value = state.expectedDraft === null || state.expectedDraft === undefined
+        ? state.expectedPrefill : state.expectedDraft;
+      state.expectedDraft = null;
+      if (caption) caption.textContent = 'EXPECTED · edit in place · Ctrl+Enter commits';
+    }
+    paintVerdict();
+  }
+  function toggleOrder() { state.orderSensitive = !state.orderSensitive; paintVerdict(); }
+
+  // ---- loading -------------------------------------------------------
+  function loadRuns(keep) {
+    return API.get('/api/runs').then(function (data) {
+      state.runs = data.runs || [];
+      if (!state.runs.length) {
+        $('#headSub').innerHTML = 'no run bundles under the runs dir — seed one with ' +
+          '<b>python -m ganglion.console seed --runs runs/traces --limit 120</b>';
+        $('#queue').innerHTML = '<div class="idle"><span class="t-eng">empty runs dir</span>' +
+          'python -m ganglion.console seed --runs runs/traces --limit 120</div>';
+        $('#runMeta').textContent = '0 runs';
+        return null;
+      }
+      var selected = keep
+        ? state.runs.filter(function (row) { return row.catalog_id === keep.catalog_id && row.run_id === keep.run_id; })[0]
+        : null;
+      state.run = selected || pickDefault(state.runs);
+      fillPicker(state.runs, state.run);
+      return loadRun();
+    });
+  }
+
+  function loadRun() {
+    var run = state.run;
+    API.saveCtx({ catalog: run.catalog_id, run: run.run_id });
+    $('#metaRun').textContent = run.run_id;
+    $('#runMeta').innerHTML = esc(run.catalog_id) + ' · ' + esc(run.model_id) + ' · ' + esc(run.benchmark) +
+      ' · iter ' + esc(run.iteration === null || run.iteration === undefined ? '—' : run.iteration) +
+      ' · parent ' + esc(run.parent_run_id || '—') + ' · ' + esc(run.catalog_fingerprint);
+    if (!changedEnabled(run) && state.filter === 'changed') state.filter = 'wrong';
+    paintSeg();
+    return API.get(runPath(run)).then(function (detail) {
+      state.detailRun = detail;
+      fillFailureTypes(detail.histogram);
+      return loadList();
+    });
+  }
+
+  function loadList(keepTraceId) {
+    var run = state.run;
+    var params = { filter: state.filter === 'by_failure' ? 'all' : state.filter, limit: 500 };
+    if (state.failureType) { params.filter = 'all'; params.failure_type = state.failureType; }
+    return API.get(runPath(run) + '/traces', params).then(function (data) {
+      ok();
+      state.rows = data.traces || [];
+      state.counts = data.counts || {};
+      paintCounts(state.counts);
+      $('#queueSub').textContent = (state.failureType ? 'failure_type ' + state.failureType : state.filter) +
+        ' · ' + data.total + ' rows' + (data.total > state.rows.length ? ' (showing ' + state.rows.length + ')' : '');
+      $('#queueTools').textContent = state.counts.unlabelled + ' unlabelled';
+      var index = 0;
+      if (keepTraceId) {
+        state.rows.forEach(function (row, i) { if (row.trace_id === keepTraceId) index = i; });
+      }
+      state.index = state.rows.length ? index : -1;
+      renderQueue();
+      return state.index >= 0 ? select(state.index) : renderDetail();
+    });
+  }
+
+  function select(index) {
+    if (index < 0 || index >= state.rows.length) return Promise.resolve();
+    state.index = index;
+    renderQueue();
+    var row = state.rows[index];
+    var node = document.querySelector('.qrow.is-sel');
+    if (node && node.scrollIntoView) node.scrollIntoView({ block: 'nearest' });
+    state.selectedAt = Date.now();
+    state.verdict = row.label ? row.label.verdict : '';
+    state.orderSensitive = row.label ? !!row.label.order_sensitive : true;
+    state.supersedes = null;
+    return API.get(runPath(state.run) + '/traces/' + encodeURIComponent(row.trace_id)).then(function (detail) {
+      ok();
+      state.detail = detail;
+      state.sawF0 = !!(detail.attribution && detail.attribution.f0_plan);
+      renderDetail();
+    }).catch(fail);
+  }
+
+  function move(delta) {
+    if (!state.rows.length) return;
+    var next = state.index + delta;
+    if (next < 0) next = 0;
+    if (next >= state.rows.length) next = state.rows.length - 1;
+    if (next !== state.index) select(next);
+  }
+
+  function commitLabel() {
+    if (!state.detail) return;
+    if (!state.verdict) { fail({ error: 'no verdict', detail: 'press y / n / u (or abstain) before committing' }); return; }
+    var trace = state.detail.trace;
+    var body = {
+      catalog_id: state.run.catalog_id,
+      run_id: state.run.run_id,
+      trace_id: trace.trace_id,
+      verdict: state.verdict,
+      saw_f0: state.sawF0,
+      order_sensitive: state.orderSensitive,
+      note: (document.getElementById('noteEditor') || {}).value || '',
+      time_to_label_ms: Math.max(0, Date.now() - state.selectedAt)
+    };
+    if (state.supersedes) body.supersedes = state.supersedes;
+    if (state.verdict === 'incorrect' || state.verdict === 'should_abstain') {
+      var text = (document.getElementById('expEditor') || {}).value || '';
+      try {
+        body.expected_plan = JSON.parse(text);
+      } catch (parseError) {
+        fail({ error: 'expected_plan is not JSON', detail: parseError.message });
+        return;
+      }
+    }
+    API.post('/api/labels', body).then(function (result) {
+      ok();
+      state.undo = { trace_id: trace.trace_id, label_id: result.label_id, verdict: state.verdict };
+      var line = document.getElementById('labelLine');
+      if (line) {
+        line.innerHTML = 'committed <span class="t-bright">' + esc(result.label_id) + '</span> · zone ' +
+          esc(result.zone) + ' · family ' + esc(result.family_id) + ' · graded_score ' +
+          esc(result.graded_score === null ? 'ungraded' : fmt.rate(result.graded_score));
+      }
+      if (state.rows[state.index]) {
+        state.rows[state.index].label = { verdict: state.verdict, label_id: result.label_id, order_sensitive: state.orderSensitive };
+      }
+      $('#commitMsg').textContent = '✔ ' + trace.case_id + ' → ' + state.verdict + ' · ' + result.label_id +
+        ' · zone ' + result.zone + ' · score ' +
+        (result.graded_score === null ? 'ungraded' : fmt.rate(result.graded_score));
+      paintCounts(state.counts);
+      renderQueue();
+      if (state.index + 1 < state.rows.length) select(state.index + 1);
+    }).catch(fail);
+  }
+
+  function undoLast() {
+    if (!state.undo) { fail({ error: 'nothing to undo', detail: 'no label was committed from this page yet' }); return; }
+    var target = state.undo;
+    var index = -1;
+    state.rows.forEach(function (row, i) { if (row.trace_id === target.trace_id) index = i; });
+    if (index < 0) { fail({ error: 'not in this filter', detail: target.trace_id + ' is not in the current queue' }); return; }
+    select(index).then(function () {
+      state.supersedes = target.label_id;
+      state.verdict = target.verdict;
+      paintVerdict();
+      var line = document.getElementById('labelLine');
+      if (line) {
+        line.innerHTML = 'undo armed — the next commit <span class="t-bright">supersedes ' + esc(target.label_id) +
+          '</span> (labels are append-only)';
+      }
+    });
+  }
+
+  // ---- events --------------------------------------------------------
+  $('#runPick').addEventListener('change', function (ev) {
+    var parts = String(ev.target.value).split('');
+    var hit = state.runs.filter(function (row) { return row.catalog_id === parts[0] && row.run_id === parts[1]; })[0];
+    if (!hit) return;
+    state.run = hit;
+    state.failureType = '';
+    loadRun().catch(fail);
   });
-});
+  $('#reload').addEventListener('click', function () { loadRuns(state.run).catch(fail); });
+  $('#ftPick').addEventListener('change', function (ev) {
+    state.failureType = ev.target.value;
+    if (state.failureType) state.filter = 'all';
+    paintSeg();
+    loadList().catch(fail);
+  });
+  document.getElementById('segFilter').addEventListener('click', function (ev) {
+    var opt = ev.target.closest ? ev.target.closest('.seg__opt') : null;
+    if (!opt) return;
+    var name = opt.getAttribute('data-filter');
+    if (name === 'changed' && !changedEnabled(state.run)) {
+      fail({ error: 'changed vs previous unavailable', detail: opt.title });
+      return;
+    }
+    if (name === 'by_failure') {
+      document.getElementById('ftWrap').hidden = false;
+      $('#ftPick').focus();
+      return;
+    }
+    state.filter = name;
+    state.failureType = '';
+    $('#ftPick').value = '';
+    document.getElementById('ftWrap').hidden = true;
+    paintSeg();
+    loadList().catch(fail);
+  });
+  $('#queue').addEventListener('click', function (ev) {
+    var row = ev.target.closest ? ev.target.closest('.qrow') : null;
+    if (!row) return;
+    select(parseInt(row.getAttribute('data-i'), 10));
+  });
+
+  document.addEventListener('keydown', function (ev) {
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;  // never swallow Ctrl/Cmd+Z and friends
+    var target = ev.target;
+    var typing = target && (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT' ||
+      target.tagName === 'SELECT' || target.isContentEditable);
+    if (typing) return;
+    switch (ev.key) {
+      case 'j': move(1); break;
+      case 'k': move(-1); break;
+      case 'y': setVerdict('correct'); break;
+      case 'n': setVerdict('incorrect'); break;
+      case 'u': setVerdict('unsure'); break;
+      case 'o': toggleOrder(); break;
+      case 'Enter': ev.preventDefault(); commitLabel(); break;
+      case 'z': undoLast(); break;
+      case 'g': toggleAccordion(); break;
+      case '?': document.getElementById('help').hidden = !document.getElementById('help').hidden; break;
+      default: return;
+    }
+  });
+
+  // ---- clock ---------------------------------------------------------
+  (function clock() {
+    var offset = -(new Date()).getTimezoneOffset() / 60;
+    document.getElementById('metaZoneK').textContent = 'UTC' + (offset >= 0 ? '+' : '−') + Math.abs(offset);
+    function tick() {
+      var now = new Date();
+      document.getElementById('metaClock').textContent =
+        String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') +
+        ':' + String(now.getSeconds()).padStart(2, '0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  }());
+
+  // ---- boot ----------------------------------------------------------
+  (function boot() {
+    var params = new URLSearchParams(location.search);
+    var filter = params.get('filter');
+    if (filter && ['all', 'invalid', 'wrong', 'unlabelled', 'changed'].indexOf(filter) !== -1) state.filter = filter;
+    var failureType = params.get('failure_type');
+    if (failureType) { state.failureType = failureType; state.filter = 'all'; }
+    paintSeg();
+    loadRuns(null).then(function () {
+      if (!state.run) return;
+      $('#headSub').innerHTML = '<b>' + esc(state.run.catalog_id + '/' + state.run.run_id) + '</b> · <b>' +
+        esc(state.run.n_traces) + '</b> traces · <b>' + esc(state.counts.wrong || 0) + '</b> wrong · <b>' +
+        esc(state.counts.unlabelled || 0) + '</b> unlabelled';
+      var wanted = params.get('trace');
+      if (!wanted) return;
+      var index = -1;
+      state.rows.forEach(function (row, i) { if (row.trace_id === wanted || row.case_id === wanted) index = i; });
+      if (index >= 0) select(index);
+      else fail({ error: 'trace not in this filter', detail: wanted + ' — switch the filter to "all"' });
+    }).catch(fail);
+  }());
+}());
 </script>
 </body>
 </html>

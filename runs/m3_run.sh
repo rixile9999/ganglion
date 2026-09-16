@@ -11,7 +11,7 @@ mkdir -p "$OUT"
 for path in qwen qwen-native; do
   label="${path}_${TIER}_x${REPEAT}"
   echo "=== M3 starting: $label ==="
-  python -m ganglion.eval.runner \
+  python -m ganglion.cli \
     --llm "$path" --tier "$TIER" --limit "$LIMIT" --repeat "$REPEAT" \
     > "$OUT/${label}.json"
   echo "=== M3 done: $label ==="

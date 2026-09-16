@@ -307,13 +307,16 @@ def serve(
         base_dir=base_dir, web_dir=web_dir, models_path=models_path, host=host, port=port,
     )
     api = server.api
+    # flush: the banner carries the URL to open, and it must appear immediately
+    # even when stdout is a pipe or a log file (`… serve > console.log &`).
     print(
         f"[console] {server.url}  runs={api.base_dir}  web={api.web_dir}  "
-        f"models={api.registry.path or '(built-in rules only)'}"
+        f"models={api.registry.path or '(built-in rules only)'}",
+        flush=True,
     )
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\n[console] shutting down")
+        print("\n[console] shutting down", flush=True)
     finally:
         server.server_close()

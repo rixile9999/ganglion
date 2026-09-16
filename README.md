@@ -93,13 +93,60 @@ write calls exactly one analyzer or `lm` primitive. It adds **no dependencies**:
 server is Python's standard library and the pages are vanilla JS with no build
 step.
 
+### Starting it
+
+From the repo root, with the package installed (`pip install -e ".[dev]"`):
+
 ```bash
 # 1. fill a runs dir with two offline runs (no API key, no GPU) and analyse both
 python -m ganglion.console seed  --runs runs/traces --limit 100
 
-# 2. serve the pages and the API on http://127.0.0.1:8766
-python -m ganglion.console serve --runs runs/traces --web web
+# 2. serve the pages and the API
+python -m ganglion.console serve --runs runs/traces
 ```
+
+The second command prints the address to open and then stays in the
+foreground; Ctrl-C stops it.
+
+```
+[console] http://127.0.0.1:8766  runs=runs/traces  web=<repo>/web  models=configs/models.yaml
+```
+
+Open that URL and pick a page from the toolbar. `--port` (or
+`$GANGLION_CONSOLE_PORT`) moves it; the host is always loopback, so nothing is
+exposed to the network. Seeding takes well under a second and is optional — the
+pages open fine against an empty runs dir, they just have nothing to show. Use
+a scratch path (`--runs /tmp/ganglion-runs`) while trying things out; `runs/` is
+checked-in experiment data, so only seed into `runs/traces` when the run is
+meant to be kept.
+
+### A first pass through it
+
+1. **`catalog.html`** — start here. Pick `iot_light_5` and read the same five
+   tools three ways: the original spec, the Action IR the model actually
+   receives, and the canonicalisation table of aliases and defaults that
+   neither render shows.
+2. **`chat.html`** — pick a catalog and a model, type a request
+   (`거실 불 70%로 켜줘`), and send. You get the ordered tool calls, the raw
+   Action IR, and F⁰ next to Fᴷ when the correction hooks changed anything.
+   Then judge it in the verdict bar: `y` correct, `n` incorrect (edit the
+   expected plan), `u` unsure. Every send is stored as a trace and every
+   verdict as a label.
+3. **`traces.html`** — open a seeded run and filter to `wrong only`. Move with
+   `j`/`k`, label with `y`/`n`/`u`, and `?` lists the keys.
+4. **`rules.html`** — press *Analyze* on `rules-degraded-seed`. The left column
+   proposes `ToolSpec` patches from the failures you just looked at; decide
+   each one. The right column attributes what the existing correction hooks
+   rescued, and flags hooks that rescue nothing any more.
+5. **`loops.html`** — the per-run view: manifest, KPIs, failure histogram, and
+   the transition matrix against the parent run.
+
+Model choice in step 2 comes from `configs/models.yaml`. `rules` is offline and
+needs nothing. A DashScope entry needs `DASHSCOPE_API_KEY`. A `local_hf` entry
+(`qwen3-0.6b@local`) runs in-process on the local GPU and needs the `[factory]`
+extra (`pip install -e ".[factory]"`); the picker shows a Load button and the
+first send downloads the weights. LoRA adapters found under `runs/` are listed
+automatically.
 
 Five pages are live against that API:
 

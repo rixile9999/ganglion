@@ -3,14 +3,108 @@
 The proposed architecture for a continuously updated domain-specialized model
 factory is documented in [Architecture v2](docs/architecture_v2.md), with an
 [interactive diagram](web/architecture.html) and a
-[standalone SVG](docs/diagrams/factory-v2.svg). This is a design proposal;
-the POC implementation described below predates it.
+[standalone SVG](docs/diagrams/factory-v2.svg). The specification-driven
+workbench and reversible text prototype now implement the core/optional-adapter
+boundary; full automated factory and mobile deployment remain future work.
 
-The planned Korean and multilingual PII demonstration is documented in
+The Korean and multilingual PII demonstration is documented in
 [Reversible long-document pseudonymization](docs/pseudonymization_pipeline_design.md).
 It uses a Qwen3.5-0.8B backbone with typed extraction and decision heads,
 optional document preprocessing and execution adapters, and targets offline
 iPhone-class deployment after H100 training and evaluation.
+
+## Workbench v2 and reversible text prototype
+
+The new homepage uses `ApplicationSpec` input/result schemas for both
+`TextEditPlan` and existing tool-calling `ActionPlan` programs. UI and CLI share
+`/api/v2` specs, private chunk uploads, jobs, artifacts and feedback. No frontend
+build step or hosted API is required for PII extraction.
+
+```bash
+pip install -e '.[pii-model]'
+python -m ganglion.domains.pii.dataset --output runs/pii/data-v2 --count 1008
+python -m ganglion.domains.pii.train --data runs/pii/data-v2 \
+  --output runs/pii/qwen-0.8b-v2 --epochs 20
+python -m ganglion.console serve --port 8767
+```
+
+Open <http://127.0.0.1:8767>. The H100 workspace already has the trained head
+checkpoint. For the deterministic baseline without Torch, install `.[pii]`
+and choose `pii-rules`. `GANGLION_PII_CHECKPOINT` selects a different checkpoint
+directory; its pinned backbone must match the installed native adapter.
+
+```bash
+ganglion program list
+ganglion program keygen --private private-key.json --public public-key.json
+ganglion program run pii-qwen --file document.txt \
+  --public-key public-key.json --output-dir masked
+ganglion program restore masked/document.txt masked/recovery.bin \
+  --key private-key.json --output restored.txt
+```
+
+To share the running UI's jobs and model cache, set
+`GANGLION_CONSOLE_URL=http://127.0.0.1:8767` before using the CLI. Without it,
+the CLI runs a local API for each command and waits for completion. Each output
+root has one writer runtime; clients of an active server use its loopback URL.
+Private keys are new files with mode `0600`. Keys and source text are omitted
+from job metadata and PII traces; streamed source uploads are removed after
+execution. Recovery requires the unedited output, encrypted sidecar and private
+key. Restored plaintext is an explicit artifact; remove it when no longer needed.
+
+The first native model freezes Qwen3.5-0.8B and learns a compact bidirectional
+readout plus BIO/type heads. It emits spans/probabilities with **zero generated
+output tokens**. Its versioned `PreprocessorSpec` feeds complete paragraphs
+sequentially, limits each unit to 256 characters / 128 tokens, and uses sentence
+or line boundaries before hard overlap splits. Budgets are part of the pinned
+program spec, not per-request form fields. On a 89,989-byte synthetic document,
+this changes exact-span F1 from **0.543** (fixed packed windows) to **0.863**,
+using **27,277** input tokens instead of **31,219**. The rules baseline achieves
+**1.000** on the same simple templates. All three recover the exact original
+bytes. Current unbatched H100 processing takes approximately **79 seconds** for
+the semantic model path; efficient runtime and actual-device work remain open.
+This is an integration experiment, not evidence of model superiority or
+production anonymity. Scores are uncalibrated. [Implementation and limits](docs/pseudonymization_pipeline_design.md#12-구현-현황-2026-10-08)
+includes the experiment recipe, memory and streaming measurements. Actual
+iPhone inference, quantization, independent real-document evaluation and
+automatic validated rule expansion remain unimplemented.
+
+Verification:
+
+```bash
+python -m pytest -q
+python tools/benchmark_pii.py
+# Optional real Chromium flow, after installing playwright and its browser:
+python tools/smoke_workbench.py --native
+```
+
+The [CLI reference](docs/ganglion-cli.html) includes measured examples for
+spec registration, core-only plans, execution, artifacts, recovery and feedback.
+
+Failure analysis is an existing Ganglion capability: `analyzer/taxonomy.py`
+classifies tool-calling failures, `corrections.py` attributes Interpreter
+changes, and `rules.py` proposes rules through `analyze.py`. PII predictions now
+use the installed `pii-text` adapter in `analyzer/domain_analysis.py`. It
+classifies false positives, misses, type/boundary errors, splits, merges,
+duplicates and invalid spans, and compares raw with interpreted predictions.
+PII feedback returns and stores this coordinate-only analysis. A verdict alone
+does not become gold; incomplete annotations do not receive a document-wide F1.
+To score all predictions, explicitly submit a complete original UTF-8 byte
+annotation with `"gold_complete": true`. User-submitted labels still await
+independent validation; automatic PII rule synthesis and adoption remain open.
+
+```json
+{
+  "verdict": "missed_pii",
+  "expected_spans": [{"start": 8, "end": 17, "type": "PERSON"}],
+  "gold_complete": false
+}
+```
+
+Pass this JSON file to `ganglion program feedback JOB_ID feedback.json` or use
+the workbench's feedback form. Old traces without raw UTF-8 offsets support
+final-stage analysis; correction attribution is unavailable. Feedback analysis
+is capped at 10,000 predicted spans per stage and reports an unavailable result
+on overflow, leaving the streaming execution path independent of analysis size.
 
 For an implementation-independent formalization of contract-based tool
 calling (contract, compiler, representation cost, constrained decoding,

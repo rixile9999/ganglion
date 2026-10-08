@@ -10,6 +10,8 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+pii = ["pynacl>=1.6"]
+pii-model = ["pynacl>=1.6", "torch>=2.4", "transformers>=5.2", "safetensors>=0.5", "peft>=0.20"]
 dev = [
     "pytest>=8.0.0",
 ]
@@ -28,7 +30,7 @@ factory-gpu = [
 ]
 
 [project.scripts]
-ganglion-factory = "ganglion.factory.cli:main"
+ganglion = "ganglion.ctl.main:main"
 
 [tool.setuptools.packages.find]
 include = ["ganglion*"]

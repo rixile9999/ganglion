@@ -322,3 +322,75 @@ deployment:
 기존 `contract`의 타입·validator 경계, `lm`의 backend·학습 기능, `analyzer`의 trace·라벨·비교·규칙 제안 구조를 재사용한다. 현재 tool-calling 전용 타입과 패치 적용기는 그대로 PII에 적용하지 않고, `TextEditPlan` 및 PII 정책 adapter를 추가한다. 개인정보 도메인 구현은 `ganglion/domains/pii/`, 선택적 실행 구현은 `ganglion/adapters/`, 재현 데이터는 `examples/pii/`, 결과는 `runs/pii/`를 목표 위치로 삼는다. 해당 디렉터리는 기능 구현과 함께 만든다.
 
 실험 산출물에는 split manifest, 모델·계약·어댑터 hash, 학습 recipe, tokenizer, seed, device/runtime/precision, raw 및 보정 품질, 규칙별 변화, 복원 결과와 실제 장치 비용을 포함한다. 명시된 목표를 만족하지 못한 구성도 실패 원인과 함께 보존한다.
+
+## 12 구현 현황 (2026-10-08)
+
+첫 실증의 실행 가능한 프로토타입을 구축했다. `ganglion/programs/`가 데이터로 선언한 ApplicationSpec을 검증하고 UI/CLI 공통 `/api/v2`에 프로그램·작업·결과 파일·피드백을 제공한다. `web/index.html`은 밝은 배경과 입력/결과 영역을 사용하는 새 작업 공간이며, 도구 호출과 개인정보 프로그램을 같은 schema 기반 화면에서 전환한다. 기존 분석기와 CLI 명령도 유지한다. 실행 방법은 README 및 생성된 CLI 레퍼런스에 기록한다.
+
+Preprocessor는 코어 밖의 선택적 **버전 있는 스펙**이다. 긴 문서를 모델에 통째로 넣지 않으며, 분할·모델 입력 예산은 프로그램 계약에 고정한다. 기본 Qwen 프로그램은 다음 설정을 사용한다.
+
+```json
+{
+  "adapter": "utf8-windows",
+  "version": 1,
+  "config": {
+    "strategy": "semantic",
+    "max_chars": 256,
+    "overlap_chars": 64,
+    "max_tokens": 128
+  }
+}
+```
+
+문단 하나를 순서대로 전달하고, 문단이 예산보다 클 때는 문장·행 경계를 찾는다. 자연스러운 경계에서는 중복 없이 확정하며, 경계를 찾지 못해 강제로 자를 때만 overlap을 유지한다. 버퍼와 각 모델 입력을 제한하고 정규화 없이 원문 문자 위치를 보존한다. 한국어/영어, LF/CRLF, 결합 문자와 이모지의 바이트 대응을 테스트한다. 개인정보 자체가 구간보다 길거나 문장 경계를 가로지르는 경우까지 탐지 재현율을 보장하지 않는다. 구간 병합·중복 제거 및 익명화·복원 실행을 별도로 검증한다.
+
+기본 `pii-rules`는 비교용 고정 1,024자/128자 overlap 정책을 선언한다. 문자열 형태의 기존 `utf8-windows` alias는 호환 경로로 남긴다. 새 object 스펙의 예산을 요청 입력으로 바꾸는 것은 거부한다. Preprocessor를 생략하면 문서를 쪼개지 않는 제한된 코어 입력을 받고, 초과 길이는 잘라 버리지 않고 거부한다. Executor를 생략하면 키 없이 개인정보 없는 `plan.jsonl`을 반환한다.
+
+실행 결과는 가명화 문서, 공개 UTF-8 바이트 편집 계획, 원문 없는 raw/Interpreter trace, 암호화 복원 파일이다. 복원은 X25519 sealed key와 XChaCha20-Poly1305 secretstream을 사용한다. 사용자 개인키와 원문은 job metadata/PII trace에 쓰지 않는다. 임시 원문은 성공·실패·취소 후 삭제하며, 비정상 종료의 잔여 파일은 다음 writer runtime이 회수한다. 복원 결과인 평문은 사용자가 요청한 별도 artifact로 보관되므로 이용 후 삭제 대상이다. 실행 중인 계약과 결과 schema, 체크포인트 fingerprint를 고정한다. 진행 중인 웹 서버와 CLI는 `GANGLION_CONSOLE_URL`로 같은 runtime을 이용한다.
+
+모델은 Qwen3.5-0.8B의 text backbone **752,393,024 parameters**를 고정하고, 작은 bidirectional readout와 BIO/type heads **265,873 parameters**만 학습했다. Head 파일은 **1,065,132 bytes**이다. 생성형 JSON 출력 대신 구간/유형 분포를 직접 읽으며 점수는 아직 보정하지 않은 확률이다. 학습 recipe는 seed 42, 합성 학습 1,008개, 20 epochs, AdamW, train-template/validation-template/test-template 분리이다. Qwen revision은 `2fc06364715b967f1860aea9cf38778875588b17`로 고정한다. validation/test 각각 252개에서 Interpreter 후 exact-span F1은 각각 0.8621/0.8610이었다.
+
+같은 가중치와 같은 89,989-byte 긴 문서에 분할 스펙만 바꾸어 비교했다. 문서는 test-template 합성 record 1,008개를 원문 좌표 gold와 함께 연결했다. 결과 JSON은 `runs/pii/streaming-report.json`, 재현 명령은 `python tools/benchmark_pii.py`이다.
+
+| 구성 | 모델 호출 구간 | 입력 토큰 | 생성 토큰 | exact-span F1 | precision / recall | 처리 시간 | 정확한 바이트 복원 |
+|---|---:|---:|---:|---:|---:|---:|---|
+| 규칙 + 고정 분할 | 69 | 해당 없음 | 0 | 1.0000 | 1.0000 / 1.0000 | 0.074초 | 통과 |
+| Qwen + 고정 1,024자 분할 | 69 | 31,219 | 0 | 0.5430 | 0.4650 / 0.6523 | 38.00초 | 통과 |
+| 같은 Qwen + 문단 순차 분할 | 1,008 | 27,277 | 0 | 0.8628 | 0.7586 / 1.0000 | 79.31초 | 통과 |
+
+문장 단위로 학습한 head에 서로 다른 문단을 한 고정 창으로 묶어 넣으면 품질이 떨어졌다. 학습 가중치를 바꾸지 않고 Preprocessor가 학습 입력 형식에 맞는 단위를 제공하자 품질이 회복됐다. 겹침 중복이 줄어 입력 토큰은 약 12.6% 감소했지만, 이 Python/H100 구현에서는 작은 입력에 대한 반복 호출 비용으로 지연은 증가했다. 효율 개선을 증명한 결과로 해석하지 않는다. 측정 GPU는 H100 PCIe, BF16 backbone/FP32 head, PyTorch 2.11.0+cu128 및 Transformers 5.16.1이다. 모델 로딩은 약 5.27초로 위 처리 시간에서 제외했다. PyTorch peak GPU allocation은 **1,619,879,936 bytes (약 1.51 GiB)**이며, 전체 프로세스 메모리나 실제 iPhone footprint를 의미하지 않는다.
+
+이 데이터는 단순한 한국어·영어 합성 형식이고, 이름·주소 값은 split 사이에 겹치며 negative 문장도 재사용한다. test-template에는 IDENTIFIER 사례가 없어 다섯 유형의 모델 품질을 모두 검증하지 못한다. 규칙 기준선이 우월한 것은 이 비교의 제한이기도 하며, 기존 전문 모델 대비 개선·실제 문서의 익명성·다른 언어의 재현율을 주장하지 않는다. 수집된 피드백은 별도 정답 검증 대기 상태로 저장하고, 자동 규칙 확장/채택 및 학습 환류는 아직 구현하지 않았다. LoRA, probability calibration, 양자화, 모바일 export/runtime, 실제 기기 성능 및 독립 실문서 평가는 후속 단계이다.
+
+복원/스트리밍/계약/API/CLI 회귀 테스트와 실제 Chromium 흐름을 검증했다. 브라우저 검증은 키 생성, 문서 처리, artifact 다운로드, 복원, 피드백, 도구 계획, 스펙 등록, 기록 조회, 모바일 화면을 포함하며 `python tools/smoke_workbench.py --native`로 실행한다. 화면의 모바일 대응은 아이폰에서의 모델 실행 검증과 구분한다.
+
+### 12.1 기존 실패 분석기와 개인정보 도메인 연결
+
+오탐·누락을 유형화하고 개선 근거로 사용하는 기능은 기존 Ganglion에 있다. `ganglion/analyzer/taxonomy.py`는 도구 호출의 syntax, action, argument, abstention 오류를 분류하고, `corrections.py`는 Interpreter 보정의 rescue/regression을 분석한다. `rules.py`와 `analyze.py`는 해당 분류에서 규칙 후보와 검증 산출물을 만드는 경로다. 이 기존 경로는 ActionPlan/Catalog를 전제로 하므로 개인정보 구간에 그대로 적용할 수 없다.
+
+`ganglion/analyzer/domain_analysis.py`에 설치된 도메인 분석기 등록·실행 인터페이스를 추가했다. 프로그램 설정은 도메인 이름만 참조하며 임의 import 경로를 받지 않는다. 개인정보 분석 구현은 `ganglion/domains/pii/analysis.py`에 두며 다음을 구별한다.
+
+| 오류 유형 | 의미 |
+|---|---|
+| `fp` / `fn` | 정답과 겹치지 않는 오탐 / 누락 |
+| `type_mismatch` | 겹치는 구간의 개인정보 유형 오류 |
+| `boundary_mismatch` | 유형은 같지만 시작·끝 위치가 다른 오류 |
+| `split` / `merge` | 하나의 정답을 나누거나 여러 정답을 합친 오류 |
+| `duplicate` / `invalid_span` | 중복 구간 / 계약을 위반한 구간 |
+
+겹침은 원인 분류에만 사용하고 정확한 위치·유형 일치만 TP로 계산한다. 경계 오류 하나도 exact-span 기준으로 FP와 FN에 반영한다. 원시 결과와 최종 결과의 rescue/regression 및 추가·제거된 오탐을 별도로 기록하여 모델과 Interpreter 개선 효과를 구분한다. 운영 trace에는 원문 없이 전역 UTF-8 바이트 raw 구간을 추가하고, feedback에서는 실제 출력의 `plan.jsonl`과 비교한다. 이 문서 단위 귀속에는 Interpreter 보정 및 분할 결과 병합이 포함된다.
+
+UI/CLI 공통 feedback API는 오류 분류 결과를 응답하고 별도 피드백 sidecar에 저장한다. `verdict`만 입력하면 정답 없는 `unclassified` 상태이고, 일부 정답만 입력하면 `partial` 상태로 전체 precision/F1이나 미표시 구간의 오탐을 추정하지 않는다. 완전한 정답은 `gold_complete: true`와 명시적인 `expected_spans` 배열을 함께 제출한다. 사용자의 완전성 선언은 독립 검증 완료를 뜻하지 않으므로 피드백 자체는 `awaiting_independent_validation`을 유지한다. raw 바이트 좌표가 없는 이전 trace는 최종 결과만 분석하며 귀속을 보고하지 않는다. 분석 단계당 예측 10,000개를 초과하면 분석 불가와 제한 사유를 보고한다. 실행·복원은 이 분석 제한과 독립적으로 긴 문서를 처리한다.
+
+이 연결로 **오류 유형화와 보정 효과 측정**이 개인정보 도메인에서도 실행되지만, PII 규칙 후보 생성·독립 검증·채택·모델 재학습을 자동으로 이어 붙이는 factory loop는 아직 완료되지 않았다. 분류기의 추가를 전체 자동 개선 루프 완성으로 보고하지 않는다.
+
+### 12.2 초기 평가 감사 및 독립 합성 데이터 보강
+
+기존 recipe에서 14개 학습 템플릿 순환과 매 7번째 negative 생성이 겹쳐 두 템플릿의 양성이 한 번도 생성되지 않는 문제가 확인됐다. split 간 이름·주소 및 negative 문장이 재사용됐고 validation/test에는 IDENTIFIER가 없었다. 따라서 기존 0.86 지표는 모델 튜닝과 평가 양쪽이 부족한 초기 결과다. 기존 recipe와 체크포인트는 재현을 위해 유지한다.
+
+새 `diverse-v1` recipe는 학습 6,000개, 검증 1,500개, 테스트 1,500개로 구성하고 문맥상 헷갈리는 negative 20%를 포함한다. 다섯 개인정보 유형을 모든 split에 넣고 원문·템플릿·개인정보 값의 split 간 중복이 없는지 manifest로 검사한다. 실제 고정 Qwen tokenizer의 최대 입력은 학습/검증/테스트에서 91/90/93토큰으로 모두 현재 128토큰 예산 안에 들어간다. 합성 데이터 분할의 독립성은 실제 문서 분포의 대표성을 증명하지 않는다. 99.5% 목표는 validation에서 학습 설정을 선택한 뒤 고정된 test의 정확한 구간 지표로 평가하고, 실제 문서 목표는 별도 독립 평가로 남긴다.
+
+```bash
+python -m ganglion.domains.pii.dataset --output runs/pii/diverse-v1 \
+  --count 6000 --recipe diverse-v1 --seed 42
+```

@@ -80,7 +80,7 @@ Composites consume primitive events from their `Contract.event` clause; they nev
 
 ## Experimental v2 project development
 
-[autonomous_development](./autonomous_development.md) proposes bounded agent teams for module and submodule code development, with isolated attempts, independent verification and research-branch integration. It is a design proposal with no runtime implementation. The [system design](../autonomous_development_design.md) distinguishes this project development loop from the v2 product factory; the [example configuration](../autodev/experiment.example.yaml) records the proposed module hierarchy and operating limits.
+[autonomous_development](./autonomous_development.md) proposes bounded agent teams for module and submodule code development, with isolated attempts, independent verification and research-branch integration. It is a design proposal with no runtime implementation. The [system design](../autonomous_development_design.md) distinguishes this project development loop from the v2 product factory; the [example configuration](../autodev/experiment.example.yaml) records the proposed module hierarchy and operating limits. [Proposal v2](../autonomous_development_design_v2.md) revises the order (registry → manual pilot → devsystem), adds a gate-authoring procedure and token accounting, and moves the product-failure → code-task link to the first scenario.
 
 ## Legacy specs (superseded)
 

@@ -2,6 +2,8 @@
 
 상태: 설계 제안 · 2026-10-08 · 에이전트 실행기와 개발 제어기는 구현 전
 
+보완안: [제안 v2](autonomous_development_design_v2.md) — 판정 기준 작성 절차, 예산 회계, 단계 재배열(등록부 → 수동 pilot → devsystem), 제품 실패 → 코드 과제 시나리오를 추가한다. 이 문서의 단계 번호와 예산 값은 v2 채택 시 갱신한다.
+
 Ganglion의 모듈과 서브모듈이 개선 과제를 발견하고, 필요한 에이전트를 할당받아 구현·검증·통합까지 수행하는 시스템을 제안한다. **모듈의 목표와 지식은 지속적으로 보관하고, 작업 팀은 필요할 때 구성하며, 검증된 변경을 프로젝트의 다음 버전으로 통합한다.** 상위 목표, 자원 한도와 판정 규칙을 고정하면 그 범위 안에서 작업 발견과 실행을 자율화할 수 있다.
 
 기준은 [아키텍처 v2](architecture_v2.md), [작업 명세 원칙](agent-forge/task_principle.md), [워크플로 구성 원칙](agent-forge/workflow_principle.md)이다. 실행 단위의 계약은 [자율개발 복합 작업 명세](tasks/autonomous_development.md), 모듈 계층과 초기 운영 정책의 예시는 [실험 설정](autodev/experiment.example.yaml)에 둔다. 예시 설정은 설계 자료이며 현재 CLI에서 실행되지 않는다.

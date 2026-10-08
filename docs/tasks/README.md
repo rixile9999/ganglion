@@ -78,6 +78,10 @@ Not peer modules; they consume `Catalog` + `ModelClient` and emit traces into `a
 
 Composites consume primitive events from their `Contract.event` clause; they never invoke another task doc by name.
 
+## Experimental v2 project development
+
+[autonomous_development](./autonomous_development.md) proposes bounded agent teams for module and submodule code development, with isolated attempts, independent verification and research-branch integration. It is a design proposal with no runtime implementation. The [system design](../autonomous_development_design.md) distinguishes this project development loop from the v2 product factory; the [example configuration](../autodev/experiment.example.yaml) records the proposed module hierarchy and operating limits.
+
 ## Legacy specs (superseded)
 
 Pre-redesign task docs live under [`./legacy/`](./legacy/). Each carries a one-line `Superseded by [...]` pointer back into this TOC. They are retained for historical reference and for reproducibility of the M0–M5' / Phase 1–3 reports under `runs/`:

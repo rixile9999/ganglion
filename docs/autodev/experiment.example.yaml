@@ -1,0 +1,211 @@
+# Design example only. No current Ganglion CLI consumes this schema.
+schema_version: design-v0
+status: proposal
+
+project:
+  id: ganglion
+  architecture_ref: docs/architecture_v2.md
+  objective:
+    id: v2-stage-a
+    revision: 1
+    milestones:
+      - id: trace-label-boundary
+        acceptance:
+          - runtime_output_invariant_to_evaluation_labels
+          - stored_predictions_can_be_rescored
+      - id: immutable-artifacts
+        acceptance:
+          - manifest_references_exact_code_and_content_hashes
+          - changed_inputs_cannot_reuse_stale_evidence
+    # Named predicates become frozen executable gate profiles at admission.
+  source_ref: refs/heads/autodev/experiment
+
+policy:
+  revision: 1
+  execution: isolated_local_research
+  promotion:
+    code_target: refs/heads/autodev/experiment
+    automatic_after_required_gates: true
+    main_allowed: false
+    remote_push_allowed: false
+    product_deployment_allowed: false
+  concurrency:
+    active_agent_sessions: 6
+    cell_sessions: 4
+    integration_slots: 1
+    gpu_jobs: 1
+  episode:
+    max_wall_seconds: 7200
+    max_total_tokens: 240000
+    max_tasks: 12
+    max_attempts_per_task: 3
+    max_candidates_per_task: 2
+    max_proposals_per_cell_per_trigger: 2
+    max_no_progress_rounds: 3
+  allocation:
+    strategy: dependency_and_resource_aware
+    exploration_budget_fraction: 0.15
+    protect_verification_capacity: true
+    checkpoint_before_reassignment: true
+  leases:
+    heartbeat_seconds: 15
+    expiry_seconds: 90
+    require_fencing_token: true
+    fencing_scope: [task_revision, candidate_id, role_slot]
+    resource_release: after_process_termination_or_isolation
+  budget:
+    count_planning_and_verification: true
+    reserve_before_call: true
+    unknown_spend: retain_reservation_until_reconciled
+  independence:
+    verifier_session_must_differ_from_author: true
+    independent_inputs: verifier_only
+    candidate_execution_has_oracle_access: false
+    candidate_may_change_required_gate_policy: false
+    disclosed_case_becomes_development_data: true
+  self_modification:
+    running_control_plane_mutation: false
+    candidate_evaluation: replay_then_shadow
+    gate_and_objective_changes: separate_policy_revision
+
+state:
+  backend: sqlite_wal
+  deployment: single_host_local_disk
+  db: .autodev/state.sqlite3
+  artifacts: .autodev/artifacts
+  worktrees: .autodev/worktrees
+  context_packets: role_filtered_artifact_references
+  delivery: at_least_once
+  application: idempotent
+  events_and_state: transactional_outbox
+  git_db_atomicity: integration_intent_and_reconciliation
+
+cell_defaults:
+  active_sessions_when_idle: 0
+  max_active_sessions: 4
+  role_profiles: [steward, implementer, explorer, verifier]
+  ownership: most_specific_registered_submodule
+  unknown_impact: widen_required_checks
+
+# Submodule identifiers are scoped by their parent module.
+# Bind paths/symbols/gates explicitly before a cell becomes executable.
+# planned_paths describe v2 responsibility; they do not assert existing code.
+modules:
+  - id: contract
+    current_paths: [ganglion/contract]
+    submodules: [spec, compiler, representation, compatibility]
+    responsibilities: [domain_semantics, compilation, canonical_lowering]
+  - id: lm
+    current_paths: [ganglion/lm]
+    submodules: [backends, data, training, compression]
+    responsibilities: [model_adapters, provenance, sft_dpo_rl, distill_quantize]
+  - id: analyzer
+    current_paths: [ganglion/analyzer]
+    submodules: [traces, labels, failures, drift, proposals]
+    responsibilities: [evidence, label_boundary, failure_analysis, improvement]
+  - id: factory
+    current_paths: [ganglion/factory.py]
+    planned_paths: [ganglion/factory]
+    submodules: [planning, search, jobs, budget]
+    responsibilities: [product_candidate_selection, build_dag, production_budget]
+  - id: evaluation
+    planned_paths: [ganglion/evaluation]
+    submodules: [protocols, oracles, development, release]
+    responsibilities: [independent_product_scoring, dev_reports, release_decisions]
+  - id: registry
+    planned_paths: [ganglion/registry]
+    submodules: [artifacts, lineage, promotion]
+    responsibilities: [immutable_product_bundles, compatibility, active_pointer]
+  - id: runtime
+    planned_paths: [ganglion/runtime]
+    submodules: [interpreter, correction, rollout]
+    responsibilities: [pinned_request_version, plan_validation, bundle_rollout]
+  - id: domains
+    current_paths: [ganglion/domains]
+    submodules: [tool_calling, pii]
+    responsibilities: [domain_plan_types, semantics, domain_specific_analysis]
+  - id: adapters
+    current_paths: [ganglion/adapters]
+    submodules: [preprocessing, execution, recovery]
+    responsibilities: [optional_input_processing, execution, restoration]
+  - id: benchmarks
+    current_paths: [ganglion/benchmarks]
+    submodules: [iot, bfcl, pii]
+    responsibilities: [domain_evaluation_adapters]
+  - id: operator
+    current_paths: [ganglion/console, ganglion/ctl, ganglion/cli.py, ganglion/programs, web]
+    submodules: [console, ctl, web, programs]
+    responsibilities: [observability, operator_commands, application_runner]
+  - id: devsystem
+    planned_paths: [ganglion/devsystem]
+    submodules: [planning, scheduling, ledger, workspace, validation, integration]
+    responsibilities: [project_code_development_control_plane]
+
+# Examples of concrete submodule bindings, rather than a complete registry.
+cell_bindings:
+  - id: contract.compiler
+    source_paths: [ganglion/contract/schema_compiler.py]
+    spec_paths: [docs/tasks/contract_schema_compiler.md]
+    test_paths: [tests/test_tool_schema_compiler.py, tests/test_compiler_bfcl_features.py]
+    consumes: [contract.spec]
+    provides: [compiled_catalog]
+    gates: [compiler_semantic_preservation, consumer_contract_checks]
+  - id: analyzer.traces
+    source_paths: [ganglion/analyzer/trace.py]
+    spec_paths: [docs/tasks/analyzer_trace_store.md]
+    test_paths: [tests/test_analyzer_trace_store.py]
+    consumes: [contract.representation]
+    provides: [runtime_trace]
+    gates: [trace_roundtrip, prediction_label_isolation]
+  - id: analyzer.labels
+    source_paths: [ganglion/analyzer/labels.py]
+    spec_paths: [docs/tasks/analyzer_label_store.md]
+    test_paths: [tests/test_analyzer_labels.py]
+    consumes: [analyzer.traces]
+    provides: [label_record]
+    gates: [label_provenance, split_boundary, prediction_label_isolation]
+
+task_example:
+  id: trace-label-isolation
+  revision: 1
+  objective: v2-stage-a
+  milestone: trace-label-boundary
+  cells: [analyzer.traces, analyzer.labels]
+  inputs:
+    code_sha: RESOLVE_AT_ADMISSION
+    module_registry_hash: RESOLVE_AT_ADMISSION
+    objective_revision: 1
+    policy_hash: RESOLVE_AT_ADMISSION
+  role: Separate runtime predictions from evaluation labels.
+  in_scope:
+    - ganglion/analyzer/trace.py
+    - ganglion/analyzer/labels.py
+    - tests/test_analyzer_trace_store.py
+    - tests/test_analyzer_labels.py
+    - docs/tasks/analyzer_trace_store.md
+    - docs/tasks/analyzer_label_store.md
+  out_of_scope:
+    - evaluation_oracle_answers
+    - required_gate_policy
+    - unrelated_model_training
+  consumers:
+    - lm.backends
+    - operator.console
+    - operator.ctl
+    - benchmarks.iot
+    - benchmarks.bfcl
+  acceptance:
+    profile: frozen_trace_label_boundary
+    predicates:
+      - runtime_output_invariant_to_evaluation_labels
+      - stored_predictions_can_be_rescored
+      - required_consumer_checks_pass
+  team:
+    implementation: {implementer: 1, explorer: 1}
+    verification: {verifier: 1}
+    verifier_after_author_session: true
+  budget:
+    max_tokens: 40000
+    max_wall_seconds: 1800
+    max_attempts: 3
+  on_required_consumer_edit: propose_scope_revision_or_change_group

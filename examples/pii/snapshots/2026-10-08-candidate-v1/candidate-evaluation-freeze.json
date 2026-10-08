@@ -1,0 +1,52 @@
+{
+  "format": "ganglion-candidate-pre-test-freeze-v1",
+  "frozen_at": "2026-10-08T09:03:38.335119+00:00",
+  "configuration_sha256": "b573ec7ae19622ceb08bea63fc31c5a5759cd95761303f4844d354b6b5d076a2",
+  "candidate_config": {
+    "version": "candidate-v1",
+    "context_chars": 48,
+    "max_candidates": 256,
+    "max_candidate_chars": 160
+  },
+  "max_tokens": 128,
+  "model_metadata_sha256": "948dde28f5e31ec6ed13a687ad97a77d7b163ffc2b5dbf3e187bbcfb5edf467e",
+  "artifact_sha256": {
+    "candidate": {
+      "candidate_heads.safetensors": "f25cc33cde49681763e69b00cd89e917e944d75d92d30ba7b09e2a66bbec4317",
+      "model.json": "948dde28f5e31ec6ed13a687ad97a77d7b163ffc2b5dbf3e187bbcfb5edf467e",
+      "vocab.json": "b231c00e56ad255b0f024ef810e4d6a23f225a4a50ce638c47537ef703667884"
+    },
+    "source": {
+      "adapter/adapter_config.json": "134bf1a74623a2929bcc6175795db02ee25ec9be3ac0b4375b796a4d9f556914",
+      "adapter/adapter_model.safetensors": "35cd0851a74230c5c8ee8fb55ccf21f3c2bb1cc2573396d80b955c96819a5287",
+      "heads.safetensors": "7aee32df2ecd33f8be5a103b4b3b454cdb78d12884bbe1bbc70d584904e88480",
+      "model.json": "4b1f0df645d56027821192723d926285fb76475f0dfa47f5848a6036c1655f52"
+    }
+  },
+  "dataset_manifest_sha256": "75c364fc06b7b3ae6b862fbcb1f3fcac48178470ddcb9f89c1ef302e0cd6c131",
+  "splits": {
+    "train": {
+      "count": 6000,
+      "sha256": "63918fc126d996843f399e901b49b016190ca343a6b9548af17ed3aa07e23a45"
+    },
+    "validation": {
+      "count": 1500,
+      "sha256": "f158c21efdf251a0f42741d6803e6e8790ba86637fca9d3b0c14850d4bdd89a3"
+    },
+    "test": {
+      "count": 1500,
+      "sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a"
+    }
+  },
+  "source_checkpoint": "runs/pii/qwen-0.8b-v4-lora16",
+  "implementation_sha256": {
+    "candidate_model.py": "4adcfedb2e055d4808bf3a15740e1b689d7159beb4905c4a1631193c2f990221",
+    "candidates.py": "a25421ddace4326103a18d92955f5bc672564595dee2e777777cc6f4a5afddb7",
+    "native.py": "b1c6fee1ebdfd068dc8c50f942e7a93ac75d23ecf764e2e191261b32fa7e4dd2",
+    "types.py": "4d8c5015a95ff177a402b46317021259d49ab5ed03521aa8c7e91ecd753dea5b"
+  },
+  "test_read_before_freeze": false,
+  "test_forward_before_freeze": false,
+  "selection_policy": "caller --ready declares completed validation-only selection; no optimization in this evaluator",
+  "test_scope": "same development test previously measured for Ganglion v4; not a new untouched external benchmark"
+}

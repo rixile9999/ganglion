@@ -1,0 +1,13 @@
+{
+  "baseline_test": "../2026-10-08-baseline/test.jsonl",
+  "test_unchanged": true,
+  "pipeline_available": true,
+  "tests_passed": 1215,
+  "software_validation": "GPU inference, CLI run/artifacts/recovery exact bytes; no mobile runtime test",
+  "quality_gate": {
+    "promoted_to_default": false,
+    "f1_target_met": false,
+    "fully_masked_entity_recall_regressed": true
+  },
+  "training_weights": "local runs/pii/qwen-0.8b-candidates-v1; source weights remain local v4"
+}

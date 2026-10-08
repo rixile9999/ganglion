@@ -14,7 +14,7 @@ import threading
 import time
 import uuid
 
-from .specs import builtins, fingerprint, validate, validate_inputs, preprocessing
+from .specs import builtins, fingerprint, validate, validate_inputs, preprocessing, candidate_preprocessing
 
 CHUNK_BYTES = 192 * 1024
 ANALYSIS_SPAN_LIMIT = 10000
@@ -24,6 +24,10 @@ class ProgramService:
     def __init__(self, root: Path, tool_server):
         self.root, self.tool_server = root, tool_server
         self.checkpoint = Path(os.environ.get("GANGLION_PII_CHECKPOINT", "runs/pii/qwen-0.8b-v2"))
+        self.candidate_checkpoint = Path(os.environ.get("GANGLION_PII_CANDIDATE_CHECKPOINT", "runs/pii/qwen-0.8b-candidates-v1"))
+        self.candidate_fallback_checkpoint = os.environ.get("GANGLION_PII_CANDIDATE_FALLBACK_CHECKPOINT")
+        self.candidate_detectors = {}
+        self.candidate_model_stamp = None
         self.lock = threading.RLock()
         self.pool = ThreadPoolExecutor(max_workers=2, thread_name_prefix="ganglion-program")
         self.active, self.uploads = {}, {}
@@ -86,6 +90,31 @@ class ProgramService:
         path.mkdir(parents=True, exist_ok=True, mode=0o700)
         path.chmod(0o700)
 
+    def _candidate_model_fingerprint(self):
+        if self.candidate_model_stamp is not None:
+            return self.candidate_model_stamp
+        digest = hashlib.sha256()
+        def include(path, label):
+            digest.update(label.encode())
+            with path.open("rb") as source:
+                while block := source.read(65536):
+                    digest.update(block)
+        for name in ("model.json", "candidate_heads.safetensors", "vocab.json"):
+            include(self.candidate_checkpoint / name, "candidate/" + name)
+        metadata = json.loads((self.candidate_checkpoint / "model.json").read_text())
+        source_checkpoint = Path(metadata["source_checkpoint"])
+        for name in ("model.json", "heads.safetensors"):
+            include(source_checkpoint / name, "source/" + name)
+        for path in sorted((source_checkpoint / "adapter").rglob("*")):
+            if path.is_file():
+                include(path, "source/" + str(path.relative_to(source_checkpoint)))
+        for name in ("candidates.py", "candidate_model.py"):
+            path = Path(__file__).parents[1] / "domains" / "pii" / name
+            if path.is_file():
+                include(path, "implementation/" + name)
+        self.candidate_model_stamp = "candidates-" + digest.hexdigest()
+        return self.candidate_model_stamp
+
     def _specs(self):
         specs = builtins()
         for path in sorted((self.root / "specs").glob("*.json")):
@@ -93,14 +122,26 @@ class ProgramService:
             specs[spec["id"]] = spec
         return specs
 
+    def _candidate_checkpoint_ready(self):
+        if not all((self.candidate_checkpoint / name).is_file() for name in ("model.json", "candidate_heads.safetensors", "vocab.json")):
+            return False
+        try:
+            metadata = json.loads((self.candidate_checkpoint / "model.json").read_text())
+        except (OSError, ValueError):
+            return False
+        return isinstance(metadata, dict) and metadata.get("ready") is True and metadata.get("training_complete") is True
+
     def specs(self):
         return {"specs": [self._describe(s) for s in self._specs().values()]}
 
     def _describe(self, spec):
         result = copy.deepcopy(spec)
         result["fingerprint"] = fingerprint(spec)
-        result["available"] = spec["model"]["backend"] != "qwen_native" or all((self.checkpoint / name).is_file() for name in ("model.json", "heads.safetensors"))
-        result["availability_detail"] = "ready" if result["available"] else "native checkpoint not trained; see PII setup"
+        backend = spec["model"]["backend"]
+        result["available"] = (all((self.checkpoint / name).is_file() for name in ("model.json", "heads.safetensors")) if backend == "qwen_native"
+                               else self._candidate_checkpoint_ready() if backend == "qwen_candidates"
+                               else True)
+        result["availability_detail"] = "ready" if result["available"] else ("candidate checkpoint is not frozen; training must complete" if backend == "qwen_candidates" else "native checkpoint not trained; see PII setup")
         return result
 
     def spec(self, spec_id):
@@ -168,7 +209,7 @@ class ProgramService:
     def start(self, body):
         spec = self.spec(body.get("spec_id"))
         if not spec["available"]:
-            raise ValueError("native checkpoint is unavailable")
+            raise ValueError("model checkpoint is unavailable")
         inputs = validate_inputs(spec["input_schema"], body.get("inputs", {}))
         self._claim()
         source = None
@@ -224,6 +265,19 @@ class ProgramService:
                 if spec["model"]["backend"] == "rules":
                     from ganglion.domains.pii.rules import RulesDetector
                     detector = RulesDetector()
+                elif spec["model"]["backend"] == "qwen_candidates":
+                    config_key = fingerprint(candidate_preprocessing(spec))
+                    with self.model_lock:
+                        if config_key not in self.candidate_detectors:
+                            from ganglion.domains.pii.candidate_model import CandidateDetector
+                            self._candidate_model_fingerprint()
+                            candidate_detector = CandidateDetector(self.candidate_checkpoint,
+                                candidate_config=candidate_preprocessing(spec),
+                                fallback_checkpoint=self.candidate_fallback_checkpoint)
+                            if candidate_detector.metadata["base_model"] != spec["model"].get("base_model", "Qwen/Qwen3.5-0.8B"):
+                                raise ValueError("checkpoint backbone does not match application spec")
+                            self.candidate_detectors[config_key] = candidate_detector
+                    detector = self.candidate_detectors[config_key]
                 else:
                     with self.model_lock:
                         if self.detector is None:
@@ -249,9 +303,13 @@ class ProgramService:
                                       preprocess=spec.get("preprocessor") is not None,
                                       strategy=config["strategy"], max_tokens=config["max_tokens"],
                                       window_chars=config["max_chars"], overlap_chars=config["overlap_chars"],
+                                      candidate_preprocessor=spec["preprocessor"]["candidate_graph"] if spec["model"]["backend"] == "qwen_candidates" else None,
+                                      model_fingerprint=self._candidate_model_fingerprint() if spec["model"]["backend"] == "qwen_candidates" else None,
                                       progress=progress, cancelled=lambda: job["status"] == "cancelling")
                 if spec["model"]["backend"] == "qwen_native":
                     result["model_fingerprint"] = self._model_fingerprint()
+                elif spec["model"]["backend"] == "qwen_candidates":
+                    result["model_fingerprint"] = self._candidate_model_fingerprint()
                 else:
                     from ganglion.domains.pii import rules
                     result["model_fingerprint"] = "rules-" + hashlib.sha256(Path(rules.__file__).read_bytes()).hexdigest()

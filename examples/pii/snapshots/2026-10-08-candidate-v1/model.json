@@ -1,0 +1,89 @@
+{
+  "contract": "pii-candidate-judgments-v1",
+  "classes": [
+    "PERSON",
+    "ADDRESS",
+    "PHONE",
+    "EMAIL",
+    "IDENTIFIER",
+    "NOT_PII"
+  ],
+  "base_model": "Qwen/Qwen3.5-0.8B",
+  "base_model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+  "source_checkpoint": "runs/pii/qwen-0.8b-v4-lora16",
+  "source_checkpoint_sha256": "203fd8e4010601a19570d2de2be2c058dbf77013974edf57a8cbe93b29fc0912",
+  "candidate_config": {
+    "version": "candidate-v1",
+    "context_chars": 48,
+    "max_candidates": 256,
+    "max_candidate_chars": 160
+  },
+  "context_character_budget": 48,
+  "max_tokens": 128,
+  "pooled_size": 1280,
+  "head_width": 256,
+  "head_dropout": 0.15,
+  "head_parameters": 491814,
+  "encoder_parameters": 764553105,
+  "encoder_frozen": true,
+  "training_splits_sha256": {
+    "train": "63918fc126d996843f399e901b49b016190ca343a6b9548af17ed3aa07e23a45",
+    "validation": "f158c21efdf251a0f42741d6803e6e8790ba86637fca9d3b0c14850d4bdd89a3"
+  },
+  "test_sha256_expected": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+  "test_used_for_tuning": false,
+  "input_representation": "source-mapped context blocks + candidate feature tensors and character values",
+  "generated_output_tokens": 0,
+  "threshold_grid": [
+    0.3,
+    0.5,
+    0.7
+  ],
+  "seed": 42,
+  "training_args": {
+    "data": "runs/pii/diverse-v1",
+    "source_checkpoint": "runs/pii/qwen-0.8b-v4-lora16",
+    "output": "runs/pii/qwen-0.8b-candidates-v1",
+    "epochs": 30,
+    "patience": 8,
+    "batch_size": 512,
+    "encoder_batch_size": 64,
+    "learning_rate": 0.0003,
+    "seed": 42,
+    "context_chars": 48,
+    "max_candidates": 256
+  },
+  "candidate_label_counts": {
+    "NOT_PII": 157809,
+    "PERSON": 4135,
+    "ADDRESS": 2135,
+    "PHONE": 2134,
+    "EMAIL": 2400,
+    "IDENTIFIER": 2000
+  },
+  "cache_seconds": 11.599254198838025,
+  "torch": "2.11.0+cu128",
+  "selected_epoch": 8,
+  "threshold": 0.3,
+  "validation": {
+    "raw": {
+      "tp": 3399,
+      "fp": 229,
+      "fn": 301,
+      "precision": 0.9368798235942668,
+      "recall": 0.9186486486486487,
+      "f1": 0.927674672489083
+    },
+    "interpreted": {
+      "tp": 3399,
+      "fp": 4,
+      "fn": 301,
+      "precision": 0.9988245665589186,
+      "recall": 0.9186486486486487,
+      "f1": 0.9570603970153456
+    }
+  },
+  "selection_rule": "validation interpreted exact typed span F1; no test access",
+  "ready": true,
+  "training_complete": true
+}

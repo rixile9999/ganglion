@@ -527,3 +527,59 @@ export PYTHONPATH=.
 원래 예측·metadata는 `runs/pii/baselines/`의 `ganglion-lora`, `gliner`, `gliner2`, `korean-e5`, `piiranha`, `presidio-en-default`, `presidio-en-ko`에 대응하는 `*.predictions.jsonl` / `*.metadata.json`이다. 공통 scorer는 manifest/test hash, 전체 1,500문서의 ID, 각 구간의 좌표·유형과 외부 capture의 예측 hash를 검증한 뒤 계산한다. 후처리 profile별 점수, native 전체 label 마스킹, negative 문서의 오탐률도 comparison JSON에 저장한다.
 
 개발 보존용 [평가 스냅샷](../examples/pii/snapshots/2026-10-08-baseline/)에는 동일한 합성 test·manifest, 비교·감사 JSON, 고정 모델 설정 및 gzip으로 압축한 일곱 예측 capture를 함께 기록한다. 로컬 체크포인트 가중치와 운영 실행 파일은 기존 위치에 보존한다. 스냅샷의 예측 파일을 압축 해제하면 모델을 다시 실행하지 않고 동일한 scorer로 결과를 재계산할 수 있다.
+
+### 12.5 구조화 후보 IR 파이프라인 실험
+
+**이 실험은 오탐과 exact F1을 개선했지만 개인정보 완전 마스킹은 악화됐다.** 동일 test에서 공백을 제외한 정답 구간 전체의 마스킹 재현율은 v4의 91.76%에서 후보 경로의 88.76%로 낮아졌다. 따라서 아래 F1 상승을 더 안전한 익명화의 증거로 사용하지 않고 기존 기본 모델을 승격하지 않았다. 후보 경로는 별도 실험 프로그램으로 제공한다.
+
+새 실험은 Preprocessor가 원문에서 겹치는 개인정보 후보를 만들고, 형식언어모델이 각 후보를 다섯 유형 또는 `NOT_PII`로 판정하며, Interpreter가 양립 가능한 구간을 선택하는 구성이다. Executor는 기존 가명화·암호화 복원 경로를 사용한다. 후보는 개인정보 확정 결과가 아니므로 일반 명사·공개 항목·예제에도 생성한다. 모델은 원문 문맥을 보고 실제 역할을 판정해야 한다.
+
+`candidate-v1` IR에는 후보 ID, 원문 문자 시작·끝, 원문 그대로의 값, 좌우 문맥, field/type hint 및 추출 근거가 있다. 예산은 좌우 각 48자, 후보 최대 256개, 후보 값 최대 160자다. 이메일·전화·식별번호의 일반 형태, 한국어/Unicode 단어와 이름 경계 대안, 지역·도로·번호 주소 및 필드 주변 구간을 제안한다. 조사 제거를 정답으로 확정하지 않고 원래 단어와 줄인 후보를 함께 남긴다. 후보 생성은 정답·이름 사전·벤치마크 entity 값 목록을 받지 않는다. 원문 정규화 없이 좌표를 보존하며, cap 초과를 표시하고 원래 Qwen 탐지기로 대체한다. 공유 문맥이 원본 encoder의 128토큰 예산을 초과하는 경우도 같은 명시적 fallback을 사용한다. 긴 문서는 바깥의 선택적 분할 adapter가 처리한다.
+
+Qwen v4 LoRA와 기존 bidirectional readout는 고정한다. 후보별 문맥을 반복적으로 LM에 넣는 대신 필요한 문맥 구간의 합집합을 source mapping과 함께 한 번 encode한다. 후보에 걸친 token readout와 전체 문맥 요약, 형식/type/field 수치 특징, 후보 값·좌우 문맥의 작은 character CNN을 새 분류 head가 읽는다. 학습 파라미터는 **491,814개**다. 후보 ID·좌표는 프로그램이 관리하고 숫자·형식 메타데이터는 tensor로 전달하며, 위치 JSON이나 복원 문자열을 생성하지 않는다. 생성 토큰은 0이다. 후보가 촘촘하면 문맥 합집합이 원문 전체를 덮으므로 입력 토큰 감소를 보장하지 않는다.
+
+후보 규칙과 학습 설정은 `diverse-v1` train/validation에서만 개발했다. train 6,000문서의 gold 12,804개와 validation 1,500문서의 gold 3,700개 모두에 정확한 시작·끝을 가진 후보가 포함됐다. 평균 후보는 각각 **28.44/32.88개**, 최대 **64/52개**, cap overflow는 0이었다. 이는 유형 판정 이전의 **후보 포함률 100%**이며 탐지 정확도나 새로운 문서의 후보 재현율을 뜻하지 않는다. 정답은 후보 생성이나 추론 입력에 전달하지 않고, 생성 후 포함률·모델 평가와 train label 생성에 사용했다.
+
+새 head는 seed 42, AdamW, 학습률 3e-4, 후보 batch 512로 학습했다. 30 epochs 예산에 validation patience 8을 적용하여 16회를 완료하고 8번째를 선택했다. threshold 후보 0.3/0.5/0.7 중 validation의 Interpreter 후 exact typed span F1로 0.3을 선택했다. 불완전한 경계 후보도 `NOT_PII` 학습 사례로 포함했다. 문자 vocabulary는 train에서만 만들고, encoder 특징 cache는 원문 hash·후보 설정·가중치·구현 hash를 키로 사용한다. 초기 cache 평가의 변수 shadowing 오류는 수정했으며, 저장 모델을 cache 없이 다시 실행한 [validation 검증](../runs/pii/qwen-0.8b-candidates-v1/runtime-validation-parity.json)에서 선택 당시 지표와 일치했다.
+
+| validation 단계 | TP / FP / FN | precision (%) | recall (%) | exact F1 (%) |
+|---|---|---:|---:|---:|
+| 후보 분류 raw | 3,399 / 229 / 301 | 93.69 | 91.86 | 92.77 |
+| compatible 구간 선택 + 기존 Interpreter | 3,399 / 4 / 301 | 99.88 | 91.86 | 95.71 |
+
+Interpreter의 겹침 후보 선택은 이 validation에서 TP를 유지하면서 strict FP를 225개 줄였다. 학습·설정 선택에 쓴 validation이므로 최종 일반화 점수로 읽지 않는다. 또한 v4와의 비교는 **새 후보 IR, 추가 head 학습, 새 구간 선택 정책**을 함께 바꾼 실험이다. 전처리만 바꾸어 같은 모델이 좋아졌다는 인과 증명이 아니다. 후보 포함률, raw 분류, Interpreter 후 결과, fallback 및 원본 v4 capture를 각각 보고한다. 점수는 보정하지 않은 확률이며 99.5% 목표, 독립 실문서 익명성, 모바일 성능 및 자동 개선 루프는 아직 검증하지 않았다.
+
+새 파이프라인의 test 평가는 checkpoint·설정·소스 구현 hash를 디스크에 동결한 뒤 실행했다. 기존 §12.4에서 이미 개발팀이 본 동일 합성 test이므로 새로운 미관측 외부 benchmark라고 부르지 않는다. 아래 `--ready`는 train/validation의 모델·설정 선택 완료를 선언한다. 재현 시 기존 결과를 덮어쓰지 않도록 새 checkpoint와 결과 경로를 사용한다.
+
+동일 원문 1,500문서·gold 3,700개에 대한 [최종 비교](../runs/pii/candidate-v1/comparison.json)는 다음과 같다. 지표 정의와 test hash는 §12.4와 동일하며 원본 v4 capture를 변경하지 않았다. 같은 프로세스에서 v4를 다시 실행한 결과도 저장된 baseline과 모든 문서에서 일치했다.
+
+| test 구성 | TP / FP / FN | precision (%) | recall (%) | exact F1 (%) | 정답 구간 완전 마스킹·공백 제외 (%) |
+|---|---|---:|---:|---:|---:|
+| 원본 v4 + 기존 Interpreter | 3,252 / 937 / 448 | 77.63 | 87.89 | 82.44 | 91.76 |
+| 후보 IR + 추가 분류 head raw | 3,282 / 31 / 418 | 99.06 | 88.70 | 93.60 | 88.76 |
+| 후보 분류 + compatible 구간 선택·Interpreter | 3,280 / 4 / 420 | 99.88 | 88.65 | 93.93 | 88.76 |
+
+정답과 전혀 겹치지 않는 예측은 356개에서 0개로 줄었다. 그러나 정확한 경계가 아니어도 개인정보 내용을 덮던 기존 구간의 효과는 exact F1에 드러나지 않는다. 마스킹된 정답 문자 재현율도 98.70% → 86.61%로 낮아져, 현재 개선은 주로 오탐 정리이며 개인정보 누락 감소 목표를 충족했다고 볼 수 없다. 최종 F1은 한국어 93.42%, 영어 91.53%, 혼합 98.54%였지만 한국어 exact recall은 v4의 90.75%에서 87.88%로 낮아졌다. 최종 FP 4개도 strict 지표이므로 무관한 문자열 오탐 4개라는 뜻은 아니다.
+
+test의 정확한 후보 포함률은 **3,597/3,700 = 97.22%**로 train/validation의 100%보다 낮았다. 평균 후보 30.79개, 최대 57개, overflow/fallback은 0이었다. 최종 FN 420개는 후보 미포함 **103개**, 후보가 있지만 분류에서 거부되거나 유형이 틀린 **315개**, Interpreter에서 잃은 정답 **2개**로 구분된다. raw → final에서 strict FP는 31 → 4로 줄었지만 TP도 3,282 → 3,280으로 줄어 regression이 있었다. test에서 확인한 누락에 맞추어 규칙이나 threshold를 수정하지 않았다. 후속 후보·분류·선택 정책 개선은 별도 train/validation과 새로 동결한 평가 자료에서 검증해야 한다.
+
+같은 프로세스·H100·batch 64의 재실행에서는 두 경로 모두 **67,795 입력 토큰**으로 문맥 합집합이 원문 전체를 덮었다. 생성 토큰은 두 경로 모두 0이었다. v4 처리 9.97초, 후보 경로 20.33초로 후보 경로가 약 **2.04배 느렸다**. 모델 로딩과 감사용 후보 재생성은 이 시간에서 제외했다. 실행 순서·warmup 및 동시 CPU 작업의 영향이 있으므로 통제된 다회 속도 평가나 모바일 수치로 일반화하지 않는다. 현재 입력 토큰 절감이나 속도 우월성은 관측하지 못했다.
+
+별도 긴 문서 실행은 동결 test의 전체 문단을 결정적으로 연결한 **17,248-byte, gold 350개**를 112구간으로 처리했다. TP/FP/FN은 **313/0/37**, exact F1은 **94.42%**, 완전 마스킹 재현율은 **89.43%**였고 원본 바이트 복원은 성공했다. 이는 복원 계약의 검증이며 남은 37개 개인정보 누락을 상쇄하지 않는다. 실제 문서 익명성이나 아이폰 실행을 검증한 결과가 아니다.
+
+```bash
+python -m ganglion.domains.pii.candidate_train \
+  --data runs/pii/diverse-v1 \
+  --source-checkpoint runs/pii/qwen-0.8b-v4-lora16 \
+  --output runs/pii/qwen-candidates-reproduced \
+  --epochs 30 --patience 8 --seed 42
+# 학습 및 validation 선택을 완료한 후:
+PYTHONPATH=. python tools/benchmark_pii_candidates.py \
+  --checkpoint runs/pii/qwen-candidates-reproduced --ready \
+  --output runs/pii/candidate-reproduced/comparison.json \
+  --baseline-runtime --long-document-entities 350
+```
+
+학습 provenance와 설정은 [model.json](../runs/pii/qwen-0.8b-candidates-v1/model.json), epoch 기록은 [training.json](../runs/pii/qwen-0.8b-candidates-v1/training.json), 평가 전 동결은 [candidate-evaluation-freeze.json](../runs/pii/qwen-0.8b-candidates-v1/candidate-evaluation-freeze.json)에 보존한다. `runs/pii/candidate-v1/`의 `candidate.raw.predictions.jsonl`, `candidate.interpreted.predictions.jsonl`, `candidate.ir.jsonl`, `baseline-v4-runtime.predictions.jsonl` 및 comparison JSON을 함께 보존한다. IR capture에는 원문 값·문맥 없이 좌표·근거·통계만 남긴다. 후보 경로와 긴 문서의 실제 결과를 별도 평가 단계로 기록하며 기존 기본 프로그램은 유지한다.
+
+커밋에 포함한 [후보 실험 스냅샷](../examples/pii/snapshots/2026-10-08-candidate-v1/)에는 비교·학습·동결 보고서와 압축 예측/IR capture가 있다. 전체 회귀 테스트 1,215개가 통과했다. 실제 `pii-qwen-candidates` CLI 실행에서 한글·이모지·CRLF를 포함한 2,526-byte 문서를 20구간으로 처리하고 44개 편집을 실행한 뒤 내려받은 결과·복원 파일로 원본 바이트를 복원했다. 키는 일회성 임시 파일로 생성하고 검증 후 삭제했다. 이 검증은 실행·복원 성공이며 탐지 누락 개선의 증거와 구분한다.

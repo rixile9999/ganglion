@@ -1,0 +1,24 @@
+{
+  "checkpoint": "runs/pii/qwen-0.8b-candidates-v1",
+  "source": "validation only; no test opened",
+  "metrics": {
+    "raw": {
+      "tp": 3399,
+      "fp": 229,
+      "fn": 301,
+      "precision": 0.9368798235942668,
+      "recall": 0.9186486486486487,
+      "f1": 0.927674672489083
+    },
+    "interpreted": {
+      "tp": 3399,
+      "fp": 4,
+      "fn": 301,
+      "precision": 0.9988245665589186,
+      "recall": 0.9186486486486487,
+      "f1": 0.9570603970153456
+    }
+  },
+  "matches_selected_checkpoint": true,
+  "seconds": 16.324230450903997
+}

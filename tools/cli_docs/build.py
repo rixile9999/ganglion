@@ -87,6 +87,10 @@ _EXTRA_ENV = (
      "ganglion.ctl.bridge.ApiBridge"),
     ("GANGLION_PII_CHECKPOINT", "native PII checkpoint directory (default: runs/pii/qwen-0.8b-v2); read by the process that owns ProgramService",
      "ganglion.programs.service.ProgramService"),
+    ("GANGLION_PII_CANDIDATE_CHECKPOINT", "candidate PII checkpoint directory (default: runs/pii/qwen-0.8b-candidates-v1); read by the process that owns ProgramService",
+     "ganglion.programs.service.ProgramService"),
+    ("GANGLION_PII_CANDIDATE_FALLBACK_CHECKPOINT", "optional fallback directory; must match the candidate checkpoint's fingerprinted source encoder",
+     "ganglion.programs.service.ProgramService"),
 )
 
 _ENV_WHAT = {
@@ -492,6 +496,7 @@ def run_examples(leaves: Sequence[MutableLeaf], *, keep: Path | None = None) -> 
         # Capture a declared fixture, independent of a developer's trained
         # checkpoint. The examples use rules rather than initiating GPU work.
         env["GANGLION_PII_CHECKPOINT"] = str(tmp_root / "untrained-native")
+        env["GANGLION_PII_CANDIDATE_CHECKPOINT"] = str(tmp_root / "untrained-candidate")
         _seed(runs_dir, env)
         _pin_clocks(runs_dir)
         scrub = Scrubber(tmp_root, ROOT)

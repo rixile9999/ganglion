@@ -132,6 +132,41 @@ Model runners are in `tools/pii_baselines/`; score their saved captures with
 `python tools/pii_baselines/compare.py --include-examples`. Source excerpts are
 enabled only for a corpus whose manifest explicitly declares synthetic data.
 
+The optional `pii-qwen-candidates` program adds a deterministic candidate IR,
+a learned 491,814-parameter classification head over the frozen v4 encoder,
+and compatible-span selection. It is an experiment combining preprocessing,
+additional training and interpretation; validation gains do not establish an
+input-only improvement or production anonymity. [Protocol and measurements](docs/pseudonymization_pipeline_design.md#125-구조화-후보-ir-파이프라인-실험)
+separate proposal coverage, raw classification, interpreted results and fallback.
+On the same frozen development test, exact F1 increased from 82.44% to 93.93%,
+but full non-whitespace entity masking recall fell from 91.76% to 88.76%.
+The candidate path used the same input tokens and ran about twice as slowly;
+it is not promoted as a safer or more efficient default.
+Candidate budgets are pinned in the program spec. Overflow falls back explicitly
+to the fingerprinted source encoder; the original `pii-qwen` remains available.
+When using `GANGLION_CONSOLE_URL`, set the candidate checkpoint environment
+variable in the server process that owns the model cache.
+
+```bash
+# Train into a fresh directory; only train/validation are read here.
+python -m ganglion.domains.pii.candidate_train \
+  --data runs/pii/diverse-v1 \
+  --source-checkpoint runs/pii/qwen-0.8b-v4-lora16 \
+  --output runs/pii/qwen-candidates-reproduced --epochs 30 --patience 8
+# After completing validation-only checkpoint/configuration selection:
+PYTHONPATH=. python tools/benchmark_pii_candidates.py \
+  --checkpoint runs/pii/qwen-candidates-reproduced --ready \
+  --output runs/pii/candidate-reproduced/comparison.json --baseline-runtime
+GANGLION_PII_CANDIDATE_CHECKPOINT=runs/pii/qwen-candidates-reproduced \
+  ganglion program run pii-qwen-candidates --file document.txt \
+  --public-key public-key.json --output-dir candidate-masked
+```
+
+The benchmark records model/configuration hashes before loading test data.
+It uses the previously measured frozen development test, which is not a new
+untouched external evaluation. Candidate values/context remain transient inputs;
+ordinary traces and public plans contain source coordinates and counters.
+
 For an implementation-independent formalization of contract-based tool
 calling (contract, compiler, representation cost, constrained decoding,
 correction, training, evaluation, and the factory objective) see

@@ -1,0 +1,93 @@
+{
+  "program": "pii-qwen-candidates",
+  "available": true,
+  "input_bytes": 2526,
+  "exact_byte_roundtrip": true,
+  "result": {
+    "status": "complete",
+    "mode": "execute",
+    "domain": "pii-text",
+    "backend": "qwen_candidates",
+    "score_kind": "uncalibrated_probability",
+    "units": 20,
+    "preprocessor": {
+      "adapter": "utf8-windows",
+      "version": 1,
+      "config": {
+        "strategy": "semantic",
+        "max_chars": 256,
+        "overlap_chars": 64,
+        "max_tokens": 128
+      },
+      "candidate_graph": {
+        "adapter": "pii-candidate-graph",
+        "version": 1,
+        "config": {
+          "context_chars": 48,
+          "max_candidates": 256,
+          "max_candidate_chars": 160
+        }
+      }
+    },
+    "edits": 44,
+    "entity_counts": {
+      "PERSON": 14,
+      "ADDRESS": 8,
+      "PHONE": 8,
+      "EMAIL": 7,
+      "IDENTIFIER": 7
+    },
+    "corrections": 0,
+    "processed_bytes": 2526,
+    "input_tokens": 830,
+    "output_tokens": 0,
+    "latency_ms": 1994.4719201885164,
+    "artifacts": [
+      "document.txt",
+      "recovery.bin",
+      "plan.jsonl",
+      "trace.jsonl"
+    ],
+    "quality_status": "experimental",
+    "candidate_diagnostics": {
+      "candidates": 658,
+      "proposed_count": 658,
+      "fallback_count": 0,
+      "context_characters": 1543,
+      "source_characters": 1543,
+      "encoded_tokens": 830,
+      "output_candidates": 44,
+      "overflow_units": 0,
+      "candidate_sources": {
+        "hangul-prefix-variant": 327,
+        "hangul-word": 152,
+        "field-prefix-variant:suffix-variant": 53,
+        "hangul-word:suffix-variant": 58,
+        "field-prefix-variant": 181,
+        "field-value": 44,
+        "identifier-shape": 11,
+        "ko-address-shape:end-variant": 12,
+        "ko-address-shape": 7,
+        "phone-shape": 8,
+        "unicode-word": 61,
+        "email-shape": 7,
+        "titlecase-sequence": 5,
+        "en-address-shape:end-variant": 4,
+        "en-address-shape": 1,
+        "ko-address-shape:end-variant:suffix-variant": 4,
+        "ko-address-shape:suffix-variant": 4,
+        "email-shape:suffix-variant": 2,
+        "field-value:suffix-variant": 1
+      },
+      "budget": {
+        "context_chars": 48,
+        "max_candidates": 256,
+        "max_candidate_chars": 160
+      }
+    },
+    "source_input_tokens": 830,
+    "model_fingerprint": "candidates-5f7efb901b3e5fda72a7135da713a6a4c4e1fc740e05437fc0954970dbbf64bb"
+  },
+  "restored_bytes": 2526,
+  "private_keys": "ephemeral temporary files removed at scope exit"
+}

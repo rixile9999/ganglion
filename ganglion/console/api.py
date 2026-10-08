@@ -312,6 +312,8 @@ class ConsoleAPI:
         self._count_lock = threading.Lock()
         #: ``"<path> <status>" → n`` (the ``console_request_count`` observation).
         self.request_count: dict[str, int] = {}
+        self._programs = None
+        self._programs_lock = threading.Lock()
 
     # -- shared bits -------------------------------------------------------
 
@@ -356,6 +358,8 @@ class ConsoleAPI:
 
     def close(self) -> None:
         """Stop the writer thread (the server's shutdown path)."""
+        if self._programs is not None:
+            self._programs.close()
         self.writer.stop()
 
     # -- dispatch ----------------------------------------------------------
@@ -409,6 +413,13 @@ class ConsoleAPI:
         if not parts:
             raise ApiError(404, "not_found", path)
         head, rest = parts[0], parts[1:]
+
+        if head == "v2":
+            with self._programs_lock:
+                if self._programs is None:
+                    from ganglion.programs.service import ProgramService
+                    self._programs = ProgramService(self.base_dir.parent / "programs", self.serve_server)
+            return self._programs.route(method, rest, query, body)
 
         if head == "health" and not rest:
             self._only(method, "GET")

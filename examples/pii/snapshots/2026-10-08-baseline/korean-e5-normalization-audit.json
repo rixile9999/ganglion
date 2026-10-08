@@ -1,0 +1,277 @@
+{
+  "harmful_count": 26,
+  "helpful_count": 0,
+  "harmful_examples": [
+    {
+      "id": "test-00087",
+      "type": "PERSON",
+      "raw_text": "양연은",
+      "normalized_text": "양연",
+      "raw_span": {
+        "label": "private_person",
+        "start": 6,
+        "end": 9,
+        "score": 0.9990665713946024
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 6,
+        "end": 8,
+        "score": 0.9990665713946024
+      },
+      "context": "본인 실명 양연은 / private e-ma"
+    },
+    {
+      "id": "test-00097",
+      "type": "PERSON",
+      "raw_text": "전도은",
+      "normalized_text": "전도",
+      "raw_span": {
+        "label": "private_person",
+        "start": 13,
+        "end": 16,
+        "score": 0.9994890888532003
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 13,
+        "end": 15,
+        "score": 0.9994890888532003
+      },
+      "context": "신원을 확인할 때 성명 전도은과 개인번호 911018-1"
+    },
+    {
+      "id": "test-00151",
+      "type": "PERSON",
+      "raw_text": "홍성은",
+      "normalized_text": "홍성",
+      "raw_span": {
+        "label": "private_person",
+        "start": 14,
+        "end": 17,
+        "score": 0.9926182230313619
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 14,
+        "end": 16,
+        "score": 0.9926182230313619
+      },
+      "context": "보관된 개인 기록: 실명 홍성은; 자택 위치 울산광역시 남"
+    },
+    {
+      "id": "test-00247",
+      "type": "PERSON",
+      "raw_text": "홍준은",
+      "normalized_text": "홍준",
+      "raw_span": {
+        "label": "private_person",
+        "start": 13,
+        "end": 16,
+        "score": 0.9998981157938639
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 13,
+        "end": 15,
+        "score": 0.9998981157938639
+      },
+      "context": "신원을 확인할 때 성명 홍준은과 개인번호 860225-1"
+    },
+    {
+      "id": "test-00291",
+      "type": "PERSON",
+      "raw_text": "홍태은",
+      "normalized_text": "홍태",
+      "raw_span": {
+        "label": "private_person",
+        "start": 0,
+        "end": 3,
+        "score": 0.999890406926473
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 0,
+        "end": 2,
+        "score": 0.999890406926473
+      },
+      "context": "홍태은님이 남긴 휴대전화는 010"
+    },
+    {
+      "id": "test-00379",
+      "type": "PERSON",
+      "raw_text": "유수은",
+      "normalized_text": "유수",
+      "raw_span": {
+        "label": "private_person",
+        "start": 53,
+        "end": 56,
+        "score": 0.9998860359191895
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 53,
+        "end": 55,
+        "score": 0.9998860359191895
+      },
+      "context": "확인했습니다. 수령 실명은 유수은입니다."
+    },
+    {
+      "id": "test-00394",
+      "type": "PERSON",
+      "raw_text": "양희은",
+      "normalized_text": "양희",
+      "raw_span": {
+        "label": "private_person",
+        "start": 54,
+        "end": 57,
+        "score": 0.9998421470324198
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 54,
+        "end": 56,
+        "score": 0.9998421470324198
+      },
+      "context": "확인했습니다. 수령 실명은 양희은입니다."
+    },
+    {
+      "id": "test-00432",
+      "type": "PERSON",
+      "raw_text": "고지은",
+      "normalized_text": "고지",
+      "raw_span": {
+        "label": "private_person",
+        "start": 6,
+        "end": 9,
+        "score": 0.9999157985051473
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 6,
+        "end": 8,
+        "score": 0.9999157985051473
+      },
+      "context": "본인 실명 고지은 / private e-ma"
+    },
+    {
+      "id": "test-00492",
+      "type": "PERSON",
+      "raw_text": "고성은",
+      "normalized_text": "고성",
+      "raw_span": {
+        "label": "private_person",
+        "start": 6,
+        "end": 9,
+        "score": 0.9956337809562683
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 6,
+        "end": 8,
+        "score": 0.9956337809562683
+      },
+      "context": "본인 실명 고성은 / private e-ma"
+    },
+    {
+      "id": "test-00576",
+      "type": "PERSON",
+      "raw_text": "문도은",
+      "normalized_text": "문도",
+      "raw_span": {
+        "label": "private_person",
+        "start": 0,
+        "end": 3,
+        "score": 0.9999106327692667
+      },
+      "normalized_span": {
+        "label": "private_person",
+        "start": 0,
+        "end": 2,
+        "score": 0.9999106327692667
+      },
+      "context": "문도은님이 남긴 휴대전화는 010"
+    }
+  ],
+  "helpful_examples": [],
+  "audit_scope": "existing native PERSON/ADDRESS spans shortened by official normalization; gold used only for after-the-fact error classification, never inference or tuning",
+  "all_mapped_categories": {
+    "helpful_count": 25,
+    "harmful_count": 26,
+    "helpful_examples": [
+      {
+        "id": "test-00026",
+        "type": "IDENTIFIER",
+        "raw_text": "910923-1632624.",
+        "normalized_text": "910923-1632624",
+        "context": "dentity marker 910923-1632624."
+      },
+      {
+        "id": "test-00106",
+        "type": "IDENTIFIER",
+        "raw_text": "941222-1632704.",
+        "normalized_text": "941222-1632704",
+        "context": "mple; 개인 식별 코드 941222-1632704."
+      },
+      {
+        "id": "test-00206",
+        "type": "IDENTIFIER",
+        "raw_text": "760819-1632804.",
+        "normalized_text": "760819-1632804",
+        "context": "dentity marker 760819-1632804."
+      },
+      {
+        "id": "test-00211",
+        "type": "IDENTIFIER",
+        "raw_text": "740627-1632809.",
+        "normalized_text": "740627-1632809",
+        "context": "mple; 개인 식별 코드 740627-1632809."
+      },
+      {
+        "id": "test-00226",
+        "type": "IDENTIFIER",
+        "raw_text": "860513-1632824.",
+        "normalized_text": "860513-1632824",
+        "context": "mple; 개인 식별 코드 860513-1632824."
+      },
+      {
+        "id": "test-00311",
+        "type": "IDENTIFIER",
+        "raw_text": "970409-1632909.",
+        "normalized_text": "970409-1632909",
+        "context": "dentity marker 970409-1632909."
+      },
+      {
+        "id": "test-00326",
+        "type": "IDENTIFIER",
+        "raw_text": "800108-1632924.",
+        "normalized_text": "800108-1632924",
+        "context": "dentity marker 800108-1632924."
+      },
+      {
+        "id": "test-00406",
+        "type": "IDENTIFIER",
+        "raw_text": "761219-1633004.",
+        "normalized_text": "761219-1633004",
+        "context": "mple; 개인 식별 코드 761219-1633004."
+      },
+      {
+        "id": "test-00611",
+        "type": "IDENTIFIER",
+        "raw_text": "930713-1633209.",
+        "normalized_text": "930713-1633209",
+        "context": "dentity marker 930713-1633209."
+      },
+      {
+        "id": "test-00626",
+        "type": "IDENTIFIER",
+        "raw_text": "980121-1633224.",
+        "normalized_text": "980121-1633224",
+        "context": "dentity marker 980121-1633224."
+      }
+    ]
+  },
+  "empty_mapped_spans_removed": {
+    "private_email": 236
+  }
+}

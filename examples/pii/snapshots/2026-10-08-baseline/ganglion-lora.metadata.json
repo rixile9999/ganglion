@@ -1,0 +1,47 @@
+{
+  "model_id": "Ganglion Qwen3.5-0.8B LoRA v4",
+  "checkpoint": "runs/pii/qwen-0.8b-v4-lora16",
+  "model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+  "test_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+  "documents": 1500,
+  "source": "local frozen validation-selected checkpoint; no further optimization",
+  "base_parameters": 752393024,
+  "adapter_parameters": 10822656,
+  "head_parameters": 1337425,
+  "generation_tokens": 0,
+  "batch_size": 64,
+  "load_seconds": 5.994167612167075,
+  "inference_seconds": 12.63985597784631,
+  "timing_scope": "batched backbone+readout; concurrent GPU jobs, not a speed ranking",
+  "precision": "BF16 backbone/FP32 heads",
+  "float32_matmul_precision": "highest",
+  "labels": [
+    "O",
+    "B-PERSON",
+    "I-PERSON",
+    "B-ADDRESS",
+    "I-ADDRESS",
+    "B-PHONE",
+    "I-PHONE",
+    "B-EMAIL",
+    "I-EMAIL",
+    "B-IDENTIFIER",
+    "I-IDENTIFIER"
+  ],
+  "package_versions": {
+    "torch": "2.11.0+cu128"
+  },
+  "decoder": {
+    "boundary_classes": 32,
+    "decode_mode": "bio-viterbi",
+    "joint_type_weight": 0.5
+  },
+  "prediction_sha256": "bf1b00e9a0251213f84d92d4470260df09af95247ed3f39da1eba38d58f101a6",
+  "checkpoint_sha256": {
+    "adapter/adapter_config.json": "134bf1a74623a2929bcc6175795db02ee25ec9be3ac0b4375b796a4d9f556914",
+    "adapter/adapter_model.safetensors": "35cd0851a74230c5c8ee8fb55ccf21f3c2bb1cc2573396d80b955c96819a5287",
+    "heads.safetensors": "7aee32df2ecd33f8be5a103b4b3b454cdb78d12884bbe1bbc70d584904e88480",
+    "model.json": "4b1f0df645d56027821192723d926285fb76475f0dfa47f5848a6036c1655f52"
+  },
+  "artifact_hash_audit": "post-capture audit; original exact metrics reproduced unchanged"
+}

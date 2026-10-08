@@ -337,6 +337,12 @@ artifact key에는 spec, 코드, 데이터, recipe, seed, base/tokenizer/runtime
 | `factory.py` | 상태 기반 제어기로 교체 | 고정 threshold/max_iter 루프에서 비용·변경 기반 계획으로 전환 |
 | `runs/*` | 과거 실험으로 보존 | 검증된 알고리즘만 플러그인으로 이동; gold 기반 보정은 배포에서 제외 |
 
+현재 PII 실증에서는 `analyzer/domain_analysis.py`가 설치된 도메인 분석기를 호출하며,
+`domains/pii/analysis.py`가 구간 기반 오탐·누락·유형·경계·분할·병합 오류와
+raw/final 보정 기여를 계산한다. 기존 도구 호출 taxonomy와 규칙 제안 경로는 유지한다.
+정답이 없거나 불완전한 운영 피드백은 의미적 성공이나 전체 F1로 바꾸지 않는다.
+PII 규칙의 자동 제안·검증·채택은 이 분류 인터페이스 뒤에 연결할 후속 구현이다.
+
 목표 디렉터리의 논리적 구조:
 
 ```text

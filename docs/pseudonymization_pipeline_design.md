@@ -322,3 +322,208 @@ deployment:
 기존 `contract`의 타입·validator 경계, `lm`의 backend·학습 기능, `analyzer`의 trace·라벨·비교·규칙 제안 구조를 재사용한다. 현재 tool-calling 전용 타입과 패치 적용기는 그대로 PII에 적용하지 않고, `TextEditPlan` 및 PII 정책 adapter를 추가한다. 개인정보 도메인 구현은 `ganglion/domains/pii/`, 선택적 실행 구현은 `ganglion/adapters/`, 재현 데이터는 `examples/pii/`, 결과는 `runs/pii/`를 목표 위치로 삼는다. 해당 디렉터리는 기능 구현과 함께 만든다.
 
 실험 산출물에는 split manifest, 모델·계약·어댑터 hash, 학습 recipe, tokenizer, seed, device/runtime/precision, raw 및 보정 품질, 규칙별 변화, 복원 결과와 실제 장치 비용을 포함한다. 명시된 목표를 만족하지 못한 구성도 실패 원인과 함께 보존한다.
+
+## 12 구현 현황 (2026-10-08)
+
+첫 실증의 실행 가능한 프로토타입을 구축했다. `ganglion/programs/`가 데이터로 선언한 ApplicationSpec을 검증하고 UI/CLI 공통 `/api/v2`에 프로그램·작업·결과 파일·피드백을 제공한다. `web/index.html`은 밝은 배경과 입력/결과 영역을 사용하는 새 작업 공간이며, 도구 호출과 개인정보 프로그램을 같은 schema 기반 화면에서 전환한다. 기존 분석기와 CLI 명령도 유지한다. 실행 방법은 README 및 생성된 CLI 레퍼런스에 기록한다.
+
+Preprocessor는 코어 밖의 선택적 **버전 있는 스펙**이다. 긴 문서를 모델에 통째로 넣지 않으며, 분할·모델 입력 예산은 프로그램 계약에 고정한다. 기본 Qwen 프로그램은 다음 설정을 사용한다.
+
+```json
+{
+  "adapter": "utf8-windows",
+  "version": 1,
+  "config": {
+    "strategy": "semantic",
+    "max_chars": 256,
+    "overlap_chars": 64,
+    "max_tokens": 128
+  }
+}
+```
+
+문단 하나를 순서대로 전달하고, 문단이 예산보다 클 때는 문장·행 경계를 찾는다. 자연스러운 경계에서는 중복 없이 확정하며, 경계를 찾지 못해 강제로 자를 때만 overlap을 유지한다. 버퍼와 각 모델 입력을 제한하고 정규화 없이 원문 문자 위치를 보존한다. 한국어/영어, LF/CRLF, 결합 문자와 이모지의 바이트 대응을 테스트한다. 개인정보 자체가 구간보다 길거나 문장 경계를 가로지르는 경우까지 탐지 재현율을 보장하지 않는다. 구간 병합·중복 제거 및 익명화·복원 실행을 별도로 검증한다.
+
+기본 `pii-rules`는 비교용 고정 1,024자/128자 overlap 정책을 선언한다. 문자열 형태의 기존 `utf8-windows` alias는 호환 경로로 남긴다. 새 object 스펙의 예산을 요청 입력으로 바꾸는 것은 거부한다. Preprocessor를 생략하면 문서를 쪼개지 않는 제한된 코어 입력을 받고, 초과 길이는 잘라 버리지 않고 거부한다. Executor를 생략하면 키 없이 개인정보 없는 `plan.jsonl`을 반환한다.
+
+실행 결과는 가명화 문서, 공개 UTF-8 바이트 편집 계획, 원문 없는 raw/Interpreter trace, 암호화 복원 파일이다. 복원은 X25519 sealed key와 XChaCha20-Poly1305 secretstream을 사용한다. 사용자 개인키와 원문은 job metadata/PII trace에 쓰지 않는다. 임시 원문은 성공·실패·취소 후 삭제하며, 비정상 종료의 잔여 파일은 다음 writer runtime이 회수한다. 복원 결과인 평문은 사용자가 요청한 별도 artifact로 보관되므로 이용 후 삭제 대상이다. 실행 중인 계약과 결과 schema, 체크포인트 fingerprint를 고정한다. 진행 중인 웹 서버와 CLI는 `GANGLION_CONSOLE_URL`로 같은 runtime을 이용한다.
+
+모델은 Qwen3.5-0.8B의 text backbone **752,393,024 parameters**를 고정하고, 작은 bidirectional readout와 BIO/type heads **265,873 parameters**만 학습했다. Head 파일은 **1,065,132 bytes**이다. 생성형 JSON 출력 대신 구간/유형 분포를 직접 읽으며 점수는 아직 보정하지 않은 확률이다. 학습 recipe는 seed 42, 합성 학습 1,008개, 20 epochs, AdamW, train-template/validation-template/test-template 분리이다. Qwen revision은 `2fc06364715b967f1860aea9cf38778875588b17`로 고정한다. validation/test 각각 252개에서 Interpreter 후 exact-span F1은 각각 0.8621/0.8610이었다.
+
+같은 가중치와 같은 89,989-byte 긴 문서에 분할 스펙만 바꾸어 비교했다. 문서는 test-template 합성 record 1,008개를 원문 좌표 gold와 함께 연결했다. 결과 JSON은 `runs/pii/streaming-report.json`, 재현 명령은 `python tools/benchmark_pii.py`이다.
+
+| 구성 | 모델 호출 구간 | 입력 토큰 | 생성 토큰 | exact-span F1 | precision / recall | 처리 시간 | 정확한 바이트 복원 |
+|---|---:|---:|---:|---:|---:|---:|---|
+| 규칙 + 고정 분할 | 69 | 해당 없음 | 0 | 1.0000 | 1.0000 / 1.0000 | 0.074초 | 통과 |
+| Qwen + 고정 1,024자 분할 | 69 | 31,219 | 0 | 0.5430 | 0.4650 / 0.6523 | 38.00초 | 통과 |
+| 같은 Qwen + 문단 순차 분할 | 1,008 | 27,277 | 0 | 0.8628 | 0.7586 / 1.0000 | 79.31초 | 통과 |
+
+문장 단위로 학습한 head에 서로 다른 문단을 한 고정 창으로 묶어 넣으면 품질이 떨어졌다. 학습 가중치를 바꾸지 않고 Preprocessor가 학습 입력 형식에 맞는 단위를 제공하자 품질이 회복됐다. 겹침 중복이 줄어 입력 토큰은 약 12.6% 감소했지만, 이 Python/H100 구현에서는 작은 입력에 대한 반복 호출 비용으로 지연은 증가했다. 효율 개선을 증명한 결과로 해석하지 않는다. 측정 GPU는 H100 PCIe, BF16 backbone/FP32 head, PyTorch 2.11.0+cu128 및 Transformers 5.16.1이다. 모델 로딩은 약 5.27초로 위 처리 시간에서 제외했다. PyTorch peak GPU allocation은 **1,619,879,936 bytes (약 1.51 GiB)**이며, 전체 프로세스 메모리나 실제 iPhone footprint를 의미하지 않는다.
+
+이 데이터는 단순한 한국어·영어 합성 형식이고, 이름·주소 값은 split 사이에 겹치며 negative 문장도 재사용한다. test-template에는 IDENTIFIER 사례가 없어 다섯 유형의 모델 품질을 모두 검증하지 못한다. 규칙 기준선이 우월한 것은 이 비교의 제한이기도 하며, 기존 전문 모델 대비 개선·실제 문서의 익명성·다른 언어의 재현율을 주장하지 않는다. 수집된 피드백은 별도 정답 검증 대기 상태로 저장하고, 자동 규칙 확장/채택 및 학습 환류는 아직 구현하지 않았다. LoRA, probability calibration, 양자화, 모바일 export/runtime, 실제 기기 성능 및 독립 실문서 평가는 후속 단계이다.
+
+복원/스트리밍/계약/API/CLI 회귀 테스트와 실제 Chromium 흐름을 검증했다. 브라우저 검증은 키 생성, 문서 처리, artifact 다운로드, 복원, 피드백, 도구 계획, 스펙 등록, 기록 조회, 모바일 화면을 포함하며 `python tools/smoke_workbench.py --native`로 실행한다. 화면의 모바일 대응은 아이폰에서의 모델 실행 검증과 구분한다.
+
+### 12.1 기존 실패 분석기와 개인정보 도메인 연결
+
+오탐·누락을 유형화하고 개선 근거로 사용하는 기능은 기존 Ganglion에 있다. `ganglion/analyzer/taxonomy.py`는 도구 호출의 syntax, action, argument, abstention 오류를 분류하고, `corrections.py`는 Interpreter 보정의 rescue/regression을 분석한다. `rules.py`와 `analyze.py`는 해당 분류에서 규칙 후보와 검증 산출물을 만드는 경로다. 이 기존 경로는 ActionPlan/Catalog를 전제로 하므로 개인정보 구간에 그대로 적용할 수 없다.
+
+`ganglion/analyzer/domain_analysis.py`에 설치된 도메인 분석기 등록·실행 인터페이스를 추가했다. 프로그램 설정은 도메인 이름만 참조하며 임의 import 경로를 받지 않는다. 개인정보 분석 구현은 `ganglion/domains/pii/analysis.py`에 두며 다음을 구별한다.
+
+| 오류 유형 | 의미 |
+|---|---|
+| `fp` / `fn` | 정답과 겹치지 않는 오탐 / 누락 |
+| `type_mismatch` | 겹치는 구간의 개인정보 유형 오류 |
+| `boundary_mismatch` | 유형은 같지만 시작·끝 위치가 다른 오류 |
+| `split` / `merge` | 하나의 정답을 나누거나 여러 정답을 합친 오류 |
+| `duplicate` / `invalid_span` | 중복 구간 / 계약을 위반한 구간 |
+
+겹침은 원인 분류에만 사용하고 정확한 위치·유형 일치만 TP로 계산한다. 경계 오류 하나도 exact-span 기준으로 FP와 FN에 반영한다. 원시 결과와 최종 결과의 rescue/regression 및 추가·제거된 오탐을 별도로 기록하여 모델과 Interpreter 개선 효과를 구분한다. 운영 trace에는 원문 없이 전역 UTF-8 바이트 raw 구간을 추가하고, feedback에서는 실제 출력의 `plan.jsonl`과 비교한다. 이 문서 단위 귀속에는 Interpreter 보정 및 분할 결과 병합이 포함된다.
+
+UI/CLI 공통 feedback API는 오류 분류 결과를 응답하고 별도 피드백 sidecar에 저장한다. `verdict`만 입력하면 정답 없는 `unclassified` 상태이고, 일부 정답만 입력하면 `partial` 상태로 전체 precision/F1이나 미표시 구간의 오탐을 추정하지 않는다. 완전한 정답은 `gold_complete: true`와 명시적인 `expected_spans` 배열을 함께 제출한다. 사용자의 완전성 선언은 독립 검증 완료를 뜻하지 않으므로 피드백 자체는 `awaiting_independent_validation`을 유지한다. raw 바이트 좌표가 없는 이전 trace는 최종 결과만 분석하며 귀속을 보고하지 않는다. 분석 단계당 예측 10,000개를 초과하면 분석 불가와 제한 사유를 보고한다. 실행·복원은 이 분석 제한과 독립적으로 긴 문서를 처리한다.
+
+이 연결로 **오류 유형화와 보정 효과 측정**이 개인정보 도메인에서도 실행되지만, PII 규칙 후보 생성·독립 검증·채택·모델 재학습을 자동으로 이어 붙이는 factory loop는 아직 완료되지 않았다. 분류기의 추가를 전체 자동 개선 루프 완성으로 보고하지 않는다.
+
+### 12.2 초기 평가 감사 및 독립 합성 데이터 보강
+
+기존 recipe에서 14개 학습 템플릿 순환과 매 7번째 negative 생성이 겹쳐 두 템플릿의 양성이 한 번도 생성되지 않는 문제가 확인됐다. split 간 이름·주소 및 negative 문장이 재사용됐고 validation/test에는 IDENTIFIER가 없었다. 따라서 기존 0.86 지표는 모델 튜닝과 평가 양쪽이 부족한 초기 결과다. 기존 recipe와 체크포인트는 재현을 위해 유지한다.
+
+새 `diverse-v1` recipe는 학습 6,000개, 검증 1,500개, 테스트 1,500개로 구성하고 문맥상 헷갈리는 negative 20%를 포함한다. 다섯 개인정보 유형을 모든 split에 넣고 원문·템플릿·개인정보 값의 split 간 중복이 없는지 manifest로 검사한다. 실제 고정 Qwen tokenizer의 최대 입력은 학습/검증/테스트에서 91/90/93토큰으로 모두 현재 128토큰 예산 안에 들어간다. 합성 데이터 분할의 독립성은 실제 문서 분포의 대표성을 증명하지 않는다. 99.5% 목표는 validation에서 학습 설정을 선택한 뒤 고정된 test의 정확한 구간 지표로 평가하고, 실제 문서 목표는 별도 독립 평가로 남긴다.
+
+```bash
+python -m ganglion.domains.pii.dataset --output runs/pii/diverse-v1 \
+  --count 6000 --recipe diverse-v1 --seed 42
+```
+
+### 12.3 문자 경계 헤드와 LoRA 비교 결과
+
+모델의 토큰이 이름 앞 공백이나 뒤 조사를 함께 포함하면 BIO만으로 정답 문자 경계를 표현할 수 없다. 시작·끝 토큰 내부에서 잘라낼 문자 수를 예측하는 32-class 헤드를 추가하고, 적법한 BIO 경로와 유형 분포를 함께 사용하도록 decoder를 확장했다. 기존 v2 체크포인트는 이전 헤드 구조·좌표·argmax 동작을 유지한다. 새 readout는 width 256, 두 층, dropout 0.1이며 헤드 파라미터는 1,337,425개다. O loss weight는 0.4에서 1.0으로 변경했다. negative-only batch의 경계 loss와 토큰 하나에 여러 gold가 겹쳐 표현할 수 없는 경우도 명시적으로 처리한다.
+
+`diverse-v1`에서 validation exact-span F1로 체크포인트를 선택한 뒤 test를 읽었다. frozen head 실험은 최대 80 epochs 중 validation patience에 따라 46회까지 학습하고 22번째를 선택했다. LoRA 비교는 rank 16, backbone 학습률 1e-4, head 학습률 3e-4, batch 32를 사용했다. 30 epochs로 시작했으나 계산 예산상 완전한 6번째 epoch 이후 비교를 종료하고, 저장 완료된 최선 체크포인트를 고정한 뒤 테스트했다. 완료되지 않은 다음 epoch는 폐기했다. 기본 프로그램을 이 체크포인트로 승격하지 않았다.
+
+| 구성 | validation F1 | test F1 | test precision / recall | test TP / FP / FN |
+|---|---:|---:|---:|---|
+| 고정 백본 + 문자 경계 헤드 v3 | 0.8525 | 0.7449 | 0.6833 / 0.8186 | 3,029 / 1,404 / 671 |
+| LoRA + 같은 문자 경계 헤드 v4 | 0.8445 | 0.8244 | 0.7763 / 0.8789 | 3,252 / 937 / 448 |
+
+LoRA의 validation 선택 점수는 학습 시 float32 matmul `high`에서 0.844117이며, 위 표는 저장 모델을 실제 추론 기본값 `highest`로 다시 평가한 0.844472이다. 이 작은 차이와 실행 설정을 metadata/report에 기록했다. singleton 및 batched 결과는 별도 32개 validation 사례에서 일치했다. 두 실험의 test에는 1,500문서, gold 3,700개 구간이 있고, 이전 legacy 데이터의 0.86 점수와 직접 비교하지 않는다. test를 사용해 체크포인트를 고르거나 규칙을 추가하지 않았다. 모델별 결과는 `runs/pii/qwen-0.8b-v3/evaluation.json`, `runs/pii/qwen-0.8b-v4-lora16/evaluation.json`에 보존한다.
+
+LoRA test 유형별 F1은 PERSON 0.7060, ADDRESS 0.6343, PHONE 1.0000, EMAIL 0.8750, IDENTIFIER 1.0000이다. 원시/Interpreter 최종 F1은 같아 새 문자 경계 헤드 뒤에서 기존 공백 보정 규칙이 추가 이득을 만들지는 않았다. 752,393,024개의 원본 백본 가중치는 고정하고 LoRA 10,822,656개와 헤드를 학습했다. 생성 토큰은 0이며 확률 보정은 아직 없다.
+
+**99.5% 목표는 달성하지 못했다.** validation 오류 분류에서 이메일의 앞 `contact` 부분 누락, 식별번호를 주소·식별번호로 나누는 오류, 일반 명사와 공개 숫자의 오탐이 확인됐다. 학습 loss가 거의 0인데 새 문맥의 오류가 남는 것은 단순 epoch 부족보다 문맥·배치 일반화 문제다. 다음 개선 대상은 heldout 문구를 복사하지 않는 학습용 역할·배치 조합, 일반 명사·공개 숫자 hard negative, 검증 근거가 있는 도메인 정책이다. test 결과에서 규칙을 만들어 같은 test로 성공을 주장하지 않는다. 자동 규칙 생성·검증·채택 루프 완성과 독립 실문서 평가도 남아 있다.
+
+별도 실행 검증으로 diverse-v1 test 합성 record 120개를 연결한 17,204-byte 문서를 처리했다. LoRA 모델의 고정 분할도 선언된 모델 예산 128토큰을 지키도록 자동 분할했으며, 모든 경로는 원본 바이트 복원에 성공했다.
+
+| 구성 | 작업 단위 | 입력 토큰 | exact-span F1 | 처리 시간 | 정확한 복원 |
+|---|---:|---:|---:|---:|---|
+| 규칙 + 고정 분할 | 15 | 해당 없음 | 0.7717 | 0.013초 | 통과 |
+| LoRA + 고정 분할/128토큰 예산 | 66 | 8,382 | 0.8407 | 8.21초 | 통과 |
+| 같은 LoRA + 문단 분할/128토큰 예산 | 120 | 5,540 | 0.8196 | 32.81초 | 통과 |
+
+이 비교에서는 문단 분할이 입력 토큰을 줄였지만 F1과 지연에서 우월하지 않았다. 초기 v2 결과의 전처리 이득을 다른 가중치·데이터에도 일반화하지 않는다. 모델 로딩 6.21초는 위 지연에서 제외하고, 실행 peak GPU allocation은 1,631,114,752 bytes였다. 원본 복원 성공과 개인정보 탐지 성공은 별개의 지표다. 결과는 `runs/pii/streaming-report-v4-diverse.json`이고 재현 명령은 다음과 같다.
+
+```bash
+python tools/benchmark_pii.py --checkpoint runs/pii/qwen-0.8b-v4-lora16 \
+  --recipe diverse-v1 --documents 120 --output runs/pii/streaming-report-v4-diverse.json
+```
+
+현재 전체 회귀 테스트 1,096개 및 실제 Chromium native 실행·복원·피드백 흐름이 통과했다. 피드백 화면의 정답 없음·부분 정답·완전한 정답 분기도 실제 API로 확인했다. 이 소프트웨어 검증을 99.5% 모델 품질이나 실제 아이폰 구동 검증으로 해석하지 않는다.
+
+### 12.4 동일 데이터 외부 기준선 실측
+
+공개 전문 모델과 Presidio를 실제로 실행하여 동일한 `diverse-v1` test에서 비교했다. 고정 원문은 **1,500문서, 정답 3,700구간**이며 언어 표시는 한국어 750, 영어 500, 혼합 250문서다. test SHA-256은 `a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a`이다. 추론기는 원문과 문서 ID만 받으며, Presidio의 다국어 구성만 기존 언어 metadata로 실행 언어를 선택한다. 정답 구간·템플릿·가족 정보는 탐지기에 전달하지 않았다. 데이터, 모델 revision, 출력 파일 hash와 미리 정한 threshold·유형 매핑을 보존했다. 외부 결과를 보고 test 원문이나 설정을 바꾸지 않았다.
+
+비교 원본은 [comparison.json](../runs/pii/baselines/comparison.json)이다. 위치는 Unicode 문자 좌표이고, **시작·끝·유형이 모두 일치할 때만 TP**인 micro precision/recall/F1을 사용한다. 각 모델의 고정 출력 어댑터 뒤에 공통으로 앞뒤 공백만 제거한다. `mask_coverage`는 유형을 무시한 예측 구간의 합집합으로 별도 계산한다. 아래의 완전 마스킹 재현율은 정답 하나의 **공백을 제외한 모든 문자**가 덮인 비율이며, 이름 사이 공백만 남은 경우를 개인정보 문자 노출과 구별한다. 쉼표를 포함한 공백 이외의 문자는 제외하지 않는다. 정확한 유형·경계 지표와 함께 읽어야 한다.
+
+| 구성 | exact precision (%) | exact recall (%) | exact F1 (%) | 정답 구간 완전 마스킹 재현율·공백 제외 (%) |
+|---|---:|---:|---:|---:|
+| Ganglion Qwen3.5-0.8B LoRA v4 | 77.63 | 87.89 | 82.44 | 91.76 |
+| GLiNER multi PII v1 | 59.59 | 64.43 | 61.91 | 91.38 |
+| GLiNER2 privacy-filter PII multi | 78.43 | 74.30 | 76.31 | 92.54 |
+| Korean PII e5-base·공식 정규화 + 유형 통합 | 65.91 | 74.51 | 69.95 | 75.14 |
+| Piiranha v1·유형 통합 | 74.05 | 50.59 | 60.12 | 51.16 |
+| Presidio·영어 기본 구성 | 11.78 | 10.41 | 11.05 | 11.14 |
+| Presidio·명시적 영어/한국어 구성 | 42.65 | 45.62 | 44.08 | 46.62 |
+
+언어별 수치는 아래와 같다. 각 셀은 **precision / recall / F1 (%)**이며, 한국어/영어/혼합 gold는 각각 1,600/1,300/800개다.
+
+| 구성 | 한국어 750문서 | 영어 500문서 | 혼합 250문서 |
+|---|---|---|---|
+| Ganglion LoRA v4 | 75.94 / 90.75 / 82.69 | 76.73 / 80.15 / 78.40 | 82.48 / 94.75 / 88.19 |
+| GLiNER | 27.01 / 29.81 / 28.34 | 85.95 / 95.08 / 90.28 | 84.19 / 83.88 / 84.03 |
+| GLiNER2 | 49.03 / 42.62 / 45.60 | 97.57 / 98.77 / 98.17 | 98.12 / 97.88 / 98.00 |
+| Korean PII e5-base | 85.37 / 89.38 / 87.33 | 55.43 / 64.38 / 59.57 | 49.10 / 61.25 / 54.51 |
+| Piiranha | 58.72 / 34.50 / 43.46 | 85.00 / 69.31 / 76.36 | 79.36 / 52.38 / 63.10 |
+| Presidio·영어 기본 | 0.00 / 0.00 / 0.00 | 19.63 / 22.08 / 20.78 | 12.58 / 12.25 / 12.41 |
+| Presidio·영어/한국어 | 64.22 / 37.69 / 47.50 | 38.19 / 52.85 / 44.34 | 32.62 / 49.75 / 39.41 |
+
+Ganglion은 이 recipe의 **train split으로 학습**하고 validation으로 체크포인트를 선택했다. 외부 모델은 공개 가중치를 **추가 학습 없이** 사용했다. 따라서 위 표는 이 합성 분포에 대한 특화 모델과 공개 모델의 전이 성능 비교이며 Ganglion 구조 자체의 일반적 우월성을 입증하지 않는다. 영어·혼합에서는 GLiNER2, 한국어에서는 Korean PII e5-base의 F1이 Ganglion보다 높았다. 전체 완전 마스킹 재현율도 GLiNER2가 높았다. GLiNER/GLiNER2/Piiranha의 공개 PII 학습 언어 목록에는 한국어가 없고, Korean PII e5-base는 한국어 중심으로 학습됐다. 각 모델의 기존 자체 평가 수치와 이 test 수치를 혼합하지 않는다. 근거 모델 카드는 [GLiNER](https://huggingface.co/urchade/gliner_multi_pii-v1/blob/1fcf13e85f4eef5394e1fcd406cf2ca9ea82351d/README.md), [GLiNER2](https://huggingface.co/fastino/gliner2-privacy-filter-PII-multi/blob/1cb4166094dc58fa8d836429f060d6c95f62b495/README.md), [Korean PII e5-base](https://huggingface.co/FrameByFrame/korean-pii-e5-base/blob/a308c54b4407819624a5661e31e162a269f39818/README.md), [Piiranha](https://huggingface.co/iiiorg/piiranha-v1-detect-personal-information/blob/255acde67a2f34cf452eb42e365b24d2957352fc/README.md)이다.
+
+외부 native taxonomy는 동일하지 않다. Piiranha의 `GIVENNAME`/`SURNAME`은 PERSON, `BUILDINGNUM`/`STREET`/`CITY`/`ZIPCODE`는 ADDRESS로 명시적으로 매핑했다. native 개인 식별·계정 항목은 IDENTIFIER로 매핑하며 모델별 전체 표는 metadata에 기록한다. HF 어댑터는 같은 coarse 유형의 인접 구간을 공백·문장부호 간격에 한해 통합하고 앞뒤 공백·일부 문장부호를 정리한다. 일반 단어나 숫자가 있는 빈틈을 메우지 않는다. 이 고정 어댑터를 공유 scorer의 추가 공백 정리와 구별한다. Piiranha의 단순 native 매핑 F1은 30.17%, 통합 후 60.12%로, subtype을 전체 이름/주소 정답에 맞추는 것만으로도 지표가 크게 달라졌다. 이 차이를 가중치 개선으로 해석하지 않는다.
+
+Korean PII e5-base는 공개 [usage.py](https://huggingface.co/FrameByFrame/korean-pii-e5-base/blob/a308c54b4407819624a5661e31e162a269f39818/usage.py)의 BIOES 해석·조사/날짜/공백 정규화를 사용했다. 다음 profile들은 test를 실행하기 전에 정의하여 동일한 logits에서 함께 저장했으며, test에서 가장 높은 값을 골라 기본 경로를 바꾸지 않았다.
+
+| Korean PII e5-base 출력 profile | exact F1 (%) |
+|---|---:|
+| native 매핑만 (`native_mapped`) | 60.76 |
+| 공식 정규화만, coarse 통합 없음 (`card_normalized`) | 62.49 |
+| 공식 정규화 + coarse 통합·보고 기본값 (`card_normalized_canonical`) | 69.95 |
+| 공식 조사 제거 없이 coarse 통합 (`canonical`) | 70.61 |
+
+공식 후처리도 rescue와 regression을 함께 감사했다. 이 corpus에서는 조사 제거가 정확했던 PERSON 26개를 줄였고, PERSON의 정확한 경계를 개선한 사례는 없었다. 실제로 `test-00087`의 `양연은 → 양연`, `test-00097`의 `전도은 → 전도`, `test-00151`의 `홍성은 → 홍성`이 발생했다. 전체 다섯 유형에서는 식별번호 끝 마침표 제거 등을 통해 25개 구간의 경계가 정확해졌으며, 문장부호만 포함한 `private_email` 구간 236개도 제거됐다. 따라서 공식 정규화만의 F1 상승 60.76% → 62.49%를 이름 악화 26건과 경계 개선 25건의 차이만으로 설명하지 않는다. 이 감사는 저장된 native 예측을 정답으로 사후 분류한 것이며 모델 입력이나 설정을 바꾸지 않았다. [정규화 audit JSON](../runs/pii/baselines/korean-e5-normalization-audit.json).
+
+Presidio는 `presidio-analyzer 2.2.364`, `spaCy 3.8.16`, 공식 `en_core_web_lg 3.8.0`을 사용했다. 영어 기본 구성은 기본 전화 국가 목록과 영어 recognizer를 유지했으며 한국어에 대한 지원 범위를 벗어나는 입력도 그대로 평가했다. 별도 한국어 구성은 `ko_core_news_sm 3.8.0`과 그 native PS/LC label 매핑, 공식 한국 식별번호 recognizer의 명시적 활성화, KR 전화 지역을 사용한다. 혼합 문서는 영어/한국어 결과를 합쳤다. 한국 식별번호 recognizer는 기본 registry에서 꺼져 있으므로 이 구성을 기본 설정이라고 부르지 않는다. 현재 RRN recognizer는 `ko`를 사용하고 일부 registry/class에는 이전 `kr` alias가 남아 있다. pre-2020 checksum이 맞지 않으면 False가 아닌 None을 반환하는 구현도 확인했다. 이 합성 식별번호를 검증된 실제 주민등록번호로 취급하지 않는다. [공식 registry](https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/conf/default_recognizers.yaml), [RRN 검증 코드](https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/country_specific/korea/kr_rrn_recognizer.py).
+
+Presidio의 EMAIL F1은 두 구성 모두 0이었지만, 직접 확인한 원인은 이 데이터의 **예약 도메인 `.example`과 검증 정책의 불일치**다. 공식 `EmailRecognizer`의 regex는 후보를 찾지만 `tldextract`의 public suffix/FQDN이 비어 있으면 거부한다. 동일한 두 합성 문장에서 `.example`만 `.com`으로 바꾼 별도 보조 실험에서는 두 구성 모두 이메일을 찾았다. 기본 전화 지역에는 KR이 없어 국내 `010` 표기 탐지가 없었고, 같은 문장에서 `+82` 국제 표기로만 바꾸면 기본 구성도 탐지했다. KR 구성을 활성화한 원래 test의 PHONE F1은 97.56%였다. 또한 `LOCATION → ADDRESS`는 근사 매핑으로, 도시·도로 일부를 찾은 것을 건물 번호·호수까지 포함한 주소 전체의 정확한 탐지로 인정하지 않는다. 이는 모델 일반적 실패, 어댑터 결함, annotation granularity 차이를 분리해서 읽어야 하는 이유다. 이 이메일 원인 확인은 Presidio에 한정한다. [공식 이메일 검증](https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py), [IANA 예약 도메인](https://www.iana.org/assignments/special-use-domain-names/), [보조 실험 audit JSON](../runs/pii/baselines/presidio-format-probes.audit.json). 보조 실험은 위 동일-test 점수에 포함하지 않았으며 원래 test와 예측 파일을 수정하지 않았다.
+
+HF 모델의 별도 감사에서는 단순한 유형 매핑 오류로 설명되지 않는 native 예측을 확인했다. `test-00002`의 이메일 중 `000002.s42`를 Piiranha는 USERNAME으로 출력했고 EMAIL은 없었다. Korean PII e5-base는 같은 이메일을 EMAIL/URL로 나누고 앞 `contact`를 놓쳤다. 고정 가중치의 8개 보조 입력에서 `.example → .com` 변경은 Piiranha의 해당 숫자 부분을 EMAIL로 바꿨지만 이메일 전체를 복구하지 못했다. Korean PII e5-base는 이메일만 제시한 문맥에서는 전체 EMAIL을 찾았으나 원래 영어 문맥에서는 `.com`으로 바꾸어도 `contact`가 빠졌다. 이는 해당 입력의 형식·문맥 민감성에 대한 증거이며 `.example`을 두 모델의 모든 이메일 오류의 원인으로 단정하지 않는다. Korean 모델의 decoder는 고정 revision 공식 helper와 실제 8개 입력 및 무작위 BIOES 100개에서 일치했고, singleton/batch 결과도 일치했다. 보조 입력은 새 benchmark나 test 튜닝에 쓰지 않았으며 원본 test와 예측 hash는 유지됐다. [HF 구현·형식 audit JSON](../runs/pii/baselines/hf-models-audit.json).
+
+Ganglion의 exact FP **937개**를 모두 무관한 문자열의 오탐으로 읽으면 원인을 놓친다. 도메인 분석기는 **정답과 겹치지 않는 `fp` 356건**, **`boundary_mismatch` 315건**, **`split` 133건**을 분류했다. 경계가 틀리면 strict 지표에는 FP와 FN이 함께 생기며, 한 정답을 둘로 나누면 FP 두 개와 FN 하나가 생긴다. 이 결과에서는 `356 + 315 + 2×133 = 937`이고 FN은 `315 + 133 = 448`이다. 원문 없는 실패 분류와 strict 산술 지표를 함께 보관한다.
+
+실제 합성 test 사례는 다음과 같다. 이 예시를 규칙 작성에 바로 사용해 같은 test의 성공을 다시 주장하지 않는다.
+
+| 문서 | 실제 출력과 정답의 차이 | 해석 |
+|---|---|---|
+| `test-00004` | 개인정보가 아닌 `우편`의 `우`를 PERSON으로 출력 | 문맥·토큰 내부의 순수 오탐 |
+| `test-00002` | 주소 끝 `Southridge` 다음 쉼표까지 ADDRESS에 포함 | strict 경계 오류, 개인정보 내용 자체는 덮임 |
+| `test-00013` | 이메일의 앞 `contact`를 빼고 `000013.s42@reply.test.example`만 EMAIL로 출력 | 실제 식별 문자열 일부가 남는 경계 누락 |
+| `test-00003` | `Zachary Bennett`를 `Zach`와 `ry Bennett`로 나누어 중간 `a`가 남음 | split 및 실제 문자 누락 |
+
+외부 모델에서도 개인정보 유형의 언급과 실제 개인 정보의 역할을 혼동한 순수 오탐이 있었다. 빈 서식을 설명하는 `test-00000`에서 GLiNER는 `개인의 이름`을 PERSON으로, Presidio 한국어 구성은 `서식`을 PERSON으로 출력했다. `test-00005`의 공개 도움말 항목 번호 `4200005`는 GLiNER2에서 PHONE이 됐다. 모델별 실패 histogram과 합성 원문 예시는 comparison JSON에 보관한다. 후속 개선은 별도 train/validation의 역할·배치 조합, hard negative 및 독립 검증 자료로 설계하고, 새로 동결한 test로 평가해야 한다.
+
+이 실험은 짧은 합성 문단의 **탐지 비교**다. 완전 마스킹 91.76%나 문자 coverage를 문서 익명성 보장으로 확대하지 않는다. 외부 모델 복원 파이프라인, 실제 아이폰 실행, 모바일 전력·메모리, 통제된 속도 비교를 수행하지 않았다. CUDA/CPU, batch 크기·정밀도와 동시 작업이 달라 실행 시간의 우열도 주장하지 않는다. 모든 모델의 생성 토큰은 0이지만 GLiNER의 text+schema 입력 토큰은 계측하지 않았고 spaCy 토큰은 LLM tokenizer 토큰과 단위가 다르다. 입력 토큰·메모리·속도 측정 범위는 각 metadata에서 확인한다.
+
+외부 Transformer 실행은 독립 venv의 **Transformers 4.57.6**을 사용했고, 기존 Ganglion conda의 **5.16.1**은 유지했다. HF/GLiNER 실행 환경과 Presidio 환경도 분리했다. 다음은 사용한 네 runner와 공통 scorer의 재현 명령이며, 기존 결과를 보존하도록 새 출력 디렉터리를 사용한다. 환경 재구성에는 각 `*.metadata.json`의 패키지 버전과 `presidio.environment.txt`를 사용한다.
+
+```bash
+MAIN_PY=/home/kist/miniforge3/envs/ganglion/bin/python
+HF_PY=/tmp/ganglion-hf-baselines-venv/bin/python
+GLINER_PY=/tmp/ganglion-gliner-baselines/bin/python
+PRESIDIO_PY=runs/pii/baselines/.venv-presidio/bin/python
+OUT=runs/pii/baselines-reproduced
+export PYTHONPATH=.
+
+"$MAIN_PY" tools/pii_baselines/ganglion_model.py \
+  --data runs/pii/diverse-v1/test.jsonl \
+  --checkpoint runs/pii/qwen-0.8b-v4-lora16 \
+  --output "$OUT/ganglion-lora.predictions.jsonl"
+"$GLINER_PY" tools/pii_baselines/gliner_models.py \
+  --backend both --data runs/pii/diverse-v1/test.jsonl --output "$OUT"
+"$HF_PY" tools/pii_baselines/hf_models.py --model korean-e5 \
+  --input runs/pii/diverse-v1/test.jsonl \
+  --output "$OUT/korean-e5.predictions.jsonl" --metadata "$OUT/korean-e5.metadata.json"
+"$HF_PY" tools/pii_baselines/hf_models.py --model piiranha \
+  --input runs/pii/diverse-v1/test.jsonl \
+  --output "$OUT/piiranha.predictions.jsonl" --metadata "$OUT/piiranha.metadata.json"
+"$PRESIDIO_PY" tools/pii_baselines/presidio_model.py \
+  --configuration en-default --output-prefix "$OUT/presidio-en-default"
+"$PRESIDIO_PY" tools/pii_baselines/presidio_model.py \
+  --configuration en-ko --output-prefix "$OUT/presidio-en-ko"
+"$MAIN_PY" tools/pii_baselines/compare.py \
+  --data runs/pii/diverse-v1/test.jsonl --captures "$OUT" \
+  --output "$OUT/comparison.json" --include-examples
+```
+
+원래 예측·metadata는 `runs/pii/baselines/`의 `ganglion-lora`, `gliner`, `gliner2`, `korean-e5`, `piiranha`, `presidio-en-default`, `presidio-en-ko`에 대응하는 `*.predictions.jsonl` / `*.metadata.json`이다. 공통 scorer는 manifest/test hash, 전체 1,500문서의 ID, 각 구간의 좌표·유형과 외부 capture의 예측 hash를 검증한 뒤 계산한다. 후처리 profile별 점수, native 전체 label 마스킹, negative 문서의 오탐률도 comparison JSON에 저장한다.
+
+개발 보존용 [평가 스냅샷](../examples/pii/snapshots/2026-10-08-baseline/)에는 동일한 합성 test·manifest, 비교·감사 JSON, 고정 모델 설정 및 gzip으로 압축한 일곱 예측 capture를 함께 기록한다. 로컬 체크포인트 가중치와 운영 실행 파일은 기존 위치에 보존한다. 스냅샷의 예측 파일을 압축 해제하면 모델을 다시 실행하지 않고 동일한 scorer로 결과를 재계산할 수 있다.

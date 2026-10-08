@@ -41,9 +41,17 @@ runs/**/*.ckpt
 runs/**/*.pt
 runs/**/*.pth
 
+# Reversible text jobs can contain sensitive outputs and encrypted recovery data.
+runs/programs/
+runs/pii/
+runs/ui-preview/
+
 # Temporary PowerPoint files
 ~$*.pptx
 
 
 # Jupyter
 .ipynb_checkpoints/
+
+# operator CLI context (per checkout, see docs/tasks/cli_operator.md)
+.ganglion/

@@ -1,0 +1,4821 @@
+{
+  "dataset": "runs/pii/diverse-v1/test.jsonl",
+  "test_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+  "recipe": "diverse-v1",
+  "documents": 1500,
+  "gold_entities": 3700,
+  "protocol": {
+    "coordinate": "Unicode character",
+    "metric": "micro exact typed span F1",
+    "postprocessing": "exported native adapter then shared whitespace trim only",
+    "mask_metrics": "type-agnostic union of predicted character intervals",
+    "non_whitespace_entity_mask_recall": "all non-whitespace characters of a gold entity are covered; omitted separators alone do not imply disclosure",
+    "native_all_label_mask_metrics": "also includes native PII labels outside the five-type task",
+    "test_used_for_tuning": false,
+    "timings_comparable": false,
+    "scope": "fabricated synthetic paragraphs; detection only, not restoration or real-document anonymity"
+  },
+  "models": {
+    "ganglion-lora": {
+      "metadata": {
+        "model_id": "Ganglion Qwen3.5-0.8B LoRA v4",
+        "checkpoint": "runs/pii/qwen-0.8b-v4-lora16",
+        "model_revision": "2fc06364715b967f1860aea9cf38778875588b17",
+        "test_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "documents": 1500,
+        "source": "local frozen validation-selected checkpoint; no further optimization",
+        "base_parameters": 752393024,
+        "adapter_parameters": 10822656,
+        "head_parameters": 1337425,
+        "generation_tokens": 0,
+        "batch_size": 64,
+        "load_seconds": 5.994167612167075,
+        "inference_seconds": 12.63985597784631,
+        "timing_scope": "batched backbone+readout; concurrent GPU jobs, not a speed ranking",
+        "precision": "BF16 backbone/FP32 heads",
+        "float32_matmul_precision": "highest",
+        "labels": [
+          "O",
+          "B-PERSON",
+          "I-PERSON",
+          "B-ADDRESS",
+          "I-ADDRESS",
+          "B-PHONE",
+          "I-PHONE",
+          "B-EMAIL",
+          "I-EMAIL",
+          "B-IDENTIFIER",
+          "I-IDENTIFIER"
+        ],
+        "package_versions": {
+          "torch": "2.11.0+cu128"
+        },
+        "decoder": {
+          "boundary_classes": 32,
+          "decode_mode": "bio-viterbi",
+          "joint_type_weight": 0.5
+        },
+        "prediction_sha256": "bf1b00e9a0251213f84d92d4470260df09af95247ed3f39da1eba38d58f101a6",
+        "checkpoint_sha256": {
+          "adapter/adapter_config.json": "134bf1a74623a2929bcc6175795db02ee25ec9be3ac0b4375b796a4d9f556914",
+          "adapter/adapter_model.safetensors": "35cd0851a74230c5c8ee8fb55ccf21f3c2bb1cc2573396d80b955c96819a5287",
+          "heads.safetensors": "7aee32df2ecd33f8be5a103b4b3b454cdb78d12884bbe1bbc70d584904e88480",
+          "model.json": "4b1f0df645d56027821192723d926285fb76475f0dfa47f5848a6036c1655f52"
+        },
+        "artifact_hash_audit": "post-capture audit; original exact metrics reproduced unchanged"
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 3252,
+        "fp": 937,
+        "fn": 448,
+        "precision": 0.7763189305323466,
+        "recall": 0.8789189189189189,
+        "f1": 0.8244390924071492
+      },
+      "exported_exact": {
+        "tp": 3252,
+        "fp": 937,
+        "fn": 448,
+        "precision": 0.7763189305323466,
+        "recall": 0.8789189189189189,
+        "f1": 0.8244390924071492
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 808,
+          "fp": 581,
+          "fn": 92,
+          "precision": 0.5817134629229662,
+          "recall": 0.8977777777777778,
+          "f1": 0.7059851463521188
+        },
+        "ADDRESS": {
+          "tp": 444,
+          "fp": 256,
+          "fn": 256,
+          "precision": 0.6342857142857142,
+          "recall": 0.6342857142857142,
+          "f1": 0.6342857142857142
+        },
+        "PHONE": {
+          "tp": 600,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        },
+        "EMAIL": {
+          "tp": 700,
+          "fp": 100,
+          "fn": 100,
+          "precision": 0.875,
+          "recall": 0.875,
+          "f1": 0.875
+        },
+        "IDENTIFIER": {
+          "tp": 700,
+          "fp": 0,
+          "fn": 0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 1042,
+          "fp": 316,
+          "fn": 258,
+          "precision": 0.7673048600883653,
+          "recall": 0.8015384615384615,
+          "f1": 0.7840481565086531
+        },
+        "ko": {
+          "tp": 1452,
+          "fp": 460,
+          "fn": 148,
+          "precision": 0.7594142259414226,
+          "recall": 0.9075,
+          "f1": 0.826879271070615
+        },
+        "mixed": {
+          "tp": 758,
+          "fp": 161,
+          "fn": 42,
+          "precision": 0.8248095756256801,
+          "recall": 0.9475,
+          "f1": 0.8819080860965678
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 70083,
+        "correctly_masked_characters": 69562,
+        "overmasked_characters": 521,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 3395,
+        "fully_masked_non_whitespace_entities": 3395,
+        "gold_entities": 3700,
+        "character_recall": 0.9870310460298541,
+        "character_precision": 0.9925659575075267,
+        "fully_masked_entity_recall": 0.9175675675675675,
+        "fully_masked_non_whitespace_entity_recall": 0.9175675675675675,
+        "non_pii_character_overmask_rate": 0.006307506053268765
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 70083,
+        "correctly_masked_characters": 69562,
+        "overmasked_characters": 521,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 3395,
+        "fully_masked_non_whitespace_entities": 3395,
+        "gold_entities": 3700,
+        "character_recall": 0.9870310460298541,
+        "character_precision": 0.9925659575075267,
+        "fully_masked_entity_recall": 0.9175675675675675,
+        "fully_masked_non_whitespace_entity_recall": 0.9175675675675675,
+        "non_pii_character_overmask_rate": 0.006307506053268765
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 0,
+      "negative_document_fp_rate": 0.0,
+      "pure_non_pii_predictions": 356,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "boundary_mismatch": 315,
+        "split": 133,
+        "fp": 356
+      },
+      "examples": {
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 69,
+                "end": 94,
+                "type": "ADDRESS",
+                "value": "40 Aspen Way, Southridge,"
+              }
+            ],
+            "expected": [
+              {
+                "start": 69,
+                "end": 93,
+                "type": "ADDRESS",
+                "value": "40 Aspen Way, Southridge"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00013",
+            "language": "en",
+            "source": "The individual Trevor Hayes provided home details 365 Aspen Way, Riverford and a private mailbox contact000013.s42@reply.test.example.",
+            "predicted": [
+              {
+                "start": 104,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "000013.s42@reply.test.example"
+              }
+            ],
+            "expected": [
+              {
+                "start": 97,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "contact000013.s42@reply.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00016",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 문희연; 자택 위치 전라남도 순천시 삼산로 478 1145호; 휴대전화번호 010-7033-2614; 전자우편 계정 contact000016.s42@contact.testing.example; 개인 식별 코드 710402-1632614.",
+            "predicted": [
+              {
+                "start": 26,
+                "end": 47,
+                "type": "ADDRESS",
+                "value": "라남도 순천시 삼산로 478 1145호"
+              }
+            ],
+            "expected": [
+              {
+                "start": 25,
+                "end": 47,
+                "type": "ADDRESS",
+                "value": "전라남도 순천시 삼산로 478 1145호"
+              }
+            ]
+          }
+        ],
+        "split": [
+          {
+            "document_id": "test-00003",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Zachary Bennett / 집 주소 울산광역시 남구 달구벌대로 144 13층 / mobile 010-7033-2601 / 메일 contact000003.s42@people.test.example / personal ID 750628-1632601",
+            "predicted": [
+              {
+                "start": 22,
+                "end": 26,
+                "type": "PERSON",
+                "value": "Zach"
+              },
+              {
+                "start": 27,
+                "end": 37,
+                "type": "PERSON",
+                "value": "ry Bennett"
+              }
+            ],
+            "expected": [
+              {
+                "start": 22,
+                "end": 37,
+                "type": "PERSON",
+                "value": "Zachary Bennett"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00023",
+            "language": "ko",
+            "source": "거주 위치로 전라남도 순천시 중앙로 65가 기록되어 있으며 회신용 휴대폰은 010-7033-2621입니다.",
+            "predicted": [
+              {
+                "start": 7,
+                "end": 9,
+                "type": "PERSON",
+                "value": "전라"
+              },
+              {
+                "start": 10,
+                "end": 23,
+                "type": "ADDRESS",
+                "value": "도 순천시 중앙로 65가"
+              }
+            ],
+            "expected": [
+              {
+                "start": 7,
+                "end": 22,
+                "type": "ADDRESS",
+                "value": "전라남도 순천시 중앙로 65"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00034",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 강원특별자치도 춘천시 달구벌대로 276 834호로 확인했습니다. 수령 실명은 고하서입니다.",
+            "predicted": [
+              {
+                "start": 15,
+                "end": 17,
+                "type": "PERSON",
+                "value": "강원"
+              },
+              {
+                "start": 18,
+                "end": 41,
+                "type": "ADDRESS",
+                "value": "별자치도 춘천시 달구벌대로 276 834호"
+              }
+            ],
+            "expected": [
+              {
+                "start": 15,
+                "end": 41,
+                "type": "ADDRESS",
+                "value": "강원특별자치도 춘천시 달구벌대로 276 834호"
+              }
+            ]
+          }
+        ],
+        "fp": [
+          {
+            "document_id": "test-00004",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 77 566호로 확인했습니다. 수령 실명은 유진태입니다.",
+            "predicted": [
+              {
+                "start": 4,
+                "end": 5,
+                "type": "PERSON",
+                "value": "우"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00006",
+            "language": "ko",
+            "source": "고지도님이 남긴 휴대전화는 010-7033-2604이고 개인 이메일은 contact000006.s42@contact.testing.example입니다.",
+            "predicted": [
+              {
+                "start": 6,
+                "end": 7,
+                "type": "PERSON",
+                "value": "남"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00008",
+            "language": "ko",
+            "source": "거주 위치로 강원특별자치도 춘천시 솔바람길 209가 기록되어 있으며 회신용 휴대폰은 010-7033-2606입니다.",
+            "predicted": [
+              {
+                "start": 40,
+                "end": 41,
+                "type": "PERSON",
+                "value": "용"
+              }
+            ],
+            "expected": []
+          }
+        ]
+      },
+      "adapter_profiles": {}
+    },
+    "gliner": {
+      "metadata": {
+        "format": "ganglion-pii-external-baseline-v1",
+        "backend": "gliner",
+        "model_id": "urchade/gliner_multi_pii-v1",
+        "revision": "1fcf13e85f4eef5394e1fcd406cf2ca9ea82351d",
+        "threshold": 0.3,
+        "labels": {
+          "person": "PERSON",
+          "address": "ADDRESS",
+          "phone number": "PHONE",
+          "email": "EMAIL",
+          "national id number": "IDENTIFIER",
+          "social security number": "IDENTIFIER",
+          "identity card number": "IDENTIFIER"
+        },
+        "source": "https://huggingface.co/urchade/gliner_multi_pii-v1",
+        "threshold_source": "https://huggingface.co/spaces/urchade/gliner_multi_pii-v1/blob/main/app.py",
+        "threshold_reason": "Official author's application sets the threshold slider default to 0.3.",
+        "pii_training_languages": [
+          "en",
+          "fr",
+          "es",
+          "de",
+          "it",
+          "pt"
+        ],
+        "created_at": "2026-10-08T07:57:39.666090+00:00",
+        "coordinate": "character",
+        "data": "runs/pii/diverse-v1/test.jsonl",
+        "data_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "rows": 1500,
+        "model_input_fields": [
+          "text"
+        ],
+        "gold_passed_to_model": false,
+        "configuration_policy": "official defaults frozen before test; no test-driven threshold or label tuning",
+        "supported_canonical_types": [
+          "ADDRESS",
+          "EMAIL",
+          "IDENTIFIER",
+          "PERSON",
+          "PHONE"
+        ],
+        "postprocessing": "native label mapping and exact-coordinate/type deduplication only; no boundary corrections",
+        "native_span_count": 4001,
+        "canonical_span_count": 4001,
+        "predictions": "runs/pii/baselines/gliner.predictions.jsonl",
+        "prediction_sha256": "73f5605d726835854e33195f3d1e6e05c3900f775cf748c80fabe0e5ac03a2df",
+        "parameters": 288949504,
+        "parameter_bytes": 1155798016,
+        "dtype": "torch.float32",
+        "device": "cuda",
+        "gpu": "NVIDIA H100 PCIe",
+        "peak_allocated_bytes": 1302795776,
+        "model_load_seconds": 10.014501861995086,
+        "inference_seconds": 4.065022172173485,
+        "batch_size": 8,
+        "timing_caveat": "Concurrent workloads may share H100. These timings are not a controlled speed ranking or an iPhone measurement.",
+        "input_tokens": null,
+        "token_measurement": "Model text+schema input token lengths not instrumented; no token-generation decoder.",
+        "generated_output_tokens": 0,
+        "python": "3.12.14",
+        "packages": {
+          "torch": "2.11.0+cu128",
+          "transformers": "4.57.6",
+          "gliner": "0.2.29",
+          "gliner2": "2.0.0",
+          "huggingface_hub": "0.36.2",
+          "tokenizers": "0.22.2",
+          "sentencepiece": "0.2.2",
+          "protobuf": "7.36.2"
+        },
+        "language_caveat": "Korean is not listed in PII training languages; no pretrained Korean quality guarantee. The unchanged corpus measures Korean/English/mixed transfer.",
+        "evaluation_caveat": "This corpus is Ganglion's fabricated synthetic dataset. Ganglion was trained on its training split; released baselines are zero-shot."
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 2384,
+        "fp": 1617,
+        "fn": 1316,
+        "precision": 0.5958510372406898,
+        "recall": 0.6443243243243243,
+        "f1": 0.6191403713803402
+      },
+      "exported_exact": {
+        "tp": 2384,
+        "fp": 1617,
+        "fn": 1316,
+        "precision": 0.5958510372406898,
+        "recall": 0.6443243243243243,
+        "f1": 0.6191403713803402
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 551,
+          "fp": 613,
+          "fn": 349,
+          "precision": 0.4733676975945017,
+          "recall": 0.6122222222222222,
+          "f1": 0.5339147286821705
+        },
+        "ADDRESS": {
+          "tp": 500,
+          "fp": 300,
+          "fn": 200,
+          "precision": 0.625,
+          "recall": 0.7142857142857143,
+          "f1": 0.6666666666666666
+        },
+        "PHONE": {
+          "tp": 400,
+          "fp": 250,
+          "fn": 200,
+          "precision": 0.6153846153846154,
+          "recall": 0.6666666666666666,
+          "f1": 0.64
+        },
+        "EMAIL": {
+          "tp": 533,
+          "fp": 352,
+          "fn": 267,
+          "precision": 0.6022598870056497,
+          "recall": 0.66625,
+          "f1": 0.6326409495548961
+        },
+        "IDENTIFIER": {
+          "tp": 400,
+          "fp": 102,
+          "fn": 300,
+          "precision": 0.796812749003984,
+          "recall": 0.5714285714285714,
+          "f1": 0.6655574043261231
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 1236,
+          "fp": 202,
+          "fn": 64,
+          "precision": 0.8595271210013908,
+          "recall": 0.9507692307692308,
+          "f1": 0.9028487947406866
+        },
+        "ko": {
+          "tp": 477,
+          "fp": 1289,
+          "fn": 1123,
+          "precision": 0.27010192525481314,
+          "recall": 0.298125,
+          "f1": 0.28342245989304815
+        },
+        "mixed": {
+          "tp": 671,
+          "fp": 126,
+          "fn": 129,
+          "precision": 0.8419071518193224,
+          "recall": 0.83875,
+          "f1": 0.8403256105197244
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 70763,
+        "correctly_masked_characters": 65150,
+        "overmasked_characters": 5613,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 3381,
+        "fully_masked_non_whitespace_entities": 3381,
+        "gold_entities": 3700,
+        "character_recall": 0.9244281741302004,
+        "character_precision": 0.9206788858584288,
+        "fully_masked_entity_recall": 0.9137837837837838,
+        "fully_masked_non_whitespace_entity_recall": 0.9137837837837838,
+        "non_pii_character_overmask_rate": 0.06795399515738498
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 70763,
+        "correctly_masked_characters": 65150,
+        "overmasked_characters": 5613,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 3381,
+        "fully_masked_non_whitespace_entities": 3381,
+        "gold_entities": 3700,
+        "character_recall": 0.9244281741302004,
+        "character_precision": 0.9206788858584288,
+        "fully_masked_entity_recall": 0.9137837837837838,
+        "fully_masked_non_whitespace_entity_recall": 0.9137837837837838,
+        "non_pii_character_overmask_rate": 0.06795399515738498
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 250,
+      "negative_document_fp_rate": 0.8333333333333334,
+      "pure_non_pii_predictions": 620,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "fp": 620,
+        "boundary_mismatch": 996,
+        "fn": 319,
+        "type_mismatch": 1
+      },
+      "examples": {
+        "fp": [
+          {
+            "document_id": "test-00000",
+            "language": "ko",
+            "source": "개인의 이름 및 집 주소를 표시하지 않는 빈 서식입니다. 공개 서식 설명 순번 4200000를 읽어 주세요.",
+            "predicted": [
+              {
+                "start": 0,
+                "end": 6,
+                "type": "PERSON",
+                "value": "개인의 이름"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00000",
+            "language": "ko",
+            "source": "개인의 이름 및 집 주소를 표시하지 않는 빈 서식입니다. 공개 서식 설명 순번 4200000를 읽어 주세요.",
+            "predicted": [
+              {
+                "start": 9,
+                "end": 14,
+                "type": "ADDRESS",
+                "value": "집 주소를"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00004",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 77 566호로 확인했습니다. 수령 실명은 유진태입니다.",
+            "predicted": [
+              {
+                "start": 0,
+                "end": 3,
+                "type": "PERSON",
+                "value": "개인이"
+              }
+            ],
+            "expected": []
+          }
+        ],
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 11,
+                "end": 17,
+                "type": "PERSON",
+                "value": "실명 양도은"
+              }
+            ],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "양도은"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00004",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 77 566호로 확인했습니다. 수령 실명은 유진태입니다.",
+            "predicted": [
+              {
+                "start": 15,
+                "end": 39,
+                "type": "ADDRESS",
+                "value": "대구광역시 수성구 달구벌대로 77 566호로"
+              }
+            ],
+            "expected": [
+              {
+                "start": 15,
+                "end": 38,
+                "type": "ADDRESS",
+                "value": "대구광역시 수성구 달구벌대로 77 566호"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00004",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 77 566호로 확인했습니다. 수령 실명은 유진태입니다.",
+            "predicted": [
+              {
+                "start": 55,
+                "end": 61,
+                "type": "PERSON",
+                "value": "유진태입니다"
+              }
+            ],
+            "expected": [
+              {
+                "start": 55,
+                "end": 58,
+                "type": "PERSON",
+                "value": "유진태"
+              }
+            ]
+          }
+        ],
+        "fn": [
+          {
+            "document_id": "test-00012",
+            "language": "mixed",
+            "source": "본인 실명 문성연 / private e-mail contact000012.s42@contact.testing.example / verification ID 960911-1632610",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 87,
+                "end": 101,
+                "type": "IDENTIFIER",
+                "value": "960911-1632610"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00013",
+            "language": "en",
+            "source": "The individual Trevor Hayes provided home details 365 Aspen Way, Riverford and a private mailbox contact000013.s42@reply.test.example.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 97,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "contact000013.s42@reply.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00014",
+            "language": "ko",
+            "source": "본인 확인 코드 700724-1632612를 저장했고 이메일 연락처는 contact000014.s42@contact.testing.example로 설정했습니다.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 9,
+                "end": 23,
+                "type": "IDENTIFIER",
+                "value": "700724-1632612"
+              }
+            ]
+          }
+        ],
+        "type_mismatch": [
+          {
+            "document_id": "test-01489",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 27 188호로 확인했습니다. 수령 실명은 문민도입니다.",
+            "predicted": [
+              {
+                "start": 55,
+                "end": 61,
+                "type": "IDENTIFIER",
+                "value": "문민도입니다"
+              }
+            ],
+            "expected": [
+              {
+                "start": 55,
+                "end": 58,
+                "type": "PERSON",
+                "value": "문민도"
+              }
+            ]
+          }
+        ]
+      },
+      "adapter_profiles": {}
+    },
+    "gliner2": {
+      "metadata": {
+        "format": "ganglion-pii-external-baseline-v1",
+        "backend": "gliner2",
+        "model_id": "fastino/gliner2-privacy-filter-PII-multi",
+        "revision": "1cb4166094dc58fa8d836429f060d6c95f62b495",
+        "threshold": 0.5,
+        "labels": {
+          "person": "PERSON",
+          "address": "ADDRESS",
+          "phone_number": "PHONE",
+          "email": "EMAIL",
+          "government_id": "IDENTIFIER",
+          "national_id_number": "IDENTIFIER"
+        },
+        "source": "https://huggingface.co/fastino/gliner2-privacy-filter-PII-multi",
+        "threshold_source": "https://huggingface.co/fastino/gliner2-privacy-filter-PII-multi#quick-start",
+        "threshold_reason": "Official model-card quickstart uses threshold=0.5.",
+        "pii_training_languages": [
+          "en",
+          "fr",
+          "es",
+          "de",
+          "it",
+          "pt",
+          "nl"
+        ],
+        "created_at": "2026-10-08T07:57:50.284234+00:00",
+        "coordinate": "character",
+        "data": "runs/pii/diverse-v1/test.jsonl",
+        "data_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "rows": 1500,
+        "model_input_fields": [
+          "text"
+        ],
+        "gold_passed_to_model": false,
+        "configuration_policy": "official defaults frozen before test; no test-driven threshold or label tuning",
+        "supported_canonical_types": [
+          "ADDRESS",
+          "EMAIL",
+          "IDENTIFIER",
+          "PERSON",
+          "PHONE"
+        ],
+        "postprocessing": "native label mapping and exact-coordinate/type deduplication only; no boundary corrections",
+        "native_span_count": 3948,
+        "canonical_span_count": 3505,
+        "predictions": "runs/pii/baselines/gliner2.predictions.jsonl",
+        "prediction_sha256": "bcf4f40002ae4689926a6bdada191a460c6dbf2ad915240530974e928f1ac8ad",
+        "parameters": 307098645,
+        "parameter_bytes": 1228394580,
+        "dtype": "torch.float32",
+        "device": "cuda",
+        "gpu": "NVIDIA H100 PCIe",
+        "peak_allocated_bytes": 1374299648,
+        "model_load_seconds": 6.107818539021537,
+        "inference_seconds": 4.0409745359793305,
+        "batch_size": 8,
+        "timing_caveat": "Concurrent workloads may share H100. These timings are not a controlled speed ranking or an iPhone measurement.",
+        "input_tokens": null,
+        "token_measurement": "Model text+schema input token lengths not instrumented; no token-generation decoder.",
+        "generated_output_tokens": 0,
+        "python": "3.12.14",
+        "packages": {
+          "torch": "2.11.0+cu128",
+          "transformers": "4.57.6",
+          "gliner": "0.2.29",
+          "gliner2": "2.0.0",
+          "huggingface_hub": "0.36.2",
+          "tokenizers": "0.22.2",
+          "sentencepiece": "0.2.2",
+          "protobuf": "7.36.2"
+        },
+        "language_caveat": "Korean is not listed in PII training languages; no pretrained Korean quality guarantee. The unchanged corpus measures Korean/English/mixed transfer.",
+        "evaluation_caveat": "This corpus is Ganglion's fabricated synthetic dataset. Ganglion was trained on its training split; released baselines are zero-shot."
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 2749,
+        "fp": 756,
+        "fn": 951,
+        "precision": 0.7843081312410841,
+        "recall": 0.7429729729729729,
+        "f1": 0.7630811936155447
+      },
+      "exported_exact": {
+        "tp": 2749,
+        "fp": 756,
+        "fn": 951,
+        "precision": 0.7843081312410841,
+        "recall": 0.7429729729729729,
+        "f1": 0.7630811936155447
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 568,
+          "fp": 265,
+          "fn": 332,
+          "precision": 0.6818727490996399,
+          "recall": 0.6311111111111111,
+          "f1": 0.6555106751298326
+        },
+        "ADDRESS": {
+          "tp": 497,
+          "fp": 109,
+          "fn": 203,
+          "precision": 0.8201320132013201,
+          "recall": 0.71,
+          "f1": 0.7611026033690659
+        },
+        "PHONE": {
+          "tp": 400,
+          "fp": 282,
+          "fn": 200,
+          "precision": 0.5865102639296188,
+          "recall": 0.6666666666666666,
+          "f1": 0.62402496099844
+        },
+        "EMAIL": {
+          "tp": 785,
+          "fp": 0,
+          "fn": 15,
+          "precision": 1.0,
+          "recall": 0.98125,
+          "f1": 0.9905362776025236
+        },
+        "IDENTIFIER": {
+          "tp": 499,
+          "fp": 100,
+          "fn": 201,
+          "precision": 0.8330550918196995,
+          "recall": 0.7128571428571429,
+          "f1": 0.7682832948421863
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 1284,
+          "fp": 32,
+          "fn": 16,
+          "precision": 0.9756838905775076,
+          "recall": 0.9876923076923076,
+          "f1": 0.981651376146789
+        },
+        "ko": {
+          "tp": 682,
+          "fp": 709,
+          "fn": 918,
+          "precision": 0.49029475197699496,
+          "recall": 0.42625,
+          "f1": 0.4560347709796055
+        },
+        "mixed": {
+          "tp": 783,
+          "fp": 15,
+          "fn": 17,
+          "precision": 0.981203007518797,
+          "recall": 0.97875,
+          "f1": 0.9799749687108886
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 68145,
+        "correctly_masked_characters": 66347,
+        "overmasked_characters": 1798,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 3424,
+        "fully_masked_non_whitespace_entities": 3424,
+        "gold_entities": 3700,
+        "character_recall": 0.9414126794937283,
+        "character_precision": 0.9736150854794923,
+        "fully_masked_entity_recall": 0.9254054054054054,
+        "fully_masked_non_whitespace_entity_recall": 0.9254054054054054,
+        "non_pii_character_overmask_rate": 0.021767554479418885
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 68145,
+        "correctly_masked_characters": 66347,
+        "overmasked_characters": 1798,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 3424,
+        "fully_masked_non_whitespace_entities": 3424,
+        "gold_entities": 3700,
+        "character_recall": 0.9414126794937283,
+        "character_precision": 0.9736150854794923,
+        "fully_masked_entity_recall": 0.9254054054054054,
+        "fully_masked_non_whitespace_entity_recall": 0.9254054054054054,
+        "non_pii_character_overmask_rate": 0.021767554479418885
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 80,
+      "negative_document_fp_rate": 0.26666666666666666,
+      "pure_non_pii_predictions": 80,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "fn": 276,
+        "boundary_mismatch": 673,
+        "fp": 80,
+        "split": 1,
+        "type_mismatch": 1
+      },
+      "examples": {
+        "fn": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "양도은"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00004",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 77 566호로 확인했습니다. 수령 실명은 유진태입니다.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 15,
+                "end": 38,
+                "type": "ADDRESS",
+                "value": "대구광역시 수성구 달구벌대로 77 566호"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00008",
+            "language": "ko",
+            "source": "거주 위치로 강원특별자치도 춘천시 솔바람길 209가 기록되어 있으며 회신용 휴대폰은 010-7033-2606입니다.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 7,
+                "end": 27,
+                "type": "ADDRESS",
+                "value": "강원특별자치도 춘천시 솔바람길 209"
+              }
+            ]
+          }
+        ],
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00004",
+            "language": "ko",
+            "source": "개인이 우편을 받는 주소를 대구광역시 수성구 달구벌대로 77 566호로 확인했습니다. 수령 실명은 유진태입니다.",
+            "predicted": [
+              {
+                "start": 55,
+                "end": 61,
+                "type": "PERSON",
+                "value": "유진태입니다"
+              }
+            ],
+            "expected": [
+              {
+                "start": 55,
+                "end": 58,
+                "type": "PERSON",
+                "value": "유진태"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00006",
+            "language": "ko",
+            "source": "고지도님이 남긴 휴대전화는 010-7033-2604이고 개인 이메일은 contact000006.s42@contact.testing.example입니다.",
+            "predicted": [
+              {
+                "start": 0,
+                "end": 5,
+                "type": "PERSON",
+                "value": "고지도님이"
+              }
+            ],
+            "expected": [
+              {
+                "start": 0,
+                "end": 3,
+                "type": "PERSON",
+                "value": "고지도"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00006",
+            "language": "ko",
+            "source": "고지도님이 남긴 휴대전화는 010-7033-2604이고 개인 이메일은 contact000006.s42@contact.testing.example입니다.",
+            "predicted": [
+              {
+                "start": 15,
+                "end": 30,
+                "type": "PHONE",
+                "value": "010-7033-2604이고"
+              }
+            ],
+            "expected": [
+              {
+                "start": 15,
+                "end": 28,
+                "type": "PHONE",
+                "value": "010-7033-2604"
+              }
+            ]
+          }
+        ],
+        "fp": [
+          {
+            "document_id": "test-00005",
+            "language": "en",
+            "source": "The customer contact form contains no personal details; its public help entry is 4200005.",
+            "predicted": [
+              {
+                "start": 81,
+                "end": 88,
+                "type": "PHONE",
+                "value": "4200005"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00010",
+            "language": "ko",
+            "source": "연락 번호: (제공되지 않음)\n메일 계정: (제공되지 않음)\n공개 안내 절: 4200010",
+            "predicted": [
+              {
+                "start": 43,
+                "end": 50,
+                "type": "PHONE",
+                "value": "4200010"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00040",
+            "language": "ko",
+            "source": "연락 번호: (제공되지 않음)\n메일 계정: (제공되지 않음)\n공개 안내 절: 4200040",
+            "predicted": [
+              {
+                "start": 43,
+                "end": 50,
+                "type": "PHONE",
+                "value": "4200040"
+              }
+            ],
+            "expected": []
+          }
+        ],
+        "split": [
+          {
+            "document_id": "test-01132",
+            "language": "ko",
+            "source": "신원을 확인할 때 성명 홍재준과 개인번호 810510-1633730를 함께 제시합니다.",
+            "predicted": [
+              {
+                "start": 23,
+                "end": 38,
+                "type": "IDENTIFIER",
+                "value": "810510-1633730를"
+              },
+              {
+                "start": 23,
+                "end": 38,
+                "type": "PHONE",
+                "value": "810510-1633730를"
+              }
+            ],
+            "expected": [
+              {
+                "start": 23,
+                "end": 37,
+                "type": "IDENTIFIER",
+                "value": "810510-1633730"
+              }
+            ]
+          }
+        ],
+        "type_mismatch": [
+          {
+            "document_id": "test-01181",
+            "language": "en",
+            "source": "Personal account metadata: mailbox contact001181.s42@people.test.example; telephone 010 7033 3779; identity marker 701025-1633779.",
+            "predicted": [
+              {
+                "start": 115,
+                "end": 129,
+                "type": "PHONE",
+                "value": "701025-1633779"
+              }
+            ],
+            "expected": [
+              {
+                "start": 115,
+                "end": 129,
+                "type": "IDENTIFIER",
+                "value": "701025-1633779"
+              }
+            ]
+          }
+        ]
+      },
+      "adapter_profiles": {}
+    },
+    "korean-e5": {
+      "metadata": {
+        "model": "FrameByFrame/korean-pii-e5-base",
+        "model_revision": "a308c54b4407819624a5661e31e162a269f39818",
+        "modelcard_url": "https://huggingface.co/FrameByFrame/korean-pii-e5-base/blob/a308c54b4407819624a5661e31e162a269f39818/README.md",
+        "license": "mit",
+        "advertised_languages": [
+          "ko",
+          "en"
+        ],
+        "parameters": 277481509,
+        "packages": {
+          "torch": "2.11.0+cu128",
+          "transformers": "4.57.6",
+          "tokenizers": "0.22.2",
+          "safetensors": "0.8.0",
+          "huggingface-hub": "0.36.2"
+        },
+        "python": "3.12.14",
+        "input_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "documents": 1500,
+        "gold_blind": true,
+        "inference_input_fields": [
+          "id",
+          "text"
+        ],
+        "label_map": {
+          "private_person": "PERSON",
+          "private_address": "ADDRESS",
+          "private_phone": "PHONE",
+          "private_email": "EMAIL",
+          "account_number": "IDENTIFIER"
+        },
+        "native_labels": {
+          "0": "O",
+          "1": "B-private_person",
+          "2": "I-private_person",
+          "3": "E-private_person",
+          "4": "S-private_person",
+          "5": "B-personal_handle",
+          "6": "I-personal_handle",
+          "7": "E-personal_handle",
+          "8": "S-personal_handle",
+          "9": "B-private_phone",
+          "10": "I-private_phone",
+          "11": "E-private_phone",
+          "12": "S-private_phone",
+          "13": "B-private_email",
+          "14": "I-private_email",
+          "15": "E-private_email",
+          "16": "S-private_email",
+          "17": "B-private_address",
+          "18": "I-private_address",
+          "19": "E-private_address",
+          "20": "S-private_address",
+          "21": "B-private_date",
+          "22": "I-private_date",
+          "23": "E-private_date",
+          "24": "S-private_date",
+          "25": "B-private_url",
+          "26": "I-private_url",
+          "27": "E-private_url",
+          "28": "S-private_url",
+          "29": "B-account_number",
+          "30": "I-account_number",
+          "31": "E-account_number",
+          "32": "S-account_number",
+          "33": "B-ip_address",
+          "34": "I-ip_address",
+          "35": "E-ip_address",
+          "36": "S-ip_address"
+        },
+        "unmapped_labels": [
+          "ip_address",
+          "personal_handle",
+          "private_date",
+          "private_url"
+        ],
+        "decode": "argmax, official BIOES helper: B/S starts a new entity; E/S does not immediately close it",
+        "threshold": null,
+        "threshold_policy": "all argmax non-O predictions, no validation or test tuning",
+        "score": "mean assigned native-token softmax probability; canonical spans character-weighted mean; uncalibrated",
+        "profiles": [
+          "native_mapped",
+          "canonical",
+          "card_normalized",
+          "card_normalized_canonical"
+        ],
+        "default_profile": "card_normalized_canonical",
+        "canonical_policy": "strip whitespace and . , ; : at edges; merge adjacent same coarse type across only whitespace or Unicode punctuation; never general words/digits",
+        "korean_normalization": "unaltered official MIT usage.py Josa/date/whitespace normalizer",
+        "max_tokens": 256,
+        "observed_max_tokens": 78,
+        "total_input_tokens": 58618,
+        "generated_tokens": 0,
+        "truncation": false,
+        "batch_size": 32,
+        "device": "cuda",
+        "dtype": "bfloat16",
+        "load_seconds": 22.827738234074786,
+        "inference_seconds": 5.599357963073999,
+        "timing_context": "shared H100, concurrent experiment; indicative runtime, not isolated latency benchmark",
+        "gpu": "NVIDIA H100 PCIe",
+        "peak_gpu_allocated_bytes": 639859200,
+        "prediction_sha256": "19e651a14a1fe399ec2b9d437b244bbe1f7a8941d54394571cc2bf7a658ec78b",
+        "metadata_correction": "Clarified model-specific decoder description only; no prediction, profile, weight or inference configuration changes."
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 2757,
+        "fp": 1426,
+        "fn": 943,
+        "precision": 0.6590963423380349,
+        "recall": 0.7451351351351352,
+        "f1": 0.6994798934415831
+      },
+      "exported_exact": {
+        "tp": 2757,
+        "fp": 1426,
+        "fn": 943,
+        "precision": 0.6590963423380349,
+        "recall": 0.7451351351351352,
+        "f1": 0.6994798934415831
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 845,
+          "fp": 40,
+          "fn": 55,
+          "precision": 0.9548022598870056,
+          "recall": 0.9388888888888889,
+          "f1": 0.9467787114845938
+        },
+        "ADDRESS": {
+          "tp": 391,
+          "fp": 331,
+          "fn": 309,
+          "precision": 0.5415512465373962,
+          "recall": 0.5585714285714286,
+          "f1": 0.549929676511955
+        },
+        "PHONE": {
+          "tp": 596,
+          "fp": 8,
+          "fn": 4,
+          "precision": 0.9867549668874173,
+          "recall": 0.9933333333333333,
+          "f1": 0.9900332225913622
+        },
+        "EMAIL": {
+          "tp": 225,
+          "fp": 963,
+          "fn": 575,
+          "precision": 0.1893939393939394,
+          "recall": 0.28125,
+          "f1": 0.22635814889336017
+        },
+        "IDENTIFIER": {
+          "tp": 700,
+          "fp": 84,
+          "fn": 0,
+          "precision": 0.8928571428571429,
+          "recall": 1.0,
+          "f1": 0.9433962264150944
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 837,
+          "fp": 673,
+          "fn": 463,
+          "precision": 0.5543046357615894,
+          "recall": 0.6438461538461538,
+          "f1": 0.595729537366548
+        },
+        "ko": {
+          "tp": 1430,
+          "fp": 245,
+          "fn": 170,
+          "precision": 0.8537313432835821,
+          "recall": 0.89375,
+          "f1": 0.8732824427480916
+        },
+        "mixed": {
+          "tp": 490,
+          "fp": 508,
+          "fn": 310,
+          "precision": 0.4909819639278557,
+          "recall": 0.6125,
+          "f1": 0.5450500556173526
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 59174,
+        "correctly_masked_characters": 59131,
+        "overmasked_characters": 43,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 2771,
+        "fully_masked_non_whitespace_entities": 2780,
+        "gold_entities": 3700,
+        "character_recall": 0.8390232135762529,
+        "character_precision": 0.9992733295028222,
+        "fully_masked_entity_recall": 0.7489189189189189,
+        "fully_masked_non_whitespace_entity_recall": 0.7513513513513513,
+        "non_pii_character_overmask_rate": 0.0005205811138014527
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 61540,
+        "correctly_masked_characters": 61497,
+        "overmasked_characters": 43,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 2599,
+        "fully_masked_non_whitespace_entities": 2659,
+        "gold_entities": 3700,
+        "character_recall": 0.8725949259322322,
+        "character_precision": 0.9993012674683133,
+        "fully_masked_entity_recall": 0.7024324324324325,
+        "fully_masked_non_whitespace_entity_recall": 0.7186486486486486,
+        "non_pii_character_overmask_rate": 0.0005205811138014527
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 18,
+      "negative_document_fp_rate": 0.06,
+      "pure_non_pii_predictions": 23,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "fn": 27,
+        "boundary_mismatch": 492,
+        "split": 424,
+        "fp": 34
+      },
+      "examples": {
+        "fn": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "양도은"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00028",
+            "language": "en",
+            "source": "The individual Yara Bennett provided home details 16 Oak Terrace, Southridge and a private mailbox contact000028.s42@reply.test.example.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 50,
+                "end": 76,
+                "type": "ADDRESS",
+                "value": "16 Oak Terrace, Southridge"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00046",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 유서지; 자택 위치 전라남도 순천시 삼산로 391 359호; 휴대전화번호 010-7033-2644; 전자우편 계정 contact000046.s42@people.test.example; 개인 식별 코드 790826-1632644.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "유서지"
+              }
+            ]
+          }
+        ],
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 72,
+                "end": 77,
+                "type": "ADDRESS",
+                "value": "Aspen"
+              }
+            ],
+            "expected": [
+              {
+                "start": 69,
+                "end": 93,
+                "type": "ADDRESS",
+                "value": "40 Aspen Way, Southridge"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 145,
+                "end": 162,
+                "type": "EMAIL",
+                "value": "000002.s42@people"
+              }
+            ],
+            "expected": [
+              {
+                "start": 138,
+                "end": 175,
+                "type": "EMAIL",
+                "value": "contact000002.s42@people.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00003",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Zachary Bennett / 집 주소 울산광역시 남구 달구벌대로 144 13층 / mobile 010-7033-2601 / 메일 contact000003.s42@people.test.example / personal ID 750628-1632601",
+            "predicted": [
+              {
+                "start": 45,
+                "end": 63,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 144"
+              }
+            ],
+            "expected": [
+              {
+                "start": 45,
+                "end": 67,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 144 13층"
+              }
+            ]
+          }
+        ],
+        "split": [
+          {
+            "document_id": "test-00012",
+            "language": "mixed",
+            "source": "본인 실명 문성연 / private e-mail contact000012.s42@contact.testing.example / verification ID 960911-1632610",
+            "predicted": [
+              {
+                "start": 27,
+                "end": 52,
+                "type": "EMAIL",
+                "value": "contact000012.s42@contact"
+              },
+              {
+                "start": 64,
+                "end": 68,
+                "type": "EMAIL",
+                "value": "mple"
+              }
+            ],
+            "expected": [
+              {
+                "start": 27,
+                "end": 68,
+                "type": "EMAIL",
+                "value": "contact000012.s42@contact.testing.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00013",
+            "language": "en",
+            "source": "The individual Trevor Hayes provided home details 365 Aspen Way, Riverford and a private mailbox contact000013.s42@reply.test.example.",
+            "predicted": [
+              {
+                "start": 54,
+                "end": 63,
+                "type": "ADDRESS",
+                "value": "Aspen Way"
+              },
+              {
+                "start": 70,
+                "end": 74,
+                "type": "ADDRESS",
+                "value": "ford"
+              }
+            ],
+            "expected": [
+              {
+                "start": 50,
+                "end": 74,
+                "type": "ADDRESS",
+                "value": "365 Aspen Way, Riverford"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00013",
+            "language": "en",
+            "source": "The individual Trevor Hayes provided home details 365 Aspen Way, Riverford and a private mailbox contact000013.s42@reply.test.example.",
+            "predicted": [
+              {
+                "start": 104,
+                "end": 120,
+                "type": "EMAIL",
+                "value": "000013.s42@reply"
+              },
+              {
+                "start": 129,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "mple"
+              }
+            ],
+            "expected": [
+              {
+                "start": 97,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "contact000013.s42@reply.test.example"
+              }
+            ]
+          }
+        ],
+        "fp": [
+          {
+            "document_id": "test-00073",
+            "language": "en",
+            "source": "The individual Quentin Bennett provided home details 464 Aspen Way, Lakewood and a private mailbox contact000073.s42@contact.testing.example.",
+            "predicted": [
+              {
+                "start": 53,
+                "end": 54,
+                "type": "IDENTIFIER",
+                "value": "4"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00159",
+            "language": "en",
+            "source": "Private post should reach resident Yara Hayes at the home location 366 Aspen Way, Lakewood.",
+            "predicted": [
+              {
+                "start": 67,
+                "end": 68,
+                "type": "IDENTIFIER",
+                "value": "3"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00354",
+            "language": "en",
+            "source": "Private post should reach resident Quentin Bennett at the home location 426 Aspen Way, Lakewood.",
+            "predicted": [
+              {
+                "start": 72,
+                "end": 73,
+                "type": "IDENTIFIER",
+                "value": "4"
+              }
+            ],
+            "expected": []
+          }
+        ]
+      },
+      "adapter_profiles": {
+        "canonical": {
+          "documents": 1500,
+          "exact": {
+            "tp": 2783,
+            "fp": 1400,
+            "fn": 917,
+            "precision": 0.6653119770499641,
+            "recall": 0.7521621621621621,
+            "f1": 0.7060763668654065
+          },
+          "exported_exact": {
+            "tp": 2783,
+            "fp": 1400,
+            "fn": 917,
+            "precision": 0.6653119770499641,
+            "recall": 0.7521621621621621,
+            "f1": 0.7060763668654065
+          },
+          "per_type": {
+            "PERSON": {
+              "tp": 871,
+              "fp": 14,
+              "fn": 29,
+              "precision": 0.984180790960452,
+              "recall": 0.9677777777777777,
+              "f1": 0.9759103641456582
+            },
+            "ADDRESS": {
+              "tp": 391,
+              "fp": 331,
+              "fn": 309,
+              "precision": 0.5415512465373962,
+              "recall": 0.5585714285714286,
+              "f1": 0.549929676511955
+            },
+            "PHONE": {
+              "tp": 596,
+              "fp": 8,
+              "fn": 4,
+              "precision": 0.9867549668874173,
+              "recall": 0.9933333333333333,
+              "f1": 0.9900332225913622
+            },
+            "EMAIL": {
+              "tp": 225,
+              "fp": 963,
+              "fn": 575,
+              "precision": 0.1893939393939394,
+              "recall": 0.28125,
+              "f1": 0.22635814889336017
+            },
+            "IDENTIFIER": {
+              "tp": 700,
+              "fp": 84,
+              "fn": 0,
+              "precision": 0.8928571428571429,
+              "recall": 1.0,
+              "f1": 0.9433962264150944
+            }
+          },
+          "per_language": {
+            "en": {
+              "tp": 837,
+              "fp": 673,
+              "fn": 463,
+              "precision": 0.5543046357615894,
+              "recall": 0.6438461538461538,
+              "f1": 0.595729537366548
+            },
+            "ko": {
+              "tp": 1448,
+              "fp": 227,
+              "fn": 152,
+              "precision": 0.8644776119402985,
+              "recall": 0.905,
+              "f1": 0.8842748091603053
+            },
+            "mixed": {
+              "tp": 498,
+              "fp": 500,
+              "fn": 302,
+              "precision": 0.49899799599198397,
+              "recall": 0.6225,
+              "f1": 0.5539488320355951
+            }
+          },
+          "mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 59200,
+            "correctly_masked_characters": 59157,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2797,
+            "fully_masked_non_whitespace_entities": 2806,
+            "gold_entities": 3700,
+            "character_recall": 0.8393921334922527,
+            "character_precision": 0.9992736486486486,
+            "fully_masked_entity_recall": 0.755945945945946,
+            "fully_masked_non_whitespace_entity_recall": 0.7583783783783784,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "native_all_label_mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 61540,
+            "correctly_masked_characters": 61497,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2599,
+            "fully_masked_non_whitespace_entities": 2659,
+            "gold_entities": 3700,
+            "character_recall": 0.8725949259322322,
+            "character_precision": 0.9993012674683133,
+            "fully_masked_entity_recall": 0.7024324324324325,
+            "fully_masked_non_whitespace_entity_recall": 0.7186486486486486,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "negative_documents": 300,
+          "negative_documents_with_fp": 18,
+          "negative_document_fp_rate": 0.06,
+          "pure_non_pii_predictions": 23,
+          "duplicate_predictions": 0,
+          "failure_histogram": {
+            "fn": 27,
+            "boundary_mismatch": 466,
+            "split": 424,
+            "fp": 34
+          },
+          "examples": null
+        },
+        "card_normalized": {
+          "documents": 1500,
+          "exact": {
+            "tp": 2561,
+            "fp": 1936,
+            "fn": 1139,
+            "precision": 0.5694907716255281,
+            "recall": 0.6921621621621622,
+            "f1": 0.6248627546663413
+          },
+          "exported_exact": {
+            "tp": 2561,
+            "fp": 1936,
+            "fn": 1139,
+            "precision": 0.5694907716255281,
+            "recall": 0.6921621621621622,
+            "f1": 0.6248627546663413
+          },
+          "per_type": {
+            "PERSON": {
+              "tp": 845,
+              "fp": 40,
+              "fn": 55,
+              "precision": 0.9548022598870056,
+              "recall": 0.9388888888888889,
+              "f1": 0.9467787114845938
+            },
+            "ADDRESS": {
+              "tp": 198,
+              "fp": 778,
+              "fn": 502,
+              "precision": 0.2028688524590164,
+              "recall": 0.28285714285714286,
+              "f1": 0.23627684964200477
+            },
+            "PHONE": {
+              "tp": 596,
+              "fp": 8,
+              "fn": 4,
+              "precision": 0.9867549668874173,
+              "recall": 0.9933333333333333,
+              "f1": 0.9900332225913622
+            },
+            "EMAIL": {
+              "tp": 222,
+              "fp": 1026,
+              "fn": 578,
+              "precision": 0.1778846153846154,
+              "recall": 0.2775,
+              "f1": 0.216796875
+            },
+            "IDENTIFIER": {
+              "tp": 700,
+              "fp": 84,
+              "fn": 0,
+              "precision": 0.8928571428571429,
+              "recall": 1.0,
+              "f1": 0.9433962264150944
+            }
+          },
+          "per_language": {
+            "en": {
+              "tp": 702,
+              "fp": 1025,
+              "fn": 598,
+              "precision": 0.4064852345107122,
+              "recall": 0.54,
+              "f1": 0.4638255698711596
+            },
+            "ko": {
+              "tp": 1370,
+              "fp": 382,
+              "fn": 230,
+              "precision": 0.7819634703196348,
+              "recall": 0.85625,
+              "f1": 0.8174224343675418
+            },
+            "mixed": {
+              "tp": 489,
+              "fp": 529,
+              "fn": 311,
+              "precision": 0.48035363457760316,
+              "recall": 0.61125,
+              "f1": 0.5379537953795379
+            }
+          },
+          "mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 58695,
+            "correctly_masked_characters": 58652,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2572,
+            "fully_masked_non_whitespace_entities": 2632,
+            "gold_entities": 3700,
+            "character_recall": 0.832226573585334,
+            "character_precision": 0.9992673992673993,
+            "fully_masked_entity_recall": 0.6951351351351351,
+            "fully_masked_non_whitespace_entity_recall": 0.7113513513513513,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "native_all_label_mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 61540,
+            "correctly_masked_characters": 61497,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2599,
+            "fully_masked_non_whitespace_entities": 2659,
+            "gold_entities": 3700,
+            "character_recall": 0.8725949259322322,
+            "character_precision": 0.9993012674683133,
+            "fully_masked_entity_recall": 0.7024324324324325,
+            "fully_masked_non_whitespace_entity_recall": 0.7186486486486486,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "negative_documents": 300,
+          "negative_documents_with_fp": 18,
+          "negative_document_fp_rate": 0.06,
+          "pure_non_pii_predictions": 23,
+          "duplicate_predictions": 0,
+          "failure_histogram": {
+            "fn": 27,
+            "boundary_mismatch": 430,
+            "split": 682,
+            "fp": 24
+          },
+          "examples": null
+        },
+        "card_normalized_canonical": {
+          "documents": 1500,
+          "exact": {
+            "tp": 2757,
+            "fp": 1426,
+            "fn": 943,
+            "precision": 0.6590963423380349,
+            "recall": 0.7451351351351352,
+            "f1": 0.6994798934415831
+          },
+          "exported_exact": {
+            "tp": 2757,
+            "fp": 1426,
+            "fn": 943,
+            "precision": 0.6590963423380349,
+            "recall": 0.7451351351351352,
+            "f1": 0.6994798934415831
+          },
+          "per_type": {
+            "PERSON": {
+              "tp": 845,
+              "fp": 40,
+              "fn": 55,
+              "precision": 0.9548022598870056,
+              "recall": 0.9388888888888889,
+              "f1": 0.9467787114845938
+            },
+            "ADDRESS": {
+              "tp": 391,
+              "fp": 331,
+              "fn": 309,
+              "precision": 0.5415512465373962,
+              "recall": 0.5585714285714286,
+              "f1": 0.549929676511955
+            },
+            "PHONE": {
+              "tp": 596,
+              "fp": 8,
+              "fn": 4,
+              "precision": 0.9867549668874173,
+              "recall": 0.9933333333333333,
+              "f1": 0.9900332225913622
+            },
+            "EMAIL": {
+              "tp": 225,
+              "fp": 963,
+              "fn": 575,
+              "precision": 0.1893939393939394,
+              "recall": 0.28125,
+              "f1": 0.22635814889336017
+            },
+            "IDENTIFIER": {
+              "tp": 700,
+              "fp": 84,
+              "fn": 0,
+              "precision": 0.8928571428571429,
+              "recall": 1.0,
+              "f1": 0.9433962264150944
+            }
+          },
+          "per_language": {
+            "en": {
+              "tp": 837,
+              "fp": 673,
+              "fn": 463,
+              "precision": 0.5543046357615894,
+              "recall": 0.6438461538461538,
+              "f1": 0.595729537366548
+            },
+            "ko": {
+              "tp": 1430,
+              "fp": 245,
+              "fn": 170,
+              "precision": 0.8537313432835821,
+              "recall": 0.89375,
+              "f1": 0.8732824427480916
+            },
+            "mixed": {
+              "tp": 490,
+              "fp": 508,
+              "fn": 310,
+              "precision": 0.4909819639278557,
+              "recall": 0.6125,
+              "f1": 0.5450500556173526
+            }
+          },
+          "mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 59174,
+            "correctly_masked_characters": 59131,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2771,
+            "fully_masked_non_whitespace_entities": 2780,
+            "gold_entities": 3700,
+            "character_recall": 0.8390232135762529,
+            "character_precision": 0.9992733295028222,
+            "fully_masked_entity_recall": 0.7489189189189189,
+            "fully_masked_non_whitespace_entity_recall": 0.7513513513513513,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "native_all_label_mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 61540,
+            "correctly_masked_characters": 61497,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2599,
+            "fully_masked_non_whitespace_entities": 2659,
+            "gold_entities": 3700,
+            "character_recall": 0.8725949259322322,
+            "character_precision": 0.9993012674683133,
+            "fully_masked_entity_recall": 0.7024324324324325,
+            "fully_masked_non_whitespace_entity_recall": 0.7186486486486486,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "negative_documents": 300,
+          "negative_documents_with_fp": 18,
+          "negative_document_fp_rate": 0.06,
+          "pure_non_pii_predictions": 23,
+          "duplicate_predictions": 0,
+          "failure_histogram": {
+            "fn": 27,
+            "boundary_mismatch": 492,
+            "split": 424,
+            "fp": 34
+          },
+          "examples": null
+        },
+        "native_mapped": {
+          "documents": 1500,
+          "exact": {
+            "tp": 2562,
+            "fp": 2171,
+            "fn": 1138,
+            "precision": 0.5413057257553349,
+            "recall": 0.6924324324324325,
+            "f1": 0.607612949128424
+          },
+          "exported_exact": {
+            "tp": 2562,
+            "fp": 2171,
+            "fn": 1138,
+            "precision": 0.5413057257553349,
+            "recall": 0.6924324324324325,
+            "f1": 0.607612949128424
+          },
+          "per_type": {
+            "PERSON": {
+              "tp": 871,
+              "fp": 14,
+              "fn": 29,
+              "precision": 0.984180790960452,
+              "recall": 0.9677777777777777,
+              "f1": 0.9759103641456582
+            },
+            "ADDRESS": {
+              "tp": 198,
+              "fp": 778,
+              "fn": 502,
+              "precision": 0.2028688524590164,
+              "recall": 0.28285714285714286,
+              "f1": 0.23627684964200477
+            },
+            "PHONE": {
+              "tp": 596,
+              "fp": 8,
+              "fn": 4,
+              "precision": 0.9867549668874173,
+              "recall": 0.9933333333333333,
+              "f1": 0.9900332225913622
+            },
+            "EMAIL": {
+              "tp": 222,
+              "fp": 1262,
+              "fn": 578,
+              "precision": 0.1495956873315364,
+              "recall": 0.2775,
+              "f1": 0.19439579684763572
+            },
+            "IDENTIFIER": {
+              "tp": 675,
+              "fp": 109,
+              "fn": 25,
+              "precision": 0.860969387755102,
+              "recall": 0.9642857142857143,
+              "f1": 0.9097035040431267
+            }
+          },
+          "per_language": {
+            "en": {
+              "tp": 689,
+              "fp": 1160,
+              "fn": 611,
+              "precision": 0.37263385613845323,
+              "recall": 0.53,
+              "f1": 0.43759923785328675
+            },
+            "ko": {
+              "tp": 1376,
+              "fp": 397,
+              "fn": 224,
+              "precision": 0.7760857304004513,
+              "recall": 0.86,
+              "f1": 0.8158908983101097
+            },
+            "mixed": {
+              "tp": 497,
+              "fp": 614,
+              "fn": 303,
+              "precision": 0.44734473447344736,
+              "recall": 0.62125,
+              "f1": 0.5201465201465202
+            }
+          },
+          "mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 59547,
+            "correctly_masked_characters": 59479,
+            "overmasked_characters": 68,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2600,
+            "fully_masked_non_whitespace_entities": 2687,
+            "gold_entities": 3700,
+            "character_recall": 0.8439610647596345,
+            "character_precision": 0.9988580449057047,
+            "fully_masked_entity_recall": 0.7027027027027027,
+            "fully_masked_non_whitespace_entity_recall": 0.7262162162162162,
+            "non_pii_character_overmask_rate": 0.0008232445520581114
+          },
+          "native_all_label_mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 61540,
+            "correctly_masked_characters": 61497,
+            "overmasked_characters": 43,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 2599,
+            "fully_masked_non_whitespace_entities": 2659,
+            "gold_entities": 3700,
+            "character_recall": 0.8725949259322322,
+            "character_precision": 0.9993012674683133,
+            "fully_masked_entity_recall": 0.7024324324324325,
+            "fully_masked_non_whitespace_entity_recall": 0.7186486486486486,
+            "non_pii_character_overmask_rate": 0.0005205811138014527
+          },
+          "negative_documents": 300,
+          "negative_documents_with_fp": 18,
+          "negative_document_fp_rate": 0.06,
+          "pure_non_pii_predictions": 23,
+          "duplicate_predictions": 0,
+          "failure_histogram": {
+            "fn": 27,
+            "boundary_mismatch": 340,
+            "split": 771,
+            "fp": 24
+          },
+          "examples": null
+        }
+      }
+    },
+    "piiranha": {
+      "metadata": {
+        "model": "iiiorg/piiranha-v1-detect-personal-information",
+        "model_revision": "255acde67a2f34cf452eb42e365b24d2957352fc",
+        "modelcard_url": "https://huggingface.co/iiiorg/piiranha-v1-detect-personal-information/blob/255acde67a2f34cf452eb42e365b24d2957352fc/README.md",
+        "license": "cc-by-nc-nd-4.0",
+        "advertised_languages": [
+          "en",
+          "es",
+          "fr",
+          "de",
+          "it",
+          "nl"
+        ],
+        "parameters": 278232594,
+        "packages": {
+          "torch": "2.11.0+cu128",
+          "transformers": "4.57.6",
+          "tokenizers": "0.22.2",
+          "safetensors": "0.8.0",
+          "huggingface-hub": "0.36.2"
+        },
+        "python": "3.12.14",
+        "input_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "documents": 1500,
+        "gold_blind": true,
+        "inference_input_fields": [
+          "id",
+          "text"
+        ],
+        "label_map": {
+          "GIVENNAME": "PERSON",
+          "SURNAME": "PERSON",
+          "BUILDINGNUM": "ADDRESS",
+          "CITY": "ADDRESS",
+          "STREET": "ADDRESS",
+          "ZIPCODE": "ADDRESS",
+          "TELEPHONENUM": "PHONE",
+          "EMAIL": "EMAIL",
+          "ACCOUNTNUM": "IDENTIFIER",
+          "CREDITCARDNUMBER": "IDENTIFIER",
+          "DRIVERLICENSENUM": "IDENTIFIER",
+          "IDCARDNUM": "IDENTIFIER",
+          "SOCIALNUM": "IDENTIFIER",
+          "TAXNUM": "IDENTIFIER"
+        },
+        "native_labels": {
+          "0": "I-ACCOUNTNUM",
+          "1": "I-BUILDINGNUM",
+          "2": "I-CITY",
+          "3": "I-CREDITCARDNUMBER",
+          "4": "I-DATEOFBIRTH",
+          "5": "I-DRIVERLICENSENUM",
+          "6": "I-EMAIL",
+          "7": "I-GIVENNAME",
+          "8": "I-IDCARDNUM",
+          "9": "I-PASSWORD",
+          "10": "I-SOCIALNUM",
+          "11": "I-STREET",
+          "12": "I-SURNAME",
+          "13": "I-TAXNUM",
+          "14": "I-TELEPHONENUM",
+          "15": "I-USERNAME",
+          "16": "I-ZIPCODE",
+          "17": "O"
+        },
+        "unmapped_labels": [
+          "DATEOFBIRTH",
+          "PASSWORD",
+          "USERNAME"
+        ],
+        "decode": "argmax, contiguous I-label native-category aggregation",
+        "threshold": null,
+        "threshold_policy": "all argmax non-O predictions, no validation or test tuning",
+        "score": "mean assigned native-token softmax probability; canonical spans character-weighted mean; uncalibrated",
+        "profiles": [
+          "native_mapped",
+          "canonical"
+        ],
+        "default_profile": "canonical",
+        "canonical_policy": "strip whitespace and . , ; : at edges; merge adjacent same coarse type across only whitespace or Unicode punctuation; never general words/digits",
+        "korean_normalization": null,
+        "max_tokens": 256,
+        "observed_max_tokens": 74,
+        "total_input_tokens": 59349,
+        "generated_tokens": 0,
+        "truncation": false,
+        "batch_size": 32,
+        "device": "cuda",
+        "dtype": "float32",
+        "load_seconds": 23.976867340039462,
+        "inference_seconds": 1.8835475489031523,
+        "timing_context": "shared H100, concurrent experiment; indicative runtime, not isolated latency benchmark",
+        "gpu": "NVIDIA H100 PCIe",
+        "peak_gpu_allocated_bytes": 1455607808,
+        "prediction_sha256": "49f879e6817a63430600a0dc96324923a2715f3ccd3efcf05053f74366397686",
+        "metadata_correction": "Clarified model-specific decoder description only; no prediction, profile, weight or inference configuration changes."
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 1872,
+        "fp": 656,
+        "fn": 1828,
+        "precision": 0.740506329113924,
+        "recall": 0.505945945945946,
+        "f1": 0.6011560693641619
+      },
+      "exported_exact": {
+        "tp": 1872,
+        "fp": 656,
+        "fn": 1828,
+        "precision": 0.740506329113924,
+        "recall": 0.505945945945946,
+        "f1": 0.6011560693641619
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 484,
+          "fp": 125,
+          "fn": 416,
+          "precision": 0.7947454844006568,
+          "recall": 0.5377777777777778,
+          "f1": 0.6414844267726971
+        },
+        "ADDRESS": {
+          "tp": 350,
+          "fp": 425,
+          "fn": 350,
+          "precision": 0.45161290322580644,
+          "recall": 0.5,
+          "f1": 0.4745762711864407
+        },
+        "PHONE": {
+          "tp": 586,
+          "fp": 27,
+          "fn": 14,
+          "precision": 0.9559543230016313,
+          "recall": 0.9766666666666667,
+          "f1": 0.966199505358615
+        },
+        "EMAIL": {
+          "tp": 0,
+          "fp": 69,
+          "fn": 800,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "IDENTIFIER": {
+          "tp": 452,
+          "fp": 10,
+          "fn": 248,
+          "precision": 0.9783549783549783,
+          "recall": 0.6457142857142857,
+          "f1": 0.7779690189328744
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 901,
+          "fp": 159,
+          "fn": 399,
+          "precision": 0.85,
+          "recall": 0.693076923076923,
+          "f1": 0.7635593220338983
+        },
+        "ko": {
+          "tp": 552,
+          "fp": 388,
+          "fn": 1048,
+          "precision": 0.5872340425531914,
+          "recall": 0.345,
+          "f1": 0.4346456692913386
+        },
+        "mixed": {
+          "tp": 419,
+          "fp": 109,
+          "fn": 381,
+          "precision": 0.7935606060606061,
+          "recall": 0.52375,
+          "f1": 0.6310240963855421
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 33576,
+        "correctly_masked_characters": 33576,
+        "overmasked_characters": 0,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 1893,
+        "fully_masked_non_whitespace_entities": 1893,
+        "gold_entities": 3700,
+        "character_recall": 0.47641750383109144,
+        "character_precision": 1.0,
+        "fully_masked_entity_recall": 0.5116216216216216,
+        "fully_masked_non_whitespace_entity_recall": 0.5116216216216216,
+        "non_pii_character_overmask_rate": 0.0
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 43069,
+        "correctly_masked_characters": 40885,
+        "overmasked_characters": 2184,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 1593,
+        "fully_masked_non_whitespace_entities": 1593,
+        "gold_entities": 3700,
+        "character_recall": 0.580126567909643,
+        "character_precision": 0.9492906731059463,
+        "fully_masked_entity_recall": 0.43054054054054053,
+        "fully_masked_non_whitespace_entity_recall": 0.43054054054054053,
+        "non_pii_character_overmask_rate": 0.026440677966101694
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 0,
+      "negative_document_fp_rate": 0.0,
+      "pure_non_pii_predictions": 0,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "boundary_mismatch": 441,
+        "fn": 1270,
+        "type_mismatch": 20,
+        "split": 97
+      },
+      "examples": {
+        "fn": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "양도은"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 81,
+                "end": 122,
+                "type": "EMAIL",
+                "value": "contact000001.s42@contact.testing.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 133,
+                "end": 147,
+                "type": "IDENTIFIER",
+                "value": "871228-1632599"
+              }
+            ]
+          }
+        ],
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 25,
+                "end": 48,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 178 1096"
+              }
+            ],
+            "expected": [
+              {
+                "start": 25,
+                "end": 49,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 178 1096호"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 62,
+                "end": 64,
+                "type": "PHONE",
+                "value": "70"
+              }
+            ],
+            "expected": [
+              {
+                "start": 58,
+                "end": 71,
+                "type": "PHONE",
+                "value": "010 7033 2599"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 45,
+                "end": 51,
+                "type": "PERSON",
+                "value": "Trevor"
+              }
+            ],
+            "expected": [
+              {
+                "start": 45,
+                "end": 57,
+                "type": "PERSON",
+                "value": "Trevor Hayes"
+              }
+            ]
+          }
+        ],
+        "type_mismatch": [
+          {
+            "document_id": "test-00007",
+            "language": "ko",
+            "source": "신원을 확인할 때 성명 홍재성과 개인번호 741013-1632605를 함께 제시합니다.",
+            "predicted": [
+              {
+                "start": 23,
+                "end": 37,
+                "type": "PHONE",
+                "value": "741013-1632605"
+              }
+            ],
+            "expected": [
+              {
+                "start": 23,
+                "end": 37,
+                "type": "IDENTIFIER",
+                "value": "741013-1632605"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00059",
+            "language": "ko",
+            "source": "본인 확인 코드 750415-1632657를 저장했고 이메일 연락처는 contact000059.s42@contact.testing.example로 설정했습니다.",
+            "predicted": [
+              {
+                "start": 9,
+                "end": 23,
+                "type": "PHONE",
+                "value": "750415-1632657"
+              }
+            ],
+            "expected": [
+              {
+                "start": 9,
+                "end": 23,
+                "type": "IDENTIFIER",
+                "value": "750415-1632657"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00097",
+            "language": "ko",
+            "source": "신원을 확인할 때 성명 전도은과 개인번호 911018-1632695를 함께 제시합니다.",
+            "predicted": [
+              {
+                "start": 23,
+                "end": 37,
+                "type": "PHONE",
+                "value": "911018-1632695"
+              }
+            ],
+            "expected": [
+              {
+                "start": 23,
+                "end": 37,
+                "type": "IDENTIFIER",
+                "value": "911018-1632695"
+              }
+            ]
+          }
+        ],
+        "split": [
+          {
+            "document_id": "test-00008",
+            "language": "ko",
+            "source": "거주 위치로 강원특별자치도 춘천시 솔바람길 209가 기록되어 있으며 회신용 휴대폰은 010-7033-2606입니다.",
+            "predicted": [
+              {
+                "start": 15,
+                "end": 17,
+                "type": "ADDRESS",
+                "value": "춘천"
+              },
+              {
+                "start": 19,
+                "end": 27,
+                "type": "ADDRESS",
+                "value": "솔바람길 209"
+              }
+            ],
+            "expected": [
+              {
+                "start": 7,
+                "end": 27,
+                "type": "ADDRESS",
+                "value": "강원특별자치도 춘천시 솔바람길 209"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00013",
+            "language": "en",
+            "source": "The individual Trevor Hayes provided home details 365 Aspen Way, Riverford and a private mailbox contact000013.s42@reply.test.example.",
+            "predicted": [
+              {
+                "start": 104,
+                "end": 110,
+                "type": "EMAIL",
+                "value": "000013"
+              },
+              {
+                "start": 112,
+                "end": 114,
+                "type": "EMAIL",
+                "value": "42"
+              }
+            ],
+            "expected": [
+              {
+                "start": 97,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "contact000013.s42@reply.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00023",
+            "language": "ko",
+            "source": "거주 위치로 전라남도 순천시 중앙로 65가 기록되어 있으며 회신용 휴대폰은 010-7033-2621입니다.",
+            "predicted": [
+              {
+                "start": 7,
+                "end": 15,
+                "type": "ADDRESS",
+                "value": "전라남도 순천시"
+              },
+              {
+                "start": 20,
+                "end": 22,
+                "type": "ADDRESS",
+                "value": "65"
+              }
+            ],
+            "expected": [
+              {
+                "start": 7,
+                "end": 22,
+                "type": "ADDRESS",
+                "value": "전라남도 순천시 중앙로 65"
+              }
+            ]
+          }
+        ]
+      },
+      "adapter_profiles": {
+        "canonical": {
+          "documents": 1500,
+          "exact": {
+            "tp": 1872,
+            "fp": 656,
+            "fn": 1828,
+            "precision": 0.740506329113924,
+            "recall": 0.505945945945946,
+            "f1": 0.6011560693641619
+          },
+          "exported_exact": {
+            "tp": 1872,
+            "fp": 656,
+            "fn": 1828,
+            "precision": 0.740506329113924,
+            "recall": 0.505945945945946,
+            "f1": 0.6011560693641619
+          },
+          "per_type": {
+            "PERSON": {
+              "tp": 484,
+              "fp": 125,
+              "fn": 416,
+              "precision": 0.7947454844006568,
+              "recall": 0.5377777777777778,
+              "f1": 0.6414844267726971
+            },
+            "ADDRESS": {
+              "tp": 350,
+              "fp": 425,
+              "fn": 350,
+              "precision": 0.45161290322580644,
+              "recall": 0.5,
+              "f1": 0.4745762711864407
+            },
+            "PHONE": {
+              "tp": 586,
+              "fp": 27,
+              "fn": 14,
+              "precision": 0.9559543230016313,
+              "recall": 0.9766666666666667,
+              "f1": 0.966199505358615
+            },
+            "EMAIL": {
+              "tp": 0,
+              "fp": 69,
+              "fn": 800,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "IDENTIFIER": {
+              "tp": 452,
+              "fp": 10,
+              "fn": 248,
+              "precision": 0.9783549783549783,
+              "recall": 0.6457142857142857,
+              "f1": 0.7779690189328744
+            }
+          },
+          "per_language": {
+            "en": {
+              "tp": 901,
+              "fp": 159,
+              "fn": 399,
+              "precision": 0.85,
+              "recall": 0.693076923076923,
+              "f1": 0.7635593220338983
+            },
+            "ko": {
+              "tp": 552,
+              "fp": 388,
+              "fn": 1048,
+              "precision": 0.5872340425531914,
+              "recall": 0.345,
+              "f1": 0.4346456692913386
+            },
+            "mixed": {
+              "tp": 419,
+              "fp": 109,
+              "fn": 381,
+              "precision": 0.7935606060606061,
+              "recall": 0.52375,
+              "f1": 0.6310240963855421
+            }
+          },
+          "mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 33576,
+            "correctly_masked_characters": 33576,
+            "overmasked_characters": 0,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 1893,
+            "fully_masked_non_whitespace_entities": 1893,
+            "gold_entities": 3700,
+            "character_recall": 0.47641750383109144,
+            "character_precision": 1.0,
+            "fully_masked_entity_recall": 0.5116216216216216,
+            "fully_masked_non_whitespace_entity_recall": 0.5116216216216216,
+            "non_pii_character_overmask_rate": 0.0
+          },
+          "native_all_label_mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 43069,
+            "correctly_masked_characters": 40885,
+            "overmasked_characters": 2184,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 1593,
+            "fully_masked_non_whitespace_entities": 1593,
+            "gold_entities": 3700,
+            "character_recall": 0.580126567909643,
+            "character_precision": 0.9492906731059463,
+            "fully_masked_entity_recall": 0.43054054054054053,
+            "fully_masked_non_whitespace_entity_recall": 0.43054054054054053,
+            "non_pii_character_overmask_rate": 0.026440677966101694
+          },
+          "negative_documents": 300,
+          "negative_documents_with_fp": 0,
+          "negative_document_fp_rate": 0.0,
+          "pure_non_pii_predictions": 0,
+          "duplicate_predictions": 0,
+          "failure_histogram": {
+            "boundary_mismatch": 441,
+            "fn": 1270,
+            "type_mismatch": 20,
+            "split": 97
+          },
+          "examples": null
+        },
+        "native_mapped": {
+          "documents": 1500,
+          "exact": {
+            "tp": 1144,
+            "fp": 2739,
+            "fn": 2556,
+            "precision": 0.29461756373937675,
+            "recall": 0.3091891891891892,
+            "f1": 0.3017275484636687
+          },
+          "exported_exact": {
+            "tp": 78,
+            "fp": 3809,
+            "fn": 3622,
+            "precision": 0.020066889632107024,
+            "recall": 0.02108108108108108,
+            "f1": 0.02056148675365757
+          },
+          "per_type": {
+            "PERSON": {
+              "tp": 198,
+              "fp": 702,
+              "fn": 702,
+              "precision": 0.22,
+              "recall": 0.22,
+              "f1": 0.22
+            },
+            "ADDRESS": {
+              "tp": 0,
+              "fp": 1838,
+              "fn": 700,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "PHONE": {
+              "tp": 563,
+              "fp": 50,
+              "fn": 37,
+              "precision": 0.9184339314845025,
+              "recall": 0.9383333333333334,
+              "f1": 0.9282769991755977
+            },
+            "EMAIL": {
+              "tp": 0,
+              "fp": 70,
+              "fn": 800,
+              "precision": 0.0,
+              "recall": 0.0,
+              "f1": 0.0
+            },
+            "IDENTIFIER": {
+              "tp": 383,
+              "fp": 79,
+              "fn": 317,
+              "precision": 0.829004329004329,
+              "recall": 0.5471428571428572,
+              "f1": 0.6592082616179001
+            }
+          },
+          "per_language": {
+            "en": {
+              "tp": 335,
+              "fp": 1514,
+              "fn": 965,
+              "precision": 0.1811790156841536,
+              "recall": 0.25769230769230766,
+              "f1": 0.2127659574468085
+            },
+            "ko": {
+              "tp": 490,
+              "fp": 803,
+              "fn": 1110,
+              "precision": 0.37896365042536734,
+              "recall": 0.30625,
+              "f1": 0.33874870376771515
+            },
+            "mixed": {
+              "tp": 319,
+              "fp": 422,
+              "fn": 481,
+              "precision": 0.43049932523616735,
+              "recall": 0.39875,
+              "f1": 0.41401687216093447
+            }
+          },
+          "mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 32115,
+            "correctly_masked_characters": 32022,
+            "overmasked_characters": 93,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 1259,
+            "fully_masked_non_whitespace_entities": 1593,
+            "gold_entities": 3700,
+            "character_recall": 0.4543674442363358,
+            "character_precision": 0.9971041569360112,
+            "fully_masked_entity_recall": 0.3402702702702703,
+            "fully_masked_non_whitespace_entity_recall": 0.43054054054054053,
+            "non_pii_character_overmask_rate": 0.00112590799031477
+          },
+          "native_all_label_mask_coverage": {
+            "gold_characters": 70476,
+            "masked_characters": 43069,
+            "correctly_masked_characters": 40885,
+            "overmasked_characters": 2184,
+            "non_pii_characters": 82600,
+            "fully_masked_entities": 1593,
+            "fully_masked_non_whitespace_entities": 1593,
+            "gold_entities": 3700,
+            "character_recall": 0.580126567909643,
+            "character_precision": 0.9492906731059463,
+            "fully_masked_entity_recall": 0.43054054054054053,
+            "fully_masked_non_whitespace_entity_recall": 0.43054054054054053,
+            "non_pii_character_overmask_rate": 0.026440677966101694
+          },
+          "negative_documents": 300,
+          "negative_documents_with_fp": 0,
+          "negative_document_fp_rate": 0.0,
+          "pure_non_pii_predictions": 0,
+          "duplicate_predictions": 0,
+          "failure_histogram": {
+            "boundary_mismatch": 312,
+            "fn": 1270,
+            "split": 954,
+            "type_mismatch": 20
+          },
+          "examples": null
+        }
+      }
+    },
+    "presidio-en-default": {
+      "metadata": {
+        "backend": "presidio-spacy",
+        "configuration": "en-default",
+        "supported_languages": [
+          "en"
+        ],
+        "language_selection": "always en (Korean/mixed rows outside advertised English NER support)",
+        "input_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "coordinate": "character",
+        "score_threshold": 0.0,
+        "threshold_policy": "default 0.0; not tuned on test",
+        "score_kind": "mixed NER default scores and recognizer heuristic scores; uncalibrated",
+        "entity_mapping": {
+          "PERSON": "PERSON",
+          "LOCATION": "ADDRESS",
+          "PHONE_NUMBER": "PHONE",
+          "EMAIL_ADDRESS": "EMAIL",
+          "US_SSN": "IDENTIFIER",
+          "US_ITIN": "IDENTIFIER",
+          "US_PASSPORT": "IDENTIFIER",
+          "US_DRIVER_LICENSE": "IDENTIFIER",
+          "UK_NHS": "IDENTIFIER",
+          "MEDICAL_LICENSE": "IDENTIFIER",
+          "KR_RRN": "IDENTIFIER",
+          "KR_FRN": "IDENTIFIER",
+          "KR_DRIVER_LICENSE": "IDENTIFIER",
+          "KR_PASSPORT": "IDENTIFIER",
+          "KR_BRN": "IDENTIFIER"
+        },
+        "mapping_caveats": [
+          "LOCATION maps to ADDRESS as a granularity proxy; partial city/street ranges are not expanded.",
+          "KR_BRN is a business identifier; mapped to the broad IDENTIFIER category explicitly.",
+          "Financial account, credit-card, date and other unsupported labels stay in raw_model_spans but are excluded from five-type spans.",
+          "Synthetic benchmark IDs are not verified real identity numbers. Current KR_RRN validation returns None on an old-checksum mismatch, permitting post-2020 formats."
+        ],
+        "official_recognizers_explicitly_enabled": [],
+        "custom_regex_or_context_added": false,
+        "ganglion_interpreter_applied": false,
+        "gold_accessed_by_detector": false,
+        "device": "cpu",
+        "cpu_threads": 1,
+        "input_token_unit": "spaCy NLP tokens, summed over selected language passes; not LLM tokens",
+        "python": "3.12.8",
+        "model_load_seconds": 1.5611408669501543,
+        "packages": {
+          "Jinja2": "3.1.6",
+          "MarkupSafe": "3.0.4",
+          "PyYAML": "6.0.3",
+          "Pygments": "2.21.0",
+          "annotated-doc": "0.0.5",
+          "annotated-types": "0.8.0",
+          "anyio": "4.15.1",
+          "blis": "1.3.3",
+          "catalogue": "2.0.10",
+          "certifi": "2026.7.22",
+          "charset-normalizer": "3.5.2",
+          "click": "8.5.0",
+          "cloudpathlib": "0.26.0",
+          "confection": "1.3.3",
+          "cymem": "2.0.13",
+          "en_core_web_lg": "3.8.0",
+          "filelock": "4.0.12",
+          "h11": "0.16.0",
+          "httpcore": "1.0.9",
+          "httpx": "0.28.1",
+          "idna": "3.20",
+          "ko_core_news_sm": "3.8.0",
+          "markdown-it-py": "4.2.0",
+          "mdurl": "0.1.2",
+          "mecab-ko-dic": "1.0.0",
+          "mecab-python3": "1.0.12",
+          "murmurhash": "1.0.15",
+          "numpy": "2.4.6",
+          "packaging": "26.3",
+          "phonenumbers": "9.0.40",
+          "pip": "24.3.1",
+          "preshed": "3.0.13",
+          "presidio_analyzer": "2.2.364",
+          "pydantic": "2.13.5",
+          "pydantic_core": "2.46.5",
+          "regex": "2026.9.29",
+          "requests": "2.34.2",
+          "requests-file": "3.0.1",
+          "rich": "15.0.0",
+          "setuptools": "84.0.0",
+          "shellingham": "1.5.4",
+          "smart_open": "8.0.2",
+          "spacy": "3.8.16",
+          "spacy-legacy": "3.0.12",
+          "spacy-loggers": "1.0.5",
+          "srsly": "2.5.4",
+          "thinc": "8.3.13",
+          "tldextract": "5.4.0",
+          "tqdm": "4.70.1",
+          "typer": "0.27.3",
+          "typing-inspection": "0.4.4",
+          "typing_extensions": "4.16.0",
+          "urllib3": "2.8.0",
+          "wasabi": "1.1.3",
+          "weasel": "1.0.0",
+          "wrapt": "2.5.0"
+        },
+        "sources": {
+          "installation": "https://microsoft.github.io/presidio/installation/",
+          "language_configuration": "https://github.com/data-privacy-stack/presidio/blob/main/docs/tutorial/05_languages.md",
+          "recognizer_defaults": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/conf/default_recognizers.yaml",
+          "rrn_validation": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/country_specific/korea/kr_rrn_recognizer.py",
+          "korean_model": "https://spacy.io/models/ko#ko_core_news_sm",
+          "english_model": "https://spacy.io/models/en#en_core_web_lg"
+        },
+        "models": [
+          {
+            "language": "en",
+            "name": "en_core_web_lg",
+            "version": "3.8.0",
+            "artifact_sha256": "74ccb1581337fac03516ed70f69d0a41e7a63e96f261da3c7891b9ff6d6fff29",
+            "installed_artifact_bytes": 445142969,
+            "pipeline_components": [
+              "tok2vec",
+              "tagger",
+              "parser",
+              "attribute_ruler",
+              "lemmatizer",
+              "ner"
+            ],
+            "native_ner_labels": [
+              "CARDINAL",
+              "DATE",
+              "EVENT",
+              "FAC",
+              "GPE",
+              "LANGUAGE",
+              "LAW",
+              "LOC",
+              "MONEY",
+              "NORP",
+              "ORDINAL",
+              "ORG",
+              "PERCENT",
+              "PERSON",
+              "PRODUCT",
+              "QUANTITY",
+              "TIME",
+              "WORK_OF_ART"
+            ],
+            "pipeline_parameter_elements": 3300070,
+            "static_vector_elements": 102875400,
+            "tokenizer_class": "spacy.tokenizer.Tokenizer"
+          }
+        ],
+        "recognizers": [
+          {
+            "name": "CreditCardRecognizer",
+            "class": "CreditCardRecognizer",
+            "language": "en",
+            "entities": [
+              "CREDIT_CARD"
+            ],
+            "source_sha256": "762612c51d56339e6bd39362402a330d46d48c0aabe4db100012cd03fcb0e562"
+          },
+          {
+            "name": "UsBankRecognizer",
+            "class": "UsBankRecognizer",
+            "language": "en",
+            "entities": [
+              "US_BANK_NUMBER"
+            ],
+            "source_sha256": "257713e9ddb376a5da4178e0a346e1c1becf96e53ff2b34a86fb247a8dd257fd"
+          },
+          {
+            "name": "UsLicenseRecognizer",
+            "class": "UsLicenseRecognizer",
+            "language": "en",
+            "entities": [
+              "US_DRIVER_LICENSE"
+            ],
+            "source_sha256": "a7a0018090247b796559971094247b911af228de3265db2cc4813c8df5ae43de"
+          },
+          {
+            "name": "UsItinRecognizer",
+            "class": "UsItinRecognizer",
+            "language": "en",
+            "entities": [
+              "US_ITIN"
+            ],
+            "source_sha256": "a233c979070fe43188abe8c677e78c1adff360b80513d04b42f2aeb5de0c531f"
+          },
+          {
+            "name": "UsPassportRecognizer",
+            "class": "UsPassportRecognizer",
+            "language": "en",
+            "entities": [
+              "US_PASSPORT"
+            ],
+            "source_sha256": "8914e153e9133284de1d97e64e6943160e18e9fbf9e625a3e012aaeb7a259377"
+          },
+          {
+            "name": "UsSsnRecognizer",
+            "class": "UsSsnRecognizer",
+            "language": "en",
+            "entities": [
+              "US_SSN"
+            ],
+            "source_sha256": "e9227abeecf9221a0cad0c8b01785485c936ccf759ded80b6cc4f2eb8d0910fa"
+          },
+          {
+            "name": "NhsRecognizer",
+            "class": "NhsRecognizer",
+            "language": "en",
+            "entities": [
+              "UK_NHS"
+            ],
+            "source_sha256": "75b1cbd7142b0e4ba7a37bc62d391c17d4ffce05d9b5049eb48cd5ee393b2b15"
+          },
+          {
+            "name": "CryptoRecognizer",
+            "class": "CryptoRecognizer",
+            "language": "en",
+            "entities": [
+              "CRYPTO"
+            ],
+            "source_sha256": "07f5c4b4c85ef248fbe3a9cd3ad2595119c2e907c0e497105d7e6488800f6419"
+          },
+          {
+            "name": "DateRecognizer",
+            "class": "DateRecognizer",
+            "language": "en",
+            "entities": [
+              "DATE_TIME"
+            ],
+            "source_sha256": "2aeca2d46fea8d43fc77c2e5d45d7a1331acff9a50cadce95cebd21eb4db1057"
+          },
+          {
+            "name": "EmailRecognizer",
+            "class": "EmailRecognizer",
+            "language": "en",
+            "entities": [
+              "EMAIL_ADDRESS"
+            ],
+            "source_sha256": "1d4ff93e067426c9db105100f8343d7bcb3cc9a8115ce2511782e7858300f59d"
+          },
+          {
+            "name": "IbanRecognizer",
+            "class": "IbanRecognizer",
+            "language": "en",
+            "entities": [
+              "IBAN_CODE"
+            ],
+            "source_sha256": "287013043056c19522f0a08ce6f6464fd7909c2516286060811d3c714113f2d3"
+          },
+          {
+            "name": "IpRecognizer",
+            "class": "IpRecognizer",
+            "language": "en",
+            "entities": [
+              "IP_ADDRESS"
+            ],
+            "source_sha256": "4d46aa9623114c3ee147c7f2f11455caf4911d42059e2583d46494574efe65e5"
+          },
+          {
+            "name": "MedicalLicenseRecognizer",
+            "class": "MedicalLicenseRecognizer",
+            "language": "en",
+            "entities": [
+              "MEDICAL_LICENSE"
+            ],
+            "source_sha256": "aa532dbc1cab38eec613f0eedd444c00d6c0f4b946799a5e9a793657188f9753"
+          },
+          {
+            "name": "MacAddressRecognizer",
+            "class": "MacAddressRecognizer",
+            "language": "en",
+            "entities": [
+              "MAC_ADDRESS"
+            ],
+            "source_sha256": "c9caea6308afcbf9e8588f01af8a65371e90c4178aaa4db27fb9bed7ada7714c"
+          },
+          {
+            "name": "PhoneRecognizer",
+            "class": "PhoneRecognizer",
+            "language": "en",
+            "entities": [
+              "PHONE_NUMBER"
+            ],
+            "source_sha256": "d8bef4065297fb3661ca224813a16fb118a9d7f2c3c282231eb93ab91426c4b0",
+            "phone_regions": [
+              "US",
+              "GB",
+              "DE",
+              "FR",
+              "IL",
+              "IN",
+              "CA",
+              "BR"
+            ]
+          },
+          {
+            "name": "UrlRecognizer",
+            "class": "UrlRecognizer",
+            "language": "en",
+            "entities": [
+              "URL"
+            ],
+            "source_sha256": "46b17361e0d8a683a106cb977098b8210b492f357be1c79a3db93127a999c5ee"
+          },
+          {
+            "name": "SpacyRecognizer",
+            "class": "SpacyRecognizer",
+            "language": "en",
+            "entities": [
+              "DATE_TIME",
+              "LOCATION",
+              "PERSON",
+              "NRP"
+            ],
+            "source_sha256": "f5fd4400927278350af7e8d3fcb3e4fa9924590ec00f4eb71ebd19fde83a0564"
+          }
+        ],
+        "nlp_ner_configuration": {
+          "labels_to_ignore": [
+            "ORGANIZATION",
+            "CARDINAL",
+            "EVENT",
+            "LANGUAGE",
+            "LAW",
+            "MONEY",
+            "ORDINAL",
+            "PERCENT",
+            "PRODUCT",
+            "QUANTITY",
+            "WORK_OF_ART"
+          ],
+          "aggregation_strategy": "max",
+          "stride": 14,
+          "alignment_mode": "expand",
+          "default_score": 0.85,
+          "model_to_presidio_entity_mapping": {
+            "PER": "PERSON",
+            "PERSON": "PERSON",
+            "NORP": "NRP",
+            "FAC": "LOCATION",
+            "LOC": "LOCATION",
+            "GPE": "LOCATION",
+            "LOCATION": "LOCATION",
+            "ORG": "ORGANIZATION",
+            "ORGANIZATION": "ORGANIZATION",
+            "DATE": "DATE_TIME",
+            "TIME": "DATE_TIME"
+          },
+          "low_score_entity_names": [
+            null
+          ],
+          "low_confidence_score_multiplier": 0.4
+        },
+        "rows": 1500,
+        "input_tokens": 28650,
+        "output_tokens": 0,
+        "source_language_counts": {
+          "ko": 750,
+          "en": 500,
+          "mixed": 250
+        },
+        "language_pass_counts": {
+          "en": 1500
+        },
+        "ignored_native_entity_counts": {
+          "DATE_TIME": 571,
+          "NRP": 3
+        },
+        "elapsed_seconds": 9.475252710981295,
+        "latency_ms": {
+          "median": 5.479501443915069,
+          "mean": 6.271777736023068,
+          "p95": 8.983412059023976
+        },
+        "peak_process_rss_mb": 749.16796875,
+        "predictions_sha256": "71deed0c10469ebc9b6bf68d8e3bf425b2c9609c8522361c61cd9af5720b4e2f"
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 385,
+        "fp": 2884,
+        "fn": 3315,
+        "precision": 0.11777301927194861,
+        "recall": 0.10405405405405406,
+        "f1": 0.11048930980054528
+      },
+      "exported_exact": {
+        "tp": 385,
+        "fp": 2884,
+        "fn": 3315,
+        "precision": 0.11777301927194861,
+        "recall": 0.10405405405405406,
+        "f1": 0.11048930980054528
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 385,
+          "fp": 137,
+          "fn": 515,
+          "precision": 0.7375478927203065,
+          "recall": 0.42777777777777776,
+          "f1": 0.5414908579465542
+        },
+        "ADDRESS": {
+          "tp": 0,
+          "fp": 520,
+          "fn": 700,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "PHONE": {
+          "tp": 0,
+          "fp": 27,
+          "fn": 600,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "EMAIL": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 800,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "IDENTIFIER": {
+          "tp": 0,
+          "fp": 2200,
+          "fn": 700,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 287,
+          "fp": 1175,
+          "fn": 1013,
+          "precision": 0.19630642954856362,
+          "recall": 0.22076923076923077,
+          "f1": 0.20782041998551773
+        },
+        "ko": {
+          "tp": 0,
+          "fp": 1028,
+          "fn": 1600,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "mixed": {
+          "tp": 98,
+          "fp": 681,
+          "fn": 702,
+          "precision": 0.1258023106546855,
+          "recall": 0.1225,
+          "f1": 0.12412919569347688
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 21231,
+        "correctly_masked_characters": 19145,
+        "overmasked_characters": 2086,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 412,
+        "fully_masked_non_whitespace_entities": 412,
+        "gold_entities": 3700,
+        "character_recall": 0.271652761223679,
+        "character_precision": 0.901747444774151,
+        "fully_masked_entity_recall": 0.11135135135135135,
+        "fully_masked_non_whitespace_entity_recall": 0.11135135135135135,
+        "non_pii_character_overmask_rate": 0.025254237288135594
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 23158,
+        "correctly_masked_characters": 20924,
+        "overmasked_characters": 2234,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 896,
+        "fully_masked_non_whitespace_entities": 896,
+        "gold_entities": 3700,
+        "character_recall": 0.2968953970145865,
+        "character_precision": 0.9035322566715606,
+        "fully_masked_entity_recall": 0.24216216216216216,
+        "fully_masked_non_whitespace_entity_recall": 0.24216216216216216,
+        "non_pii_character_overmask_rate": 0.02704600484261501
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 200,
+      "negative_document_fp_rate": 0.6666666666666666,
+      "pure_non_pii_predictions": 368,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "boundary_mismatch": 388,
+        "fn": 1455,
+        "split": 639,
+        "type_mismatch": 833,
+        "fp": 368
+      },
+      "examples": {
+        "fn": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "양도은"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 58,
+                "end": 71,
+                "type": "PHONE",
+                "value": "010 7033 2599"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 69,
+                "end": 93,
+                "type": "ADDRESS",
+                "value": "40 Aspen Way, Southridge"
+              }
+            ]
+          }
+        ],
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 25,
+                "end": 30,
+                "type": "ADDRESS",
+                "value": "울산광역시"
+              }
+            ],
+            "expected": [
+              {
+                "start": 25,
+                "end": 49,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 178 1096호"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00007",
+            "language": "ko",
+            "source": "신원을 확인할 때 성명 홍재성과 개인번호 741013-1632605를 함께 제시합니다.",
+            "predicted": [
+              {
+                "start": 23,
+                "end": 29,
+                "type": "IDENTIFIER",
+                "value": "741013"
+              }
+            ],
+            "expected": [
+              {
+                "start": 23,
+                "end": 37,
+                "type": "IDENTIFIER",
+                "value": "741013-1632605"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00014",
+            "language": "ko",
+            "source": "본인 확인 코드 700724-1632612를 저장했고 이메일 연락처는 contact000014.s42@contact.testing.example로 설정했습니다.",
+            "predicted": [
+              {
+                "start": 9,
+                "end": 15,
+                "type": "IDENTIFIER",
+                "value": "700724"
+              }
+            ],
+            "expected": [
+              {
+                "start": 9,
+                "end": 23,
+                "type": "IDENTIFIER",
+                "value": "700724-1632612"
+              }
+            ]
+          }
+        ],
+        "type_mismatch": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 95,
+                "end": 98,
+                "type": "IDENTIFIER",
+                "value": "s42"
+              }
+            ],
+            "expected": [
+              {
+                "start": 81,
+                "end": 122,
+                "type": "EMAIL",
+                "value": "contact000001.s42@contact.testing.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 152,
+                "end": 155,
+                "type": "IDENTIFIER",
+                "value": "s42"
+              }
+            ],
+            "expected": [
+              {
+                "start": 138,
+                "end": 175,
+                "type": "EMAIL",
+                "value": "contact000002.s42@people.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00003",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Zachary Bennett / 집 주소 울산광역시 남구 달구벌대로 144 13층 / mobile 010-7033-2601 / 메일 contact000003.s42@people.test.example / personal ID 750628-1632601",
+            "predicted": [
+              {
+                "start": 45,
+                "end": 50,
+                "type": "PERSON",
+                "value": "울산광역시"
+              }
+            ],
+            "expected": [
+              {
+                "start": 45,
+                "end": 67,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 144 13층"
+              }
+            ]
+          }
+        ],
+        "split": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 133,
+                "end": 139,
+                "type": "IDENTIFIER",
+                "value": "871228"
+              },
+              {
+                "start": 140,
+                "end": 147,
+                "type": "IDENTIFIER",
+                "value": "1632599"
+              }
+            ],
+            "expected": [
+              {
+                "start": 133,
+                "end": 147,
+                "type": "IDENTIFIER",
+                "value": "871228-1632599"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 196,
+                "end": 202,
+                "type": "IDENTIFIER",
+                "value": "941119"
+              },
+              {
+                "start": 203,
+                "end": 210,
+                "type": "IDENTIFIER",
+                "value": "1632600"
+              }
+            ],
+            "expected": [
+              {
+                "start": 196,
+                "end": 210,
+                "type": "IDENTIFIER",
+                "value": "941119-1632600"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00003",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Zachary Bennett / 집 주소 울산광역시 남구 달구벌대로 144 13층 / mobile 010-7033-2601 / 메일 contact000003.s42@people.test.example / personal ID 750628-1632601",
+            "predicted": [
+              {
+                "start": 148,
+                "end": 154,
+                "type": "IDENTIFIER",
+                "value": "750628"
+              },
+              {
+                "start": 155,
+                "end": 162,
+                "type": "IDENTIFIER",
+                "value": "1632601"
+              }
+            ],
+            "expected": [
+              {
+                "start": 148,
+                "end": 162,
+                "type": "IDENTIFIER",
+                "value": "750628-1632601"
+              }
+            ]
+          }
+        ],
+        "fp": [
+          {
+            "document_id": "test-00005",
+            "language": "en",
+            "source": "The customer contact form contains no personal details; its public help entry is 4200005.",
+            "predicted": [
+              {
+                "start": 81,
+                "end": 88,
+                "type": "IDENTIFIER",
+                "value": "4200005"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00010",
+            "language": "ko",
+            "source": "연락 번호: (제공되지 않음)\n메일 계정: (제공되지 않음)\n공개 안내 절: 4200010",
+            "predicted": [
+              {
+                "start": 8,
+                "end": 12,
+                "type": "PERSON",
+                "value": "제공되지"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00010",
+            "language": "ko",
+            "source": "연락 번호: (제공되지 않음)\n메일 계정: (제공되지 않음)\n공개 안내 절: 4200010",
+            "predicted": [
+              {
+                "start": 25,
+                "end": 29,
+                "type": "PERSON",
+                "value": "제공되지"
+              }
+            ],
+            "expected": []
+          }
+        ]
+      },
+      "adapter_profiles": {}
+    },
+    "presidio-en-ko": {
+      "metadata": {
+        "backend": "presidio-spacy",
+        "configuration": "en-ko",
+        "supported_languages": [
+          "en",
+          "ko"
+        ],
+        "language_selection": "row.language metadata; mixed unions en and ko passes",
+        "input_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+        "coordinate": "character",
+        "score_threshold": 0.0,
+        "threshold_policy": "default 0.0; not tuned on test",
+        "score_kind": "mixed NER default scores and recognizer heuristic scores; uncalibrated",
+        "entity_mapping": {
+          "PERSON": "PERSON",
+          "LOCATION": "ADDRESS",
+          "PHONE_NUMBER": "PHONE",
+          "EMAIL_ADDRESS": "EMAIL",
+          "US_SSN": "IDENTIFIER",
+          "US_ITIN": "IDENTIFIER",
+          "US_PASSPORT": "IDENTIFIER",
+          "US_DRIVER_LICENSE": "IDENTIFIER",
+          "UK_NHS": "IDENTIFIER",
+          "MEDICAL_LICENSE": "IDENTIFIER",
+          "KR_RRN": "IDENTIFIER",
+          "KR_FRN": "IDENTIFIER",
+          "KR_DRIVER_LICENSE": "IDENTIFIER",
+          "KR_PASSPORT": "IDENTIFIER",
+          "KR_BRN": "IDENTIFIER"
+        },
+        "mapping_caveats": [
+          "LOCATION maps to ADDRESS as a granularity proxy; partial city/street ranges are not expanded.",
+          "KR_BRN is a business identifier; mapped to the broad IDENTIFIER category explicitly.",
+          "Financial account, credit-card, date and other unsupported labels stay in raw_model_spans but are excluded from five-type spans.",
+          "Synthetic benchmark IDs are not verified real identity numbers. Current KR_RRN validation returns None on an old-checksum mismatch, permitting post-2020 formats."
+        ],
+        "official_recognizers_explicitly_enabled": [
+          {
+            "name": "KrRrnRecognizer",
+            "language": "en"
+          },
+          {
+            "name": "KrFrnRecognizer",
+            "language": "en"
+          },
+          {
+            "name": "KrPassportRecognizer",
+            "language": "en"
+          },
+          {
+            "name": "KrDriverLicenseRecognizer",
+            "language": "en"
+          },
+          {
+            "name": "KrBrnRecognizer",
+            "language": "en"
+          },
+          {
+            "name": "KrRrnRecognizer",
+            "language": "ko"
+          },
+          {
+            "name": "KrFrnRecognizer",
+            "language": "ko"
+          },
+          {
+            "name": "KrPassportRecognizer",
+            "language": "ko"
+          },
+          {
+            "name": "KrDriverLicenseRecognizer",
+            "language": "ko"
+          },
+          {
+            "name": "KrBrnRecognizer",
+            "language": "ko"
+          }
+        ],
+        "custom_regex_or_context_added": false,
+        "ganglion_interpreter_applied": false,
+        "gold_accessed_by_detector": false,
+        "device": "cpu",
+        "cpu_threads": 1,
+        "input_token_unit": "spaCy NLP tokens, summed over selected language passes; not LLM tokens",
+        "python": "3.12.8",
+        "model_load_seconds": 1.883667895104736,
+        "packages": {
+          "Jinja2": "3.1.6",
+          "MarkupSafe": "3.0.4",
+          "PyYAML": "6.0.3",
+          "Pygments": "2.21.0",
+          "annotated-doc": "0.0.5",
+          "annotated-types": "0.8.0",
+          "anyio": "4.15.1",
+          "blis": "1.3.3",
+          "catalogue": "2.0.10",
+          "certifi": "2026.7.22",
+          "charset-normalizer": "3.5.2",
+          "click": "8.5.0",
+          "cloudpathlib": "0.26.0",
+          "confection": "1.3.3",
+          "cymem": "2.0.13",
+          "en_core_web_lg": "3.8.0",
+          "filelock": "4.0.12",
+          "h11": "0.16.0",
+          "httpcore": "1.0.9",
+          "httpx": "0.28.1",
+          "idna": "3.20",
+          "ko_core_news_sm": "3.8.0",
+          "markdown-it-py": "4.2.0",
+          "mdurl": "0.1.2",
+          "mecab-ko-dic": "1.0.0",
+          "mecab-python3": "1.0.12",
+          "murmurhash": "1.0.15",
+          "numpy": "2.4.6",
+          "packaging": "26.3",
+          "phonenumbers": "9.0.40",
+          "pip": "24.3.1",
+          "preshed": "3.0.13",
+          "presidio_analyzer": "2.2.364",
+          "pydantic": "2.13.5",
+          "pydantic_core": "2.46.5",
+          "regex": "2026.9.29",
+          "requests": "2.34.2",
+          "requests-file": "3.0.1",
+          "rich": "15.0.0",
+          "setuptools": "84.0.0",
+          "shellingham": "1.5.4",
+          "smart_open": "8.0.2",
+          "spacy": "3.8.16",
+          "spacy-legacy": "3.0.12",
+          "spacy-loggers": "1.0.5",
+          "srsly": "2.5.4",
+          "thinc": "8.3.13",
+          "tldextract": "5.4.0",
+          "tqdm": "4.70.1",
+          "typer": "0.27.3",
+          "typing-inspection": "0.4.4",
+          "typing_extensions": "4.16.0",
+          "urllib3": "2.8.0",
+          "wasabi": "1.1.3",
+          "weasel": "1.0.0",
+          "wrapt": "2.5.0"
+        },
+        "sources": {
+          "installation": "https://microsoft.github.io/presidio/installation/",
+          "language_configuration": "https://github.com/data-privacy-stack/presidio/blob/main/docs/tutorial/05_languages.md",
+          "recognizer_defaults": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/conf/default_recognizers.yaml",
+          "rrn_validation": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/country_specific/korea/kr_rrn_recognizer.py",
+          "korean_model": "https://spacy.io/models/ko#ko_core_news_sm",
+          "english_model": "https://spacy.io/models/en#en_core_web_lg"
+        },
+        "models": [
+          {
+            "language": "en",
+            "name": "en_core_web_lg",
+            "version": "3.8.0",
+            "artifact_sha256": "74ccb1581337fac03516ed70f69d0a41e7a63e96f261da3c7891b9ff6d6fff29",
+            "installed_artifact_bytes": 445142969,
+            "pipeline_components": [
+              "tok2vec",
+              "tagger",
+              "parser",
+              "attribute_ruler",
+              "lemmatizer",
+              "ner"
+            ],
+            "native_ner_labels": [
+              "CARDINAL",
+              "DATE",
+              "EVENT",
+              "FAC",
+              "GPE",
+              "LANGUAGE",
+              "LAW",
+              "LOC",
+              "MONEY",
+              "NORP",
+              "ORDINAL",
+              "ORG",
+              "PERCENT",
+              "PERSON",
+              "PRODUCT",
+              "QUANTITY",
+              "TIME",
+              "WORK_OF_ART"
+            ],
+            "pipeline_parameter_elements": 3300070,
+            "static_vector_elements": 102875400,
+            "tokenizer_class": "spacy.tokenizer.Tokenizer"
+          },
+          {
+            "language": "ko",
+            "name": "ko_core_news_sm",
+            "version": "3.8.0",
+            "artifact_sha256": "82bee804c21f5060254fad8b64d0177ba73c1583fb65274ede772731f249ff78",
+            "installed_artifact_bytes": 24788051,
+            "pipeline_components": [
+              "tok2vec",
+              "tagger",
+              "morphologizer",
+              "parser",
+              "lemmatizer",
+              "attribute_ruler",
+              "ner"
+            ],
+            "native_ner_labels": [
+              "DT",
+              "LC",
+              "OG",
+              "PS",
+              "QT",
+              "TI"
+            ],
+            "pipeline_parameter_elements": 3479594,
+            "static_vector_elements": 0,
+            "tokenizer_class": "spacy.tokenizer.Tokenizer"
+          }
+        ],
+        "recognizers": [
+          {
+            "name": "CreditCardRecognizer",
+            "class": "CreditCardRecognizer",
+            "language": "en",
+            "entities": [
+              "CREDIT_CARD"
+            ],
+            "source_sha256": "762612c51d56339e6bd39362402a330d46d48c0aabe4db100012cd03fcb0e562"
+          },
+          {
+            "name": "UsBankRecognizer",
+            "class": "UsBankRecognizer",
+            "language": "en",
+            "entities": [
+              "US_BANK_NUMBER"
+            ],
+            "source_sha256": "257713e9ddb376a5da4178e0a346e1c1becf96e53ff2b34a86fb247a8dd257fd"
+          },
+          {
+            "name": "UsLicenseRecognizer",
+            "class": "UsLicenseRecognizer",
+            "language": "en",
+            "entities": [
+              "US_DRIVER_LICENSE"
+            ],
+            "source_sha256": "a7a0018090247b796559971094247b911af228de3265db2cc4813c8df5ae43de"
+          },
+          {
+            "name": "UsItinRecognizer",
+            "class": "UsItinRecognizer",
+            "language": "en",
+            "entities": [
+              "US_ITIN"
+            ],
+            "source_sha256": "a233c979070fe43188abe8c677e78c1adff360b80513d04b42f2aeb5de0c531f"
+          },
+          {
+            "name": "UsPassportRecognizer",
+            "class": "UsPassportRecognizer",
+            "language": "en",
+            "entities": [
+              "US_PASSPORT"
+            ],
+            "source_sha256": "8914e153e9133284de1d97e64e6943160e18e9fbf9e625a3e012aaeb7a259377"
+          },
+          {
+            "name": "UsSsnRecognizer",
+            "class": "UsSsnRecognizer",
+            "language": "en",
+            "entities": [
+              "US_SSN"
+            ],
+            "source_sha256": "e9227abeecf9221a0cad0c8b01785485c936ccf759ded80b6cc4f2eb8d0910fa"
+          },
+          {
+            "name": "NhsRecognizer",
+            "class": "NhsRecognizer",
+            "language": "en",
+            "entities": [
+              "UK_NHS"
+            ],
+            "source_sha256": "75b1cbd7142b0e4ba7a37bc62d391c17d4ffce05d9b5049eb48cd5ee393b2b15"
+          },
+          {
+            "name": "CryptoRecognizer",
+            "class": "CryptoRecognizer",
+            "language": "en",
+            "entities": [
+              "CRYPTO"
+            ],
+            "source_sha256": "07f5c4b4c85ef248fbe3a9cd3ad2595119c2e907c0e497105d7e6488800f6419"
+          },
+          {
+            "name": "CryptoRecognizer",
+            "class": "CryptoRecognizer",
+            "language": "ko",
+            "entities": [
+              "CRYPTO"
+            ],
+            "source_sha256": "07f5c4b4c85ef248fbe3a9cd3ad2595119c2e907c0e497105d7e6488800f6419"
+          },
+          {
+            "name": "DateRecognizer",
+            "class": "DateRecognizer",
+            "language": "en",
+            "entities": [
+              "DATE_TIME"
+            ],
+            "source_sha256": "2aeca2d46fea8d43fc77c2e5d45d7a1331acff9a50cadce95cebd21eb4db1057"
+          },
+          {
+            "name": "DateRecognizer",
+            "class": "DateRecognizer",
+            "language": "ko",
+            "entities": [
+              "DATE_TIME"
+            ],
+            "source_sha256": "2aeca2d46fea8d43fc77c2e5d45d7a1331acff9a50cadce95cebd21eb4db1057"
+          },
+          {
+            "name": "EmailRecognizer",
+            "class": "EmailRecognizer",
+            "language": "en",
+            "entities": [
+              "EMAIL_ADDRESS"
+            ],
+            "source_sha256": "1d4ff93e067426c9db105100f8343d7bcb3cc9a8115ce2511782e7858300f59d"
+          },
+          {
+            "name": "EmailRecognizer",
+            "class": "EmailRecognizer",
+            "language": "ko",
+            "entities": [
+              "EMAIL_ADDRESS"
+            ],
+            "source_sha256": "1d4ff93e067426c9db105100f8343d7bcb3cc9a8115ce2511782e7858300f59d"
+          },
+          {
+            "name": "IbanRecognizer",
+            "class": "IbanRecognizer",
+            "language": "en",
+            "entities": [
+              "IBAN_CODE"
+            ],
+            "source_sha256": "287013043056c19522f0a08ce6f6464fd7909c2516286060811d3c714113f2d3"
+          },
+          {
+            "name": "IbanRecognizer",
+            "class": "IbanRecognizer",
+            "language": "ko",
+            "entities": [
+              "IBAN_CODE"
+            ],
+            "source_sha256": "287013043056c19522f0a08ce6f6464fd7909c2516286060811d3c714113f2d3"
+          },
+          {
+            "name": "IpRecognizer",
+            "class": "IpRecognizer",
+            "language": "en",
+            "entities": [
+              "IP_ADDRESS"
+            ],
+            "source_sha256": "4d46aa9623114c3ee147c7f2f11455caf4911d42059e2583d46494574efe65e5"
+          },
+          {
+            "name": "IpRecognizer",
+            "class": "IpRecognizer",
+            "language": "ko",
+            "entities": [
+              "IP_ADDRESS"
+            ],
+            "source_sha256": "4d46aa9623114c3ee147c7f2f11455caf4911d42059e2583d46494574efe65e5"
+          },
+          {
+            "name": "MedicalLicenseRecognizer",
+            "class": "MedicalLicenseRecognizer",
+            "language": "en",
+            "entities": [
+              "MEDICAL_LICENSE"
+            ],
+            "source_sha256": "aa532dbc1cab38eec613f0eedd444c00d6c0f4b946799a5e9a793657188f9753"
+          },
+          {
+            "name": "MedicalLicenseRecognizer",
+            "class": "MedicalLicenseRecognizer",
+            "language": "ko",
+            "entities": [
+              "MEDICAL_LICENSE"
+            ],
+            "source_sha256": "aa532dbc1cab38eec613f0eedd444c00d6c0f4b946799a5e9a793657188f9753"
+          },
+          {
+            "name": "MacAddressRecognizer",
+            "class": "MacAddressRecognizer",
+            "language": "en",
+            "entities": [
+              "MAC_ADDRESS"
+            ],
+            "source_sha256": "c9caea6308afcbf9e8588f01af8a65371e90c4178aaa4db27fb9bed7ada7714c"
+          },
+          {
+            "name": "MacAddressRecognizer",
+            "class": "MacAddressRecognizer",
+            "language": "ko",
+            "entities": [
+              "MAC_ADDRESS"
+            ],
+            "source_sha256": "c9caea6308afcbf9e8588f01af8a65371e90c4178aaa4db27fb9bed7ada7714c"
+          },
+          {
+            "name": "UrlRecognizer",
+            "class": "UrlRecognizer",
+            "language": "en",
+            "entities": [
+              "URL"
+            ],
+            "source_sha256": "46b17361e0d8a683a106cb977098b8210b492f357be1c79a3db93127a999c5ee"
+          },
+          {
+            "name": "UrlRecognizer",
+            "class": "UrlRecognizer",
+            "language": "ko",
+            "entities": [
+              "URL"
+            ],
+            "source_sha256": "46b17361e0d8a683a106cb977098b8210b492f357be1c79a3db93127a999c5ee"
+          },
+          {
+            "name": "SpacyRecognizer",
+            "class": "SpacyRecognizer",
+            "language": "en",
+            "entities": [
+              "ID",
+              "PERSON",
+              "LOCATION",
+              "PHONE_NUMBER",
+              "DATE_TIME",
+              "ORGANIZATION",
+              "EMAIL",
+              "AGE",
+              "NRP"
+            ],
+            "source_sha256": "f5fd4400927278350af7e8d3fcb3e4fa9924590ec00f4eb71ebd19fde83a0564"
+          },
+          {
+            "name": "SpacyRecognizer",
+            "class": "SpacyRecognizer",
+            "language": "ko",
+            "entities": [
+              "ID",
+              "PERSON",
+              "LOCATION",
+              "PHONE_NUMBER",
+              "DATE_TIME",
+              "ORGANIZATION",
+              "EMAIL",
+              "AGE",
+              "NRP"
+            ],
+            "source_sha256": "f5fd4400927278350af7e8d3fcb3e4fa9924590ec00f4eb71ebd19fde83a0564"
+          },
+          {
+            "name": "PhoneRecognizer",
+            "class": "PhoneRecognizer",
+            "language": "en",
+            "entities": [
+              "PHONE_NUMBER"
+            ],
+            "source_sha256": "d8bef4065297fb3661ca224813a16fb118a9d7f2c3c282231eb93ab91426c4b0",
+            "phone_regions": [
+              "US",
+              "GB",
+              "DE",
+              "FR",
+              "IL",
+              "IN",
+              "CA",
+              "BR",
+              "KR"
+            ]
+          },
+          {
+            "name": "KrRrnRecognizer",
+            "class": "KrRrnRecognizer",
+            "language": "en",
+            "entities": [
+              "KR_RRN"
+            ],
+            "source_sha256": "6edd38b849823b8a01ae46d748dd74cd08e9899b6019bf38c899803d9b2c77f4"
+          },
+          {
+            "name": "KrFrnRecognizer",
+            "class": "KrFrnRecognizer",
+            "language": "en",
+            "entities": [
+              "KR_FRN"
+            ],
+            "source_sha256": "5150882b794ba6b3af350ddbdb9c069244f0248da1f0277ce78540215a41250f"
+          },
+          {
+            "name": "KrPassportRecognizer",
+            "class": "KrPassportRecognizer",
+            "language": "en",
+            "entities": [
+              "KR_PASSPORT"
+            ],
+            "source_sha256": "f71b68769e302f3af4903c2554e93b68b08401668b5da8e6e6e025c939a9b507"
+          },
+          {
+            "name": "KrDriverLicenseRecognizer",
+            "class": "KrDriverLicenseRecognizer",
+            "language": "en",
+            "entities": [
+              "KR_DRIVER_LICENSE"
+            ],
+            "source_sha256": "288230e8e683ed93897ac4b126a7780e57ca80e4f02798068db3ee96d6d3e990"
+          },
+          {
+            "name": "KrBrnRecognizer",
+            "class": "KrBrnRecognizer",
+            "language": "en",
+            "entities": [
+              "KR_BRN"
+            ],
+            "source_sha256": "00af73be03b39006004b3e28313500fbeefec2e55a53f5f58bb03300dc18d866"
+          },
+          {
+            "name": "PhoneRecognizer",
+            "class": "PhoneRecognizer",
+            "language": "ko",
+            "entities": [
+              "PHONE_NUMBER"
+            ],
+            "source_sha256": "d8bef4065297fb3661ca224813a16fb118a9d7f2c3c282231eb93ab91426c4b0",
+            "phone_regions": [
+              "US",
+              "GB",
+              "DE",
+              "FR",
+              "IL",
+              "IN",
+              "CA",
+              "BR",
+              "KR"
+            ]
+          },
+          {
+            "name": "KrRrnRecognizer",
+            "class": "KrRrnRecognizer",
+            "language": "ko",
+            "entities": [
+              "KR_RRN"
+            ],
+            "source_sha256": "6edd38b849823b8a01ae46d748dd74cd08e9899b6019bf38c899803d9b2c77f4"
+          },
+          {
+            "name": "KrFrnRecognizer",
+            "class": "KrFrnRecognizer",
+            "language": "ko",
+            "entities": [
+              "KR_FRN"
+            ],
+            "source_sha256": "5150882b794ba6b3af350ddbdb9c069244f0248da1f0277ce78540215a41250f"
+          },
+          {
+            "name": "KrPassportRecognizer",
+            "class": "KrPassportRecognizer",
+            "language": "ko",
+            "entities": [
+              "KR_PASSPORT"
+            ],
+            "source_sha256": "f71b68769e302f3af4903c2554e93b68b08401668b5da8e6e6e025c939a9b507"
+          },
+          {
+            "name": "KrDriverLicenseRecognizer",
+            "class": "KrDriverLicenseRecognizer",
+            "language": "ko",
+            "entities": [
+              "KR_DRIVER_LICENSE"
+            ],
+            "source_sha256": "288230e8e683ed93897ac4b126a7780e57ca80e4f02798068db3ee96d6d3e990"
+          },
+          {
+            "name": "KrBrnRecognizer",
+            "class": "KrBrnRecognizer",
+            "language": "ko",
+            "entities": [
+              "KR_BRN"
+            ],
+            "source_sha256": "00af73be03b39006004b3e28313500fbeefec2e55a53f5f58bb03300dc18d866"
+          }
+        ],
+        "nlp_ner_configuration": {
+          "labels_to_ignore": [
+            "QT"
+          ],
+          "aggregation_strategy": "max",
+          "stride": 14,
+          "alignment_mode": "expand",
+          "default_score": 0.85,
+          "model_to_presidio_entity_mapping": {
+            "PER": "PERSON",
+            "PERSON": "PERSON",
+            "LOC": "LOCATION",
+            "LOCATION": "LOCATION",
+            "GPE": "LOCATION",
+            "ORG": "ORGANIZATION",
+            "DATE": "DATE_TIME",
+            "TIME": "DATE_TIME",
+            "NORP": "NRP",
+            "AGE": "AGE",
+            "ID": "ID",
+            "EMAIL": "EMAIL",
+            "PATIENT": "PERSON",
+            "STAFF": "PERSON",
+            "HOSP": "ORGANIZATION",
+            "PATORG": "ORGANIZATION",
+            "PHONE": "PHONE_NUMBER",
+            "HCW": "PERSON",
+            "HOSPITAL": "ORGANIZATION",
+            "PS": "PERSON",
+            "LC": "LOCATION",
+            "OG": "ORGANIZATION",
+            "DT": "DATE_TIME",
+            "TI": "DATE_TIME"
+          },
+          "low_score_entity_names": [],
+          "low_confidence_score_multiplier": 0.4
+        },
+        "rows": 1500,
+        "input_tokens": 34150,
+        "output_tokens": 0,
+        "source_language_counts": {
+          "ko": 750,
+          "en": 500,
+          "mixed": 250
+        },
+        "language_pass_counts": {
+          "ko": 1000,
+          "en": 750
+        },
+        "ignored_native_entity_counts": {
+          "DATE_TIME": 833,
+          "ORGANIZATION": 298
+        },
+        "elapsed_seconds": 11.500527443131432,
+        "latency_ms": {
+          "median": 5.767924594692886,
+          "mean": 7.619661135443796,
+          "p95": 17.520543886348605
+        },
+        "peak_process_rss_mb": 841.80078125,
+        "predictions_sha256": "5a68029a5b200277072139cceca8dbfa564ed921b34215e6dd662a2762f4ede1"
+      },
+      "documents": 1500,
+      "exact": {
+        "tp": 1688,
+        "fp": 2270,
+        "fn": 2012,
+        "precision": 0.426478019201617,
+        "recall": 0.4562162162162162,
+        "f1": 0.4408461739357535
+      },
+      "exported_exact": {
+        "tp": 1688,
+        "fp": 2270,
+        "fn": 2012,
+        "precision": 0.426478019201617,
+        "recall": 0.4562162162162162,
+        "f1": 0.4408461739357535
+      },
+      "per_type": {
+        "PERSON": {
+          "tp": 388,
+          "fp": 236,
+          "fn": 512,
+          "precision": 0.6217948717948718,
+          "recall": 0.4311111111111111,
+          "f1": 0.5091863517060368
+        },
+        "ADDRESS": {
+          "tp": 0,
+          "fp": 554,
+          "fn": 700,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "PHONE": {
+          "tp": 600,
+          "fp": 30,
+          "fn": 0,
+          "precision": 0.9523809523809523,
+          "recall": 1.0,
+          "f1": 0.975609756097561
+        },
+        "EMAIL": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 800,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0
+        },
+        "IDENTIFIER": {
+          "tp": 700,
+          "fp": 1450,
+          "fn": 0,
+          "precision": 0.32558139534883723,
+          "recall": 1.0,
+          "f1": 0.49122807017543857
+        }
+      },
+      "per_language": {
+        "en": {
+          "tp": 687,
+          "fp": 1112,
+          "fn": 613,
+          "precision": 0.3818788215675375,
+          "recall": 0.5284615384615384,
+          "f1": 0.44336882865440463
+        },
+        "ko": {
+          "tp": 603,
+          "fp": 336,
+          "fn": 997,
+          "precision": 0.6421725239616614,
+          "recall": 0.376875,
+          "f1": 0.474990153603781
+        },
+        "mixed": {
+          "tp": 398,
+          "fp": 822,
+          "fn": 402,
+          "precision": 0.3262295081967213,
+          "recall": 0.4975,
+          "f1": 0.3940594059405941
+        }
+      },
+      "mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 30245,
+        "correctly_masked_characters": 28869,
+        "overmasked_characters": 1376,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 1725,
+        "fully_masked_non_whitespace_entities": 1725,
+        "gold_entities": 3700,
+        "character_recall": 0.4096288098075941,
+        "character_precision": 0.954504876839147,
+        "fully_masked_entity_recall": 0.46621621621621623,
+        "fully_masked_non_whitespace_entity_recall": 0.46621621621621623,
+        "non_pii_character_overmask_rate": 0.016658595641646488
+      },
+      "native_all_label_mask_coverage": {
+        "gold_characters": 70476,
+        "masked_characters": 33664,
+        "correctly_masked_characters": 30715,
+        "overmasked_characters": 2949,
+        "non_pii_characters": 82600,
+        "fully_masked_entities": 1748,
+        "fully_masked_non_whitespace_entities": 1752,
+        "gold_entities": 3700,
+        "character_recall": 0.43582212384357794,
+        "character_precision": 0.9123990019011406,
+        "fully_masked_entity_recall": 0.47243243243243244,
+        "fully_masked_non_whitespace_entity_recall": 0.4735135135135135,
+        "non_pii_character_overmask_rate": 0.03570217917675545
+      },
+      "negative_documents": 300,
+      "negative_documents_with_fp": 200,
+      "negative_document_fp_rate": 0.6666666666666666,
+      "pure_non_pii_predictions": 254,
+      "duplicate_predictions": 0,
+      "failure_histogram": {
+        "fp": 1083,
+        "boundary_mismatch": 305,
+        "fn": 982,
+        "type_mismatch": 581,
+        "split": 144
+      },
+      "examples": {
+        "fp": [
+          {
+            "document_id": "test-00000",
+            "language": "ko",
+            "source": "개인의 이름 및 집 주소를 표시하지 않는 빈 서식입니다. 공개 서식 설명 순번 4200000를 읽어 주세요.",
+            "predicted": [
+              {
+                "start": 35,
+                "end": 37,
+                "type": "PERSON",
+                "value": "서식"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 196,
+                "end": 202,
+                "type": "IDENTIFIER",
+                "value": "941119"
+              }
+            ],
+            "expected": []
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 203,
+                "end": 210,
+                "type": "IDENTIFIER",
+                "value": "1632600"
+              }
+            ],
+            "expected": []
+          }
+        ],
+        "fn": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 14,
+                "end": 17,
+                "type": "PERSON",
+                "value": "양도은"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 81,
+                "end": 122,
+                "type": "EMAIL",
+                "value": "contact000001.s42@contact.testing.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [],
+            "expected": [
+              {
+                "start": 69,
+                "end": 93,
+                "type": "ADDRESS",
+                "value": "40 Aspen Way, Southridge"
+              }
+            ]
+          }
+        ],
+        "boundary_mismatch": [
+          {
+            "document_id": "test-00001",
+            "language": "ko",
+            "source": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+            "predicted": [
+              {
+                "start": 25,
+                "end": 39,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로"
+              }
+            ],
+            "expected": [
+              {
+                "start": 25,
+                "end": 49,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 178 1096호"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00017",
+            "language": "en",
+            "source": "Confidential individual details — legal name Rosa Hayes, residence 268 Elm Boulevard, Southridge, mobile number 010 7033 2615, email account contact000017.s42@reply.test.example, and identity value 730924-1632615.",
+            "predicted": [
+              {
+                "start": 86,
+                "end": 96,
+                "type": "ADDRESS",
+                "value": "Southridge"
+              }
+            ],
+            "expected": [
+              {
+                "start": 67,
+                "end": 96,
+                "type": "ADDRESS",
+                "value": "268 Elm Boulevard, Southridge"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00024",
+            "language": "en",
+            "source": "Private post should reach resident Rosa Hayes at the home location 84 Elm Boulevard, Lakewood.",
+            "predicted": [
+              {
+                "start": 85,
+                "end": 93,
+                "type": "ADDRESS",
+                "value": "Lakewood"
+              }
+            ],
+            "expected": [
+              {
+                "start": 67,
+                "end": 93,
+                "type": "ADDRESS",
+                "value": "84 Elm Boulevard, Lakewood"
+              }
+            ]
+          }
+        ],
+        "type_mismatch": [
+          {
+            "document_id": "test-00002",
+            "language": "en",
+            "source": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+            "predicted": [
+              {
+                "start": 152,
+                "end": 155,
+                "type": "IDENTIFIER",
+                "value": "s42"
+              }
+            ],
+            "expected": [
+              {
+                "start": 138,
+                "end": 175,
+                "type": "EMAIL",
+                "value": "contact000002.s42@people.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00003",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Zachary Bennett / 집 주소 울산광역시 남구 달구벌대로 144 13층 / mobile 010-7033-2601 / 메일 contact000003.s42@people.test.example / personal ID 750628-1632601",
+            "predicted": [
+              {
+                "start": 110,
+                "end": 113,
+                "type": "IDENTIFIER",
+                "value": "s42"
+              }
+            ],
+            "expected": [
+              {
+                "start": 96,
+                "end": 133,
+                "type": "EMAIL",
+                "value": "contact000003.s42@people.test.example"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00008",
+            "language": "ko",
+            "source": "거주 위치로 강원특별자치도 춘천시 솔바람길 209가 기록되어 있으며 회신용 휴대폰은 010-7033-2606입니다.",
+            "predicted": [
+              {
+                "start": 15,
+                "end": 18,
+                "type": "PERSON",
+                "value": "춘천시"
+              }
+            ],
+            "expected": [
+              {
+                "start": 7,
+                "end": 27,
+                "type": "ADDRESS",
+                "value": "강원특별자치도 춘천시 솔바람길 209"
+              }
+            ]
+          }
+        ],
+        "split": [
+          {
+            "document_id": "test-00003",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Zachary Bennett / 집 주소 울산광역시 남구 달구벌대로 144 13층 / mobile 010-7033-2601 / 메일 contact000003.s42@people.test.example / personal ID 750628-1632601",
+            "predicted": [
+              {
+                "start": 45,
+                "end": 50,
+                "type": "PERSON",
+                "value": "울산광역시"
+              },
+              {
+                "start": 51,
+                "end": 59,
+                "type": "ADDRESS",
+                "value": "남구 달구벌대로"
+              }
+            ],
+            "expected": [
+              {
+                "start": 45,
+                "end": 67,
+                "type": "ADDRESS",
+                "value": "울산광역시 남구 달구벌대로 144 13층"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00023",
+            "language": "ko",
+            "source": "거주 위치로 전라남도 순천시 중앙로 65가 기록되어 있으며 회신용 휴대폰은 010-7033-2621입니다.",
+            "predicted": [
+              {
+                "start": 7,
+                "end": 11,
+                "type": "ADDRESS",
+                "value": "전라남도"
+              },
+              {
+                "start": 12,
+                "end": 15,
+                "type": "ADDRESS",
+                "value": "순천시"
+              }
+            ],
+            "expected": [
+              {
+                "start": 7,
+                "end": 22,
+                "type": "ADDRESS",
+                "value": "전라남도 순천시 중앙로 65"
+              }
+            ]
+          },
+          {
+            "document_id": "test-00033",
+            "language": "mixed",
+            "source": "본인 등록 내역 / legal name Soren Bennett / 집 주소 전라남도 순천시 솔바람길 378 5층 / mobile 010 7033 2631 / 메일 contact000033.s42@people.test.example / personal ID 851101-1632631",
+            "predicted": [
+              {
+                "start": 43,
+                "end": 47,
+                "type": "ADDRESS",
+                "value": "전라남도"
+              },
+              {
+                "start": 48,
+                "end": 51,
+                "type": "ADDRESS",
+                "value": "순천시"
+              },
+              {
+                "start": 52,
+                "end": 56,
+                "type": "ADDRESS",
+                "value": "솔바람길"
+              }
+            ],
+            "expected": [
+              {
+                "start": 43,
+                "end": 63,
+                "type": "ADDRESS",
+                "value": "전라남도 순천시 솔바람길 378 5층"
+              }
+            ]
+          }
+        ]
+      },
+      "adapter_profiles": {}
+    }
+  }
+}

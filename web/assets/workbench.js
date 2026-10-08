@@ -1,87 +1,72 @@
-/* ============================================================
-   GANGLION WORKBENCH  ·  focus-pane orchestration
-   ============================================================ */
-
-(function () {
-  'use strict';
-
-  // ---- focus stage handling -----------------------------------
-  const stages = document.querySelectorAll('[data-stage]');
-  const focusCtxs = document.querySelectorAll('.fctx');
-  const triadCells = document.querySelectorAll('.triad-mini__cell');
-
-  function setFocus(id) {
-    stages.forEach((s) => {
-      s.classList.toggle('is-active', s.dataset.stage === id);
-    });
-    triadCells.forEach((c) => {
-      const targets = (c.dataset.target || '').split(',');
-      c.classList.toggle('active', targets.includes(id));
-    });
-    focusCtxs.forEach((c) => {
-      c.classList.toggle('is-active', c.dataset.ctx === id);
-    });
-    // sync header
-    const titleEl = document.querySelector('[data-focus-title]');
-    const kindEl = document.querySelector('[data-focus-kind]');
-    const subEl = document.querySelector('[data-focus-sub]');
-    const ctx = document.querySelector(`.fctx[data-ctx="${id}"]`);
-    if (ctx && titleEl) {
-      titleEl.innerHTML = ctx.dataset.title || id;
-      if (kindEl) kindEl.innerHTML = ctx.dataset.kind || '';
-      if (subEl) subEl.textContent = ctx.dataset.sub || '';
+/* Schema-driven workbench. Source and recovery keys never enter browser storage. */
+'use strict';
+(() => {
+ const $=id=>document.getElementById(id), controls=new Map(); let specs=[], currentJob=null, polling=false;
+ const labels={queued:'대기 중',running:'실행 중',cancelling:'취소 중',cancelled:'취소됨',complete:'완료',failed:'실패',interrupted:'중단됨'};
+ function node(tag,text,cls){const el=document.createElement(tag);if(text!=null)el.textContent=text;if(cls)el.className=cls;return el;}
+ function notice(text,error=false){$('notice').textContent=text;$('notice').className=error?'error':'';$('notice').hidden=false;}
+ async function api(path,body){const response=await fetch('/api/v2/'+path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const value=await response.json();if(!response.ok)throw new Error(value.detail||value.error||`HTTP ${response.status}`);return value;}
+ function guarded(fn){return async(...args)=>{try{await fn(...args);}catch(error){notice(error.message,true);}};}
+ function view(name){document.querySelectorAll('.view').forEach(el=>el.hidden=el.id!==name);document.querySelectorAll('[data-view]').forEach(el=>{el.classList.toggle('active',el.dataset.view===name);if(el.dataset.view===name)el.setAttribute('aria-current','page');else el.removeAttribute('aria-current');});if(name==='history')guarded(loadJobs)();}
+ document.querySelectorAll('[data-view]').forEach(el=>el.addEventListener('click',()=>view(el.dataset.view)));
+ function selectedSpec(){return specs.find(s=>s.id===$('program').value);}
+ function downloadBytes(bytes,name){const url=URL.createObjectURL(new Blob([bytes],{type:'application/octet-stream'}));const link=node('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+ function from64(data){return Uint8Array.from(atob(data),c=>c.charCodeAt(0));}
+ function to64(bytes){let s='';for(let i=0;i<bytes.length;i+=8192)s+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(s);}
+ async function upload(file){let row=await api('uploads',{});try{for(let offset=0;offset<file.size;offset+=196608){const bytes=new Uint8Array(await file.slice(offset,offset+196608).arrayBuffer());row=await api('uploads',{upload_id:row.upload_id,offset,data:to64(bytes)});}return row.upload_id;}catch(error){await api(`uploads/${row.upload_id}/discard`,{});throw error;}}
+ async function downloadArtifact(jobId,name){
+  let writable=null;if(window.showSaveFilePicker){try{writable=await(await window.showSaveFilePicker({suggestedName:name})).createWritable();}catch(error){if(error.name==='AbortError')return;throw error;}}
+  const chunks=[];let offset=0;try{while(true){const row=await api(`jobs/${jobId}/artifacts/${encodeURIComponent(name)}?offset=${offset}`);if(!writable&&row.total_bytes>32*1024*1024)throw new Error('이 브라우저는 대용량 파일 저장을 지원하지 않습니다. CLI의 program artifact 명령을 사용하세요.');const bytes=from64(row.data);if(writable)await writable.write(bytes);else chunks.push(bytes);if(row.done)break;offset+=row.bytes;}if(writable)await writable.close();else downloadBytes(new Blob(chunks),name);}catch(error){if(writable)await writable.abort();throw error;}
+ }
+ function renderFields(){
+  const spec=selectedSpec();controls.clear();$('fields').replaceChildren();$('pipeline').replaceChildren();if(!spec)return;
+  $('program-description').textContent=spec.description||'';
+  [['입력 가공',typeof spec.preprocessor==='object'?spec.preprocessor?.adapter:spec.preprocessor,'optional'],['모델',spec.model.backend,'core'],['해석',spec.contract.output,'core'],['실행',spec.executor,'optional']].forEach(([label,value,cls])=>{if(value)$('pipeline').append(node('span',`${label} · ${value}`,cls));});
+  if(spec.preprocessor?.config){const c=spec.preprocessor.config;$('pipeline').append(node('span',`${c.strategy==='semantic'?'문단·문장 순차 분할':'고정 구간 순차 분할'} · 최대 ${c.max_tokens} 토큰`,'optional'));}
+  let advanced=null;
+  for(const [name,field] of Object.entries(spec.input_schema.properties)){
+   const group=node('div',null,'field-group'),id='field-'+name;
+   if(field.format==='document'){
+    const label=node('label','문서 내용');label.htmlFor=id;const text=node('textarea');text.id=id;text.rows=5;text.placeholder='이름: 김민수\n주소: 서울특별시 강남구 테헤란로 123\n전화: 010-1234-5678';const fileLabel=node('label','또는 UTF-8 파일 선택');fileLabel.htmlFor=id+'-file';const file=node('input');file.type='file';file.id=id+'-file';file.accept='.txt,.md,.csv,.json,.jsonl';const box=node('div',null,'document-box');box.append(label,text,fileLabel,file,node('p','파일을 선택하면 입력한 내용 대신 파일을 처리합니다.','help'));group.append(box);controls.set(name,{text,file,field});
+   }else{
+    const label=node('label',field.title||name);label.htmlFor=id;let input;
+    if(field.enum&&field.type!=='boolean'){input=node('select');field.enum.forEach(value=>{const option=node('option',String(value));option.value=value;input.append(option);});}else input=node(field.format==='textarea'?'textarea':'input');input.id=id;
+    if(field.type==='boolean'){input.type='checkbox';input.checked=field.default===true;label.prepend(input);group.append(label);}else{if(field.type==='integer'){input.type='number';input.min=field.minimum??'';input.max=field.maximum??'';}if(field.type==='string'&&input.tagName==='INPUT')input.type='text';input.value=field.default??'';input.required=spec.input_schema.required.includes(name);group.append(label,input);}controls.set(name,{input,field});
+    if(field.format==='public-key'){
+     const row=node('div',null,'key-row'),generate=node('button','키 생성 & 개인키 저장','secondary');generate.type='button';generate.addEventListener('click',guarded(async()=>{generate.disabled=true;try{const keys=await api('keys',{});input.value=keys.public_key;downloadBytes(JSON.stringify(keys,null,2),'ganglion-private-key.json');notice('개인키 파일을 저장했습니다. 복원 시 이 파일과 recovery.bin이 필요합니다.');}finally{generate.disabled=false;}}));
+     const fileLabel=node('label','공개키 또는 개인키 JSON');fileLabel.htmlFor=id+'-file';const file=node('input');file.id=id+'-file';file.type='file';file.accept='.json';file.addEventListener('change',guarded(async()=>{if(file.files[0]){const keys=JSON.parse(await file.files[0].text());if(!keys.public_key)throw new Error('공개키가 없는 파일입니다.');input.value=keys.public_key;file.value='';}}));const existing=node('details');existing.append(node('summary','기존 키 파일 불러오기'),fileLabel,file);row.append(generate);group.append(row,existing);
     }
-    // reset tab to first
-    const tabs = document.querySelectorAll(`.fctx[data-ctx="${id}"] .fp__tab`);
-    if (tabs.length) {
-      tabs.forEach((t) => t.classList.remove('active'));
-      tabs[0].classList.add('active');
-      const subs = document.querySelectorAll(`.fctx[data-ctx="${id}"] .fctx__sub`);
-      subs.forEach((s) => s.classList.remove('is-active'));
-      const first = document.querySelector(`.fctx[data-ctx="${id}"] .fctx__sub`);
-      if (first) first.classList.add('is-active');
-    }
-  }
-
-  stages.forEach((s) => {
-    s.addEventListener('click', (e) => { setFocus(s.dataset.stage); });
-  });
-  triadCells.forEach((c) => {
-    c.addEventListener('click', () => {
-      const t = (c.dataset.target || '').split(',')[0];
-      if (t) setFocus(t);
-    });
-  });
-
-  // ---- tabs ----------------------------------------------------
-  document.addEventListener('click', (e) => {
-    const tab = e.target.closest('.fp__tab');
-    if (!tab) return;
-    const ctx = tab.closest('.fctx');
-    if (!ctx) return;
-    ctx.querySelectorAll('.fp__tab').forEach((t) => t.classList.remove('active'));
-    tab.classList.add('active');
-    const key = tab.dataset.sub;
-    ctx.querySelectorAll('.fctx__sub').forEach((s) => {
-      s.classList.toggle('is-active', s.dataset.sub === key);
-    });
-  });
-
-  // ---- toggles -------------------------------------------------
-  document.querySelectorAll('.toggle:not(.lock)').forEach((t) => {
-    t.addEventListener('click', () => t.classList.toggle('on'));
-  });
-
-  // ---- seg controls -------------------------------------------
-  document.querySelectorAll('.seg').forEach((seg) => {
-    seg.addEventListener('click', (e) => {
-      const opt = e.target.closest('.seg__opt');
-      if (!opt) return;
-      seg.querySelectorAll('.seg__opt').forEach((o) => o.classList.remove('active'));
-      opt.classList.add('active');
-    });
-  });
-
-  // ---- default focus ------------------------------------------
-  setFocus('pipeline');
+   }if(field.advanced){if(!advanced){advanced=node('details');advanced.append(node('summary','고급 입력 설정'));$('fields').append(advanced);}advanced.append(group);}else $('fields').append(group);
+  }$('run-button').disabled=polling||!spec.available;
+ }
+ function cleanSpec(spec){const clean={...spec};delete clean.fingerprint;delete clean.available;delete clean.availability_detail;return clean;}
+ async function loadSpecs(){
+  specs=(await api('specs')).specs;const previous=$('program').value;$('program').replaceChildren();specs.forEach(spec=>{const option=node('option',spec.title+(spec.available?'':' · 준비 필요'));option.value=spec.id;option.disabled=!spec.available;$('program').append(option);});$('program').value=specs.some(s=>s.id===previous&&s.available)?previous:specs.find(s=>s.available)?.id||'';renderFields();$('spec-list').replaceChildren();
+  specs.forEach(spec=>{const card=node('div',null,'card');card.append(node('h2',spec.title),node('p',spec.description,'help'));const button=node('button','스펙 편집','secondary');button.type='button';button.addEventListener('click',()=>{$('spec-json').value=JSON.stringify(cleanSpec(spec),null,2);$('spec-json').focus();});card.append(button);$('spec-list').append(card);});if(!$('spec-json').value){const clean=cleanSpec(specs[0]);clean.id='my-pii';$('spec-json').value=JSON.stringify(clean,null,2);}
+ }
+ $('program').addEventListener('change',renderFields);
+ function setStatus(status){$('status').textContent=labels[status]||status;$('status').className='pill '+status;}
+ function renderResult(job){
+  currentJob=job;setStatus(job.status);$('empty-result').hidden=true;$('running').hidden=true;$('result').hidden=job.status!=='complete';if(job.status!=='complete'){notice(job.error?.detail||labels[job.status],job.status==='failed');return;}
+  const result=job.result,spec=specs.find(s=>s.id===job.spec_id);$('metrics').replaceChildren();
+  for(const [name,field] of Object.entries(job.result_schema?.properties||spec?.result_schema?.properties||{})){if(!(name in result))continue;const cell=node('div',null,'metric'),v=result[name];cell.append(node('span',field.title||name),node('strong',v==null?'—':typeof v==='number'?Number(v.toFixed(1)).toLocaleString():String(v)));$('metrics').append(cell);}
+  $('quality').hidden=result.quality_status!=='experimental';$('quality').textContent='실험 결과입니다. 개인정보가 남아 있는지 검토한 후 사용하세요. 모델 점수는 보정되지 않은 확률입니다.';
+  $('artifacts').replaceChildren();result.artifacts.forEach(name=>{const row=node('div',null,'artifact');row.append(node('span',name));const button=node('button','저장 ↓');button.type='button';button.addEventListener('click',guarded(()=>downloadArtifact(job.job_id,name)));row.append(button);
+   if(/\.(txt|json|jsonl)$/.test(name)){const preview=node('button','미리보기');preview.type='button';preview.addEventListener('click',guarded(async()=>{const old=row.nextElementSibling;if(old?.classList.contains('preview')){old.remove();return;}const chunk=await api(`jobs/${job.job_id}/artifacts/${encodeURIComponent(name)}?offset=0`);row.after(node('pre',new TextDecoder().decode(from64(chunk.data).subarray(0,12000))+(chunk.total_bytes>12000?'\n… (파일의 일부)':''),'preview'));}));row.append(preview);}$('artifacts').append(row);
+  });$('result-json').textContent=JSON.stringify(result,null,2);$('feedback-status').textContent='';$('feedback-analysis').hidden=true;$('expected-spans').value='';$('gold-complete').checked=false;
+  $('feedback-gold').hidden=result.domain!=='pii-text';$('verdict').value='correct';for(const option of $('verdict').options){const piiOnly=['missed_pii','overmasked'].includes(option.value);option.disabled=piiOnly&&result.domain!=='pii-text';option.hidden=option.disabled;}
+ }
+ $('run-form').addEventListener('submit',guarded(async event=>{
+  event.preventDefault();if(polling)return;const spec=selectedSpec(),inputs={},uploads=[];polling=true;currentJob=null;$('program').disabled=true;$('run-button').disabled=true;$('result').hidden=true;$('empty-result').hidden=true;$('running').hidden=false;$('cancel-button').disabled=true;$('notice').hidden=true;setStatus('queued');
+  try{for(const [name,c] of controls){if(c.field.format==='document'){const file=c.file.files[0]||new File([c.text.value],'document.txt',{type:'text/plain'});if(!file.size)throw new Error('문서 내용이나 파일을 입력하세요.');$('progress-text').textContent='문서를 업로드하고 있습니다…';const id=await upload(file);uploads.push(id);inputs[name]=id;}else inputs[name]=c.field.type==='boolean'?c.input.checked:c.field.type==='integer'?Number(c.input.value):c.input.value;}
+   currentJob=await api('jobs',{spec_id:spec.id,inputs});$('cancel-button').disabled=false;
+   while(['queued','running','cancelling'].includes(currentJob.status)){setStatus(currentJob.status);const p=currentJob.progress;$('progress-text').textContent=p.units?`${p.units.toLocaleString()}개 구간 · ${p.processed_bytes.toLocaleString()} 바이트 · ${p.edits}개 편집`:'모델을 준비하고 있습니다…';await new Promise(r=>setTimeout(r,350));currentJob=await api(`jobs/${currentJob.job_id}`);}renderResult(currentJob);$('result').scrollIntoView({block:'start',behavior:'smooth'});
+  }catch(error){$('running').hidden=true;setStatus('failed');throw error;}finally{polling=false;$('program').disabled=false;$('run-button').disabled=!selectedSpec().available;for(const id of uploads)await api(`uploads/${id}/discard`,{});}
+ }));
+ $('cancel-button').addEventListener('click',guarded(async()=>{if(currentJob){currentJob=await api(`jobs/${currentJob.job_id}/cancel`,{});setStatus(currentJob.status);}}));
+ $('feedback-button').addEventListener('click',guarded(async()=>{if(!currentJob||currentJob.status!=='complete')return;const body={verdict:$('verdict').value},gold=$('expected-spans').value.trim();if(gold||$('gold-complete').checked){body.expected_spans=JSON.parse(gold||'[]');body.gold_complete=$('gold-complete').checked;}const row=await api(`jobs/${currentJob.job_id}/feedback`,body),analysis=row.analysis;$('feedback-status').textContent='저장했습니다. '+(analysis?.status==='unclassified'?'정답 구간이 없어 오류 판정을 보류합니다.':analysis?.status==='partial'?'입력한 정답 구간에 대한 오류를 분류했습니다.':analysis?.final?.f1!=null?`입력한 정답 기준 F1 ${(analysis.final.f1*100).toFixed(2)}%. 독립 검증을 기다립니다.`:'독립된 정답 검증을 기다립니다.');$('feedback-analysis').hidden=!analysis;$('feedback-analysis-json').textContent=JSON.stringify(analysis,null,2);}));
+ async function loadJobs(){const jobs=(await api('jobs')).jobs;$('jobs').replaceChildren();if(!jobs.length)$('jobs').append(node('p','아직 실행 기록이 없습니다.','help'));jobs.forEach(job=>{const row=node('div',null,'job-row'),title=node('div',specs.find(s=>s.id===job.spec_id)?.title||job.spec_id);title.append(node('small',`${job.job_id.slice(0,10)} · ${new Date(job.created_at*1000).toLocaleString()}`));row.append(title,node('span',labels[job.status]||job.status,'pill '+job.status));const button=node('button','열기','secondary');button.disabled=polling;button.addEventListener('click',()=>{view('workspace');renderResult(job);});row.append(button);$('jobs').append(row);});}
+ $('refresh-jobs').addEventListener('click',guarded(loadJobs));$('register-spec').addEventListener('click',guarded(async()=>{await api('specs',JSON.parse($('spec-json').value));await loadSpecs();notice('스펙을 검증하고 등록했습니다.');}));
+ $('restore-form').addEventListener('submit',guarded(async event=>{event.preventDefault();const uploads=[];$('restore-button').disabled=true;$('restore-result').textContent='문서를 확인하고 있습니다…';try{const keys=JSON.parse(await $('restore-key').files[0].text());for(const id of ['restore-document','restore-recovery'])uploads.push(await upload($(id).files[0]));const job=await api('restore',{document:uploads[0],recovery:uploads[1],private_key:keys.private_key});$('restore-key').value='';$('restore-result').replaceChildren(node('p','원문 바이트 검증을 통과했습니다.'));const save=node('button','복원 문서 저장 ↓','secondary');save.type='button';save.addEventListener('click',guarded(()=>downloadArtifact(job.job_id,'restored.txt')));$('restore-result').append(save);}catch(error){$('restore-result').textContent='복원하지 못했습니다.';throw error;}finally{$('restore-button').disabled=false;for(const id of uploads)await api(`uploads/${id}/discard`,{});}}));
+ guarded(async()=>{await loadSpecs();$('connection').textContent='API 연결됨';})();
 })();

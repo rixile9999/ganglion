@@ -1,0 +1,654 @@
+{
+  "backend": "presidio-spacy",
+  "configuration": "en-ko",
+  "supported_languages": [
+    "en",
+    "ko"
+  ],
+  "language_selection": "row.language metadata; mixed unions en and ko passes",
+  "input_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+  "coordinate": "character",
+  "score_threshold": 0.0,
+  "threshold_policy": "default 0.0; not tuned on test",
+  "score_kind": "mixed NER default scores and recognizer heuristic scores; uncalibrated",
+  "entity_mapping": {
+    "PERSON": "PERSON",
+    "LOCATION": "ADDRESS",
+    "PHONE_NUMBER": "PHONE",
+    "EMAIL_ADDRESS": "EMAIL",
+    "US_SSN": "IDENTIFIER",
+    "US_ITIN": "IDENTIFIER",
+    "US_PASSPORT": "IDENTIFIER",
+    "US_DRIVER_LICENSE": "IDENTIFIER",
+    "UK_NHS": "IDENTIFIER",
+    "MEDICAL_LICENSE": "IDENTIFIER",
+    "KR_RRN": "IDENTIFIER",
+    "KR_FRN": "IDENTIFIER",
+    "KR_DRIVER_LICENSE": "IDENTIFIER",
+    "KR_PASSPORT": "IDENTIFIER",
+    "KR_BRN": "IDENTIFIER"
+  },
+  "mapping_caveats": [
+    "LOCATION maps to ADDRESS as a granularity proxy; partial city/street ranges are not expanded.",
+    "KR_BRN is a business identifier; mapped to the broad IDENTIFIER category explicitly.",
+    "Financial account, credit-card, date and other unsupported labels stay in raw_model_spans but are excluded from five-type spans.",
+    "Synthetic benchmark IDs are not verified real identity numbers. Current KR_RRN validation returns None on an old-checksum mismatch, permitting post-2020 formats."
+  ],
+  "official_recognizers_explicitly_enabled": [
+    {
+      "name": "KrRrnRecognizer",
+      "language": "en"
+    },
+    {
+      "name": "KrFrnRecognizer",
+      "language": "en"
+    },
+    {
+      "name": "KrPassportRecognizer",
+      "language": "en"
+    },
+    {
+      "name": "KrDriverLicenseRecognizer",
+      "language": "en"
+    },
+    {
+      "name": "KrBrnRecognizer",
+      "language": "en"
+    },
+    {
+      "name": "KrRrnRecognizer",
+      "language": "ko"
+    },
+    {
+      "name": "KrFrnRecognizer",
+      "language": "ko"
+    },
+    {
+      "name": "KrPassportRecognizer",
+      "language": "ko"
+    },
+    {
+      "name": "KrDriverLicenseRecognizer",
+      "language": "ko"
+    },
+    {
+      "name": "KrBrnRecognizer",
+      "language": "ko"
+    }
+  ],
+  "custom_regex_or_context_added": false,
+  "ganglion_interpreter_applied": false,
+  "gold_accessed_by_detector": false,
+  "device": "cpu",
+  "cpu_threads": 1,
+  "input_token_unit": "spaCy NLP tokens, summed over selected language passes; not LLM tokens",
+  "python": "3.12.8",
+  "model_load_seconds": 1.883667895104736,
+  "packages": {
+    "Jinja2": "3.1.6",
+    "MarkupSafe": "3.0.4",
+    "PyYAML": "6.0.3",
+    "Pygments": "2.21.0",
+    "annotated-doc": "0.0.5",
+    "annotated-types": "0.8.0",
+    "anyio": "4.15.1",
+    "blis": "1.3.3",
+    "catalogue": "2.0.10",
+    "certifi": "2026.7.22",
+    "charset-normalizer": "3.5.2",
+    "click": "8.5.0",
+    "cloudpathlib": "0.26.0",
+    "confection": "1.3.3",
+    "cymem": "2.0.13",
+    "en_core_web_lg": "3.8.0",
+    "filelock": "4.0.12",
+    "h11": "0.16.0",
+    "httpcore": "1.0.9",
+    "httpx": "0.28.1",
+    "idna": "3.20",
+    "ko_core_news_sm": "3.8.0",
+    "markdown-it-py": "4.2.0",
+    "mdurl": "0.1.2",
+    "mecab-ko-dic": "1.0.0",
+    "mecab-python3": "1.0.12",
+    "murmurhash": "1.0.15",
+    "numpy": "2.4.6",
+    "packaging": "26.3",
+    "phonenumbers": "9.0.40",
+    "pip": "24.3.1",
+    "preshed": "3.0.13",
+    "presidio_analyzer": "2.2.364",
+    "pydantic": "2.13.5",
+    "pydantic_core": "2.46.5",
+    "regex": "2026.9.29",
+    "requests": "2.34.2",
+    "requests-file": "3.0.1",
+    "rich": "15.0.0",
+    "setuptools": "84.0.0",
+    "shellingham": "1.5.4",
+    "smart_open": "8.0.2",
+    "spacy": "3.8.16",
+    "spacy-legacy": "3.0.12",
+    "spacy-loggers": "1.0.5",
+    "srsly": "2.5.4",
+    "thinc": "8.3.13",
+    "tldextract": "5.4.0",
+    "tqdm": "4.70.1",
+    "typer": "0.27.3",
+    "typing-inspection": "0.4.4",
+    "typing_extensions": "4.16.0",
+    "urllib3": "2.8.0",
+    "wasabi": "1.1.3",
+    "weasel": "1.0.0",
+    "wrapt": "2.5.0"
+  },
+  "sources": {
+    "installation": "https://microsoft.github.io/presidio/installation/",
+    "language_configuration": "https://github.com/data-privacy-stack/presidio/blob/main/docs/tutorial/05_languages.md",
+    "recognizer_defaults": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/conf/default_recognizers.yaml",
+    "rrn_validation": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/country_specific/korea/kr_rrn_recognizer.py",
+    "korean_model": "https://spacy.io/models/ko#ko_core_news_sm",
+    "english_model": "https://spacy.io/models/en#en_core_web_lg"
+  },
+  "models": [
+    {
+      "language": "en",
+      "name": "en_core_web_lg",
+      "version": "3.8.0",
+      "artifact_sha256": "74ccb1581337fac03516ed70f69d0a41e7a63e96f261da3c7891b9ff6d6fff29",
+      "installed_artifact_bytes": 445142969,
+      "pipeline_components": [
+        "tok2vec",
+        "tagger",
+        "parser",
+        "attribute_ruler",
+        "lemmatizer",
+        "ner"
+      ],
+      "native_ner_labels": [
+        "CARDINAL",
+        "DATE",
+        "EVENT",
+        "FAC",
+        "GPE",
+        "LANGUAGE",
+        "LAW",
+        "LOC",
+        "MONEY",
+        "NORP",
+        "ORDINAL",
+        "ORG",
+        "PERCENT",
+        "PERSON",
+        "PRODUCT",
+        "QUANTITY",
+        "TIME",
+        "WORK_OF_ART"
+      ],
+      "pipeline_parameter_elements": 3300070,
+      "static_vector_elements": 102875400,
+      "tokenizer_class": "spacy.tokenizer.Tokenizer"
+    },
+    {
+      "language": "ko",
+      "name": "ko_core_news_sm",
+      "version": "3.8.0",
+      "artifact_sha256": "82bee804c21f5060254fad8b64d0177ba73c1583fb65274ede772731f249ff78",
+      "installed_artifact_bytes": 24788051,
+      "pipeline_components": [
+        "tok2vec",
+        "tagger",
+        "morphologizer",
+        "parser",
+        "lemmatizer",
+        "attribute_ruler",
+        "ner"
+      ],
+      "native_ner_labels": [
+        "DT",
+        "LC",
+        "OG",
+        "PS",
+        "QT",
+        "TI"
+      ],
+      "pipeline_parameter_elements": 3479594,
+      "static_vector_elements": 0,
+      "tokenizer_class": "spacy.tokenizer.Tokenizer"
+    }
+  ],
+  "recognizers": [
+    {
+      "name": "CreditCardRecognizer",
+      "class": "CreditCardRecognizer",
+      "language": "en",
+      "entities": [
+        "CREDIT_CARD"
+      ],
+      "source_sha256": "762612c51d56339e6bd39362402a330d46d48c0aabe4db100012cd03fcb0e562"
+    },
+    {
+      "name": "UsBankRecognizer",
+      "class": "UsBankRecognizer",
+      "language": "en",
+      "entities": [
+        "US_BANK_NUMBER"
+      ],
+      "source_sha256": "257713e9ddb376a5da4178e0a346e1c1becf96e53ff2b34a86fb247a8dd257fd"
+    },
+    {
+      "name": "UsLicenseRecognizer",
+      "class": "UsLicenseRecognizer",
+      "language": "en",
+      "entities": [
+        "US_DRIVER_LICENSE"
+      ],
+      "source_sha256": "a7a0018090247b796559971094247b911af228de3265db2cc4813c8df5ae43de"
+    },
+    {
+      "name": "UsItinRecognizer",
+      "class": "UsItinRecognizer",
+      "language": "en",
+      "entities": [
+        "US_ITIN"
+      ],
+      "source_sha256": "a233c979070fe43188abe8c677e78c1adff360b80513d04b42f2aeb5de0c531f"
+    },
+    {
+      "name": "UsPassportRecognizer",
+      "class": "UsPassportRecognizer",
+      "language": "en",
+      "entities": [
+        "US_PASSPORT"
+      ],
+      "source_sha256": "8914e153e9133284de1d97e64e6943160e18e9fbf9e625a3e012aaeb7a259377"
+    },
+    {
+      "name": "UsSsnRecognizer",
+      "class": "UsSsnRecognizer",
+      "language": "en",
+      "entities": [
+        "US_SSN"
+      ],
+      "source_sha256": "e9227abeecf9221a0cad0c8b01785485c936ccf759ded80b6cc4f2eb8d0910fa"
+    },
+    {
+      "name": "NhsRecognizer",
+      "class": "NhsRecognizer",
+      "language": "en",
+      "entities": [
+        "UK_NHS"
+      ],
+      "source_sha256": "75b1cbd7142b0e4ba7a37bc62d391c17d4ffce05d9b5049eb48cd5ee393b2b15"
+    },
+    {
+      "name": "CryptoRecognizer",
+      "class": "CryptoRecognizer",
+      "language": "en",
+      "entities": [
+        "CRYPTO"
+      ],
+      "source_sha256": "07f5c4b4c85ef248fbe3a9cd3ad2595119c2e907c0e497105d7e6488800f6419"
+    },
+    {
+      "name": "CryptoRecognizer",
+      "class": "CryptoRecognizer",
+      "language": "ko",
+      "entities": [
+        "CRYPTO"
+      ],
+      "source_sha256": "07f5c4b4c85ef248fbe3a9cd3ad2595119c2e907c0e497105d7e6488800f6419"
+    },
+    {
+      "name": "DateRecognizer",
+      "class": "DateRecognizer",
+      "language": "en",
+      "entities": [
+        "DATE_TIME"
+      ],
+      "source_sha256": "2aeca2d46fea8d43fc77c2e5d45d7a1331acff9a50cadce95cebd21eb4db1057"
+    },
+    {
+      "name": "DateRecognizer",
+      "class": "DateRecognizer",
+      "language": "ko",
+      "entities": [
+        "DATE_TIME"
+      ],
+      "source_sha256": "2aeca2d46fea8d43fc77c2e5d45d7a1331acff9a50cadce95cebd21eb4db1057"
+    },
+    {
+      "name": "EmailRecognizer",
+      "class": "EmailRecognizer",
+      "language": "en",
+      "entities": [
+        "EMAIL_ADDRESS"
+      ],
+      "source_sha256": "1d4ff93e067426c9db105100f8343d7bcb3cc9a8115ce2511782e7858300f59d"
+    },
+    {
+      "name": "EmailRecognizer",
+      "class": "EmailRecognizer",
+      "language": "ko",
+      "entities": [
+        "EMAIL_ADDRESS"
+      ],
+      "source_sha256": "1d4ff93e067426c9db105100f8343d7bcb3cc9a8115ce2511782e7858300f59d"
+    },
+    {
+      "name": "IbanRecognizer",
+      "class": "IbanRecognizer",
+      "language": "en",
+      "entities": [
+        "IBAN_CODE"
+      ],
+      "source_sha256": "287013043056c19522f0a08ce6f6464fd7909c2516286060811d3c714113f2d3"
+    },
+    {
+      "name": "IbanRecognizer",
+      "class": "IbanRecognizer",
+      "language": "ko",
+      "entities": [
+        "IBAN_CODE"
+      ],
+      "source_sha256": "287013043056c19522f0a08ce6f6464fd7909c2516286060811d3c714113f2d3"
+    },
+    {
+      "name": "IpRecognizer",
+      "class": "IpRecognizer",
+      "language": "en",
+      "entities": [
+        "IP_ADDRESS"
+      ],
+      "source_sha256": "4d46aa9623114c3ee147c7f2f11455caf4911d42059e2583d46494574efe65e5"
+    },
+    {
+      "name": "IpRecognizer",
+      "class": "IpRecognizer",
+      "language": "ko",
+      "entities": [
+        "IP_ADDRESS"
+      ],
+      "source_sha256": "4d46aa9623114c3ee147c7f2f11455caf4911d42059e2583d46494574efe65e5"
+    },
+    {
+      "name": "MedicalLicenseRecognizer",
+      "class": "MedicalLicenseRecognizer",
+      "language": "en",
+      "entities": [
+        "MEDICAL_LICENSE"
+      ],
+      "source_sha256": "aa532dbc1cab38eec613f0eedd444c00d6c0f4b946799a5e9a793657188f9753"
+    },
+    {
+      "name": "MedicalLicenseRecognizer",
+      "class": "MedicalLicenseRecognizer",
+      "language": "ko",
+      "entities": [
+        "MEDICAL_LICENSE"
+      ],
+      "source_sha256": "aa532dbc1cab38eec613f0eedd444c00d6c0f4b946799a5e9a793657188f9753"
+    },
+    {
+      "name": "MacAddressRecognizer",
+      "class": "MacAddressRecognizer",
+      "language": "en",
+      "entities": [
+        "MAC_ADDRESS"
+      ],
+      "source_sha256": "c9caea6308afcbf9e8588f01af8a65371e90c4178aaa4db27fb9bed7ada7714c"
+    },
+    {
+      "name": "MacAddressRecognizer",
+      "class": "MacAddressRecognizer",
+      "language": "ko",
+      "entities": [
+        "MAC_ADDRESS"
+      ],
+      "source_sha256": "c9caea6308afcbf9e8588f01af8a65371e90c4178aaa4db27fb9bed7ada7714c"
+    },
+    {
+      "name": "UrlRecognizer",
+      "class": "UrlRecognizer",
+      "language": "en",
+      "entities": [
+        "URL"
+      ],
+      "source_sha256": "46b17361e0d8a683a106cb977098b8210b492f357be1c79a3db93127a999c5ee"
+    },
+    {
+      "name": "UrlRecognizer",
+      "class": "UrlRecognizer",
+      "language": "ko",
+      "entities": [
+        "URL"
+      ],
+      "source_sha256": "46b17361e0d8a683a106cb977098b8210b492f357be1c79a3db93127a999c5ee"
+    },
+    {
+      "name": "SpacyRecognizer",
+      "class": "SpacyRecognizer",
+      "language": "en",
+      "entities": [
+        "ID",
+        "PERSON",
+        "LOCATION",
+        "PHONE_NUMBER",
+        "DATE_TIME",
+        "ORGANIZATION",
+        "EMAIL",
+        "AGE",
+        "NRP"
+      ],
+      "source_sha256": "f5fd4400927278350af7e8d3fcb3e4fa9924590ec00f4eb71ebd19fde83a0564"
+    },
+    {
+      "name": "SpacyRecognizer",
+      "class": "SpacyRecognizer",
+      "language": "ko",
+      "entities": [
+        "ID",
+        "PERSON",
+        "LOCATION",
+        "PHONE_NUMBER",
+        "DATE_TIME",
+        "ORGANIZATION",
+        "EMAIL",
+        "AGE",
+        "NRP"
+      ],
+      "source_sha256": "f5fd4400927278350af7e8d3fcb3e4fa9924590ec00f4eb71ebd19fde83a0564"
+    },
+    {
+      "name": "PhoneRecognizer",
+      "class": "PhoneRecognizer",
+      "language": "en",
+      "entities": [
+        "PHONE_NUMBER"
+      ],
+      "source_sha256": "d8bef4065297fb3661ca224813a16fb118a9d7f2c3c282231eb93ab91426c4b0",
+      "phone_regions": [
+        "US",
+        "GB",
+        "DE",
+        "FR",
+        "IL",
+        "IN",
+        "CA",
+        "BR",
+        "KR"
+      ]
+    },
+    {
+      "name": "KrRrnRecognizer",
+      "class": "KrRrnRecognizer",
+      "language": "en",
+      "entities": [
+        "KR_RRN"
+      ],
+      "source_sha256": "6edd38b849823b8a01ae46d748dd74cd08e9899b6019bf38c899803d9b2c77f4"
+    },
+    {
+      "name": "KrFrnRecognizer",
+      "class": "KrFrnRecognizer",
+      "language": "en",
+      "entities": [
+        "KR_FRN"
+      ],
+      "source_sha256": "5150882b794ba6b3af350ddbdb9c069244f0248da1f0277ce78540215a41250f"
+    },
+    {
+      "name": "KrPassportRecognizer",
+      "class": "KrPassportRecognizer",
+      "language": "en",
+      "entities": [
+        "KR_PASSPORT"
+      ],
+      "source_sha256": "f71b68769e302f3af4903c2554e93b68b08401668b5da8e6e6e025c939a9b507"
+    },
+    {
+      "name": "KrDriverLicenseRecognizer",
+      "class": "KrDriverLicenseRecognizer",
+      "language": "en",
+      "entities": [
+        "KR_DRIVER_LICENSE"
+      ],
+      "source_sha256": "288230e8e683ed93897ac4b126a7780e57ca80e4f02798068db3ee96d6d3e990"
+    },
+    {
+      "name": "KrBrnRecognizer",
+      "class": "KrBrnRecognizer",
+      "language": "en",
+      "entities": [
+        "KR_BRN"
+      ],
+      "source_sha256": "00af73be03b39006004b3e28313500fbeefec2e55a53f5f58bb03300dc18d866"
+    },
+    {
+      "name": "PhoneRecognizer",
+      "class": "PhoneRecognizer",
+      "language": "ko",
+      "entities": [
+        "PHONE_NUMBER"
+      ],
+      "source_sha256": "d8bef4065297fb3661ca224813a16fb118a9d7f2c3c282231eb93ab91426c4b0",
+      "phone_regions": [
+        "US",
+        "GB",
+        "DE",
+        "FR",
+        "IL",
+        "IN",
+        "CA",
+        "BR",
+        "KR"
+      ]
+    },
+    {
+      "name": "KrRrnRecognizer",
+      "class": "KrRrnRecognizer",
+      "language": "ko",
+      "entities": [
+        "KR_RRN"
+      ],
+      "source_sha256": "6edd38b849823b8a01ae46d748dd74cd08e9899b6019bf38c899803d9b2c77f4"
+    },
+    {
+      "name": "KrFrnRecognizer",
+      "class": "KrFrnRecognizer",
+      "language": "ko",
+      "entities": [
+        "KR_FRN"
+      ],
+      "source_sha256": "5150882b794ba6b3af350ddbdb9c069244f0248da1f0277ce78540215a41250f"
+    },
+    {
+      "name": "KrPassportRecognizer",
+      "class": "KrPassportRecognizer",
+      "language": "ko",
+      "entities": [
+        "KR_PASSPORT"
+      ],
+      "source_sha256": "f71b68769e302f3af4903c2554e93b68b08401668b5da8e6e6e025c939a9b507"
+    },
+    {
+      "name": "KrDriverLicenseRecognizer",
+      "class": "KrDriverLicenseRecognizer",
+      "language": "ko",
+      "entities": [
+        "KR_DRIVER_LICENSE"
+      ],
+      "source_sha256": "288230e8e683ed93897ac4b126a7780e57ca80e4f02798068db3ee96d6d3e990"
+    },
+    {
+      "name": "KrBrnRecognizer",
+      "class": "KrBrnRecognizer",
+      "language": "ko",
+      "entities": [
+        "KR_BRN"
+      ],
+      "source_sha256": "00af73be03b39006004b3e28313500fbeefec2e55a53f5f58bb03300dc18d866"
+    }
+  ],
+  "nlp_ner_configuration": {
+    "labels_to_ignore": [
+      "QT"
+    ],
+    "aggregation_strategy": "max",
+    "stride": 14,
+    "alignment_mode": "expand",
+    "default_score": 0.85,
+    "model_to_presidio_entity_mapping": {
+      "PER": "PERSON",
+      "PERSON": "PERSON",
+      "LOC": "LOCATION",
+      "LOCATION": "LOCATION",
+      "GPE": "LOCATION",
+      "ORG": "ORGANIZATION",
+      "DATE": "DATE_TIME",
+      "TIME": "DATE_TIME",
+      "NORP": "NRP",
+      "AGE": "AGE",
+      "ID": "ID",
+      "EMAIL": "EMAIL",
+      "PATIENT": "PERSON",
+      "STAFF": "PERSON",
+      "HOSP": "ORGANIZATION",
+      "PATORG": "ORGANIZATION",
+      "PHONE": "PHONE_NUMBER",
+      "HCW": "PERSON",
+      "HOSPITAL": "ORGANIZATION",
+      "PS": "PERSON",
+      "LC": "LOCATION",
+      "OG": "ORGANIZATION",
+      "DT": "DATE_TIME",
+      "TI": "DATE_TIME"
+    },
+    "low_score_entity_names": [],
+    "low_confidence_score_multiplier": 0.4
+  },
+  "rows": 1500,
+  "input_tokens": 34150,
+  "output_tokens": 0,
+  "source_language_counts": {
+    "ko": 750,
+    "en": 500,
+    "mixed": 250
+  },
+  "language_pass_counts": {
+    "ko": 1000,
+    "en": 750
+  },
+  "ignored_native_entity_counts": {
+    "DATE_TIME": 833,
+    "ORGANIZATION": 298
+  },
+  "elapsed_seconds": 11.500527443131432,
+  "latency_ms": {
+    "median": 5.767924594692886,
+    "mean": 7.619661135443796,
+    "p95": 17.520543886348605
+  },
+  "peak_process_rss_mb": 841.80078125,
+  "predictions_sha256": "5a68029a5b200277072139cceca8dbfa564ed921b34215e6dd662a2762f4ede1"
+}

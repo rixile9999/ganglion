@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GANGLION ◦ CLI Reference — Sheet R1</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="./assets/style.css">
+<style>
+  /* Page-local layout only; every colour, type and component class comes from
+     assets/style.css. Generated data lives in assets/cli.json — see
+     tools/cli_docs/README.md. */
+  .cli        { display: grid; grid-template-columns: 268px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .cli__rail  { position: sticky; top: calc(var(--header-h) + 16px); max-height: calc(100vh - var(--header-h) - 48px);
+                overflow-y: auto; border: 1px solid var(--rule); background: var(--ink-card); }
+  .cli__find  { width: 100%; padding: 10px 12px; border-bottom: 1px solid var(--rule);
+                font-family: var(--mono); font-size: 11.5px; color: var(--bone); background: var(--ink-raised); }
+  .cli__find::placeholder { color: var(--bone-mute); }
+  .cli__group { padding: 12px 0 6px; border-bottom: 1px solid var(--rule-soft); }
+  .cli__group:last-child { border-bottom: 0; }
+  .cli__grouph{ font-family: var(--sans); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+                color: var(--bone-mute); padding: 0 12px 6px; }
+  .cli__link  { display: flex; align-items: baseline; gap: 6px; padding: 4px 12px; font-family: var(--mono);
+                font-size: 11.5px; color: var(--bone-dim); cursor: pointer; border-left: 2px solid transparent; }
+  .cli__link:hover  { color: var(--bone-bright); background: var(--ink-overlay); }
+  .cli__link.active { color: var(--bone-bright); background: var(--ink-overlay); border-left-color: var(--teal); }
+  .cli__link-k{ margin-left: auto; font-size: 9px; color: var(--bone-faint); }
+  .cli__hide  { display: none; }
+  .cli__sig   { font-family: var(--mono); font-size: 13px; color: var(--bone-bright); word-break: break-word; }
+  .cli__out   { margin: 0; }
+  .cli__cmd   { font-family: var(--mono); font-size: 11.5px; color: var(--teal); padding: 10px 16px;
+                background: var(--ink-overlay); border: 1px solid var(--rule); border-bottom: 0; }
+  .cli__cmd::before { content: '$ '; color: var(--bone-mute); }
+  .cli__note  { font-size: 12px; color: var(--bone-dim); margin: 0 0 8px; line-height: 1.55; }
+  .cli__exit  { font-family: var(--mono); font-size: 10px; color: var(--bone-mute); padding: 6px 16px;
+                border: 1px solid var(--rule); border-top: 0; }
+  .cli__err   { color: var(--vermillion); }
+  .cli__empty { color: var(--bone-mute); font-size: 12px; }
+  @media (max-width: 980px) {
+    .cli { grid-template-columns: 1fr; }
+    .cli__rail { position: static; max-height: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="opbar">
+  <div class="opbar__brand">
+    <div class="opbar__sigil"></div>
+    <div>
+      <div class="opbar__brand-name">GANGLION</div>
+      <div class="opbar__brand-sub">cli reference · sheet r1</div>
+    </div>
+  </div>
+  <nav class="opbar__nav">
+    <a href="./index.html"><span class="opbar__nav-num">01</span><span class="opbar__nav-label">Workbench</span></a>
+    <a href="./catalog.html"><span class="opbar__nav-num">02</span><span class="opbar__nav-label">Catalog</span></a>
+    <a href="./pipeline.html"><span class="opbar__nav-num">03</span><span class="opbar__nav-label">Pipeline</span></a>
+    <a href="./evaluation.html"><span class="opbar__nav-num">04</span><span class="opbar__nav-label">Evaluation</span></a>
+    <a href="./traces.html"><span class="opbar__nav-num">05</span><span class="opbar__nav-label">Traces</span></a>
+    <a href="./rules.html"><span class="opbar__nav-num">06</span><span class="opbar__nav-label">Rules</span></a>
+    <a href="./events.html"><span class="opbar__nav-num">07</span><span class="opbar__nav-label">Event Bus</span></a>
+    <a href="./observability.html"><span class="opbar__nav-num">08</span><span class="opbar__nav-label">Observability</span></a>
+    <a href="./chat.html"><span class="opbar__nav-num">09</span><span class="opbar__nav-label">Chat</span></a>
+    <a href="./loops.html"><span class="opbar__nav-num">10</span><span class="opbar__nav-label">Loops</span></a>
+    <a href="./cli.html" class="active"><span class="opbar__nav-num">R1</span><span class="opbar__nav-label">CLI</span></a>
+  </nav>
+  <div class="opbar__meta" id="stamp"></div>
+</header>
+
+<main class="page">
+
+  <section class="page__head">
+    <div>
+      <div class="page__id">SHEET R1 <span>◦</span> reference <span>◦</span> <span id="head-count">…</span></div>
+      <h1 class="page__title">ganglion <em>cli</em></h1>
+      <p class="page__sub">The terminal projection of this console. Every command below is <b>one
+        <span class="t-teal">/api/*</span> call plus rendering</b> — the same route table the pages use,
+        called in-process. Nothing on this sheet is written by hand: the command surface is walked out of
+        <span class="t-amber">argparse</span>, the route column out of
+        <span class="t-amber">docs/tasks/cli_operator.md</span>, and every output block is
+        <b>captured by running the command</b> against a seeded offline run store.</p>
+    </div>
+    <div class="folio" id="folio">…</div>
+  </section>
+
+  <div class="cli">
+    <aside class="cli__rail">
+      <input class="cli__find" id="find" type="text" placeholder="filter commands…" autocomplete="off" spellcheck="false">
+      <div id="rail"></div>
+    </aside>
+    <div id="pane"><p class="cli__empty">loading assets/cli.json…</p></div>
+  </div>
+
+  <footer class="footer">
+    Generated by <b>tools/cli_docs/build.py</b> from <b>ganglion.ctl.main.build_parser()</b>,
+    <b>docs/tasks/cli_operator.md</b> and <b>docs/tasks/console_operator.md</b>.
+    Regenerate with <span class="code" style="padding:1px 5px">python tools/cli_docs/build.py</span>;
+    <span class="code" style="padding:1px 5px">--check</span> is the staleness gate
+    (<b>tests/test_cli_docs.py</b>).
+  </footer>
+
+</main>
+
+<script src="./assets/cli.js"></script>
+</body>
+</html>

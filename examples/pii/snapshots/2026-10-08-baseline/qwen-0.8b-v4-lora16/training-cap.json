@@ -1,0 +1,338 @@
+{
+  "planned_epochs": 30,
+  "completed_epochs": 6,
+  "partial_next_epoch_discarded": true,
+  "reason": "predeclared six-epoch compute-budget comparison",
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.19506920926010315,
+      "validation_f1": 0.8355123894907235,
+      "validation_counts": {
+        "tp": 3355,
+        "fp": 976,
+        "fn": 345,
+        "precision": 0.7746478873239436,
+        "recall": 0.9067567567567567,
+        "exact_span_f1": 0.8355123894907235,
+        "per_type": {
+          "PERSON": {
+            "tp": 850,
+            "fp": 433,
+            "fn": 50,
+            "precision": 0.6625097427903351,
+            "recall": 0.9444444444444444,
+            "exact_span_f1": 0.7787448465414567
+          },
+          "ADDRESS": {
+            "tp": 605,
+            "fp": 341,
+            "fn": 95,
+            "precision": 0.6395348837209303,
+            "recall": 0.8642857142857143,
+            "exact_span_f1": 0.7351154313487241
+          },
+          "PHONE": {
+            "tp": 600,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.9983361064891847,
+            "recall": 1.0,
+            "exact_span_f1": 0.9991673605328892
+          },
+          "EMAIL": {
+            "tp": 700,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.875,
+            "recall": 0.875,
+            "exact_span_f1": 0.875
+          },
+          "IDENTIFIER": {
+            "tp": 600,
+            "fp": 101,
+            "fn": 100,
+            "precision": 0.8559201141226819,
+            "recall": 0.8571428571428571,
+            "exact_span_f1": 0.8565310492505354
+          }
+        }
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.002169095708597253,
+      "validation_f1": 0.835865504358655,
+      "validation_counts": {
+        "tp": 3356,
+        "fp": 974,
+        "fn": 344,
+        "precision": 0.7750577367205542,
+        "recall": 0.907027027027027,
+        "exact_span_f1": 0.835865504358655,
+        "per_type": {
+          "PERSON": {
+            "tp": 850,
+            "fp": 433,
+            "fn": 50,
+            "precision": 0.6625097427903351,
+            "recall": 0.9444444444444444,
+            "exact_span_f1": 0.7787448465414567
+          },
+          "ADDRESS": {
+            "tp": 607,
+            "fp": 339,
+            "fn": 93,
+            "precision": 0.6416490486257929,
+            "recall": 0.8671428571428571,
+            "exact_span_f1": 0.7375455650060754
+          },
+          "PHONE": {
+            "tp": 599,
+            "fp": 2,
+            "fn": 1,
+            "precision": 0.9966722129783694,
+            "recall": 0.9983333333333333,
+            "exact_span_f1": 0.9975020815986678
+          },
+          "EMAIL": {
+            "tp": 700,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.875,
+            "recall": 0.875,
+            "exact_span_f1": 0.875
+          },
+          "IDENTIFIER": {
+            "tp": 600,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.8571428571428571,
+            "recall": 0.8571428571428571,
+            "exact_span_f1": 0.8571428571428571
+          }
+        }
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.000996994723422215,
+      "validation_f1": 0.8384442782348541,
+      "validation_counts": {
+        "tp": 3363,
+        "fp": 959,
+        "fn": 337,
+        "precision": 0.7781119851920407,
+        "recall": 0.908918918918919,
+        "exact_span_f1": 0.8384442782348541,
+        "per_type": {
+          "PERSON": {
+            "tp": 852,
+            "fp": 429,
+            "fn": 48,
+            "precision": 0.6651053864168618,
+            "recall": 0.9466666666666667,
+            "exact_span_f1": 0.781292984869326
+          },
+          "ADDRESS": {
+            "tp": 612,
+            "fp": 328,
+            "fn": 88,
+            "precision": 0.6510638297872341,
+            "recall": 0.8742857142857143,
+            "exact_span_f1": 0.7463414634146341
+          },
+          "PHONE": {
+            "tp": 599,
+            "fp": 2,
+            "fn": 1,
+            "precision": 0.9966722129783694,
+            "recall": 0.9983333333333333,
+            "exact_span_f1": 0.9975020815986678
+          },
+          "EMAIL": {
+            "tp": 700,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.875,
+            "recall": 0.875,
+            "exact_span_f1": 0.875
+          },
+          "IDENTIFIER": {
+            "tp": 600,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.8571428571428571,
+            "recall": 0.8571428571428571,
+            "exact_span_f1": 0.8571428571428571
+          }
+        }
+      }
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.0005906062418015356,
+      "validation_f1": 0.8423417800524279,
+      "validation_counts": {
+        "tp": 3374,
+        "fp": 937,
+        "fn": 326,
+        "precision": 0.7826490373463234,
+        "recall": 0.9118918918918919,
+        "exact_span_f1": 0.8423417800524279,
+        "per_type": {
+          "PERSON": {
+            "tp": 860,
+            "fp": 413,
+            "fn": 40,
+            "precision": 0.6755695208169678,
+            "recall": 0.9555555555555556,
+            "exact_span_f1": 0.791532443626323
+          },
+          "ADDRESS": {
+            "tp": 614,
+            "fp": 324,
+            "fn": 86,
+            "precision": 0.6545842217484008,
+            "recall": 0.8771428571428571,
+            "exact_span_f1": 0.7496947496947497
+          },
+          "PHONE": {
+            "tp": 600,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.9983361064891847,
+            "recall": 1.0,
+            "exact_span_f1": 0.9991673605328892
+          },
+          "EMAIL": {
+            "tp": 700,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.875,
+            "recall": 0.875,
+            "exact_span_f1": 0.875
+          },
+          "IDENTIFIER": {
+            "tp": 600,
+            "fp": 99,
+            "fn": 100,
+            "precision": 0.8583690987124464,
+            "recall": 0.8571428571428571,
+            "exact_span_f1": 0.8577555396711937
+          }
+        }
+      }
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.00039551880763610825,
+      "validation_f1": 0.8430515669871395,
+      "validation_counts": {
+        "tp": 3376,
+        "fp": 933,
+        "fn": 324,
+        "precision": 0.7834764446507311,
+        "recall": 0.9124324324324324,
+        "exact_span_f1": 0.8430515669871395,
+        "per_type": {
+          "PERSON": {
+            "tp": 861,
+            "fp": 411,
+            "fn": 39,
+            "precision": 0.6768867924528302,
+            "recall": 0.9566666666666667,
+            "exact_span_f1": 0.7928176795580111
+          },
+          "ADDRESS": {
+            "tp": 616,
+            "fp": 321,
+            "fn": 84,
+            "precision": 0.6574172892209178,
+            "recall": 0.88,
+            "exact_span_f1": 0.7525962125839951
+          },
+          "PHONE": {
+            "tp": 599,
+            "fp": 2,
+            "fn": 1,
+            "precision": 0.9966722129783694,
+            "recall": 0.9983333333333333,
+            "exact_span_f1": 0.9975020815986678
+          },
+          "EMAIL": {
+            "tp": 700,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.875,
+            "recall": 0.875,
+            "exact_span_f1": 0.875
+          },
+          "IDENTIFIER": {
+            "tp": 600,
+            "fp": 99,
+            "fn": 100,
+            "precision": 0.8583690987124464,
+            "recall": 0.8571428571428571,
+            "exact_span_f1": 0.8577555396711937
+          }
+        }
+      }
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.00028395644341721796,
+      "validation_f1": 0.8441169123157631,
+      "validation_counts": {
+        "tp": 3379,
+        "fp": 927,
+        "fn": 321,
+        "precision": 0.7847189967487227,
+        "recall": 0.9132432432432432,
+        "exact_span_f1": 0.8441169123157631,
+        "per_type": {
+          "PERSON": {
+            "tp": 864,
+            "fp": 405,
+            "fn": 36,
+            "precision": 0.6808510638297872,
+            "recall": 0.96,
+            "exact_span_f1": 0.7966804979253111
+          },
+          "ADDRESS": {
+            "tp": 615,
+            "fp": 322,
+            "fn": 85,
+            "precision": 0.656350053361793,
+            "recall": 0.8785714285714286,
+            "exact_span_f1": 0.7513744654856445
+          },
+          "PHONE": {
+            "tp": 600,
+            "fp": 1,
+            "fn": 0,
+            "precision": 0.9983361064891847,
+            "recall": 1.0,
+            "exact_span_f1": 0.9991673605328892
+          },
+          "EMAIL": {
+            "tp": 700,
+            "fp": 100,
+            "fn": 100,
+            "precision": 0.875,
+            "recall": 0.875,
+            "exact_span_f1": 0.875
+          },
+          "IDENTIFIER": {
+            "tp": 600,
+            "fp": 99,
+            "fn": 100,
+            "precision": 0.8583690987124464,
+            "recall": 0.8571428571428571,
+            "exact_span_f1": 0.8577555396711937
+          }
+        }
+      }
+    }
+  ]
+}

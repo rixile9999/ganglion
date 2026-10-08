@@ -1,0 +1,1532 @@
+{
+  "audit_type": "auxiliary_format_probes_not_same_test_benchmark",
+  "input_sha256": "a690e16853a2a4d3752d7c031716bddda437c8b825ca6cfffad5976a19e5210a",
+  "parameters_unchanged": true,
+  "included_in_same_test_predictions": false,
+  "email_validator_source": "    def validate_result(self, pattern_text: str):  # noqa: D102\n        result = tldextract.extract(pattern_text)\n        return result.fqdn != \"\"\n",
+  "email_recognizer_source_sha256": "1d4ff93e067426c9db105100f8343d7bcb3cc9a8115ce2511782e7858300f59d",
+  "email_validator_diagnostics": [
+    {
+      "email": "contact000002.s42@people.test.example",
+      "regex_matches": true,
+      "validator_result": false,
+      "tldextract": {
+        "subdomain": "people.test",
+        "domain": "example",
+        "suffix": "",
+        "fqdn": ""
+      }
+    },
+    {
+      "email": "contact000002.s42@people.test.com",
+      "regex_matches": true,
+      "validator_result": true,
+      "tldextract": {
+        "subdomain": "people",
+        "domain": "test",
+        "suffix": "com",
+        "fqdn": "people.test.com"
+      }
+    }
+  ],
+  "phone_default_regions": [
+    "US",
+    "GB",
+    "DE",
+    "FR",
+    "IL",
+    "IN",
+    "CA",
+    "BR"
+  ],
+  "rrn_validation_source": "    def validate_result(self, pattern_text: str) -> Optional[bool]:\n        \"\"\"\n        Validate the pattern logic e.g., by running checksum on a detected pattern.\n\n        This validation is only for RRNs issued before October 2020.\n        Therefore, it returns None, not False, at the end of the method.\n\n        :param pattern_text: the text to validated.\n        Only the part in text that was detected by the regex engine\n        :return: A bool or None, indicating whether the validation was successful.\n        \"\"\"\n        # Pre-processing before validation checks\n        sanitized_value = EntityRecognizer.sanitize_value(\n            pattern_text, self.replacement_pairs\n        )\n\n        # Check if the sanitized value has the correct length (13 digits)\n        if len(sanitized_value) != 13:\n            return False\n\n        # Check if all characters are digits\n        if not sanitized_value.isdigit():\n            return False\n\n        # Validate region code (HI) and checksum (X)\n        region_code = int(sanitized_value[7:9])  # HI\n        if self._validate_region_code(region_code) and self._validate_checksum(\n            sanitized_value\n        ):\n            return True\n\n        return None\n",
+  "sources": {
+    "installation": "https://microsoft.github.io/presidio/installation/",
+    "language_configuration": "https://github.com/data-privacy-stack/presidio/blob/main/docs/tutorial/05_languages.md",
+    "recognizer_defaults": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/conf/default_recognizers.yaml",
+    "rrn_validation": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/country_specific/korea/kr_rrn_recognizer.py",
+    "korean_model": "https://spacy.io/models/ko#ko_core_news_sm",
+    "english_model": "https://spacy.io/models/en#en_core_web_lg",
+    "email_validation": "https://github.com/data-privacy-stack/presidio/blob/main/presidio-analyzer/presidio_analyzer/predefined_recognizers/generic/email_recognizer.py",
+    "reserved_domains": "https://www.iana.org/assignments/special-use-domain-names/"
+  },
+  "probes": [
+    {
+      "configuration": "en-default",
+      "case_id": "test-00001",
+      "change": "original",
+      "text": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+      "spans": [
+        {
+          "start": 25,
+          "end": 30,
+          "type": "ADDRESS",
+          "score": 0.85
+        },
+        {
+          "start": 95,
+          "end": 98,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 133,
+          "end": 139,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 140,
+          "end": 147,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 25,
+          "end": 30,
+          "type": "LOCATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 58,
+          "end": 71,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 95,
+          "end": 98,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 133,
+          "end": 139,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 133,
+          "end": 147,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 140,
+          "end": 147,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 31
+    },
+    {
+      "configuration": "en-default",
+      "case_id": "test-00001",
+      "change": "public_suffix_only",
+      "text": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.com; 개인 식별 코드 871228-1632599.",
+      "spans": [
+        {
+          "start": 25,
+          "end": 30,
+          "type": "ADDRESS",
+          "score": 0.85
+        },
+        {
+          "start": 81,
+          "end": 118,
+          "type": "EMAIL",
+          "score": 1.0
+        },
+        {
+          "start": 95,
+          "end": 98,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 129,
+          "end": 135,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 136,
+          "end": 143,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 25,
+          "end": 30,
+          "type": "LOCATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 58,
+          "end": 71,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 81,
+          "end": 118,
+          "type": "EMAIL_ADDRESS",
+          "score": 1.0,
+          "recognizers": [
+            "EmailRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 95,
+          "end": 98,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 99,
+          "end": 118,
+          "type": "URL",
+          "score": 0.5,
+          "recognizers": [
+            "UrlRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 129,
+          "end": 135,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 129,
+          "end": 143,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 136,
+          "end": 143,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 31
+    },
+    {
+      "configuration": "en-default",
+      "case_id": "test-00001",
+      "change": "international_phone_only",
+      "text": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 +82 10 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+      "spans": [
+        {
+          "start": 25,
+          "end": 30,
+          "type": "ADDRESS",
+          "score": 0.85
+        },
+        {
+          "start": 58,
+          "end": 74,
+          "type": "PHONE",
+          "score": 0.4
+        },
+        {
+          "start": 98,
+          "end": 101,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 136,
+          "end": 142,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 143,
+          "end": 150,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 25,
+          "end": 30,
+          "type": "LOCATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 58,
+          "end": 74,
+          "type": "PHONE_NUMBER",
+          "score": 0.4,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 98,
+          "end": 101,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 136,
+          "end": 142,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 136,
+          "end": 150,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 143,
+          "end": 150,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 32
+    },
+    {
+      "configuration": "en-default",
+      "case_id": "test-00002",
+      "change": "original",
+      "text": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+      "spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 196,
+          "end": 202,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 203,
+          "end": 210,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 196,
+          "end": 202,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 196,
+          "end": 210,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 203,
+          "end": 210,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 35
+    },
+    {
+      "configuration": "en-default",
+      "case_id": "test-00002",
+      "change": "public_suffix_only",
+      "text": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.com, and identity value 941119-1632600.",
+      "spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85
+        },
+        {
+          "start": 138,
+          "end": 171,
+          "type": "EMAIL",
+          "score": 1.0
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 192,
+          "end": 198,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 199,
+          "end": 206,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 138,
+          "end": 171,
+          "type": "EMAIL_ADDRESS",
+          "score": 1.0,
+          "recognizers": [
+            "EmailRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 156,
+          "end": 171,
+          "type": "URL",
+          "score": 0.5,
+          "recognizers": [
+            "UrlRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 192,
+          "end": 198,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 192,
+          "end": 206,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 206,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 35
+    },
+    {
+      "configuration": "en-default",
+      "case_id": "test-00002",
+      "change": "international_phone_only",
+      "text": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number +82-10-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+      "spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85
+        },
+        {
+          "start": 109,
+          "end": 125,
+          "type": "PHONE",
+          "score": 0.75
+        },
+        {
+          "start": 155,
+          "end": 158,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 199,
+          "end": 205,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 206,
+          "end": 213,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 109,
+          "end": 125,
+          "type": "PHONE_NUMBER",
+          "score": 0.75,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 155,
+          "end": 158,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 205,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 213,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 206,
+          "end": 213,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 37
+    },
+    {
+      "configuration": "en-ko",
+      "case_id": "test-00001",
+      "change": "original",
+      "text": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+      "spans": [
+        {
+          "start": 25,
+          "end": 39,
+          "type": "ADDRESS",
+          "score": 0.85
+        },
+        {
+          "start": 58,
+          "end": 71,
+          "type": "PHONE",
+          "score": 0.4
+        },
+        {
+          "start": 133,
+          "end": 147,
+          "type": "IDENTIFIER",
+          "score": 0.5
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 25,
+          "end": 39,
+          "type": "LOCATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 58,
+          "end": 71,
+          "type": "PHONE_NUMBER",
+          "score": 0.4,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 67,
+          "end": 77,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 133,
+          "end": 147,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 133,
+          "end": 147,
+          "type": "KR_RRN",
+          "score": 0.5,
+          "recognizers": [
+            "KrRrnRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        }
+      ],
+      "input_tokens": 31
+    },
+    {
+      "configuration": "en-ko",
+      "case_id": "test-00001",
+      "change": "public_suffix_only",
+      "text": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 010 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.com; 개인 식별 코드 871228-1632599.",
+      "spans": [
+        {
+          "start": 25,
+          "end": 39,
+          "type": "ADDRESS",
+          "score": 0.85
+        },
+        {
+          "start": 58,
+          "end": 71,
+          "type": "PHONE",
+          "score": 0.4
+        },
+        {
+          "start": 81,
+          "end": 118,
+          "type": "EMAIL",
+          "score": 1.0
+        },
+        {
+          "start": 129,
+          "end": 143,
+          "type": "IDENTIFIER",
+          "score": 0.5
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 25,
+          "end": 39,
+          "type": "LOCATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 58,
+          "end": 71,
+          "type": "PHONE_NUMBER",
+          "score": 0.4,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 67,
+          "end": 77,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 81,
+          "end": 118,
+          "type": "EMAIL_ADDRESS",
+          "score": 1.0,
+          "recognizers": [
+            "EmailRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 99,
+          "end": 118,
+          "type": "URL",
+          "score": 0.5,
+          "recognizers": [
+            "UrlRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 129,
+          "end": 143,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 129,
+          "end": 143,
+          "type": "KR_RRN",
+          "score": 0.5,
+          "recognizers": [
+            "KrRrnRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        }
+      ],
+      "input_tokens": 31
+    },
+    {
+      "configuration": "en-ko",
+      "case_id": "test-00001",
+      "change": "international_phone_only",
+      "text": "보관된 개인 기록: 실명 양도은; 자택 위치 울산광역시 남구 달구벌대로 178 1096호; 휴대전화번호 +82 10 7033 2599; 전자우편 계정 contact000001.s42@contact.testing.example; 개인 식별 코드 871228-1632599.",
+      "spans": [
+        {
+          "start": 25,
+          "end": 39,
+          "type": "ADDRESS",
+          "score": 0.85
+        },
+        {
+          "start": 58,
+          "end": 74,
+          "type": "PHONE",
+          "score": 0.4
+        },
+        {
+          "start": 136,
+          "end": 150,
+          "type": "IDENTIFIER",
+          "score": 0.5
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 25,
+          "end": 39,
+          "type": "LOCATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 58,
+          "end": 74,
+          "type": "PHONE_NUMBER",
+          "score": 0.4,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 136,
+          "end": 150,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        },
+        {
+          "start": 136,
+          "end": 150,
+          "type": "KR_RRN",
+          "score": 0.5,
+          "recognizers": [
+            "KrRrnRecognizer"
+          ],
+          "languages": [
+            "ko"
+          ]
+        }
+      ],
+      "input_tokens": 32
+    },
+    {
+      "configuration": "en-ko",
+      "case_id": "test-00002",
+      "change": "original",
+      "text": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+      "spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85
+        },
+        {
+          "start": 109,
+          "end": 122,
+          "type": "PHONE",
+          "score": 0.75
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 196,
+          "end": 202,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 196,
+          "end": 210,
+          "type": "IDENTIFIER",
+          "score": 0.5
+        },
+        {
+          "start": 203,
+          "end": 210,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 72,
+          "end": 81,
+          "type": "ORGANIZATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 83,
+          "end": 93,
+          "type": "ORGANIZATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 109,
+          "end": 122,
+          "type": "PHONE_NUMBER",
+          "score": 0.75,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 196,
+          "end": 202,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 196,
+          "end": 210,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 196,
+          "end": 210,
+          "type": "KR_RRN",
+          "score": 0.5,
+          "recognizers": [
+            "KrRrnRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 203,
+          "end": 210,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 35
+    },
+    {
+      "configuration": "en-ko",
+      "case_id": "test-00002",
+      "change": "public_suffix_only",
+      "text": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number 010-7033-2600, email account contact000002.s42@people.test.com, and identity value 941119-1632600.",
+      "spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85
+        },
+        {
+          "start": 109,
+          "end": 122,
+          "type": "PHONE",
+          "score": 0.75
+        },
+        {
+          "start": 138,
+          "end": 171,
+          "type": "EMAIL",
+          "score": 1.0
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 192,
+          "end": 198,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 192,
+          "end": 206,
+          "type": "IDENTIFIER",
+          "score": 0.5
+        },
+        {
+          "start": 199,
+          "end": 206,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 72,
+          "end": 81,
+          "type": "ORGANIZATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 83,
+          "end": 93,
+          "type": "ORGANIZATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 109,
+          "end": 122,
+          "type": "PHONE_NUMBER",
+          "score": 0.75,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 138,
+          "end": 171,
+          "type": "EMAIL_ADDRESS",
+          "score": 1.0,
+          "recognizers": [
+            "EmailRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 152,
+          "end": 155,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 156,
+          "end": 171,
+          "type": "URL",
+          "score": 0.5,
+          "recognizers": [
+            "UrlRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 192,
+          "end": 198,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 192,
+          "end": 206,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 192,
+          "end": 206,
+          "type": "KR_RRN",
+          "score": 0.5,
+          "recognizers": [
+            "KrRrnRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 206,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 35
+    },
+    {
+      "configuration": "en-ko",
+      "case_id": "test-00002",
+      "change": "international_phone_only",
+      "text": "Confidential individual details — legal name Trevor Hayes, residence 40 Aspen Way, Southridge, mobile number +82-10-7033-2600, email account contact000002.s42@people.test.example, and identity value 941119-1632600.",
+      "spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85
+        },
+        {
+          "start": 109,
+          "end": 125,
+          "type": "PHONE",
+          "score": 0.75
+        },
+        {
+          "start": 155,
+          "end": 158,
+          "type": "IDENTIFIER",
+          "score": 0.3
+        },
+        {
+          "start": 199,
+          "end": 205,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        },
+        {
+          "start": 199,
+          "end": 213,
+          "type": "IDENTIFIER",
+          "score": 0.5
+        },
+        {
+          "start": 206,
+          "end": 213,
+          "type": "IDENTIFIER",
+          "score": 0.01
+        }
+      ],
+      "raw_model_spans": [
+        {
+          "start": 45,
+          "end": 57,
+          "type": "PERSON",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 72,
+          "end": 81,
+          "type": "ORGANIZATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 83,
+          "end": 93,
+          "type": "ORGANIZATION",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 109,
+          "end": 125,
+          "type": "PHONE_NUMBER",
+          "score": 0.75,
+          "recognizers": [
+            "PhoneRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 155,
+          "end": 158,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.3,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 205,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 213,
+          "type": "DATE_TIME",
+          "score": 0.85,
+          "recognizers": [
+            "SpacyRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 199,
+          "end": 213,
+          "type": "KR_RRN",
+          "score": 0.5,
+          "recognizers": [
+            "KrRrnRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        },
+        {
+          "start": 206,
+          "end": 213,
+          "type": "US_DRIVER_LICENSE",
+          "score": 0.01,
+          "recognizers": [
+            "UsLicenseRecognizer"
+          ],
+          "languages": [
+            "en"
+          ]
+        }
+      ],
+      "input_tokens": 37
+    }
+  ],
+  "conclusion": ".example regex candidates are rejected because tldextract gives no public suffix/fqdn. .com permits native email recognition. Default phone regions omit KR; +82 international notation is recognized without changing phone configuration. Korean configuration includes KR and recognizes domestic notation.",
+  "packages": {
+    "presidio-analyzer": "2.2.364",
+    "spacy": "3.8.16",
+    "tldextract": "5.4.0",
+    "phonenumbers": "9.0.40"
+  }
+}

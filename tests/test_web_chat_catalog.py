@@ -34,7 +34,6 @@ API_JS = WEB / "assets" / "api.js"
 LIVE_PAGES = ("chat.html", "catalog.html")
 #: Pages that still render mock data and must advertise it.
 MOCK_PAGES = (
-    "index.html",
     "pipeline.html",
     "evaluation.html",
     "events.html",

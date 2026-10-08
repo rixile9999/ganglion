@@ -1,16 +1,18 @@
 # Ganglion 지속적 특화 모델 팩토리 — 아키텍처 v2
 
-상태: **설계 제안, 런타임 구현 전** · 2026-09-08
+상태: **설계 제안, 런타임 구현 전** · 2026-09-08 · 코어와 선택적 어댑터 경계 갱신: 2026-10-08
 
 이 문서는 사용자가 정리한 목표를 기준으로 기존 `factory_design.md`와 `redesign_plan.md`를 발전시킨 후속 설계다. 기존 구현과 실험 기록은 보존한다. 새 아키텍처 구현 시 이 문서를 기준으로 기존 task 명세를 순차 갱신한다.
 
 [인터랙티브 구조도](../web/architecture.html) · [독립 SVG 구조도](diagrams/factory-v2.svg)
 
+긴 문서 가명화 실증의 모델 구성, 선택적 문서 어댑터, 복원과 평가 계획은 [개인정보 가명화 파이프라인 설계](pseudonymization_pipeline_design.md)를 따른다. 기존 인터랙티브 그림과 SVG에는 아래의 선택적 어댑터 구분이 아직 반영되지 않았다.
+
 ## 1. 무엇을 만드는가
 
 **환경 스펙과 배포 제약을 받아, 필요한 품질을 만족하는 작은 도메인 특화 모델을 생산하고, 환경이 바뀔 때 최소 비용으로 갱신하는 팩토리.**
 
-생산 대상은 가중치 하나가 아니라 `모델 + 표현 형식 + 계약 + 보정 규칙 + 실행 정책`으로 이루어진 **ReleaseBundle**이다. 모델 크기를 줄이는 과정에서 필요한 일부 기능을 결정적 코드로 옮길 수 있고, 규칙의 복잡성이 커지면 이를 학습 데이터로 환류하여 모델에 흡수할 수 있다.
+생산 대상은 가중치 하나가 아니라 `모델 + 표현 형식 + 계약 + Interpreter + 보정 규칙 + 판단 정책`으로 이루어진 **CoreBundle**이다. 이 문서의 ReleaseBundle은 검증된 코어 또는 애플리케이션의 배포 단위를 뜻한다. **ApplicationBundle**은 CoreBundle에 선택적 Preprocessor와 Executor의 스펙·구현 참조를 연결한다. 모델 크기를 줄이는 과정에서 필요한 일부 기능을 결정적 코드로 옮길 수 있고, 규칙의 복잡성이 커지면 이를 학습 데이터로 환류하여 모델에 흡수할 수 있다.
 
 기존 세 모듈은 유지한다.
 
@@ -68,6 +70,22 @@ flowchart TB
 
 읽는 순서: **무엇을 해야 하는지 정한다 → 가장 경제적인 구현을 찾는다 → 묶어서 배포한다 → 변화와 실패를 다음 생산에 반영한다.** 개발 평가의 피드백 루프와 독립 릴리스 판정을 구분한다.
 
+### 3.1 코어와 선택적 프로그램 구성
+
+전체 프로그램은 `Preprocessor → 형식언어모델 → Interpreter → Executor`로 구성할 수 있다. Ganglion 코어의 필수 경계는 계약, 형식언어모델, Interpreter와 개선 루프다. 모델의 형식 출력은 직접 판단 헤드, 제약된 DSL, typed API 등으로 구현할 수 있으며 특정 JSON 생성 방식에 고정하지 않는다.
+
+| 구성 | 책임 | 생략 시 |
+|---|---|---|
+| Preprocessor 스펙과 어댑터 | 입력 가공·분할, 반복 입력의 공통 스펙화, 문맥과 원문 대응 제공 | 호출자가 계약에 맞는 입력을 제공 |
+| Ganglion 코어 | 판단 계약 컴파일, 형식 출력, 해석·보정·검증, 피드백 개선 | 필수 |
+| Executor 스펙과 어댑터 | 실행 계약에 따라 실제 적용·도구 호출·결과 패키징 | 코어가 검증된 계획과 상태만 반환 |
+
+입출력의 의미와 허용 연산은 필수 도메인 계약이다. 파일 분할·저장, 외부 API binding 등 구현 스펙은 선택적이며, 등록된 어댑터 참조·설정·schema·상태·실패·비용 신호를 정의한다. 선택적 스펙을 통한 임의 코드 자동 실행을 기본 기능으로 삼지 않는다.
+
+반복 입력의 공통 스펙을 추출하는 역할은 Preprocessor에 둘 수 있다. 코어는 전달된 스펙을 계약으로 등록하고, 전체 프롬프트·관련 부분·학습된 표현 중 경제적인 전달 방식을 선택한다. Preprocessor와 Executor를 함께 제공하는 편의 runner는 작업 단위 반복, 상태, 취소와 최종 결과 처리를 담당하며 코어 사용에 강제되지 않는다.
+
+Factory는 코어의 품질과 비용을 평가하고, 어댑터가 연결되면 전체 프로그램의 품질과 비용도 평가한다. 외부 어댑터 변경은 개선 제안으로 반환하거나 명시된 build recipe 안에서만 수행한다. 코어 및 어댑터별 실패와 버전을 기록해 전처리 누락, 모델 오판, 해석 회귀, 실행 실패를 구분한다. 선택적 스펙이 없는 경우 어댑터의 동작이나 비용을 추정해 기록하지 않는다.
+
 ## 4. 구성 요소와 책임
 
 | 구성 요소 | 입력 | 출력 | 결정 권한과 경계 |
@@ -77,7 +95,7 @@ flowchart TB
 | Candidate Builder | BuildPlan, 계약, 허용 데이터 | CandidateBundle, 학습·제작 비용 | 플러그인으로 데이터·규칙·학습·압축 수행. 자기 후보의 릴리스 승인 권한 없음 |
 | Evaluator | 동결된 후보, 평가 입력, 별도 정답, 장치 | DevReport 또는 ReleaseDecision | 독립 채점. runtime에는 정답을 전달하지 않음 |
 | Registry | 산출물, lineage, 판정 | 불변 번들, active pointer | 버전 조회·호환성 확인·원자적 승격. 학습·채점은 하지 않음 |
-| Runtime | ReleaseBundle, 요청, 현재 환경 상태 | ActionResult, RuntimeTrace | 허용된 보정과 재시도만 수행. 요청 처리 중 학습하거나 스펙을 수정하지 않음 |
+| Runtime | CoreBundle 또는 ApplicationBundle, 요청, 현재 환경 상태 | 도메인 계획/결과와 RuntimeTrace | 코어는 검증된 계획을 반환하고, 연결된 Executor만 실제 실행. 허용된 보정과 재시도만 수행. 요청 중 학습하거나 스펙을 수정하지 않음 |
 | Analyzer | 개발/운영 trace, 사용 가능한 결과 라벨 | FailureReport, DriftSignal, ImprovementProposal | 원인 가설과 개선 후보 제안. 정답 없는 실행 성공을 의미적 성공으로 취급하지 않음 |
 
 저장소는 전 모듈이 공유하는 기반이다. 위 다이어그램의 Registry는 릴리스 경로를 강조한 것이다. 계약·데이터·후보·작업 결과도 동일한 content-addressed artifact 저장소에 남는다.
@@ -88,9 +106,9 @@ flowchart TB
 
 스키마만으로 자연어 의도의 정답을 자동 생성할 수는 없다. DomainSpec은 다음을 명시한다.
 
-- 도구 schema, 인자의 단위·기본값·별칭·사전 조건·효과·도구 호출 간 의존성.
+- 입력·판단·계획 타입과 허용 연산의 의미. ToolCallingDomain에서는 도구 schema, 인자의 단위·기본값·별칭·사전 조건·효과·호출 간 의존성.
 - 입력 문맥과 런타임 상태, 지원 언어, 허용/거부/추가 질문의 조건.
-- 실행 adapter, 시뮬레이터 또는 결과 확인 방법, 이용 가능한 의미 검증 능력.
+- 실행 연산의 의미와 결과 확인 방법, 이용 가능한 의미 검증 능력. Preprocessor·Executor adapter와 시뮬레이터의 구현 참조는 선택적 스펙으로 연결.
 - 요구 동작의 예시와 소유자가 제공한 작업 조건. 비어 있는 부분은 `unknown`으로 유지.
 
 `ToolCallingDomain`이 첫 구현이다. 향후 다른 도메인을 추가할 때 sampler, renderer, executor, oracle 프로토콜을 구현한다. 초기부터 임의의 모든 작업을 하나의 거대한 추상 클래스로 감싸지 않는다.
@@ -106,7 +124,7 @@ DomainSpec@v7                  # 도메인이 요구하는 의미
 
 기존 `ToolSpec.prompt_correction`처럼 사용자 문장에서 값을 추론하는 코드는 별도 `CorrectionPolicy`로 분리한다. 명시된 단위·별칭을 canonical form으로 바꾸는 것은 계약의 normalization이다. 잘못 생성한 시간을 사용자 문장에서 다시 읽는 것은 최적화 정책이다. **보정이 좋아졌다고 DomainSpec의 정답 정의가 바뀌면 안 된다.**
 
-모든 표현은 canonical ActionPlan으로 lowering한다. IR 간 비교는 이 공통 의미에서 수행한다. 컴파일러가 표현할 수 없는 제약은 명시적으로 거부하거나 runtime validator에 남겼다고 manifest에 기록한다. 변환 정확성은 round-trip, 경계값, 독립 실행 결과로 검증한다.
+모든 표현은 도메인이 정의한 canonical plan으로 lowering한다. ToolCallingDomain에서는 기존 `ActionPlan`, 개인정보 편집에서는 `TextEditPlan`을 사용하며 서로 다른 도메인을 tool-call 형태로 강제하지 않는다. 같은 도메인의 IR 간 비교는 공통 계획 의미에서 수행한다. 컴파일러가 표현할 수 없는 제약은 명시적으로 거부하거나 runtime validator에 남겼다고 manifest에 기록한다. 변환 정확성은 round-trip, 경계값, 독립 실행 결과로 검증한다. 기존 [파이프라인 형식화](pipeline_formalization.md)의 ActionPlan 정의는 tool-calling 도메인의 형식화로 유지한다.
 
 ### 5.3 주요 artifact
 
@@ -117,8 +135,10 @@ DomainSpec@v7                  # 도메인이 요구하는 의미
 | DatasetManifest | 내용 hash, spec version, split, 생성 방식, label origin/quality, 원본 및 paraphrase family, 사용 가능 목적 |
 | BuildPlan | parent release, recipe, 필요한 데이터, 재사용 refs, 작업 DAG, 예상 비용, budget cap, 중단 조건 |
 | CandidateBundle | weights/adapter/base refs, contract, correction policy, compiler/tokenizer/runtime refs, calibration data, recipe |
+| CoreBundle | 계약, 모델과 출력 헤드, tokenizer, Interpreter·보정·판단 정책, calibration, runtime 참조 |
+| ApplicationBundle | CoreBundle 참조, 선택적 Preprocessor·Executor의 스펙·구현·설정·호환성 |
 | EvaluationReport | candidate hash, eval protocol/split hash, target device, 표본·신뢰 구간, raw/final 성능, 비용, 회귀 slice |
-| ReleaseBundle | 검증된 candidate 참조, evidence 참조, spec compatibility, 배포 정책, 제한 조건 |
+| ReleaseBundle | 검증된 CoreBundle 또는 ApplicationBundle 참조, evidence, spec compatibility, 배포 정책, 제한 조건 |
 | RuntimeTrace | request id, release/spec hash, raw output, correction diff, final plan, attempts, execution outcome, state version, 비용 |
 | ImprovementProposal | 적용 대상, 근거 개발 trace, 변경 종류, 기대 효과, 불확실성, 예상 비용, 독립 검증 요구 |
 
@@ -258,17 +278,19 @@ flowchart LR
 ```mermaid
 flowchart LR
     Q[요청 + 환경 상태] --> P[활성 bundle 고정]
-    P --> M[작은 모델 / 선언된 경로]
-    M --> X[Parse + 보정 후보]
+    P --> M[형식언어모델 / 선언된 경로]
+    M --> X[Interpreter: typed 출력 또는 Parse + 보정]
     X --> V[계약 재검증 + 실행 전 상태 검사]
-    V -->|유효| E[도구 실행]
+    V -->|유효| R[도메인 계획과 상태 반환]
+    R -->|Executor가 연결된 경우| E[실제 실행과 결과 패키징]
     V -->|실행 전 실패| F[제한된 retry / 질문 / 거부 / fallback]
     F -->|retry budget 남음| M
-    E --> O[결과와 비용 trace]
+    R --> O[결과와 비용 trace]
+    E --> O
     F -->|질문·거부로 종료| O
 ```
 
-요청마다 release/spec/state version을 고정한다. 보정 전후를 모두 남기며, 보정한 plan도 다시 검증한다. no-call은 유효한 ActionPlan이다. 질문과 거부는 ToolCall이 아닌 별도 ActionResult로 모델링한다.
+요청마다 release/spec/state version을 고정한다. 선택적 어댑터도 같은 요청의 버전에 묶는다. 보정 전후를 모두 남기며, 보정한 plan도 다시 검증한다. 코어만 호출하면 실제 실행 없이 계획을 반환한다. ToolCallingDomain에서는 no-call이 유효한 ActionPlan이며 질문과 거부는 ToolCall이 아닌 별도 ActionResult로 모델링한다. 다른 도메인은 같은 역할의 계획·상태 타입을 정의한다.
 
 자동 보정은 release에 포함된 정책만 적용한다. 추론 중 새 규칙 생성·학습·계약 수정은 하지 않는다. 대체 모델이 허용되는 환경에서는 그 비용과 호출률을 시스템 제약에 포함한다. 네트워크가 없는 장치에서는 질문/거부/로컬 대안만 선택한다.
 
@@ -324,7 +346,9 @@ ganglion/
   analyzer/    # traces, labels, taxonomy, drift, proposals
   factory/     # controller, recipes, search, jobs, budget
   evaluation/  # validators, oracle adapters, isolated runner, gates
-  runtime/     # bundle loader, correction, executor, rollout
+  runtime/     # bundle loader, interpreter, correction, rollout, optional runner
+  adapters/    # optional preprocessors and executors
+  domains/     # domain contracts, plans and interpretation policies
   registry/    # artifact store, manifests, lineage, active pointer
   benchmarks/  # domain-specific evaluation adapters
   cli.py

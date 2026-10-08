@@ -6,6 +6,12 @@ factory is documented in [Architecture v2](docs/architecture_v2.md), with an
 [standalone SVG](docs/diagrams/factory-v2.svg). This is a design proposal;
 the POC implementation described below predates it.
 
+The planned Korean and multilingual PII demonstration is documented in
+[Reversible long-document pseudonymization](docs/pseudonymization_pipeline_design.md).
+It uses a Qwen3.5-0.8B backbone with typed extraction and decision heads,
+optional document preprocessing and execution adapters, and targets offline
+iPhone-class deployment after H100 training and evaluation.
+
 For an implementation-independent formalization of contract-based tool
 calling (contract, compiler, representation cost, constrained decoding,
 correction, training, evaluation, and the factory objective) see
